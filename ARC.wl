@@ -1217,10 +1217,6 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
     \calltable
         ARCIndent[expr] '' Indents the given ARC expression, keeping appropriate things formatted.
     
-    Examples:
-    
-    ARCIndent[expr] === TODO
-    
     \maintainer danielb
 *)
 Clear[ARCIndent];
@@ -1290,10 +1286,6 @@ ARCClassifyLine[image_List] :=
         ARCInferBackgroundColor[example] '' Given an ARC example, tries to infer the background color.
     
     TODO: Not yet implemented
-    
-    Examples:
-    
-    ARCInferBackgroundColor[example] === TODO
     
     \maintainer danielb
 *)
@@ -2611,10 +2603,6 @@ ARCTestRules[examples_List, rules_List] :=
     \calltable
         ARCTest[file] '' Tries to find a set of rules for the training examples in the given file, and if successful, tests the set of rules on the training and test data, returning the results.
     
-    Examples:
-    
-    ARCTest[file] === TODO
-    
     \maintainer danielb
 *)
 Clear[ARCTest];
@@ -3624,10 +3612,6 @@ ResolveValues[expr_, inputObject_Association, scene_Association] :=
     \calltable
         ARCTry[file, trainOrTest, exampleIndex] '' Given an ARC example, tries finding transformation rules and then applying them to the given example.
     
-    Examples:
-    
-    ARCTry[file, inputOrOutput, exampleIndex] === TODO
-    
     \maintainer danielb
 *)
 Clear[ARCTry];
@@ -4127,10 +4111,6 @@ ARCColorize[ARCScene[image_, color_]]
     \calltable
         SetTrainingDataKeyValue[file, key, value] '' Sets a key/value pair for the given training data file.
     
-    Examples:
-    
-    SetTrainingDataKeyValue[file, key, value] === TODO
-    
     \maintainer danielb
 *)
 Clear[SetTrainingDataKeyValue];
@@ -4183,10 +4163,6 @@ ReturnIfDifferingInputAndOutputSize[parsedFile_ARCExample] :=
     
     \calltable
         ARCAddMoveAttributes[examples, referenceableOutputObjects] '' Performs additional analysis on Move transforms, adding attributes such as BlockedBy as appropriate.
-    
-    Examples:
-    
-    ARCAddMoveAttributes[examples, referenceableOutputObjects] === TODO
     
     \maintainer danielb
 *)
@@ -4435,10 +4411,6 @@ ARCOutOfBounds[position_List, image_List] :=
     
     \calltable
         ARCSimplifyRules[rules] '' Given some rules, removes keys like "Examples" which aren't essential.
-    
-    Examples:
-    
-    ARCSimplifyRules[rules] === TODO
     
     \maintainer danielb
 *)
@@ -4841,10 +4813,6 @@ ARCTransformScore[transform_Association] :=
     \calltable
         ProcessExamples[files] '' UI to iterate over examples and annotate them with metadata.
     
-    Examples:
-    
-    ProcessExamples[files] === TODO
-    
     \maintainer danielb
 *)
 Clear[ProcessExamples];
@@ -4951,10 +4919,6 @@ ProcessExamples[files_List] :=
     
     \calltable
         ARCNotebook[file] '' Creates or opens a notebook for an ARC example.
-    
-    Examples:
-    
-    ARCNotebook[file] === TODO
     
     \maintainer danielb
 *)
