@@ -190,6 +190,8 @@ Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
 
+(* These make use of utility code from an internal Wolfram git repository (wyatterp), so these
+   functions would need to be provided if this code were used by people outside of Wolfram. *)
 ReturnIfFailure = Utility`ReturnIfFailure;
 PrintIfFailure = Utility`PrintIfFailure;
 ReturnFailureIfMessages = Utility`ReturnFailureIfMessages;
