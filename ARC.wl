@@ -1,10 +1,10 @@
 (*!
-    Abstract Reasoning Challenge
+    Abstraction and Reasoning Corpus
     
     https://github.com/fchollet/ARC
     
     Authors:
-        Daniel Bigham (danielb@wolfram.com)
+        Daniel Bigham (daniel.bigham@gmail.com)
 *)
 
 If [TrueQ[DevTools`$DebugLoad], Print["Loading: Daniel`ARC`"]];
