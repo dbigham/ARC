@@ -188,6 +188,10 @@ ARCSetGroupProperties::usage = "ARCSetGroupProperties  "
 
 $UnitTestDir::usage = "$UnitTestDir  "
 
+ARCEvaluationFiles::usage = "ARCEvaluationFiles  "
+
+ARCMyTrainingFiles::usage = "ARCMyTrainingFiles  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -236,8 +240,12 @@ DownValues[DevTools`TestingTools`Private`getFunctionUsesFromNotebookHelper] =
         Infinity
     ];
 
-$gitDirectory = FileNameJoin[{FileNameDrop[FindFile["ERP`"], -7], "ARC"}];
-$trainingDirectory = FileNameJoin[{$gitDirectory, "data", "training"}];
+(* The checkout of https://github.com/fchollet/ARC, which contains the training and evaluation data. *)
+$corpusGitDirectory = FileNameJoin[{FileNameDrop[FindFile["ERP`"], -7], "ARC"}];
+$trainingDirectory = FileNameJoin[{$corpusGitDirectory, "data", "training"}];
+$arcDirectory = FileNameDrop[FindFile["Daniel`ARC`"], -1];
+$myTrainingDirectory = FileNameJoin[{$arcDirectory, "Data", "MyTrainingData"}];
+$evaluationDirectory = FileNameJoin[{$corpusGitDirectory, "data", "evaluation"}];
 
 $integerToColor = <|
     0 -> Black,
@@ -293,13 +301,21 @@ ARCParseFile[file_String] :=
             If [FileExistsQ[file],
                 file
                 ,
-                SelectFirst[
-                    ARCTrainingFiles[],
-                    StringContainsQ[#, file] &,
-                    ReturnFailure[
-                        "FileNotFound",
-                        "No matching training example was found.",
-                        "File" -> file
+                With[{files = Join[ARCTrainingFiles[], ARCMyTrainingFiles[], ARCEvaluationFiles[]]},
+                    Replace[
+                        SelectFirst[
+                            files,
+                            FileBaseName[#] === file &
+                        ],
+                        _Missing :> SelectFirst[
+                            Join[ARCTrainingFiles[], ARCMyTrainingFiles[], ARCEvaluationFiles[]],
+                            StringContainsQ[#, file] &,
+                            ReturnFailure[
+                                "FileNotFound",
+                                "No matching training example was found.",
+                                "File" -> file
+                            ]
+                        ]
                     ]
                 ]
             ];
@@ -412,6 +428,30 @@ example_ARCExample[keys___] := example[[1, keys]]
 Clear[ARCTrainingFiles];
 ARCTrainingFiles[] :=
     FileNames["*.json", $trainingDirectory]
+
+(*!
+    \function ARCMyTrainingFiles
+    
+    \calltable
+        ARCMyTrainingFiles[] '' Returns the list of ARC training files created by me.
+    
+    \maintainer danielb
+*)
+Clear[ARCMyTrainingFiles];
+ARCMyTrainingFiles[] :=
+    FileNames["*.json", $myTrainingDirectory]
+
+(*!
+    \function ARCEvaluationFiles
+    
+    \calltable
+        ARCEvaluationFiles[] '' Returns the list of ARC evaluation files.
+    
+    \maintainer danielb
+*)
+Clear[ARCEvaluationFiles];
+ARCEvaluationFiles[] :=
+    FileNames["*.json", $evaluationDirectory]
 
 (*!
     \function ARCColors
@@ -1538,9 +1578,10 @@ ARCFindObjectMapping[input_Association, output_Association] :=
             ] /@ inputObjects
         |>;
         
-        mapping =
+        (* UNDOME: Was issuing messages when running over all training examples. *)
+        (* mapping =
             ReturnIfFailure@
-            ARCGroupByOutputObject[mapping, outputObjects, input["Background"]];
+            ARCGroupByOutputObject[mapping, outputObjects, input["Background"]]; *)
         
         mapping
         
@@ -3994,7 +4035,7 @@ ARCRepositionObject[object_Association, position_List] :=
 *)
 Clear[ARCImageBorderingStrips];
 ARCImageBorderingStrips[image_, subImagePosition_, subImageDimensions_List, backgroundColor_] :=
-    Module[{},
+    Module[{xRange, yRange},
         yRange = subImagePosition[[1]] ;; subImagePosition[[1]] + subImageDimensions[[1]] - 1;
         xRange = subImagePosition[[2]] ;; subImagePosition[[2]] + subImageDimensions[[2]] - 1;
         {
@@ -4191,9 +4232,6 @@ ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
             Replace[
                 example,
                 objectMapping:KeyValuePattern[inputObject_ -> outputObject:KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "Move"]]] :> (
-                    
-                    XEcho["A" -> example];
-                    
                     Sett[
                         objectMapping,
                         inputObject -> Sett[
@@ -4754,14 +4792,21 @@ ARCInferRankProperties[objectsIn_List] :=
 *)
 Clear[ARCChooseBestTransform];
 ARCChooseBestTransform[transforms_List] :=
-    Module[{},
-        ReverseSort[
-            Function[{transform},
-                transform -> (
-                    ARCTransformScore[transform["Transform"]]
-                )
-            ] /@ transforms
-        ][[1, 1]]
+    Module[{scoredTransforms},
+        
+        scoredTransforms = ReverseSort[
+            Association[
+                Function[{transform},
+                    transform -> (
+                        ARCTransformScore[transform["Transform"]]
+                    )
+                ] /@ transforms
+            ]
+        ];
+        
+        XEchoIndented[scoredTransforms];
+        
+        Normal[scoredTransforms][[1, 1]]
     ]
 
 ARCChooseBestTransform[{}] := {}
@@ -4817,6 +4862,20 @@ ARCTransformScore[transform_Association] :=
                 assoc
             )
         ];
+        
+        If [score === 0,
+            Which[
+                MatchQ[transform, KeyValuePattern[{"Type" -> "Move", "Offset" -> _}]],
+                    (* Give some preference to Move via Offset over Move via Position.
+                       e.g. jnohuorzh-easier
+                       Note that this unfortunately also gives some preference to
+                       Move Offset transforms over any other transform as well, which
+                       is perhaps not ideal, and definitely not intended. *)
+                    score = 0.1
+            ]
+        ];
+        
+        XEcho[transform -> score];
         
         score
     ]

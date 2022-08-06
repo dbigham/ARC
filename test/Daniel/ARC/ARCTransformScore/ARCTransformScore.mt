@@ -11,11 +11,16 @@
 *)
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|
-            "Type" -> "Move",
-            "Offset" -> <|"Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {4}|>, "Y"], "X" -> 0|>
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "Type" -> "Move",
+                "Position" -> <|
+                    "Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {4}|>, "Y"],
+                    "X" -> 0
+                |>
+            |>
+        ]
     ]
     ,
     0
@@ -50,4 +55,12 @@ Test[
     -1
     ,
     TestID -> "ARCTransformScore-20220804-XKHR3Z"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[<|"Type" -> "Move", "Offset" -> <|"Y" -> 1, "X" -> 0|>|>]
+    ,
+    0.1
+    ,
+    TestID -> "ARCTransformScore-20220805-0X48JF"
 ]
