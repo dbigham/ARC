@@ -186,6 +186,8 @@ ARCGroupByOutputObject::usage = "ARCGroupByOutputObject  "
 
 ARCSetGroupProperties::usage = "ARCSetGroupProperties  "
 
+$UnitTestDir::usage = "$UnitTestDir  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -207,6 +209,8 @@ Indent3 = EntityLink`Indent3;
 AssociationApply = Utility`AssociationApply;
 ProcessOneByOne = DevTools`NotebookTools`ProcessOneByOne;
 CreateNamedNotebook2 = DevTools`NotebookTools`CreateNamedNotebook2;
+
+$UnitTestDir = FileNameJoin[{FileNameDrop[FindFile["Daniel`ARC`"], -1], "test", "Daniel", "ARC"}];
 
 (* If a test is wrapped in ARCIndent, don't include that as part of the test expression,
    but rather treat it as a formatter for use in function notebooks. *)
@@ -1410,7 +1414,7 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                                 object,
                                 OptionValue["OtherScene"]["WithMultiColorCompositeObjects"],
                                 singleOrMultiColorObjects
-                            ]
+                            ][[2]]
                         ],
                         (* There _are_ matching non-composite objects in the other scene
                            that match. *)
@@ -1422,7 +1426,7 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                                         component,
                                         OptionValue["OtherScene"]["WithoutMultiColorCompositeObjects"],
                                         singleOrMultiColorObjects
-                                    ]
+                                    ][[2]]
                                 ]
                             ]
                         ]
@@ -1534,16 +1538,19 @@ ARCFindObjectMapping[input_Association, output_Association] :=
             ] /@ inputObjects
         |>;
         
-        ARCGroupByOutputObject[mapping, outputObjects, input["Background"]]
+        mapping =
+            ReturnIfFailure@
+            ARCGroupByOutputObject[mapping, outputObjects, input["Background"]];
+        
+        mapping
         
         (* TODO: The return value doesn't indicate which objects exist in the output
                  but don't exist in the input. *)
     ]
 
-ARCFindObjectMapping[objectIn_Association, objectsToMapTo_List, inputObjects_List] :=
+ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List] :=
     Module[
         {
-            object = objectIn,
             matchingComponent,
             mappedToObject,
             possibleMatches
@@ -1684,7 +1691,7 @@ ARCFindObjectMapping[objectIn_Association, objectsToMapTo_List, inputObjects_Lis
             }
         ];
         
-        Missing["NotFound"]
+        object -> Missing["NotFound"]
     ]
 
 (*!
@@ -2718,8 +2725,6 @@ ARCGoodRulesQ[rules_List, examples_List] :=
         metrics["MeanExamplesPerRule"] >= 1.3
     ]
 
-
-
 (*!
     \function ARCWorkingQ
     
@@ -2950,15 +2955,13 @@ GetObject[object_Association, objects_List] :=
                 {} :> ReturnFailure[
                     "ObjectNotFound",
                     "The object wasn't found in the scene.",
-                    "Object" -> object,
-                    "Scene" -> ARCIndent[parsedScene]
+                    "Object" -> object
                 ],
                 multipleObjects:{_, __} :> ReturnFailure[
                     "AmbiguousObject",
                     "Multiple matching objects were found, but only 1 match was expected.",
                     "ObjectPattern" -> object,
-                    "MatchingObjects" -> objects,
-                    "Scene" -> ARCIndent[parsedScene]
+                    "MatchingObjects" -> objects
                 ]
             }
         ]
@@ -3004,7 +3007,14 @@ GetObject[object_Association, objects_List] :=
 *)
 Clear[ARCReferenceableObjectProperties];
 ARCReferenceableObjectProperties[objects_List, parsedScenes_List] :=
-    Module[{res, objectsOfType, propertyValues},
+    Module[{res, objectsOfType, propertyValues, constantProperties},
+        
+        (* What property values are consistent for all objects and thus not worth including
+           on RHSs? *)
+        constantProperties = Select[
+            Keys[$properties],
+            Length[DeleteDuplicates[Flatten[parsedScenes[[All, "Objects"]]][[All, #]]]] === 1 &
+        ];
         
         res = Function[{objectReference},
             
@@ -3032,13 +3042,16 @@ ARCReferenceableObjectProperties[objects_List, parsedScenes_List] :=
                         (* Not all objects of this type have the same value for this property. *)
                         Nothing
                     ]
-                ] /@ Complement[
+                ] /@ DeleteCases[
                     Keys[$properties],
                     (* Since we know all objects share property values for the properties in the
                        object reference, we will for now remove them from the RHSs, although
                        it's possible we should leave them if they are for any reason useful
                        in the future. *)
-                    Keys[objectReference[[1]]]
+                    Alternatives @@ Join[
+                        Keys[objectReference[[1]]],
+                        constantProperties
+                    ]
                 ]
             ]
             
@@ -3876,7 +3889,11 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
 *)
 Clear[ARCInferObjectProperties];
 ARCInferObjectProperties[object_Association] :=
-    Module[{y, x, area, filledArea},
+    Module[{width, height, y, x, area, filledArea},
+        
+        width = ImageWidth[object["Image"]];
+        height = ImageHeight[object["Image"]];
+        
         Join[
             object,
             <|
@@ -3884,8 +3901,8 @@ ARCInferObjectProperties[object_Association] :=
                 "X" -> (x = object["Position"][[2]]),
                 "Y2" -> y + height - 1,
                 "X2" -> x + width - 1,
-                "Width" -> (width = ImageWidth[object["Image"]]),
-                "Height" -> (height = ImageHeight[object["Image"]]),
+                "Width" -> width,
+                "Height" -> height,
                 "Length" -> Max[width, height],
                 "PrimarySizeDimension" ->
                     Which[
@@ -4169,9 +4186,6 @@ ReturnIfDifferingInputAndOutputSize[parsedFile_ARCExample] :=
 Clear[ARCAddMoveAttributes];
 ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
     Module[{examples = examplesIn},
-        
-        XARCEcho[examples];
-        XARCEcho[examples[[1, "ObjectMapping", 1]]];
         
         examples = Function[{example},
             Replace[

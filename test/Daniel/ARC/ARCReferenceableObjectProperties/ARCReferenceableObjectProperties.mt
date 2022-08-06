@@ -1,0 +1,551 @@
+(*
+    Tests for: Daniel`ARC`ARCReferenceableObjectProperties
+    
+    To run these tests:
+    
+        << DevTools`
+        << Daniel`ARC`
+        RunUnitTests[Daniel`ARC`ARCReferenceableObjectProperties]
+    
+    Author: danielb
+*)
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Module[
+                {parsedScenes},
+                parsedScenes = Utility`ReturnIfFailure[
+                    Daniel`ARC`ARCParseExamples[file = "1caeab9d"][[All, "Input"]]
+                ];
+                Daniel`ARC`ARCReferenceableObjectProperties[
+                    Keys[Daniel`ARC`ARCMakeObjectsReferenceable[parsedScenes]],
+                    parsedScenes
+                ]
+            ]
+        ]
+    ]
+    ,
+    <|
+        Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|"Shapes" -> {<|"Name" -> "Rectangle"|>}|>,
+        Daniel`ARC`Object[<|"Colors" -> {1}|>] -> <|"Shapes" -> {<|"Name" -> "Rectangle"|>}|>,
+        Daniel`ARC`Object[<|"Colors" -> {4}|>] -> <|"Shapes" -> {<|"Name" -> "Rectangle"|>}|>,
+        Daniel`ARC`Object[<|"Y" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Y2" -> 4
+        |>,
+        Daniel`ARC`Object[<|"X" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "XRank" -> 3,
+            "X2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"Y2" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Y" -> 3
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Y2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Y2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Y2Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "X" -> 2,
+            "X2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "X2Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "X2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"Y2Rank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "YRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"Y2Rank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "YRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"Y2Rank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "YRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "X" -> 2,
+            "XRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "XRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "XRank" -> 2
+        |>
+    |>
+    ,
+    TestID -> "ARCReferenceableObjectProperties-20220723-VLXGQE"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Module[
+                {parsedScenes},
+                parsedScenes = Utility`ReturnIfFailure[
+                    Daniel`ARC`ARCParseExamples[file = "ce9e57f2"][[All, "Input"]]
+                ];
+                Daniel`ARC`ARCReferenceableObjectProperties[
+                    Keys[Daniel`ARC`ARCMakeObjectsReferenceable[parsedScenes]],
+                    parsedScenes
+                ]
+            ]
+        ]
+    ]
+    ,
+    <|
+        Daniel`ARC`Object[<|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>] -> <|
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Y" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "YRank" -> 4,
+            "HeightRank" -> 1,
+            "LengthRank" -> 1,
+            "AspectRatioRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"Y" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "YRank" -> 3,
+            "HeightRank" -> 2,
+            "LengthRank" -> 2,
+            "AspectRatioRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"X" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X2" -> 2,
+            "XRank" -> 4,
+            "X2Rank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"X" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X2" -> 4,
+            "XRank" -> 3,
+            "X2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"X" -> 6|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X2" -> 6,
+            "XRank" -> 2,
+            "X2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"X" -> 8|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X2" -> 8,
+            "XRank" -> 1,
+            "X2Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"X2" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 2,
+            "XRank" -> 4,
+            "X2Rank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"X2" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 4,
+            "XRank" -> 3,
+            "X2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"X2" -> 6|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 6,
+            "XRank" -> 2,
+            "X2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"X2" -> 8|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 8,
+            "XRank" -> 1,
+            "X2Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Height" -> 3|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Length" -> 3|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"AspectRatio" -> 1/3|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Area" -> 3|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"FilledArea" -> 3|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 2,
+            "HeightRank" -> 1,
+            "LengthRank" -> 1,
+            "AspectRatioRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 3,
+            "HeightRank" -> 2,
+            "LengthRank" -> 2,
+            "AspectRatioRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "HeightRank" -> 3,
+            "LengthRank" -> 3,
+            "AspectRatioRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 2,
+            "X2" -> 2,
+            "X2Rank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 4,
+            "X2" -> 4,
+            "X2Rank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 6,
+            "X2" -> 6,
+            "X2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 8,
+            "X2" -> 8,
+            "X2Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 2,
+            "X2" -> 2,
+            "XRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 4,
+            "X2" -> 4,
+            "XRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 6,
+            "X2" -> 6,
+            "XRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "X" -> 8,
+            "X2" -> 8,
+            "XRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"HeightRank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 2,
+            "YRank" -> 4,
+            "LengthRank" -> 1,
+            "AspectRatioRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"HeightRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 3,
+            "YRank" -> 3,
+            "LengthRank" -> 2,
+            "AspectRatioRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"HeightRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "YRank" -> 2,
+            "LengthRank" -> 3,
+            "AspectRatioRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"HeightRank" -> 4|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "LengthRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"LengthRank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 2,
+            "YRank" -> 4,
+            "HeightRank" -> 1,
+            "AspectRatioRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"LengthRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 3,
+            "YRank" -> 3,
+            "HeightRank" -> 2,
+            "AspectRatioRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"LengthRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "YRank" -> 2,
+            "HeightRank" -> 3,
+            "AspectRatioRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"LengthRank" -> 4|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "AspectRatioRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 4|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 2,
+            "YRank" -> 4,
+            "HeightRank" -> 1,
+            "LengthRank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "Y" -> 3,
+            "YRank" -> 3,
+            "HeightRank" -> 2,
+            "LengthRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 2|>] -> <|
+            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>, <|"Name" -> "Rectangle"|>},
+            "YRank" -> 2,
+            "HeightRank" -> 3,
+            "LengthRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 1|>] -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
+            "Shapes" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>
+            },
+            "Height" -> 3,
+            "Length" -> 3,
+            "AspectRatio" -> 1/3,
+            "Area" -> 3,
+            "FilledArea" -> 3,
+            "YRank" -> 1,
+            "HeightRank" -> 4,
+            "LengthRank" -> 4
+        |>
+    |>
+    ,
+    TestID -> "ARCReferenceableObjectProperties-20220723-G8TUB6"
+]

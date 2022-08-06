@@ -1,0 +1,816 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     32437,        808]
+NotebookOptionsPosition[     22025,        577]
+NotebookOutlinePosition[     27423,        711]
+CellTagsIndexPosition[     27380,        708]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["ARCInferBackgroundColor", "Title",ExpressionUUID->"f16066d3-7959-4395-b36f-a5ec7fffcc76"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"RunUnitTests", "[", "ARCInferBackgroundColor", "]"}]}], "Code",
+ InitializationCell->
+  False,ExpressionUUID->"14077133-06a2-44ce-9156-7454d7e5828a"],
+
+Cell[CellGroupData[{
+
+Cell["Related", "Section",
+ CellChangeTimes->{{3.867151299777197*^9, 
+  3.8671513004088306`*^9}},ExpressionUUID->"66902e91-753a-4694-b68f-\
+a999fb367451"],
+
+Cell[BoxData[
+ RowBox[{"Lui", "[", "\"\<ARC Background Color\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.867151301145671*^9, 3.86715130552262*^9}},
+ CellLabel->"In[84]:=",ExpressionUUID->"cd0d0ee8-49b3-4e73-857d-64bb814d9fa6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Training Examples", "Section",
+ CellChangeTimes->{{3.867150454025303*^9, 
+  3.8671504556078463`*^9}},ExpressionUUID->"61700a50-b227-4199-95a2-\
+7bb9a749f30a"],
+
+Cell[CellGroupData[{
+
+Cell["Examples", "Subsection",
+ CellChangeTimes->{{3.8671505188563337`*^9, 
+  3.8671505195521855`*^9}},ExpressionUUID->"2689a163-8546-4bb4-a56e-\
+881267cc7e95"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FileBaseName", " ", "/@", " ", "$examples"}], " ", "//", " ", 
+  "Indent2"}]], "Input",
+ CellChangeTimes->{{3.867150483558364*^9, 3.8671504906729064`*^9}},
+ CellLabel->"In[30]:=",ExpressionUUID->"3bb53b42-22e6-4901-9e46-2008cc71000b"],
+
+Cell[BoxData["\<\"{\\n    \\\"007bbfb7\\\",\\n    \\\"00d62c1b\\\",\\n    \
+\\\"017c7c7b\\\",\\n    \\\"025d127b\\\",\\n    \\\"045e512c\\\",\\n    \
+\\\"0520fde7\\\",\\n    \\\"05269061\\\",\\n    \\\"05f2a901\\\",\\n    \
+\\\"06df4c85\\\",\\n    \\\"08ed6ac7\\\",\\n    \\\"09629e4f\\\",\\n    \
+\\\"0962bcdd\\\",\\n    \\\"0a938d79\\\",\\n    \\\"0b148d64\\\",\\n    \
+\\\"0ca9ddb6\\\",\\n    \\\"0e206a2e\\\",\\n    \\\"10fcaaa3\\\",\\n    \
+\\\"11852cab\\\"\\n}\"\>"], "Output",
+ CellChangeTimes->{3.8671504909148865`*^9},
+ CellLabel->"Out[30]=",ExpressionUUID->"9ebb517c-2b09-4ba3-92b7-0320d1414fa0"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$examples", " ", "=", " ", 
+   RowBox[{"{", "\n", "    ", 
+    RowBox[{
+    "\"\<007bbfb7\>\"", ",", "\n", "    ", "\"\<00d62c1b\>\"", ",", "\n", 
+     "    ", "\"\<017c7c7b\>\"", ",", "\n", "    ", "\"\<025d127b\>\"", ",", 
+     "\n", "    ", "\"\<045e512c\>\"", ",", "\n", "    ", "\"\<0520fde7\>\"", 
+     ",", "\n", "    ", "\"\<05269061\>\"", ",", "\n", "    ", 
+     "\"\<05f2a901\>\"", ",", "\n", "    ", "\"\<06df4c85\>\"", ",", "\n", 
+     "    ", "\"\<08ed6ac7\>\"", ",", "\n", "    ", "\"\<09629e4f\>\"", ",", 
+     "\n", "    ", "\"\<0962bcdd\>\"", ",", "\n", "    ", "\"\<0a938d79\>\"", 
+     ",", "\n", "    ", "\"\<0b148d64\>\"", ",", "\n", "    ", 
+     "\"\<0ca9ddb6\>\"", ",", "\n", "    ", "\"\<0e206a2e\>\"", ",", "\n", 
+     "    ", "\"\<10fcaaa3\>\"", ",", "\n", "    ", "\"\<11852cab\>\""}], 
+    "\n", "}"}]}], ";"}]], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.8671504564694834`*^9, 3.867150500027334*^9}},
+ CellLabel->"In[31]:=",ExpressionUUID->"5ae4f459-59bf-411c-9fdb-606b00fbbc0c"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["View Example", "Subsection",
+ CellChangeTimes->{{3.867150663327523*^9, 
+  3.8671506645832496`*^9}},ExpressionUUID->"f3d4cf05-242d-4573-a305-\
+4d135ce2e639"],
+
+Cell[BoxData[
+ RowBox[{"ARCParseFile", "[", 
+  RowBox[{"$examples", "[", 
+   RowBox[{"[", "9", "]"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.867150668497193*^9, 3.867150674858204*^9}, 
+   3.867150716218663*^9},
+ CellLabel->"In[47]:=",ExpressionUUID->"c21543df-aa71-4eef-8a04-9a81e0b53431"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Try on All Examples", "Subsection",
+ CellChangeTimes->{{3.8671505226884966`*^9, 
+  3.8671505270802526`*^9}},ExpressionUUID->"65e95264-0d5b-48dc-931c-\
+04bd3947ef06"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCInferBackgroundColor", "[", 
+     RowBox[{"ARCParseFile", "[", "#", "]"}], "]"}], " ", "&"}], " ", "/@", 
+   " ", "$examples"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+  3.867150619907236*^9, 3.86715062755359*^9}},
+ CellLabel->"In[44]:=",ExpressionUUID->"4bac40bb-0220-4ffe-b1d1-9ac7b663deba"],
+
+Cell[BoxData["\<\"{\\n    <|\\\"Ratio\\\" -> 3.65, \\\"Counts\\\" -> <|0 -> \
+358, 7 -> 98, 2 -> 42, 6 -> 30, 4 -> 12|>|>,\\n    <|\\\"Ratio\\\" -> 4.05, \
+\\\"Counts\\\" -> <|0 -> 1756, 3 -> 434, 4 -> 82|>|>,\\n    <|\\\"Ratio\\\" \
+-> 1.72, \\\"Counts\\\" -> <|0 -> 91, 2 -> 53, 1 -> 36|>|>,\\n    <|\\\"Ratio\
+\\\" -> 13.56, \\\"Counts\\\" -> <|0 -> 488, 4 -> 36, 8 -> 32, 6 -> 24, 2 -> \
+16|>|>,\\n    <|\\\"Ratio\\\" -> 49.95, \\\"Counts\\\" -> <|0 -> 3297, 2 -> \
+66, 3 -> 49, 4 -> 33, 8 -> 30, 1 -> 29, 5 -> 12, 6 -> 12|>|>,\\n    \
+<|\\\"Ratio\\\" -> 1.78, \\\"Counts\\\" -> <|0 -> 64, 1 -> 36, 5 -> 12, 2 -> \
+8|>|>,\\n    <|\\\"Ratio\\\" -> 2.41, \\\"Counts\\\" -> <|0 -> 152, 2 -> 63, \
+4 -> 58, 3 -> 41, 1 -> 39, 8 -> 39|>|>,\\n    <|\\\"Ratio\\\" -> 12.55, \
+\\\"Counts\\\" -> <|0 -> 778, 2 -> 62, 8 -> 32|>|>,\\n    <|\\\"Ratio\\\" -> \
+1.37, \\\"Counts\\\" -> <|0 -> 1728, 4 -> 1258, 1 -> 554, 8 -> 468, 2 -> 152, \
+3 -> 80, 9 -> 28|>|>,\\n    <|\\\"Ratio\\\" -> 5.15, \\\"Counts\\\" -> <|0 -> \
+350, 5 -> 68, 1 -> 25, 2 -> 20, 3 -> 15, 4 -> 8|>|>,\\n    <|\\\"Ratio\\\" -> \
+1.02, \\\"Counts\\\" -> <|0 -> 410, 5 -> 400, 3 -> 90, 4 -> 90, 6 -> 90, 2 -> \
+90, 8 -> 40|>|>,\\n    <|\\\"Ratio\\\" -> 30.5, \\\"Counts\\\" -> <|0 -> 732, \
+3 -> 24, 8 -> 24, 7 -> 24, 4 -> 20, 6 -> 20, 2 -> 20|>|>,\\n    <|\\\"Ratio\\\
+\" -> 19.26, \\\"Counts\\\" -> <|0 -> 1868, 2 -> 97, 3 -> 93, 8 -> 51, 4 -> \
+48, 1 -> 39|>|>,\\n    <|\\\"Ratio\\\" -> 3.61, \\\"Counts\\\" -> <|0 -> 844, \
+2 -> 234, 1 -> 175, 8 -> 151, 3 -> 144, 4 -> 66|>|>,\\n    <|\\\"Ratio\\\" -> \
+23.92, \\\"Counts\\\" -> <|0 -> 574, 4 -> 24, 7 -> 20, 2 -> 12, 1 -> 10, 6 -> \
+4, 8 -> 4|>|>,\\n    <|\\\"Ratio\\\" -> 63.410000000000004, \\\"Counts\\\" -> \
+<|0 -> 2156, 8 -> 34, 5 -> 26, 3 -> 20, 4 -> 18, 1 -> 18, 2 -> 12|>|>,\\n    \
+<|\\\"Ratio\\\" -> 2.46, \\\"Counts\\\" -> <|0 -> 256, 8 -> 104, 3 -> 15, 4 \
+-> 10, 6 -> 10, 2 -> 5, 5 -> 5|>|>,\\n    <|\\\"Ratio\\\" -> 29.5, \\\"Counts\
+\\\" -> <|0 -> 708, 8 -> 24, 2 -> 21, 4 -> 20, 3 -> 15, 1 -> \
+12|>|>\\n}\"\>"], "Output",
+ CellChangeTimes->{{3.8671505372027173`*^9, 3.8671505417604218`*^9}, {
+  3.8671506076200056`*^9, 3.867150644627798*^9}},
+ CellLabel->"Out[45]=",ExpressionUUID->"2daff015-a13c-4713-9b37-d18dd8e6766f"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Trickier Examples", "Subsection",
+ CellChangeTimes->{{3.867151655993944*^9, 
+  3.8671516595845237`*^9}},ExpressionUUID->"19d3b082-2094-48ea-8374-\
+95ebbe627425"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<2bee17df\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.8671509479344196`*^9, 3.8671509491373024`*^9}, {
+  3.8671516695190973`*^9, 3.8671516711061897`*^9}},
+ CellLabel->
+  "In[101]:=",ExpressionUUID->"5415214b-27c2-48ce-8936-68f9cf719714"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{"ARCParseFile", "[", "example", "]"}], "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.86715095168957*^9},
+ CellLabel->
+  "In[102]:=",ExpressionUUID->"13fe06ba-ef02-4ee3-b25c-3dcacc755539"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 1.76, \\\"Counts\\\" -> <|0 -> 469, 8 -> \
+266, 2 -> 248, 3 -> 185|>|>\"\>"], "Output",
+ CellChangeTimes->{3.86715080076762*^9, 3.8671509091718383`*^9, 
+  3.8671510157269244`*^9, 3.8671511398145857`*^9, 3.8671515803581877`*^9, 
+  3.86715167259706*^9},
+ CellLabel->
+  "Out[103]=",ExpressionUUID->"5d7a2489-8a85-48af-8a00-bb3ba2ae35ae"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"inputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+     "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}], "]"}], " ", "//",
+   " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.8671509614255714`*^9}},
+ CellLabel->
+  "In[104]:=",ExpressionUUID->"f675e07f-f117-4e39-b291-de0eb2f563a0"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 2.36, \\\"Counts\\\" -> <|0 -> 210, 8 -> \
+89, 2 -> 89|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.867150843683255*^9, 3.8671509619701853`*^9}, 
+   3.8671515813978405`*^9, 3.867151677064637*^9},
+ CellLabel->
+  "Out[106]=",ExpressionUUID->"a03c8cda-d869-47d9-a534-26b3c53a94b2"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"outputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Output\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", "outputs", "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.867150973651716*^9}},
+ CellLabel->
+  "In[107]:=",ExpressionUUID->"2c027489-3d31-4b24-a42d-6d68a2cc4007"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 1.37, \\\"Counts\\\" -> <|3 -> 122, 8 -> \
+89, 2 -> 89, 0 -> 88|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.8671509394879885`*^9, 3.867150974432489*^9}, 
+   3.8671515835650225`*^9, 3.8671516823636827`*^9},
+ CellLabel->
+  "Out[109]=",ExpressionUUID->"73031f32-8e49-465b-b737-8d3b020b1863"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Non Black Examples", "Subsection",
+ CellChangeTimes->{{3.867150765617796*^9, 3.867150768881071*^9}, {
+  3.867151708969816*^9, 
+  3.8671517107614093`*^9}},ExpressionUUID->"317975c6-7ab9-40d8-8531-\
+b1df28877099"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<9565186\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.8671509479344196`*^9, 3.8671509491373024`*^9}},
+ CellLabel->"In[71]:=",ExpressionUUID->"391066b1-119d-4fc8-b08f-dd8cf8f38f07"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<2bcee788\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.8671515747846093`*^9, 3.867151578275837*^9}},
+ CellLabel->"In[90]:=",ExpressionUUID->"766a1123-b450-4eb2-8d2f-21ea504eeda6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{"ARCParseFile", "[", "example", "]"}], "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.86715095168957*^9},
+ CellLabel->"In[91]:=",ExpressionUUID->"a16996c9-745d-48fd-bd47-8c185cf152b9"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 1.02, \\\"Counts\\\" -> <|0 -> 469, 3 -> \
+458, 6 -> 15, 4 -> 15, 1 -> 12, 8 -> 12, 2 -> 10, 7 -> 9|>|>\"\>"], "Output",
+ CellChangeTimes->{3.86715080076762*^9, 3.8671509091718383`*^9, 
+  3.8671510157269244`*^9, 3.8671511398145857`*^9, 3.8671515803581877`*^9},
+ CellLabel->"Out[92]=",ExpressionUUID->"db665da8-0b33-4410-a7f3-1fdf2604115b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"inputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+     "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}], "]"}], " ", "//",
+   " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.8671509614255714`*^9}},
+ CellLabel->"In[93]:=",ExpressionUUID->"2e1a8b26-f67c-43be-989d-9992d420debd"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 46.88, \\\"Counts\\\" -> <|0 -> 375, 2 \
+-> 8, 6 -> 5, 4 -> 5, 8 -> 4, 7 -> 3|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.867150843683255*^9, 3.8671509619701853`*^9}, 
+   3.8671515813978405`*^9},
+ CellLabel->"Out[95]=",ExpressionUUID->"a87531e4-1879-4497-91d0-84e2f6d93591"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"outputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Output\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", "outputs", "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.867150973651716*^9}},
+ CellLabel->"In[96]:=",ExpressionUUID->"1aa92a28-ff47-4336-87e7-7e09ea91be9a"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 36.6, \\\"Counts\\\" -> <|3 -> 366, 6 -> \
+10, 4 -> 10, 8 -> 8, 7 -> 6|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.8671509394879885`*^9, 3.867150974432489*^9}, 
+   3.8671515835650225`*^9},
+ CellLabel->"Out[98]=",ExpressionUUID->"d89e8e6d-621c-4bad-b217-7cca2e58271f"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Different Background per Example", "Subsection",
+ CellChangeTimes->{{3.867150765617796*^9, 3.867150768881071*^9}, {
+  3.867151708969816*^9, 
+  3.867151744378108*^9}},ExpressionUUID->"8a11cb4a-8c89-4cb3-83b6-\
+d23e5dfee11e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<2c608aff\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.8671509479344196`*^9, 3.8671509491373024`*^9}, 
+   3.867151757923338*^9},
+ CellLabel->
+  "In[112]:=",ExpressionUUID->"6da1c0ba-1cb9-47cf-b05d-ef9265591b2b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{"ARCParseFile", "[", "example", "]"}], "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.86715095168957*^9},
+ CellLabel->
+  "In[113]:=",ExpressionUUID->"b2b15a32-3c09-4e3e-9263-ffc5a16273a8"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 1.1300000000000001, \\\"Counts\\\" -> \
+<|2 -> 895, 1 -> 792, 8 -> 285, 4 -> 58, 5 -> 40, 3 -> 24|>|>\"\>"], "Output",
+ CellChangeTimes->{3.86715080076762*^9, 3.8671509091718383`*^9, 
+  3.8671510157269244`*^9, 3.8671511398145857`*^9, 3.8671515803581877`*^9, 
+  3.8671517615963078`*^9},
+ CellLabel->
+  "Out[114]=",ExpressionUUID->"b64166d9-2806-4b28-aac9-78665f1ad0e9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"inputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+     "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", " ", "\"\<Input\>\""}], "]"}], "]"}], "]"}], " ", "//",
+   " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.8671509614255714`*^9}},
+ CellLabel->
+  "In[115]:=",ExpressionUUID->"7c56c78e-74eb-4854-b67b-530326f00974"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 3.41, \\\"Counts\\\" -> <|1 -> 385, 2 -> \
+113, 8 -> 95, 4 -> 23, 5 -> 20, 3 -> 12|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.867150843683255*^9, 3.8671509619701853`*^9}, 
+   3.8671515813978405`*^9, 3.867151765328664*^9},
+ CellLabel->
+  "Out[117]=",ExpressionUUID->"5ac4d4c9-77b3-48ce-bcc7-c21d8a9c3552"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"outputs", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ARCParseFile", "[", "example", "]"}], "[", "\"\<Train\>\"", 
+    "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"All", ",", " ", "\"\<Output\>\""}], "]"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", "outputs", "]"}], " ", "//", " ", 
+  RowBox[{
+   RowBox[{"Indent2", "[", 
+    RowBox[{"#", ",", " ", 
+     RowBox[{"\"\<ColumnsAvailable\>\"", " ", "\[Rule]", " ", "300"}]}], 
+    "]"}], " ", "&"}]}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.867150528482252*^9, 3.867150541209789*^9}, {
+   3.867150619907236*^9, 3.86715062755359*^9}, {3.8671507940351133`*^9, 
+   3.867150799911271*^9}, 3.867150843025283*^9, {3.86715092974032*^9, 
+   3.867150973651716*^9}},
+ CellLabel->
+  "In[118]:=",ExpressionUUID->"03eb0686-0780-42a1-876d-6511636bd0a8"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 3.2, \\\"Counts\\\" -> <|1 -> 371, 2 -> \
+116, 8 -> 94, 4 -> 35, 5 -> 20, 3 -> 12|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.8671509394879885`*^9, 3.867150974432489*^9}, 
+   3.8671515835650225`*^9, 3.867151768819643*^9},
+ CellLabel->
+  "Out[120]=",ExpressionUUID->"2bdbb74f-72fe-4c3b-8b87-fd1151c8e772"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tests", "Section",ExpressionUUID->"550dbc0d-f46d-42d9-b0e4-67725150cb86"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ARCParseFile", "[", "\"\<007bbfb7\>\"", "]"}], " ", "//", " ", 
+  "Indent2"}]], "Input",
+ CellChangeTimes->{{3.8671502951054177`*^9, 3.8671502964458776`*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"262d2f61-9abd-4c4a-b84e-083712158fff"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCInferBackgroundColor", "[", 
+   RowBox[{"ARCParseFile", "[", "\"\<007bbfb7\>\"", "]"}], "]"}], " ", "//", 
+  " ", "Indent2"}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{
+  3.867150276399028*^9, {3.8671503397153397`*^9, 3.8671503424975805`*^9}},
+ CellLabel->"In[38]:=",ExpressionUUID->"f34dcbb5-c3ea-49d0-95fd-4ec9c08c952a"],
+
+Cell[BoxData["\<\"<|\\\"Ratio\\\" -> 179/49, \\\"Counts\\\" -> <|0 -> 358, 7 \
+-> 98, 2 -> 42, 6 -> 30, 4 -> 12|>|>\"\>"], "Output",
+ CellChangeTimes->{{3.8671502771147933`*^9, 3.8671503465829525`*^9}, {
+   3.867150413739895*^9, 3.8671504385091677`*^9}, 3.8671505064811707`*^9, 
+   3.8671506039769163`*^9},
+ CellLabel->"Out[39]=",ExpressionUUID->"b4782c79-9a8a-44cb-9fed-8e70800f7ff2"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+Evaluator->"Local",
+WindowSize->{958, 980},
+WindowMargins->{{Automatic, -7}, {Automatic, 0}},
+DockedCells->{
+  Cell[
+   BoxData[
+    DynamicBox[
+     ToBoxes[
+      Column[{
+        Row[{
+          Button["New Test", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`NewFunctionCell[
+            Daniel`ARC`ARCInferBackgroundColor], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519]], ImageSize -> {95., 40}, 
+           Method -> "Queued"], " ", 
+          Button["Add Tests to File", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`CreateUnitTests[
+            Daniel`ARC`ARCInferBackgroundColor, "SubTest" -> None], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519]], ImageSize -> {162.5, 40}, 
+           Method -> "Queued"], " ", 
+          Button[
+          "Run Tests", 
+           DevTools`TestingTools`RunUnitTestsInNotebook[
+            Daniel`ARC`ARCInferBackgroundColor]; Null, 
+           ImageSize -> {102.5, 40}, Method -> "Queued"], " ", 
+          Button["Edit Tests", 
+           DevTools`TestingTools`EditUnitTests[
+           Daniel`ARC`ARCInferBackgroundColor], ImageSize -> {110., 40}, 
+           Method -> "Queued"], " ", 
+          Button["Edit Function", 
+           DevTools`SourceTools`EditFunction[
+           Daniel`ARC`ARCInferBackgroundColor], ImageSize -> {132.5, 40}, 
+           Method -> "Queued"], " ", 
+          Row[{
+            
+            DynamicModule[{
+             DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+              "Capture"}, 
+             Button[
+              Dynamic[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel], 
+              If[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel === 
+               "Capture", 
+               DevTools`TestingTools`FunctionCapture`EnableFunctionCapture[
+                Daniel`ARC`ARCInferBackgroundColor]; 
+               
+               DevTools`TestingTools`FunctionCapture`\
+RegisterFunctionCaptureNotebook[Daniel`ARC`ARCInferBackgroundColor, 
+                 InputNotebook[]]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Release"; Null, 
+               DevTools`TestingTools`FunctionCapture`DisableFunctionCapture[
+                Daniel`ARC`ARCInferBackgroundColor]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Capture"; Null], ImageSize -> {100, 40}, Method -> "Queued"],
+              DynamicModuleValues :> {}], 
+            Button["?", 
+             DevTools`TestingTools`FunctionCapture`CaptureFunctionHelp[], 
+             ImageSize -> {30, 40}, Method -> "Queued"]}], " ", 
+          Row[{
+            Button["<", 
+             DevTools`NotebookTools`MoveNotebook["Left"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"], 
+            Button[">", 
+             DevTools`NotebookTools`MoveNotebook["Right"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"]}]}], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519; If[
+          And[
+           ValueQ[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519], 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519 =!= "", 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519 =!= Null], 
+          (If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {"MaxHeight" -> 300},
+              "NakedSection"]], 
+           Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+           
+           Framed[#, FrameStyle -> LightGray, Background -> White, 
+            FrameMargins -> 15]]& )[
+           Grid[{{
+              Pane[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519, "ImageSize" -> {Full, {0, 
+                  OptionValue[
+                  DevTools`NotebookTools`DynamicOutputSection, {
+                   "MaxHeight" -> 300}, "MaxHeight"]}}, Scrollbars -> 
+               Automatic, FrameMargins -> 0]}, 
+             If[
+              TrueQ[
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {
+                "MaxHeight" -> 300}, "NakedSection"]], 
+              Apply[Sequence, {}], {
+               Button[
+               "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519 = "", 
+                ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+            Alignment -> {Left, Top}]], 
+          Apply[Sequence, {}]]}], StandardForm], 
+     TrackedSymbols :> {
+      DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20227181218569519}]], "DockedCell"]},
+InputAutoReplacements->{},
+FrontEndVersion->"12.2 for Microsoft Windows (64-bit) (December 12, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"830cd87f-dea5-48e5-a05b-6fbb67d1a0fa"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 95, 0, 96, "Title",ExpressionUUID->"f16066d3-7959-4395-b36f-a5ec7fffcc76"],
+Cell[678, 24, 233, 5, 53, "Code",ExpressionUUID->"14077133-06a2-44ce-9156-7454d7e5828a",
+ InitializationCell->False],
+Cell[CellGroupData[{
+Cell[936, 33, 154, 3, 67, "Section",ExpressionUUID->"66902e91-753a-4694-b68f-a999fb367451"],
+Cell[1093, 38, 227, 3, 28, "Input",ExpressionUUID->"cd0d0ee8-49b3-4e73-857d-64bb814d9fa6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1357, 46, 164, 3, 67, "Section",ExpressionUUID->"61700a50-b227-4199-95a2-7bb9a749f30a"],
+Cell[CellGroupData[{
+Cell[1546, 53, 160, 3, 53, "Subsection",ExpressionUUID->"2689a163-8546-4bb4-a56e-881267cc7e95"],
+Cell[CellGroupData[{
+Cell[1731, 60, 269, 5, 28, "Input",ExpressionUUID->"3bb53b42-22e6-4901-9e46-2008cc71000b"],
+Cell[2003, 67, 606, 8, 394, "Output",ExpressionUUID->"9ebb517c-2b09-4ba3-92b7-0320d1414fa0"]
+}, Open  ]],
+Cell[2624, 78, 1060, 18, 377, "Code",ExpressionUUID->"5ae4f459-59bf-411c-9fdb-606b00fbbc0c",
+ InitializationCell->False]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[3721, 101, 162, 3, 37, "Subsection",ExpressionUUID->"f3d4cf05-242d-4573-a305-4d135ce2e639"],
+Cell[3886, 106, 296, 6, 28, "Input",ExpressionUUID->"c21543df-aa71-4eef-8a04-9a81e0b53431"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[4219, 117, 171, 3, 37, "Subsection",ExpressionUUID->"65e95264-0d5b-48dc-931c-04bd3947ef06"],
+Cell[CellGroupData[{
+Cell[4415, 124, 665, 17, 53, "Code",ExpressionUUID->"4bac40bb-0220-4ffe-b1d1-9ac7b663deba",
+ InitializationCell->False],
+Cell[5083, 143, 2254, 29, 432, "Output",ExpressionUUID->"2daff015-a13c-4713-9b37-d18dd8e6766f"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7386, 178, 167, 3, 37, "Subsection",ExpressionUUID->"19d3b082-2094-48ea-8374-95ebbe627425"],
+Cell[7556, 183, 304, 6, 28, "Input",ExpressionUUID->"5415214b-27c2-48ce-8936-68f9cf719714"],
+Cell[CellGroupData[{
+Cell[7885, 193, 675, 16, 53, "Code",ExpressionUUID->"13fe06ba-ef02-4ee3-b25c-3dcacc755539",
+ InitializationCell->False],
+Cell[8563, 211, 371, 6, 32, "Output",ExpressionUUID->"5d7a2489-8a85-48af-8a00-bb3ba2ae35ae"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8971, 222, 1116, 30, 71, "Code",ExpressionUUID->"f675e07f-f117-4e39-b291-de0eb2f563a0",
+ InitializationCell->False],
+Cell[10090, 254, 313, 5, 32, "Output",ExpressionUUID->"a03c8cda-d869-47d9-a534-26b3c53a94b2"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10440, 264, 924, 23, 71, "Code",ExpressionUUID->"2c027489-3d31-4b24-a42d-6d68a2cc4007",
+ InitializationCell->False],
+Cell[11367, 289, 324, 5, 32, "Output",ExpressionUUID->"73031f32-8e49-465b-b737-8d3b020b1863"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[11740, 300, 217, 4, 37, "Subsection",ExpressionUUID->"317975c6-7ab9-40d8-8531-b1df28877099"],
+Cell[11960, 306, 246, 4, 28, "Input",ExpressionUUID->"391066b1-119d-4fc8-b08f-dd8cf8f38f07"],
+Cell[12209, 312, 245, 4, 28, "Input",ExpressionUUID->"766a1123-b450-4eb2-8d2f-21ea504eeda6"],
+Cell[CellGroupData[{
+Cell[12479, 320, 671, 15, 53, "Code",ExpressionUUID->"a16996c9-745d-48fd-bd47-8c185cf152b9",
+ InitializationCell->False],
+Cell[13153, 337, 376, 4, 32, "Output",ExpressionUUID->"db665da8-0b33-4410-a7f3-1fdf2604115b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13566, 346, 1112, 29, 71, "Code",ExpressionUUID->"2e1a8b26-f67c-43be-989d-9992d420debd",
+ InitializationCell->False],
+Cell[14681, 377, 310, 4, 32, "Output",ExpressionUUID->"a87531e4-1879-4497-91d0-84e2f6d93591"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15028, 386, 920, 22, 71, "Code",ExpressionUUID->"1aa92a28-ff47-4336-87e7-7e09ea91be9a",
+ InitializationCell->False],
+Cell[15951, 410, 303, 4, 32, "Output",ExpressionUUID->"d89e8e6d-621c-4bad-b217-7cca2e58271f"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[16303, 420, 229, 4, 37, "Subsection",ExpressionUUID->"8a11cb4a-8c89-4cb3-83b6-d23e5dfee11e"],
+Cell[16535, 426, 277, 6, 28, "Input",ExpressionUUID->"6da1c0ba-1cb9-47cf-b05d-ef9265591b2b"],
+Cell[CellGroupData[{
+Cell[16837, 436, 675, 16, 53, "Code",ExpressionUUID->"b2b15a32-3c09-4e3e-9263-ffc5a16273a8",
+ InitializationCell->False],
+Cell[17515, 454, 405, 6, 32, "Output",ExpressionUUID->"b64166d9-2806-4b28-aac9-78665f1ad0e9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17957, 465, 1116, 30, 71, "Code",ExpressionUUID->"7c56c78e-74eb-4854-b67b-530326f00974",
+ InitializationCell->False],
+Cell[19076, 497, 341, 5, 32, "Output",ExpressionUUID->"5ac4d4c9-77b3-48ce-bcc7-c21d8a9c3552"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19454, 507, 924, 23, 71, "Code",ExpressionUUID->"03eb0686-0780-42a1-876d-6511636bd0a8",
+ InitializationCell->False],
+Cell[20381, 532, 340, 5, 32, "Output",ExpressionUUID->"2bdbb74f-72fe-4c3b-8b87-fd1151c8e772"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20782, 544, 79, 0, 67, "Section",ExpressionUUID->"550dbc0d-f46d-42d9-b0e4-67725150cb86"],
+Cell[20864, 546, 272, 5, 28, "Input",ExpressionUUID->"262d2f61-9abd-4c4a-b84e-083712158fff"],
+Cell[CellGroupData[{
+Cell[21161, 555, 436, 10, 53, "Code",ExpressionUUID->"f34dcbb5-c3ea-49d0-95fd-4ec9c08c952a",
+ InitializationCell->False],
+Cell[21600, 567, 385, 5, 32, "Output",ExpressionUUID->"b4782c79-9a8a-44cb-9fed-8e70800f7ff2"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
