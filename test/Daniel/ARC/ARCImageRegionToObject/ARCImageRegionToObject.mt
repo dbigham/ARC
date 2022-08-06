@@ -17,7 +17,7 @@ Test[
                 <|
                     "Color" -> 2,
                     "Position" -> {1, 1},
-                    "Image" -> {{2, 2, 2}, {2, 0, 0}, {2, 0, 0}},
+                    "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
                     "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
                 |>
             ]
@@ -26,24 +26,22 @@ Test[
     ,
     <|
         "UUID" -> 0,
-        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}],
+        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}],
         "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}},
         "Shapes" -> {
-            <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}]|>,
+            <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}]|>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {0, 0, 2}, {0, 0, 2}}],
+                "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {-1, -1, 2}, {-1, -1, 2}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
             |>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{0, 0, 2}, {0, 0, 2}, {2, 2, 2}}],
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 2}, {-1, -1, 2}, {2, 2, 2}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
             |>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{2, 0, 0}, {2, 0, 0}, {2, 2, 2}}],
+                "Image" -> Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-            |>,
-            <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
-            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
+            |>
         },
         "Colors" -> {2},
         "Position" -> {1, 1},

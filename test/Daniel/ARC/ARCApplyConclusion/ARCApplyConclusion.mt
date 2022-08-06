@@ -82,98 +82,107 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCApplyConclusion[
-        <|
-            "UUID" -> "baa4f5ca-31c6-4abe-81ac-61d6a7c8dfde",
-            "Image" -> Daniel`ARC`ARCScene[{{2}}],
-            "PixelPositions" -> {{1, 2}},
-            "Shapes" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
-                <|"Name" -> "Pixel"|>,
-                <|"Name" -> "Square"|>,
-                <|"Name" -> "Rectangle"|>
-            },
-            "Colors" -> {2},
-            "Position" -> {1, 2},
-            "Width" -> 1,
-            "Height" -> 1,
-            "Y" -> 1,
-            "X" -> 2,
-            "AspectRatio" -> 1,
-            "Area" -> 1,
-            "FilledArea" -> 1
-        |>,
-        <|
-            "Shape" -> Daniel`ARC`ARCScene[
-                {{0, 10, 0}, {10, 0, 10}, {0, 10, 0}, {10, 0, 10}, {0, 10, 0}, {10, 0, 10}}
-            ],
-            "Position" -> <|"RelativePosition" -> {0, -1}|>,
-            "Examples" -> {1, 2},
-            "ExampleCount" -> 2,
-            "UseCount" -> 3
-        |>,
-        <|
-            "Background" -> "Black",
-            "Width" -> 10,
-            "Height" -> 6,
-            "Objects" -> {
-                <|
-                    "UUID" -> "baa4f5ca-31c6-4abe-81ac-61d6a7c8dfde",
-                    "Image" -> Daniel`ARC`ARCScene[{{2}}],
-                    "PixelPositions" -> {{1, 2}},
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>
-                    },
-                    "Colors" -> {2},
-                    "Position" -> {1, 2},
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 1,
-                    "X" -> 2,
-                    "AspectRatio" -> 1,
-                    "Area" -> 1,
-                    "FilledArea" -> 1
-                |>,
-                <|
-                    "UUID" -> "c4cd6001-0f00-4430-99b1-8d69451861ea",
-                    "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                    "PixelPositions" -> {{1, 6}},
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{8}}]|>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>
-                    },
-                    "Colors" -> {8},
-                    "Position" -> {1, 6},
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 1,
-                    "X" -> 6,
-                    "AspectRatio" -> 1,
-                    "Area" -> 1,
-                    "FilledArea" -> 1
-                |>
-            },
-            "Scene" -> Daniel`ARC`ARCScene[
-                {
-                    {0, 2, 0, 0, 0, 8, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-                }
-            ]
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCApplyConclusion[
+            <|
+                "UUID" -> "baa4f5ca-31c6-4abe-81ac-61d6a7c8dfde",
+                "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                "PixelPositions" -> {{1, 2}},
+                "Shapes" -> {
+                    <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
+                    <|"Name" -> "Pixel"|>,
+                    <|"Name" -> "Square"|>,
+                    <|"Name" -> "Rectangle"|>
+                },
+                "Colors" -> {2},
+                "Position" -> {1, 2},
+                "Width" -> 1,
+                "Height" -> 1,
+                "Y" -> 1,
+                "X" -> 2,
+                "AspectRatio" -> 1,
+                "Area" -> 1,
+                "FilledArea" -> 1
+            |>,
+            <|
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {
+                        {-1, 10, -1},
+                        {10, -1, 10},
+                        {-1, 10, -1},
+                        {10, -1, 10},
+                        {-1, 10, -1},
+                        {10, -1, 10}
+                    }
+                ],
+                "Position" -> <|"RelativePosition" -> {0, -1}|>,
+                "Examples" -> {1, 2},
+                "ExampleCount" -> 2,
+                "UseCount" -> 3
+            |>,
+            <|
+                "Background" -> "Black",
+                "Width" -> 10,
+                "Height" -> 6,
+                "Objects" -> {
+                    <|
+                        "UUID" -> "baa4f5ca-31c6-4abe-81ac-61d6a7c8dfde",
+                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                        "PixelPositions" -> {{1, 2}},
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>
+                        },
+                        "Colors" -> {2},
+                        "Position" -> {1, 2},
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Y" -> 1,
+                        "X" -> 2,
+                        "AspectRatio" -> 1,
+                        "Area" -> 1,
+                        "FilledArea" -> 1
+                    |>,
+                    <|
+                        "UUID" -> "c4cd6001-0f00-4430-99b1-8d69451861ea",
+                        "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                        "PixelPositions" -> {{1, 6}},
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{8}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>
+                        },
+                        "Colors" -> {8},
+                        "Position" -> {1, 6},
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Y" -> 1,
+                        "X" -> 6,
+                        "AspectRatio" -> 1,
+                        "Area" -> 1,
+                        "FilledArea" -> 1
+                    |>
+                },
+                "Scene" -> Daniel`ARC`ARCScene[
+                    {
+                        {0, 2, 0, 0, 0, 8, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                    }
+                ]
+            |>
+        ]
     ]
     ,
     <|
         "Image" -> Daniel`ARC`ARCScene[
-            {{0, 2, 0}, {2, 0, 2}, {0, 2, 0}, {2, 0, 2}, {0, 2, 0}, {2, 0, 2}}
+            {{-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}}
         ],
         "Position" -> {1, 1},
         "Examples" -> {1, 2},

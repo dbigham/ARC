@@ -11,9 +11,11 @@
 *)
 
 Test[
-    Daniel`ARC`ARCColorize[Daniel`ARC`ARCScene[{{1, 0}, {0, 1}}], 2]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCColorize[Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}], 2]
+    ]
     ,
-    Daniel`ARC`ARCScene[{{2, 0}, {0, 2}}]
+    Daniel`ARC`ARCScene[{{2, -1}, {-1, 2}}]
     ,
     TestID -> "ARCColorize-20220725-QRNPB0"
 ]

@@ -249,6 +249,8 @@ $arcDirectory = FileNameDrop[FindFile["Daniel`ARC`"], -1];
 $MyTrainingDirectory = FileNameJoin[{$arcDirectory, "Data", "MyTrainingData"}];
 $evaluationDirectory = FileNameJoin[{$corpusGitDirectory, "data", "evaluation"}];
 
+$nonImageColor = -1;
+
 $integerToColor = <|
     0 -> Black,
     1 -> Blue,
@@ -365,7 +367,7 @@ MakeBoxes[grid_ARCScene, StandardForm] :=
                 Flatten[
                     MapIndexed[
                         Function[{color, position},
-                            position -> Replace[color, $integerToColor]
+                            position -> Replace[color, Prepend[$integerToColor, $nonImageColor -> GrayLevel[0.2]]]
                         ],
                         grid[[1]],
                         {2}
@@ -752,8 +754,11 @@ Options[ARCContiguousImageRegions] =
     "Background" -> 0,          (*< The background color, to be ignored. *)
     "FollowDiagonals" -> True   (*< Whether to consider diagonals as connective. *)
 };
-ARCContiguousImageRegions[image_List, OptionsPattern[]] :=
-    Module[{
+ARCContiguousImageRegions[imageIn_List, OptionsPattern[]] :=
+    Module[
+        {
+            image,
+            res,
             pixelsOfColor,
             componentMatrix,
             pixelPositions,
@@ -762,19 +767,33 @@ ARCContiguousImageRegions[image_List, OptionsPattern[]] :=
             xMinMax,
             yMinMax,
             bottomRightCorner,
-            position
+            position,
+            background = OptionValue["Background"],
+            blackTemporaryColor = 999999
         },
-        Function[{color},
+        
+        image = Replace[
+            imageIn,
+            {
+                background -> $nonImageColor,
+                0 -> blackTemporaryColor
+            },
+            {2}
+        ];
+        
+        res = Function[{color},
             pixelsOfColor = Replace[image, Except[color] -> 0, {2}];
             componentMatrix = MorphologicalComponents[
                 pixelsOfColor,
                 CornerNeighbors -> OptionValue["FollowDiagonals"]
             ];
-            componentNumbers = DeleteCases[DeleteDuplicates[Flatten[componentMatrix]], 0];
+            componentNumbers =
+                DeleteCases[DeleteDuplicates[Flatten[componentMatrix]], 0];
             Function[{componentNumber},
                 pixelPositions = Position[componentMatrix, componentNumber];
+                actualColor = Replace[color, blackTemporaryColor -> 0];
                 <|
-                    "Color" -> color,
+                    "Color" -> actualColor,
                     "Position" -> (
                         xValues = pixelPositions[[All, 1]];
                         yValues = pixelPositions[[All, 2]];
@@ -792,19 +811,18 @@ ARCContiguousImageRegions[image_List, OptionsPattern[]] :=
                     ),
                     (* Should the matrix values be colored or not? Not sure. *)
                     "Image" -> Replace[
-                        Replace[
-                            (* Take the rectangular part of the matrix occupied by this object. *)
-                            componentMatrix[[
-                                position[[1]] ;; bottomRightCorner[[1]],
-                                position[[2]] ;; bottomRightCorner[[2]]
-                            ]],
-                            (* We need to make any pixels not in our object black incase there's
-                               another object within the bounds of this object's rectangular
-                               area. *)
-                            Except[componentNumber] :> 0,
-                            {2}
-                        ],
-                        Except[0] -> color,
+                        (* Take the rectangular part of the matrix occupied by this object. *)
+                        componentMatrix[[
+                            position[[1]] ;; bottomRightCorner[[1]],
+                            position[[2]] ;; bottomRightCorner[[2]]
+                        ]],
+                        {
+                            componentNumber -> actualColor,
+                            (* We need to make any pixels not in our object the $nonImageColor
+                               incase there's another object within the bounds of this object's
+                               rectangular area. *)
+                            Except[componentNumber] :> $nonImageColor
+                        },
                         {2}
                     ],
                     (* Non-colored *)
@@ -819,10 +837,17 @@ ARCContiguousImageRegions[image_List, OptionsPattern[]] :=
                     "PixelPositions" -> pixelPositions
                 |>
             ] /@ componentNumbers
-        ] /@ DeleteCases[
-            ARCColorIntegers[],
-            OptionValue["Background"]
-        ] // Flatten // ARCImageRegions
+        ] /@
+            Replace[
+                DeleteCases[
+                    ARCColorIntegers[],
+                    background
+                ],
+                0 -> blackTemporaryColor,
+                {1}
+             ];
+        
+        ARCImageRegions[Flatten[res]]
     ]
 
 ARCContiguousImageRegions[ARCScene[image_List], opts:OptionsPattern[]] :=
@@ -1349,12 +1374,21 @@ ARCInferBackgroundColor[example_] :=
         
         scenes = Cases[example, _ARCScene, {0, Infinity}][[All, 1]];
         
-        colorCounts = Reverse[Sort[Counts[Flatten[scenes]]]];
+        colorCounts = Normal[Reverse[Sort[Counts[Flatten[scenes]]]]];
+        
+        If [Length[colorCounts] === 1,
+            (* What should we do if the entire image is a single color? For the moment
+               we'll use black as the background color, but this probably isn't what we'd
+               want in many cases. *)
+            Return[0, Module]
+        ];
         
         stats = <|
             "Ratio" -> Round[Normal[colorCounts][[1, 2]] / Normal[colorCounts][[2, 2]], 0.01],
             "Counts" -> colorCounts
         |>;
+        
+        XEcho[stats];
         
         (* It's not clear to me how this should be done, so for now we'll use some heuristics.
            We want to be cautious about choosing a non-black background, since the vast
@@ -1363,7 +1397,13 @@ ARCInferBackgroundColor[example_] :=
            a background color detector. *)
         Which[
             stats["Ratio"] >= 10,
-                Normal[colorCounts][[1, 1]],
+                colorCounts[[1, 1]],
+            And[
+                stats["Ratio"] >= 2,
+                (* The second most common color isn't black. *)
+                colorCounts[[2, 1]] =!= 0
+            ],
+                colorCounts[[1, 1]],
             True,
                 0
         ]
@@ -1411,7 +1451,7 @@ Options[ARCFormCompositeObjects] =
     "OtherScene" -> Null        (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
 };
 ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiColorObjects_List, OptionsPattern[]] :=
-    Module[{singleColorObjectsByUUID, singleColorObjectsByPixelPosition, res, object},
+    Module[{singleColorObjectsByUUID, singleColorObjectsByPixelPosition, res, object, sceneImage, imageIn, image},
         
         singleColorObjectsByUUID = ObjectsByAttribute[singleColorObjects, "UUID"];
         singleColorObjectsByPixelPosition = ObjectsByAttribute[singleColorObjects, "PixelPosition"];
@@ -1438,18 +1478,22 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                     With[{position = object["Position"]},
                         {
                             "Image" -> (
-                                image = ARCScene[
-                                    Times[
-                                        scene[[1]][[
-                                            position[[1]] ;; position[[1]] + object["Height"] - 1,
-                                            position[[2]] ;; position[[2]] + object["Width"] - 1
-                                        ]],
-                                        (* We need to make any pixels not in our object black incase there's
-                                           another object within the bounds of this object's rectangular
-                                           area. *)
-                                        Replace[objectIn["Image"][[1]], 10 :> 1, {2}]
-                                    ]
-                                ]
+                                
+                                sceneImage = scene[[1]];
+                                imageIn = objectIn["Image"][[1]];
+                                image = Table[$nonImageColor, {object["Height"]}, {object["Width"]}];
+                                posY = position[[1]];
+                                posX = position[[2]];
+                                
+                                Function[{y},
+                                    Function[{x},
+                                        If [imageIn[[y, x]] =!= $nonImageColor,
+                                            image[[y, x]] = sceneImage[[posY + y - 1, posX + x - 1]]
+                                        ]
+                                    ] /@ Range[object["Width"]]
+                                ] /@ Range[object["Height"]];
+                                
+                                ARCScene[image]
                             ),
                             "Colors" ->
                                 (* We want to sort the values so that the object references created
@@ -1459,7 +1503,7 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                                 DeleteDuplicates@
                                 Flatten[object["Components"][[All, "Colors"]]],
                             "Shapes" -> Join[
-                                ARCImageRotations[image[[1]]],
+                                ARCImageRotations[image],
                                 DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
                             ]
                         }
@@ -1893,16 +1937,13 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                             MatchQ[value["Colors"], {_}],
                             conclusion["Input", "Colors"] === value["Colors"]
                         ],
-                            (* TODO: Should the calls here and below to ARCToMonochrome always pass
-                                     black (0) as the background color, or should they be passing
-                                     the scene's background color? *)
-                            conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], 0]];
+                            conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], $nonImageColor]];
                             conclusion = KeyDrop[conclusion, "Image"],
                         And[
                             MatchQ[conclusion["Input", "Colors"], {_}],
                             MatchQ[value["Colors"], {_}],
                             conclusion["Input", "Colors"] =!= value["Colors"],
-                            ARCToMonochrome[conclusion["Image"], 0] === ARCToMonochrome[value["Image"], 0]
+                            ARCToMonochrome[conclusion["Image"], $nonImageColor] === ARCToMonochrome[value["Image"], $nonImageColor]
                         ],
                             (* The shape is staying the same and the color is changing, so drop
                                the "Image" key. *)
@@ -2602,10 +2643,13 @@ ARCRenderScene[scene_Association] :=
             
             image = object["Image"][[1]];
             
-            output[[
-                posY ;; posY + ImageHeight[image] - 1,
-                posX ;; posX + ImageWidth[image] - 1
-            ]] = object["Image"][[1]]
+            Function[{y},
+                Function[{x},
+                    If [image[[y, x]] =!= $nonImageColor,
+                        output[[posY + y - 1, posX + x - 1]] = image[[y, x]]
+                    ]
+                ] /@ Range[ImageWidth[image]]
+            ] /@ Range[ImageHeight[image]];
             
         ] /@ scene["Objects"];
         
@@ -3736,7 +3780,19 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer] :=
     
     Examples:
     
-    ARCNotableSubImages[{<|"Image" -> {{1, 0}, {0, 1}}|>}] === {{{1, 0}, {0, 1}}}
+    ARCNotableSubImages[
+        {
+            <|"Image" -> ARCScene[{{1, -1}, {-1, 1}}]|>,
+            <|"Image" -> ARCScene[{{1, 1}}]|>,
+            <|"Image" -> ARCScene[{{1, -1, 1}, {-1, 1, -1}, {1, -1, 1}}]|>
+        },
+        3,
+        3
+    ]
+    
+    ===
+    
+    {{{1, -1}, {-1, 1}} -> <|"Image" -> ARCScene[{{1, -1}, {-1, 1}}]|>}
     
     Unit tests:
     
@@ -3845,17 +3901,18 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                                         ImageHeight[subImage[[1]]],
                                         ImageWidth[subImage[[1]]]
                                     },
-                                    backgroundColor
+                                    $nonImageColor
                                 ],
-                                MemberQ[#, backgroundColor] &
+                                MemberQ[#, $nonImageColor] &
                             ]
                         ],
-                        (* Paint this region of `leftoverImage` black so that at the end we can tell
-                           if our sub-images have accounted for all non-black pixels in the image. *)
+                        (* Paint this region of `leftoverImage` $nonImageColor so that at the end
+                           we can tell if our sub-images have accounted for all non-black pixels
+                           in the image. *)
                         leftoverImage[[
                             subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage[[1]]] - 1,
                             subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage[[1]]] - 1
-                        ]] = 0;
+                        ]] = $nonImageColor;
                         
                         (* Keep track of what parts of the image we've processed so that we can avoid
                            processing overlapping sub-images. *)
@@ -4070,7 +4127,7 @@ ARCImageBorderingStrips[image_, subImagePosition_, subImageDimensions_List, back
                     subImagePosition[[1]] - 1 ;; subImagePosition[[1]] - 1,
                     xRange
                 ]],
-                ConstantArray[0, {1, subImageDimensions[[2]]}]
+                ConstantArray[backgroundColor, {1, subImageDimensions[[2]]}]
             ],
             (* Right *)
             Flatten@
@@ -4079,7 +4136,7 @@ ARCImageBorderingStrips[image_, subImagePosition_, subImageDimensions_List, back
                     yRange,
                     subImagePosition[[2]] + subImageDimensions[[2]] ;; subImagePosition[[2]] + subImageDimensions[[2]]
                 ]],
-                ConstantArray[0, {subImageDimensions[[1]], 1}]
+                ConstantArray[backgroundColor, {subImageDimensions[[1]], 1}]
             ],
             (* Below *)
             Flatten@
@@ -4088,7 +4145,7 @@ ARCImageBorderingStrips[image_, subImagePosition_, subImageDimensions_List, back
                     subImagePosition[[1]] + subImageDimensions[[1]] ;; subImagePosition[[1]] + subImageDimensions[[1]],
                     xRange
                 ]],
-                ConstantArray[0, {1, subImageDimensions[[2]]}]
+                ConstantArray[backgroundColor, {1, subImageDimensions[[2]]}]
             ],
             (* Left *)
             Flatten@
@@ -4097,7 +4154,7 @@ ARCImageBorderingStrips[image_, subImagePosition_, subImageDimensions_List, back
                     yRange,
                     subImagePosition[[2]] - 1 ;; subImagePosition[[2]] - 1
                 ]],
-                ConstantArray[0, {subImageDimensions[[1]], 1}]
+                ConstantArray[backgroundColor, {subImageDimensions[[1]], 1}]
             ]
         }
     ]
@@ -4182,10 +4239,10 @@ ARCToMonochrome[ARCScene[image_], backgroundColor_Integer]
     \maintainer danielb
 *)
 ARCColorize[image_, color_] :=
-    Replace[image, Except[0, _Integer] :> color, {3}]
+    Replace[image, Except[$nonImageColor, _Integer] :> color, {3}]
 
 ARCColorize[ARCScene[image_, color_]]
-    ARCScene[ARCToMonochrome[image, 0], color]
+    ARCScene[ARCToMonochrome[image, $nonImageColor], color]
 
 (*!
     \function SetTrainingDataKeyValue

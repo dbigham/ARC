@@ -11,31 +11,33 @@
 *)
 
 Test[
-    Daniel`ARC`ARCRenderScene[
-        <|
-            "Background" -> "Black",
-            "Width" -> 9,
-            "Height" -> 9,
-            "Objects" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "Position" -> {1, 4}|>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
-                    "Position" -> {2, 6}
-                |>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
-                    "Position" -> {3, 2}
-                |>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
-                    "Position" -> {6, 6}
-                |>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
-                    "Position" -> {7, 1}
-                |>
-            }
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCRenderScene[
+            <|
+                "Background" -> "Black",
+                "Width" -> 9,
+                "Height" -> 9,
+                "Objects" -> {
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "Position" -> {1, 4}|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
+                        "Position" -> {2, 6}
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
+                        "Position" -> {3, 2}
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
+                        "Position" -> {6, 6}
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
+                        "Position" -> {7, 1}
+                    |>
+                }
+            |>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[

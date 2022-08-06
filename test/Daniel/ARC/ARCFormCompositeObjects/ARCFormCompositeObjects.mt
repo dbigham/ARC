@@ -36,7 +36,7 @@ Test[
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>
                     },
-                    "Color" -> 1,
+                    "Colors" -> {1},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {7, 7},
@@ -48,7 +48,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{2}}],
                     "PixelPositions" -> {{4, 3}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 2,
+                    "Colors" -> {2},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {4, 3},
@@ -60,7 +60,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{3, 2}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 2},
@@ -72,7 +72,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{3, 4}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 4},
@@ -84,7 +84,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{5, 2}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 2},
@@ -96,7 +96,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{5, 4}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 4},
@@ -105,9 +105,9 @@ Test[
                 |>,
                 <|
                     "UUID" -> "7ad70b35-3033-471b-85bf-17399c3e2a35",
-                    "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
                     "PixelPositions" -> {{6, 7}, {7, 6}, {7, 8}, {8, 7}},
-                    "Color" -> 7,
+                    "Colors" -> {7},
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
@@ -118,9 +118,9 @@ Test[
             {
                 <|
                     "UUID" -> "89a9707c-edbe-4bf9-b0da-2fee6ba9b163",
-                    "Image" -> Daniel`ARC`ARCScene[{{10, 0, 10}, {0, 10, 0}, {10, 0, 10}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, -1, 10}, {-1, 10, -1}, {10, -1, 10}}],
                     "PixelPositions" -> {{3, 2}, {3, 4}, {4, 3}, {5, 2}, {5, 4}},
-                    "Color" -> 10,
+                    "Colors" -> {10},
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {3, 2},
@@ -129,9 +129,9 @@ Test[
                 |>,
                 <|
                     "UUID" -> "0548a70a-33ec-42c5-b1c5-38e21b613ee1",
-                    "Image" -> Daniel`ARC`ARCScene[{{0, 10, 0}, {10, 10, 10}, {0, 10, 0}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{-1, 10, -1}, {10, 10, 10}, {-1, 10, -1}}],
                     "PixelPositions" -> {{6, 7}, {7, 6}, {7, 7}, {7, 8}, {8, 7}},
-                    "Color" -> 10,
+                    "Colors" -> {10},
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
@@ -145,9 +145,9 @@ Test[
     {
         <|
             "UUID" -> "89a9707c-edbe-4bf9-b0da-2fee6ba9b163",
-            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+            "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "PixelPositions" -> {{3, 2}, {3, 4}, {4, 3}, {5, 2}, {5, 4}},
-            "Color" -> 10,
+            "Colors" -> {2, 4},
             "Width" -> 3,
             "Height" -> 3,
             "Position" -> {3, 2},
@@ -159,7 +159,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{3, 2}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 2},
@@ -171,7 +171,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{3, 4}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 4},
@@ -183,7 +183,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{2}}],
                     "PixelPositions" -> {{4, 3}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 2,
+                    "Colors" -> {2},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {4, 3},
@@ -195,7 +195,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{5, 2}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 2},
@@ -207,7 +207,7 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
                     "PixelPositions" -> {{5, 4}},
                     "Shape" -> {<|"Name" -> "Pixel"|>},
-                    "Color" -> 4,
+                    "Colors" -> {4},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 4},
@@ -215,17 +215,16 @@ Test[
                     "Area" -> 1
                 |>
             },
-            "Colors" -> {Missing["KeyAbsent", "Colors"]},
             "Shapes" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
                 Missing["KeyAbsent", "Shapes"]
             }
         |>,
         <|
             "UUID" -> "0548a70a-33ec-42c5-b1c5-38e21b613ee1",
-            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "PixelPositions" -> {{6, 7}, {7, 6}, {7, 7}, {7, 8}, {8, 7}},
-            "Color" -> 10,
+            "Colors" -> {1, 7},
             "Width" -> 3,
             "Height" -> 3,
             "Position" -> {6, 6},
@@ -234,9 +233,9 @@ Test[
             "Components" -> {
                 <|
                     "UUID" -> "7ad70b35-3033-471b-85bf-17399c3e2a35",
-                    "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
                     "PixelPositions" -> {{6, 7}, {7, 6}, {7, 8}, {8, 7}},
-                    "Color" -> 7,
+                    "Colors" -> {7},
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
@@ -252,7 +251,7 @@ Test[
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>
                     },
-                    "Color" -> 1,
+                    "Colors" -> {1},
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {7, 7},
@@ -260,9 +259,8 @@ Test[
                     "Area" -> 1
                 |>
             },
-            "Colors" -> {Missing["KeyAbsent", "Colors"]},
             "Shapes" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
                 Missing["KeyAbsent", "Shapes"]
             }
         |>

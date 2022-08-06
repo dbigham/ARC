@@ -280,20 +280,24 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCFindObjectMapping[
-                Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train", 2]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCFindObjectMapping[
+                        Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train", 2]
+                    ]
+                ]
             ]
         ]
     ]
     ,
     <|
         <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 2, 2}, {0, 2, 2}, {2, 2, 2}, {0, 2, 2}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 2, 2}, {-1, 2, 2}, {2, 2, 2}, {-1, 2, 2}}],
             "Position" -> {2, 1}
         |> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 2, 2}, {0, 2, 2}, {2, 2, 2}, {0, 2, 2}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 2, 2}, {-1, 2, 2}, {2, 2, 2}, {-1, 2, 2}}],
             "Position" -> {2, 4},
             "Transform" -> <|
                 "Type" -> "Move",

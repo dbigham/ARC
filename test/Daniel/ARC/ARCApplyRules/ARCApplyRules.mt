@@ -118,3 +118,30 @@ Test[
     ,
     TestID -> "ARCApplyRules-20220804-WHM3MW"
 ]
+
+Test[
+    With[
+        {parsedFile = Daniel`ARC`ARCParseFile[file = "ihiz27k2n"]},
+        Daniel`ARC`ARCApplyRules[
+            parsedFile["Test", 1, "Input"],
+            Utility`ReturnIfFailure[Daniel`ARC`ARCFindRules[parsedFile["Train"]]]
+        ]
+    ]
+    ,
+    Daniel`ARC`ARCScene[
+        {
+            {5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+            {5, 1, 5, 1, 1, 1, 1, 5, 1, 5},
+            {5, 1, 5, 1, 1, 1, 1, 5, 1, 5},
+            {5, 1, 5, 5, 5, 5, 5, 5, 1, 5},
+            {5, 1, 5, 1, 1, 1, 1, 5, 1, 5},
+            {5, 1, 5, 1, 1, 1, 1, 5, 1, 5},
+            {5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+            {5, 3, 5, 3, 3, 3, 3, 5, 3, 5},
+            {5, 3, 5, 3, 3, 3, 3, 5, 3, 5},
+            {5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+        }
+    ]
+    ,
+    TestID -> "ARCApplyRules-20220806-7U6ZB4"
+]

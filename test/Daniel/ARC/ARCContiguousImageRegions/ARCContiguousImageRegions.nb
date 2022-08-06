@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    218827,       4353]
-NotebookOptionsPosition[    208006,       4114]
-NotebookOutlinePosition[    213692,       4255]
-CellTagsIndexPosition[    213649,       4252]
+NotebookDataLength[    228290,       4565]
+NotebookOptionsPosition[    216856,       4314]
+NotebookOutlinePosition[    222536,       4455]
+CellTagsIndexPosition[    222493,       4452]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -27,7 +27,8 @@ Cell[BoxData[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{"RunUnitTests", "[", "ARCContiguousImageRegions", "]"}]}], "Code",
  InitializationCell->False,
- CellLabel->"In[14]:=",ExpressionUUID->"149951ae-536f-4c65-9b74-fe4702c40eed"],
+ CellLabel->
+  "In[823]:=",ExpressionUUID->"149951ae-536f-4c65-9b74-fe4702c40eed"],
 
 Cell[CellGroupData[{
 
@@ -145,7 +146,7 @@ DynamicOutputSectionVariable202271713103850, "ImageSize" -> {Full, {0,
 DynamicOutputSectionVariable202271713103850 = "", ImageSize -> {100, 33}]}]}, 
          Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{833., {21., 27.}},
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`DynamicOutputSectionVariable202271713103850}\
 ]], "TestUI",
@@ -176,7 +177,7 @@ Cell[BoxData[{
    3.867065699332783*^9, 3.8670657005546775`*^9}, 3.867066602985096*^9, {
    3.8670689463633366`*^9, 3.867068946514713*^9}, {3.867158767154239*^9, 
    3.867158768554189*^9}, {3.86715890774304*^9, 3.867158908977071*^9}},
- CellLabel->"In[258]:=",
+ CellLabel->"In[586]:=",
  CellID->22692119,
  "TestId" -> 
  "ARCContiguousImageRegions-20220717-WKCEJQ",ExpressionUUID->"cf9da7ba-ba95-\
@@ -186,18 +187,20 @@ Cell[BoxData[{
 Cell[BoxData["\<\"ARCImageRegions[\\n    {\\n        <|\\\"Color\\\" -> 1, \\\
 \"Position\\\" -> {2, 2}, \\\"Image\\\" -> {{1}}, \\\"PixelPositions\\\" -> \
 {{2, 2}}|>,\\n        <|\\n            \\\"Color\\\" -> 2,\\n            \
-\\\"Position\\\" -> {1, 1},\\n            \\\"Image\\\" -> {{2, 2, 2}, {2, 0, \
-0}, {2, 0, 0}},\\n            \\\"PixelPositions\\\" -> {{1, 1}, {1, 2}, {1, \
-3}, {2, 1}, {3, 1}}\\n        |>,\\n        <|\\n            \\\"Color\\\" -> \
-8,\\n            \\\"Position\\\" -> {2, 2},\\n            \\\"Image\\\" -> \
-{{0, 8}, {8, 8}},\\n            \\\"PixelPositions\\\" -> {{2, 3}, {3, 2}, \
-{3, 3}}\\n        |>\\n    }\\n]\"\>"], "Output",
+\\\"Position\\\" -> {1, 1},\\n            \\\"Image\\\" -> {{2, 2, 2}, {2, \
+-1, -1}, {2, -1, -1}},\\n            \\\"PixelPositions\\\" -> {{1, 1}, {1, \
+2}, {1, 3}, {2, 1}, {3, 1}}\\n        |>,\\n        <|\\n            \
+\\\"Color\\\" -> 8,\\n            \\\"Position\\\" -> {2, 2},\\n            \
+\\\"Image\\\" -> {{-1, 8}, {8, 8}},\\n            \\\"PixelPositions\\\" -> \
+{{2, 3}, {3, 2}, {3, 3}}\\n        |>\\n    }\\n]\"\>"], "Output",
  CellChangeTimes->{
   3.867067083060326*^9, {3.867068561220355*^9, 3.8670685859163857`*^9}, {
    3.8670689470761523`*^9, 3.8670690518881617`*^9}, {3.867158768964309*^9, 
-   3.867158784984848*^9}, {3.867158859920429*^9, 3.8671589131731224`*^9}},
+   3.867158784984848*^9}, {3.867158859920429*^9, 3.8671589131731224`*^9}, 
+   3.868791314219406*^9, 3.868792339597175*^9, 3.868792411388378*^9, 
+   3.868792447312087*^9},
  CellLabel->
-  "Out[259]=",ExpressionUUID->"e8aca6b9-2755-401d-a3ed-18fa1b7771bd"]
+  "Out[587]=",ExpressionUUID->"dffcfdcf-b36b-4960-bfdf-764a3e865f75"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -314,7 +317,7 @@ DynamicOutputSectionVariable20227171317231007 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{833., {21., 27.}},
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable20227171317231007}]], "TestUI",
@@ -343,7 +346,7 @@ Cell[BoxData[{
  CellChangeTimes->{{3.8670648834100757`*^9, 3.8670648845534835`*^9}, {
    3.867065699332783*^9, 3.8670657005546775`*^9}, 3.867066602985096*^9, 
    3.8670668881161604`*^9, {3.8670690595313263`*^9, 3.867069059676714*^9}},
- CellLabel->"In[314]:=",
+ CellLabel->"In[584]:=",
  CellID->99323463,
  "TestId" -> 
  "ARCContiguousImageRegions-20220717-RNMSEP",ExpressionUUID->"bf0a8b06-d3b3-\
@@ -367,22 +370,22 @@ Cell[BoxData[
           "Columns" -> {{None}}, "Rows" -> {{None}}, 
            "ItemsIndexed" -> {{1, 1} -> RGBColor[0, 0, 1], {1, 2} -> 
              RGBColor[0, 0, 1], {1, 3} -> RGBColor[0, 0, 1], {2, 1} -> 
-             GrayLevel[0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
-             GrayLevel[0]}},
+             GrayLevel[0.25], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
+             GrayLevel[0.25]}},
          GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
          GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
          GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 1,\\n    \\\"Position\\\" -> {1, 1},\\n   \
- \\\"Image\\\" -> {{1, 1, 1}, {0, 1, 0}},\\n    \\\"PixelPositions\\\" -> \
+ \\\"Image\\\" -> {{1, 1, 1}, {-1, 1, -1}},\\n    \\\"PixelPositions\\\" -> \
 {{1, 1}, {1, 2}, {1, 3}, {2, 2}}\\n|>\"", FontFamily -> "Courier", 
         StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 1,\n    \"Position\" -> {1, 1},\n    \"Image\" \
--> {{1, 1, 1}, {0, 1, 0}},\n    \"PixelPositions\" -> {{1, 1}, {1, 2}, {1, \
+-> {{1, 1, 1}, {-1, 1, -1}},\n    \"PixelPositions\" -> {{1, 1}, {1, 2}, {1, \
 3}, {2, 2}}\n|>", FontFamily -> "Courier"], "Tooltip"]& ]},
     {
      TagBox[
@@ -404,13 +407,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 2,\\n    \\\"Position\\\" -> {3, 2},\\n   \
- \\\"Image\\\" -> {{1, 1}},\\n    \\\"PixelPositions\\\" -> {{3, 2}, {3, \
+ \\\"Image\\\" -> {{2, 2}},\\n    \\\"PixelPositions\\\" -> {{3, 2}, {3, \
 3}}\\n|>\"", FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 2,\n    \"Position\" -> {3, 2},\n    \"Image\" \
--> {{1, 1}},\n    \"PixelPositions\" -> {{3, 2}, {3, 3}}\n|>", FontFamily -> 
+-> {{2, 2}},\n    \"PixelPositions\" -> {{3, 2}, {3, 3}}\n|>", FontFamily -> 
         "Courier"], "Tooltip"]& ]},
     {
      TagBox[
@@ -431,13 +434,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 3,\\n    \\\"Position\\\" -> {2, 3},\\n   \
- \\\"Image\\\" -> {{1}},\\n    \\\"PixelPositions\\\" -> {{2, 3}}\\n|>\"", 
+ \\\"Image\\\" -> {{3}},\\n    \\\"PixelPositions\\\" -> {{2, 3}}\\n|>\"", 
         FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 3,\n    \"Position\" -> {2, 3},\n    \"Image\" \
--> {{1}},\n    \"PixelPositions\" -> {{2, 3}}\n|>", FontFamily -> "Courier"], 
+-> {{3}},\n    \"PixelPositions\" -> {{2, 3}}\n|>", FontFamily -> "Courier"], 
        "Tooltip"]& ]},
     {
      TagBox[
@@ -463,13 +466,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 8,\\n    \\\"Position\\\" -> {2, 1},\\n   \
- \\\"Image\\\" -> {{1}, {1}},\\n    \\\"PixelPositions\\\" -> {{2, 1}, {3, \
+ \\\"Image\\\" -> {{8}, {8}},\\n    \\\"PixelPositions\\\" -> {{2, 1}, {3, \
 1}}\\n|>\"", FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 8,\n    \"Position\" -> {2, 1},\n    \"Image\" \
--> {{1}, {1}},\n    \"PixelPositions\" -> {{2, 1}, {3, 1}}\n|>", FontFamily -> 
+-> {{8}, {8}},\n    \"PixelPositions\" -> {{2, 1}, {3, 1}}\n|>", FontFamily -> 
         "Courier"], "Tooltip"]& ]}
    },
    DefaultBaseStyle->"Column",
@@ -478,9 +481,11 @@ Cell[BoxData[
   "Column"]], "Output",
  CellChangeTimes->{{3.8670668888333035`*^9, 3.8670668942636895`*^9}, 
    3.867067020463761*^9, 3.8670677288745055`*^9, {3.8670685653443055`*^9, 
-   3.8670685909508896`*^9}, {3.8670690572503853`*^9, 3.867069060051236*^9}},
+   3.8670685909508896`*^9}, {3.8670690572503853`*^9, 3.867069060051236*^9}, {
+   3.868791396198655*^9, 3.868791397212919*^9}, 3.868791505129305*^9, 
+   3.8687924419394913`*^9},
  CellLabel->
-  "Out[315]=",ExpressionUUID->"4f4495e5-0d79-4030-97fb-39fda7029437"]
+  "Out[585]=",ExpressionUUID->"29a8fdb2-e4a9-43a6-9a2c-e613901f2f34"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -575,7 +580,7 @@ DynamicOutputSectionVariable20227171328521175 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{826., {21., 27.}},
+  ImageSizeCache->{826., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable20227171328521175}]], "TestUI",
@@ -606,7 +611,7 @@ Cell[BoxData[{
    3.86706758694296*^9, 3.8670676051976705`*^9}, {3.8670678072316074`*^9, 
    3.8670678116446323`*^9}, {3.86706861880378*^9, 3.867068618940447*^9}, {
    3.867069069687951*^9, 3.867069069991556*^9}},
- CellLabel->"In[316]:=",
+ CellLabel->"In[588]:=",
  CellID->5867004,
  "TestId" -> 
  "ARCContiguousImageRegions-20220717-DS5F8I",ExpressionUUID->"18c1402a-13d4-\
@@ -630,25 +635,25 @@ Cell[BoxData[
          GridBoxBackground->{
           "Columns" -> {{None}}, "Rows" -> {{None}}, 
            "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 0, 0], {1, 2} -> 
-             GrayLevel[0], {1, 3} -> GrayLevel[0], {2, 1} -> 
-             GrayLevel[0], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
-             GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
-             GrayLevel[0], {3, 3} -> RGBColor[1, 0, 0]}},
+             GrayLevel[0.25], {1, 3} -> GrayLevel[0.25], {2, 1} -> 
+             GrayLevel[0.25], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
+             GrayLevel[0.25], {3, 1} -> GrayLevel[0.25], {3, 2} -> 
+             GrayLevel[0.25], {3, 3} -> RGBColor[1, 0, 0]}},
          GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
          GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
          GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 2,\\n    \\\"Position\\\" -> {1, 1},\\n   \
- \\\"Image\\\" -> {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},\\n    \\\"PixelPositions\
-\\\" -> {{1, 1}, {2, 2}, {3, 3}}\\n|>\"", FontFamily -> "Courier", 
-        StripOnInput -> False],
+ \\\"Image\\\" -> {{2, -1, -1}, {-1, 2, -1}, {-1, -1, 2}},\\n    \
+\\\"PixelPositions\\\" -> {{1, 1}, {2, 2}, {3, 3}}\\n|>\"", FontFamily -> 
+        "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 2,\n    \"Position\" -> {1, 1},\n    \"Image\" \
--> {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},\n    \"PixelPositions\" -> {{1, 1}, {2, \
-2}, {3, 3}}\n|>", FontFamily -> "Courier"], "Tooltip"]& ]}
+-> {{2, -1, -1}, {-1, 2, -1}, {-1, -1, 2}},\n    \"PixelPositions\" -> {{1, \
+1}, {2, 2}, {3, 3}}\n|>", FontFamily -> "Courier"], "Tooltip"]& ]}
    },
    DefaultBaseStyle->"Column",
    GridBoxAlignment->{"Columns" -> {{Left}}},
@@ -657,9 +662,10 @@ Cell[BoxData[
  CellChangeTimes->{
   3.8670675964556828`*^9, {3.8670676830277405`*^9, 3.8670677273737593`*^9}, {
    3.8670677944035463`*^9, 3.8670678121806383`*^9}, 3.8670685715634203`*^9, {
-   3.867068611822859*^9, 3.867068619310344*^9}, 3.8670690704107704`*^9},
+   3.867068611822859*^9, 3.867068619310344*^9}, 3.8670690704107704`*^9, 
+   3.8687896520076027`*^9, 3.868791511015786*^9, 3.868792451741783*^9},
  CellLabel->
-  "Out[317]=",ExpressionUUID->"26f42027-43e5-4ac0-bfd7-2210f57d0815"]
+  "Out[589]=",ExpressionUUID->"350c5e15-4a77-4b88-9f3a-4ca0cfba486c"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -747,7 +753,7 @@ DynamicOutputSectionVariable20227171343331486 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{826., {21., 27.}},
+  ImageSizeCache->{826., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable20227171343331486}]], "TestUI",
@@ -781,7 +787,7 @@ Cell[BoxData[{
    3.86706758694296*^9, 3.8670676051976705`*^9}, {3.8670678072316074`*^9, 
    3.8670678116446323`*^9}, {3.867068609503667*^9, 3.8670686099977403`*^9}, {
    3.8670690787816105`*^9, 3.8670690789496317`*^9}},
- CellLabel->"In[320]:=",
+ CellLabel->"In[590]:=",
  CellID->5546390,
  "TestId" -> 
  "ARCContiguousImageRegions-20220717-6PZ6CY",ExpressionUUID->"b171b4cf-430e-\
@@ -809,13 +815,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 2,\\n    \\\"Position\\\" -> {1, 1},\\n   \
- \\\"Image\\\" -> {{1}},\\n    \\\"PixelPositions\\\" -> {{1, 1}}\\n|>\"", 
+ \\\"Image\\\" -> {{2}},\\n    \\\"PixelPositions\\\" -> {{1, 1}}\\n|>\"", 
         FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 2,\n    \"Position\" -> {1, 1},\n    \"Image\" \
--> {{1}},\n    \"PixelPositions\" -> {{1, 1}}\n|>", FontFamily -> "Courier"], 
+-> {{2}},\n    \"PixelPositions\" -> {{1, 1}}\n|>", FontFamily -> "Courier"], 
        "Tooltip"]& ]},
     {
      TagBox[
@@ -836,13 +842,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 2,\\n    \\\"Position\\\" -> {2, 2},\\n   \
- \\\"Image\\\" -> {{1}},\\n    \\\"PixelPositions\\\" -> {{2, 2}}\\n|>\"", 
+ \\\"Image\\\" -> {{2}},\\n    \\\"PixelPositions\\\" -> {{2, 2}}\\n|>\"", 
         FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 2,\n    \"Position\" -> {2, 2},\n    \"Image\" \
--> {{1}},\n    \"PixelPositions\" -> {{2, 2}}\n|>", FontFamily -> "Courier"], 
+-> {{2}},\n    \"PixelPositions\" -> {{2, 2}}\n|>", FontFamily -> "Courier"], 
        "Tooltip"]& ]},
     {
      TagBox[
@@ -863,13 +869,13 @@ Cell[BoxData[
         "Grid"],
        StyleBox[
        "\"<|\\n    \\\"Color\\\" -> 2,\\n    \\\"Position\\\" -> {3, 3},\\n   \
- \\\"Image\\\" -> {{1}},\\n    \\\"PixelPositions\\\" -> {{3, 3}}\\n|>\"", 
+ \\\"Image\\\" -> {{2}},\\n    \\\"PixelPositions\\\" -> {{3, 3}}\\n|>\"", 
         FontFamily -> "Courier", StripOnInput -> False],
        TooltipStyle->"TextStyling"],
       Annotation[#, 
        Style[
        "<|\n    \"Color\" -> 2,\n    \"Position\" -> {3, 3},\n    \"Image\" \
--> {{1}},\n    \"PixelPositions\" -> {{3, 3}}\n|>", FontFamily -> "Courier"], 
+-> {{2}},\n    \"PixelPositions\" -> {{3, 3}}\n|>", FontFamily -> "Courier"], 
        "Tooltip"]& ]}
    },
    DefaultBaseStyle->"Column",
@@ -877,9 +883,11 @@ Cell[BoxData[
    GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
   "Column"]], "Output",
  CellChangeTimes->{
-  3.8670686102757854`*^9, {3.8670690770309715`*^9, 3.8670690793102703`*^9}},
+  3.8670686102757854`*^9, {3.8670690770309715`*^9, 3.8670690793102703`*^9}, 
+   3.868791550456582*^9, 3.8687915871148167`*^9, {3.868791746258749*^9, 
+   3.868791763962952*^9}, 3.868792457095893*^9},
  CellLabel->
-  "Out[321]=",ExpressionUUID->"b3c0860e-b25d-4fda-aa70-8d0a35e6efb2"]
+  "Out[591]=",ExpressionUUID->"730a665d-59cb-4774-8aba-5c5836bc26a9"]
 }, Closed]]
 }, Open  ]],
 
@@ -968,7 +976,7 @@ DynamicOutputSectionVariable202272532110329, "ImageSize" -> {Full, {0,
 DynamicOutputSectionVariable202272532110329 = "", ImageSize -> {100, 33}]}]}, 
          Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{833., {21., 27.}},
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`DynamicOutputSectionVariable202272532110329}\
 ]], "TestUI",
@@ -1006,7 +1014,7 @@ Cell[BoxData[{
    3.867158768554189*^9}, {3.86715890774304*^9, 3.867158908977071*^9}, {
    3.8677222622434883`*^9, 3.867722266081516*^9}, {3.867722313960558*^9, 
    3.867722325799393*^9}, 3.867722357563348*^9},
- CellLabel->"In[24]:=",
+ CellLabel->"In[592]:=",
  CellID->67606506,
  "TestId" -> 
  "ARCContiguousImageRegions-20220725-L81EQJ",ExpressionUUID->"a3342af3-a50f-\
@@ -1015,24 +1023,216 @@ Cell[BoxData[{
 
 Cell[BoxData["\<\"ARCImageRegions[\\n    {\\n        <|\\n            \
 \\\"Color\\\" -> 10,\\n            \\\"Position\\\" -> {2, 3},\\n            \
-\\\"Image\\\" -> {\\n                {10, 10, 10, 0, 0, 0},\\n                \
-{10, 0, 10, 0, 0, 0},\\n                {10, 10, 10, 0, 0, 0},\\n             \
-   {0, 0, 0, 10, 10, 10},\\n                {0, 0, 0, 10, 0, 10},\\n          \
-      {0, 0, 0, 10, 10, 10}\\n            },\\n            \\\"PixelPositions\
-\\\" -> {\\n                {2, 3},\\n                {2, 4},\\n              \
-  {2, 5},\\n                {3, 3},\\n                {3, 5},\\n              \
-  {4, 3},\\n                {4, 4},\\n                {4, 5},\\n              \
-  {5, 6},\\n                {5, 7},\\n                {5, 8},\\n              \
-  {6, 6},\\n                {6, 8},\\n                {7, 6},\\n              \
-  {7, 7},\\n                {7, 8}\\n            }\\n        |>,\\n        <|\
-\\n            \\\"Color\\\" -> 10,\\n            \\\"Position\\\" -> {7, 2},\
-\\n            \\\"Image\\\" -> {{10, 10, 10}, {10, 0, 10}, {10, 10, 10}},\\n \
-           \\\"PixelPositions\\\" -> {{7, 2}, {7, 3}, {7, 4}, {8, 2}, {8, 4}, \
-{9, 2}, {9, 3}, {9, 4}}\\n        |>\\n    }\\n]\"\>"], "Output",
+\\\"Image\\\" -> {\\n                {10, 10, 10, -1, -1, -1},\\n             \
+   {10, -1, 10, -1, -1, -1},\\n                {10, 10, 10, -1, -1, -1},\\n   \
+             {-1, -1, -1, 10, 10, 10},\\n                {-1, -1, -1, 10, -1, \
+10},\\n                {-1, -1, -1, 10, 10, 10}\\n            },\\n           \
+ \\\"PixelPositions\\\" -> {\\n                {2, 3},\\n                {2, \
+4},\\n                {2, 5},\\n                {3, 3},\\n                {3, \
+5},\\n                {4, 3},\\n                {4, 4},\\n                {4, \
+5},\\n                {5, 6},\\n                {5, 7},\\n                {5, \
+8},\\n                {6, 6},\\n                {6, 8},\\n                {7, \
+6},\\n                {7, 7},\\n                {7, 8}\\n            }\\n     \
+   |>,\\n        <|\\n            \\\"Color\\\" -> 10,\\n            \
+\\\"Position\\\" -> {7, 2},\\n            \\\"Image\\\" -> {{10, 10, 10}, \
+{10, -1, 10}, {10, 10, 10}},\\n            \\\"PixelPositions\\\" -> {{7, 2}, \
+{7, 3}, {7, 4}, {8, 2}, {8, 4}, {9, 2}, {9, 3}, {9, 4}}\\n        |>\\n    \
+}\\n]\"\>"], "Output",
  CellChangeTimes->{{3.8677222664119654`*^9, 3.867722273636755*^9}, 
    3.867722326422655*^9, 3.867722362506669*^9, 3.8677224520202007`*^9, {
-   3.8677226117430944`*^9, 3.867722650038989*^9}, 3.867722689527904*^9},
- CellLabel->"Out[25]=",ExpressionUUID->"79f6f0aa-c220-49d8-b41a-eae13342d97e"]
+   3.8677226117430944`*^9, 3.867722650038989*^9}, 3.867722689527904*^9, 
+   3.8687924618915267`*^9},
+ CellLabel->
+  "Out[593]=",ExpressionUUID->"d7ac5eb7-b5bf-4e75-84d7-eaa633914c76"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Non-black Background Color + Black Object", "Subsection",
+ CellChangeTimes->{{3.868789613246433*^9, 3.8687896148869143`*^9}, {
+  3.868790124711913*^9, 
+  3.868790132974214*^9}},ExpressionUUID->"4d745a10-6d4f-4bc9-9d40-\
+ff4425c12a14"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCContiguousImageRegions-20220806-MTBH9U", 
+              Daniel`ARC`ARCContiguousImageRegions, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076], 67304027]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCContiguousImageRegions-20220806-MTBH9U"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCContiguousImageRegions-20220806-MTBH9U", 
+            Daniel`ARC`ARCContiguousImageRegions, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076], "CellID" -> 67304027, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCContiguousImageRegions-20220806-MTBH9U", 
+           Daniel`ARC`ARCContiguousImageRegions, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076], None], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCContiguousImageRegions-20220806-MTBH9U"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20228611553760076}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8687901365997663`*^9},ExpressionUUID->"70b66851-c8bd-42d4-8140-\
+7033103654b6"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"ARCContiguousImageRegions", "[", "\n", "\t", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", " ", "1", ",", " ", "1"}], "}"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", " ", "0", ",", " ", "1"}], "}"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", " ", "1", ",", " ", "0"}], "}"}]}], "}"}], ",", "\n", 
+   "\t", 
+   RowBox[{"\"\<Background\>\"", " ", "->", " ", "1"}]}], "\n", 
+  "]"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8670648834100757`*^9, 3.8670648845534835`*^9}, {
+   3.867065699332783*^9, 3.8670657005546775`*^9}, 3.867066602985096*^9, {
+   3.86706758694296*^9, 3.8670676051976705`*^9}, {3.8670678072316074`*^9, 
+   3.8670678116446323`*^9}, {3.86706861880378*^9, 3.867068618940447*^9}, {
+   3.867069069687951*^9, 3.867069069991556*^9}, {3.8687896172734003`*^9, 
+   3.8687896281648397`*^9}, {3.868789868843974*^9, 3.8687898732277164`*^9}, {
+   3.8687912714259095`*^9, 3.8687912746886463`*^9}, {3.868791401901044*^9, 
+   3.868791402304921*^9}, {3.8687917731146026`*^9, 3.8687917742995567`*^9}, {
+   3.868791970486108*^9, 3.8687919706328106`*^9}, {3.868792074936265*^9, 
+   3.8687920882740183`*^9}, {3.868792295374874*^9, 3.8687922955049763`*^9}},
+ CellLabel->"In[594]:=",
+ CellID->67304027,
+ "TestId" -> 
+ "ARCContiguousImageRegions-20220806-MTBH9U",ExpressionUUID->"a44e579c-3c64-\
+4640-a531-ff95080ed941"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     TagBox[
+      TooltipBox[
+       TagBox[GridBox[{
+          {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+          {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+          {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+         },
+         AutoDelete->False,
+         FrameStyle->{
+           AbsoluteThickness[1], 
+           GrayLevel[0.5]},
+         GridBoxBackground->{
+          "Columns" -> {{None}}, "Rows" -> {{None}}, 
+           "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+             GrayLevel[0.25], {1, 3} -> GrayLevel[0.25], {2, 1} -> 
+             GrayLevel[0.25], {2, 2} -> GrayLevel[0], {2, 3} -> 
+             GrayLevel[0.25], {3, 1} -> GrayLevel[0.25], {3, 2} -> 
+             GrayLevel[0.25], {3, 3} -> GrayLevel[0]}},
+         GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+         GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+         GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+        "Grid"],
+       StyleBox[
+       "\"<|\\n    \\\"Color\\\" -> 0,\\n    \\\"Position\\\" -> {1, 1},\\n   \
+ \\\"Image\\\" -> {{0, -1, -1}, {-1, 0, -1}, {-1, -1, 0}},\\n    \
+\\\"PixelPositions\\\" -> {{1, 1}, {2, 2}, {3, 3}}\\n|>\"", FontFamily -> 
+        "Courier", StripOnInput -> False],
+       TooltipStyle->"TextStyling"],
+      Annotation[#, 
+       Style[
+       "<|\n    \"Color\" -> 0,\n    \"Position\" -> {1, 1},\n    \"Image\" \
+-> {{0, -1, -1}, {-1, 0, -1}, {-1, -1, 0}},\n    \"PixelPositions\" -> {{1, \
+1}, {2, 2}, {3, 3}}\n|>", FontFamily -> "Courier"], "Tooltip"]& ]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{{3.8687896287945704`*^9, 3.8687896919103794`*^9}, {
+   3.8687897980729227`*^9, 3.868789888994848*^9}, 3.8687900510094814`*^9, {
+   3.868790106202781*^9, 3.868790134538767*^9}, {3.868791096391667*^9, 
+   3.868791134675149*^9}, {3.868791205512827*^9, 3.8687912125554094`*^9}, {
+   3.868791255162154*^9, 3.8687912750057063`*^9}, {3.8687914007513323`*^9, 
+   3.8687914100101037`*^9}, 3.86879149850558*^9, {3.868791770163045*^9, 
+   3.8687917917862177`*^9}, {3.8687918322290506`*^9, 3.868791840248234*^9}, {
+   3.868791872971337*^9, 3.8687919132132263`*^9}, {3.8687919462989883`*^9, 
+   3.868791956123706*^9}, 3.8687919951945467`*^9, {3.868792032560305*^9, 
+   3.8687921365621805`*^9}, {3.8687921744266157`*^9, 3.868792183465547*^9}, {
+   3.868792220618484*^9, 3.868792257968358*^9}, {3.868792291473442*^9, 
+   3.8687923318111744`*^9}, 3.868792467892909*^9},
+ CellLabel->
+  "Out[595]=",ExpressionUUID->"6b420d4b-91fb-4173-ae92-613e1df38af3"]
 }, Closed]]
 }, Open  ]],
 
@@ -2055,13 +2255,13 @@ lastPathIsLeafHeader, TypeSystem`NestedGrid`PackagePrivate`headerHidden$ = And[
         Hold[
           TypeSystem`NestedGrid`PackagePrivate`localHold[
           TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]], StandardForm],
-      ImageSizeCache->{534., {150., 156.}},
+      ImageSizeCache->{503., {149.134033203125, 154.865966796875}},
       TrackedSymbols:>{
        TypeSystem`NestedGrid`PackagePrivate`$state$$, 
         TypeSystem`NestedGrid`PackagePrivate`$grid$$}], 
      TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$ = 
      MouseAnnotation[],
-     ImageSizeCache->{534., {150., 156.}}],
+     ImageSizeCache->{503., {149.134033203125, 154.865966796875}}],
     BaseStyle->{LineBreakWithin -> False},
     DynamicModuleValues:>{},
     Initialization:>
@@ -4114,7 +4314,7 @@ Cell[BoxData[
 },
 Evaluator->"Local",
 WindowSize->{958, 980},
-WindowMargins->{{-7., Automatic}, {Automatic, 0}},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
   Cell[
@@ -4239,7 +4439,7 @@ TaggingRules->{
      "Function" -> Daniel`ARC`ARCContiguousImageRegions}, "ReturnNotebook" -> 
     True}},
 InputAutoReplacements->{},
-FrontEndVersion->"12.2 for Microsoft Windows (64-bit) (December 12, 2020)",
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"814907a3-e475-4702-a3c7-9478f348f34a"
 ]
@@ -4255,103 +4455,115 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 97, 0, 96, "Title",ExpressionUUID->"c690ee21-6006-4824-87bd-d6901cb7756f"],
-Cell[680, 24, 256, 5, 53, "Code",ExpressionUUID->"149951ae-536f-4c65-9b74-fe4702c40eed",
+Cell[580, 22, 97, 0, 98, "Title",ExpressionUUID->"c690ee21-6006-4824-87bd-d6901cb7756f"],
+Cell[680, 24, 260, 6, 54, "Code",ExpressionUUID->"149951ae-536f-4c65-9b74-fe4702c40eed",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[961, 33, 79, 0, 67, "Section",ExpressionUUID->"12a5ffe0-9841-459e-87e5-7cca512d5200"],
+Cell[965, 34, 79, 0, 67, "Section",ExpressionUUID->"12a5ffe0-9841-459e-87e5-7cca512d5200"],
 Cell[CellGroupData[{
-Cell[1065, 37, 161, 3, 53, "Subsection",ExpressionUUID->"fe609f61-90fb-4b6c-8fc1-81519d668dac"],
-Cell[1229, 42, 1129, 26, 94, "Output",ExpressionUUID->"dd6126c0-6dd5-4e10-95ff-26a41cd6219b"],
+Cell[1069, 38, 161, 3, 54, "Subsection",ExpressionUUID->"fe609f61-90fb-4b6c-8fc1-81519d668dac"],
+Cell[1233, 43, 1129, 26, 95, "Output",ExpressionUUID->"dd6126c0-6dd5-4e10-95ff-26a41cd6219b"],
 Cell[CellGroupData[{
-Cell[2383, 72, 3582, 84, 50, "TestUI",ExpressionUUID->"da9b01f0-b084-4042-8881-70e6a1c12f27",
+Cell[2387, 73, 3602, 84, 52, "TestUI",ExpressionUUID->"da9b01f0-b084-4042-8881-70e6a1c12f27",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[5968, 158, 1023, 24, 89, "Code",ExpressionUUID->"cf9da7ba-ba95-4d8a-b708-1ff987b2396e",
+Cell[5992, 159, 1023, 24, 90, "Code",ExpressionUUID->"cf9da7ba-ba95-4d8a-b708-1ff987b2396e",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->22692119]
 }, Open  ]],
-Cell[7006, 185, 1003, 14, 337, "Output",ExpressionUUID->"e8aca6b9-2755-401d-a3ed-18fa1b7771bd"]
+Cell[7030, 186, 1104, 16, 354, "Output",ExpressionUUID->"dffcfdcf-b36b-4960-bfdf-764a3e865f75"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[8046, 204, 157, 3, 37, "Subsection",ExpressionUUID->"c4a67c81-ce40-4a2d-80ad-d61ee47369e4"],
-Cell[8206, 209, 1123, 27, 94, "Output",ExpressionUUID->"07aa6008-20ae-4a54-a3bc-121bb3113443"],
+Cell[8171, 207, 157, 3, 38, "Subsection",ExpressionUUID->"c4a67c81-ce40-4a2d-80ad-d61ee47369e4"],
+Cell[8331, 212, 1123, 27, 95, "Output",ExpressionUUID->"07aa6008-20ae-4a54-a3bc-121bb3113443"],
 Cell[CellGroupData[{
-Cell[9354, 240, 3618, 85, 50, "TestUI",ExpressionUUID->"2c661f7c-3f14-46b7-af5f-701d12ce5869",
+Cell[9479, 243, 3638, 85, 52, "TestUI",ExpressionUUID->"2c661f7c-3f14-46b7-af5f-701d12ce5869",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[12975, 327, 903, 22, 89, "Code",ExpressionUUID->"bf0a8b06-d3b3-4b32-b70f-c328e1a0d92b",
+Cell[13120, 330, 903, 22, 90, "Code",ExpressionUUID->"bf0a8b06-d3b3-4b32-b70f-c328e1a0d92b",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->99323463]
 }, Open  ]],
-Cell[13893, 352, 5381, 130, 194, "Output",ExpressionUUID->"4f4495e5-0d79-4030-97fb-39fda7029437"]
+Cell[14038, 355, 5491, 132, 195, "Output",ExpressionUUID->"29a8fdb2-e4a9-43a6-9a2c-e613901f2f34"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[19311, 487, 158, 3, 37, "Subsection",ExpressionUUID->"505e7833-ad11-4d2b-b5cc-be7834091e93"],
+Cell[19566, 492, 158, 3, 38, "Subsection",ExpressionUUID->"505e7833-ad11-4d2b-b5cc-be7834091e93"],
 Cell[CellGroupData[{
-Cell[19494, 494, 169, 3, 44, "Subsubsection",ExpressionUUID->"bd960dae-f807-47d3-9a0f-11648c8f483f"],
+Cell[19749, 499, 169, 3, 45, "Subsubsection",ExpressionUUID->"bd960dae-f807-47d3-9a0f-11648c8f483f"],
 Cell[CellGroupData[{
-Cell[19688, 501, 3614, 85, 50, "TestUI",ExpressionUUID->"1075fae6-1c33-4246-a063-ed8ddf1d67d5",
+Cell[19943, 506, 3634, 85, 52, "TestUI",ExpressionUUID->"1075fae6-1c33-4246-a063-ed8ddf1d67d5",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[23305, 588, 1026, 24, 89, "Code",ExpressionUUID->"18c1402a-13d4-4aa2-884a-f9465c092cf7",
+Cell[23580, 593, 1026, 24, 90, "Code",ExpressionUUID->"18c1402a-13d4-4aa2-884a-f9465c092cf7",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->5867004]
 }, Open  ]],
-Cell[24346, 615, 2076, 46, 95, "Output",ExpressionUUID->"26f42027-43e5-4ac0-bfd7-2210f57d0815"]
+Cell[24621, 620, 2178, 47, 95, "Output",ExpressionUUID->"350c5e15-4a77-4b88-9f3a-4ca0cfba486c"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[26459, 666, 194, 3, 36, "Subsubsection",ExpressionUUID->"e9e6d6a2-c034-4e84-b7fc-c8d7022c6c30"],
+Cell[26836, 672, 194, 3, 37, "Subsubsection",ExpressionUUID->"e9e6d6a2-c034-4e84-b7fc-c8d7022c6c30"],
 Cell[CellGroupData[{
-Cell[26678, 673, 3614, 85, 50, "TestUI",ExpressionUUID->"9428f487-d5e4-45b0-9057-8d16744c6751",
+Cell[27055, 679, 3634, 85, 52, "TestUI",ExpressionUUID->"9428f487-d5e4-45b0-9057-8d16744c6751",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[30295, 760, 1146, 27, 107, "Code",ExpressionUUID->"b171b4cf-430e-4895-b8d7-dafce63d8e6a",
+Cell[30692, 766, 1146, 27, 108, "Code",ExpressionUUID->"b171b4cf-430e-4895-b8d7-dafce63d8e6a",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->5546390]
 }, Open  ]],
-Cell[31456, 790, 3600, 91, 113, "Output",ExpressionUUID->"b3c0860e-b25d-4fda-aa70-8d0a35e6efb2"]
+Cell[31853, 796, 3722, 93, 113, "Output",ExpressionUUID->"730a665d-59cb-4774-8aba-5c5836bc26a9"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[35105, 887, 211, 4, 53, "Subsection",ExpressionUUID->"09ba5d07-6e7e-47b0-838c-334fc3d1633a"],
+Cell[35624, 895, 211, 4, 54, "Subsection",ExpressionUUID->"09ba5d07-6e7e-47b0-838c-334fc3d1633a"],
 Cell[CellGroupData[{
-Cell[35341, 895, 3584, 84, 50, "TestUI",ExpressionUUID->"ba28ff5b-12b6-4f5e-9b96-b41a078479cc",
+Cell[35860, 903, 3604, 84, 52, "TestUI",ExpressionUUID->"ba28ff5b-12b6-4f5e-9b96-b41a078479cc",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[38928, 981, 1358, 31, 161, "Code",ExpressionUUID->"a3342af3-a50f-4218-b688-c8cfda6276f6",
+Cell[39467, 989, 1359, 31, 162, "Code",ExpressionUUID->"a3342af3-a50f-4218-b688-c8cfda6276f6",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->67606506]
 }, Open  ]],
-Cell[40301, 1015, 1546, 19, 774, "Output",ExpressionUUID->"79f6f0aa-c220-49d8-b41a-eae13342d97e"]
+Cell[40841, 1023, 1601, 22, 814, "Output",ExpressionUUID->"d7ac5eb7-b5bf-4e75-84d7-eaa633914c76"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[42479, 1050, 240, 4, 38, "Subsection",ExpressionUUID->"4d745a10-6d4f-4bc9-9d40-ff4425c12a14"],
+Cell[CellGroupData[{
+Cell[42744, 1058, 3638, 85, 52, "TestUI",ExpressionUUID->"70b66851-c8bd-42d4-8140-7033103654b6",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[46385, 1145, 1534, 32, 108, "Code",ExpressionUUID->"a44e579c-3c64-4640-a531-ff95080ed941",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->67304027]
+}, Open  ]],
+Cell[47934, 1180, 2715, 54, 95, "Output",ExpressionUUID->"6b420d4b-91fb-4173-ae92-613e1df38af3"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[41896, 1040, 154, 3, 67, "Section",ExpressionUUID->"1fa5c936-c47c-4526-b41f-195e979fe365"],
+Cell[50698, 1240, 154, 3, 67, "Section",ExpressionUUID->"1fa5c936-c47c-4526-b41f-195e979fe365"],
 Cell[CellGroupData[{
-Cell[42075, 1047, 159, 3, 53, "Subsection",ExpressionUUID->"1e96bc66-6761-42c2-9304-4f9b9d0af710"],
-Cell[42237, 1052, 926, 22, 125, "Code",ExpressionUUID->"573a2bec-f8b8-437a-b629-c78630219379",
+Cell[50877, 1247, 159, 3, 54, "Subsection",ExpressionUUID->"1e96bc66-6761-42c2-9304-4f9b9d0af710"],
+Cell[51039, 1252, 926, 22, 126, "Code",ExpressionUUID->"573a2bec-f8b8-437a-b629-c78630219379",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->85172780],
-Cell[43166, 1076, 54249, 1005, 325, "Output",ExpressionUUID->"c0e636bb-3f8c-4dca-8d50-7e8a678d8fd2"]
+Cell[51968, 1276, 54297, 1005, 323, "Output",ExpressionUUID->"c0e636bb-3f8c-4dca-8d50-7e8a678d8fd2"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[97452, 2086, 153, 3, 37, "Subsection",ExpressionUUID->"e306c565-bd03-40e7-8d2b-ab8bed044c90"],
+Cell[106302, 2286, 153, 3, 38, "Subsection",ExpressionUUID->"e306c565-bd03-40e7-8d2b-ab8bed044c90"],
 Cell[CellGroupData[{
-Cell[97630, 2093, 329, 7, 28, "Input",ExpressionUUID->"9ecba804-e82d-4284-bb9b-d4816170af4e"],
-Cell[97962, 2102, 38326, 600, 742, "Output",ExpressionUUID->"25901723-4d69-4c27-b129-5f329df6eeff"]
+Cell[106480, 2293, 329, 7, 28, "Input",ExpressionUUID->"9ecba804-e82d-4284-bb9b-d4816170af4e"],
+Cell[106812, 2302, 38326, 600, 742, "Output",ExpressionUUID->"25901723-4d69-4c27-b129-5f329df6eeff"]
 }, Open  ]],
-Cell[136303, 2705, 1111, 24, 125, "Code",ExpressionUUID->"68a0a59c-4264-4021-a43a-defb06b73f5b",
+Cell[145153, 2905, 1111, 24, 125, "Code",ExpressionUUID->"68a0a59c-4264-4021-a43a-defb06b73f5b",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->207392509],
-Cell[137417, 2731, 54793, 1011, 325, "Output",ExpressionUUID->"15bd759d-9f30-4cdd-afe3-4cb248b32a32"],
-Cell[192213, 3744, 878, 18, 71, "Code",ExpressionUUID->"f9eb0708-94e3-4528-bffc-35a5ae42ce56",
+Cell[146267, 2931, 54793, 1011, 325, "Output",ExpressionUUID->"15bd759d-9f30-4cdd-afe3-4cb248b32a32"],
+Cell[201063, 3944, 878, 18, 71, "Code",ExpressionUUID->"f9eb0708-94e3-4528-bffc-35a5ae42ce56",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->51734470],
-Cell[193094, 3764, 14872, 345, 545, "Output",ExpressionUUID->"57066c77-61d5-4f04-947a-2ffa8950e9d5"]
+Cell[201944, 3964, 14872, 345, 545, "Output",ExpressionUUID->"57066c77-61d5-4f04-947a-2ffa8950e9d5"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]
