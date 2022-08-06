@@ -1630,16 +1630,40 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene] :=
     ]
 
 ARCFindObjectMapping[input_Association, output_Association] :=
-    Module[{outputObjects, inputObjects, mapping},
+    Module[{outputObjects, inputObjects, inputObjectsHandled, mapping, res},
         
         outputObjects = output["Objects"];
         inputObjects = input["Objects"];
+        inputObjectsHandled = {};
         
         mapping = <|
             Function[{object},
                 (* Map this input object to an output object. *)
-                ReturnIfFailure@
-                ARCFindObjectMapping[object, outputObjects, inputObjects]
+                If [MemberQ[inputObjectsHandled, object],
+                    (* This object was already handled, so skip it. *)
+                    Nothing
+                    ,
+                    Replace[
+                        res =
+                            ReturnIfFailure@
+                            ARCFindObjectMapping[object, outputObjects, inputObjects],
+                        {
+                            HoldPattern[Rule][inputObject_, _] :> (
+                                (* This call returned a single mapping from our input object. *)
+                                AppendTo[inputObjectsHandled, inputObject];
+                                res
+                            ),
+                            {Repeated[HoldPattern[Rule][_, _]]} :> (
+                                (* The call returned a list of multiple mappings from
+                                   different input objects to various output objects,
+                                   so take care to record which inputs have been
+                                   handled so that we don't process them again. *)
+                                inputObjectsHandled = Join[inputObjectsHandled, res[[All, 1]]];
+                                Sequence @@ res
+                            )
+                        }
+                    ]
+                ]
             ] /@ inputObjects
         |>;
         
@@ -1659,7 +1683,8 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
         {
             matchingComponent,
             mappedToObject,
-            possibleMatches
+            possibleMatches,
+            inputsObjectsOfType
         },
         
         (* Look for an exact match. *)
@@ -1749,14 +1774,54 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
             objectsToMapTo,
             #["Image"] == object["Image"] &
         ];
-        If [MatchQ[possibleMatches, {_}],
-            mappedToObject = possibleMatches[[1]];
-            mappedToObject["Transform"] = <|
-                "Type" -> "Move",
-                "Position" -> ToXY @ mappedToObject["Position"],
-                "Offset" -> ToXY[mappedToObject["Position"] - object["Position"]]
-            |>;
-            Return[object -> mappedToObject, Module]
+        Which[
+            MatchQ[possibleMatches, {_}],
+                (* There's a single object in the output with this color + shape, so we'll treat
+                   this as a moved object. *)
+                mappedToObject = possibleMatches[[1]];
+                mappedToObject["Transform"] = <|
+                    "Type" -> "Move",
+                    "Position" -> ToXY @ mappedToObject["Position"],
+                    "Offset" -> ToXY[mappedToObject["Position"] - object["Position"]]
+                |>;
+                Return[object -> mappedToObject, Module],
+            MatchQ[possibleMatches, {_, __}],
+                (* There are multiple objects in the output with this color + shape, so it's
+                   ambiguous which of them corresponds with this object. *)
+                inputsObjectsOfType = Select[
+                    inputObjects,
+                    #["Image"] == object["Image"] &
+                ];
+                If [Length[possibleMatches] === Length[inputsObjectsOfType],
+                    (* The number of objects in the output of this color + shape match the
+                       number of objects of this color + shape in the input, so we should
+                       consider whether a transform has been applied to all of them. *)
+                    topLeftOfOutputs = Sort[possibleMatches[[All, "Position"]]][[1]];
+                    topLeftOfInputs = Sort[inputsObjectsOfType[[All, "Position"]]][[1]];
+                    offset = topLeftOfOutputs - topLeftOfInputs;
+                    If [SameQ[
+                            Sort[inputsObjectsOfType[[All, "Position"]] + Table[offset, {Length[inputsObjectsOfType]}]],
+                            Sort[possibleMatches[[All, "Position"]]]
+                        ],
+                        Return[
+                            Function[{inputObject},
+                                mappedToObject =
+                                    SelectFirst[
+                                        possibleMatches,
+                                        #["Position"] === inputObject["Position"] + offset &
+                                    ];
+                                mappedToObject["Transform"] = <|
+                                    "Type" -> "Move",
+                                    "Position" -> ToXY @ mappedToObject["Position"],
+                                    "Offset" -> ToXY[offset]
+                                |>;
+                                object -> mappedToObject
+                            ] /@ inputsObjectsOfType,
+                            Module
+                        ]
+                    ]
+                ];
+                Null
         ];
         
         (* Check if the object was replaced. *)
