@@ -192,6 +192,8 @@ ARCEvaluationFiles::usage = "ARCEvaluationFiles  "
 
 ARCMyTrainingFiles::usage = "ARCMyTrainingFiles  "
 
+$MyTrainingDirectory::usage = "$MyTrainingDirectory  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -244,7 +246,7 @@ DownValues[DevTools`TestingTools`Private`getFunctionUsesFromNotebookHelper] =
 $corpusGitDirectory = FileNameJoin[{FileNameDrop[FindFile["ERP`"], -7], "ARC"}];
 $trainingDirectory = FileNameJoin[{$corpusGitDirectory, "data", "training"}];
 $arcDirectory = FileNameDrop[FindFile["Daniel`ARC`"], -1];
-$myTrainingDirectory = FileNameJoin[{$arcDirectory, "Data", "MyTrainingData"}];
+$MyTrainingDirectory = FileNameJoin[{$arcDirectory, "Data", "MyTrainingData"}];
 $evaluationDirectory = FileNameJoin[{$corpusGitDirectory, "data", "evaluation"}];
 
 $integerToColor = <|
@@ -439,7 +441,7 @@ ARCTrainingFiles[] :=
 *)
 Clear[ARCMyTrainingFiles];
 ARCMyTrainingFiles[] :=
-    FileNames["*.json", $myTrainingDirectory]
+    FileNames["*.json", $MyTrainingDirectory]
 
 (*!
     \function ARCEvaluationFiles
@@ -533,9 +535,9 @@ Options[ARCParseScene] =
     "SingleColorObjects" -> Automatic               (*< If the single color objects have already been determined, they can be passed in to save time. *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
-    Module[{background, backgroundInteger, objects},
+    Module[{background, objects},
         
-        background = 0;
+        background = ARCInferBackgroundColor[scene];
         
         objects =
             ReturnIfFailure@
@@ -607,7 +609,7 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
                         ReturnIfFailure@
                         ARCContiguousImageRegions[
                             (* Make all non-background pixels white. *)
-                            ARCToMonochrome[scene],
+                            ARCToMonochrome[scene, backgroundColor],
                             "Background" -> backgroundColor
                         ]
                     ];
@@ -1331,21 +1333,40 @@ ARCClassifyLine[image_List] :=
     
     TODO: Not yet implemented
     
+    Example:
+    
+    (ARCInferBackgroundColor[ARCParseFile[#1]] & ) /@ $examples === $examples
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferBackgroundColor]
+    
     \maintainer danielb
 *)
 Clear[ARCInferBackgroundColor];
 ARCInferBackgroundColor[example_] :=
-    Module[{scenes},
+    Module[{scenes, colorCounts, stats},
         
-        scenes = Cases[example, _ARCScene, Infinity][[All, 1]];
+        scenes = Cases[example, _ARCScene, {0, Infinity}][[All, 1]];
         
         colorCounts = Reverse[Sort[Counts[Flatten[scenes]]]];
         
-        (* Experimentation *)
-        <|
+        stats = <|
             "Ratio" -> Round[Normal[colorCounts][[1, 2]] / Normal[colorCounts][[2, 2]], 0.01],
             "Counts" -> colorCounts
-        |>
+        |>;
+        
+        (* It's not clear to me how this should be done, so for now we'll use some heuristics.
+           We want to be cautious about choosing a non-black background, since the vast
+           majority of scenes will use black as the background color, so the cost of non-black
+           false positives will be high, and quickly diminish or eliminate the benefit of having
+           a background color detector. *)
+        Which[
+            stats["Ratio"] >= 10,
+                Normal[colorCounts][[1, 1]],
+            True,
+                0
+        ]
     ]
 
 (*!
@@ -1872,13 +1893,16 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                             MatchQ[value["Colors"], {_}],
                             conclusion["Input", "Colors"] === value["Colors"]
                         ],
-                            conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"]]];
+                            (* TODO: Should the calls here and below to ARCToMonochrome always pass
+                                     black (0) as the background color, or should they be passing
+                                     the scene's background color? *)
+                            conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], 0]];
                             conclusion = KeyDrop[conclusion, "Image"],
                         And[
                             MatchQ[conclusion["Input", "Colors"], {_}],
                             MatchQ[value["Colors"], {_}],
                             conclusion["Input", "Colors"] =!= value["Colors"],
-                            ARCToMonochrome[conclusion["Image"]] === ARCToMonochrome[value["Image"]]
+                            ARCToMonochrome[conclusion["Image"], 0] === ARCToMonochrome[value["Image"], 0]
                         ],
                             (* The shape is staying the same and the color is changing, so drop
                                the "Image" key. *)
@@ -4122,11 +4146,11 @@ ObjectWithinQ[object1_Association, object2_Association] :=
     \function ARCToMonochrome
     
     \calltable
-        ARCToMonochrome[image] '' Given an image, makes it black and white.
+        ARCToMonochrome[image, backgroundColor] '' Given an image, makes it black and white.
     
     Examples:
     
-    ARCToMonochrome[ARCScene[{{2, 0}, {0, 2}}]] === ARCScene[{{10, 0}, {0, 10}}]
+    ARCToMonochrome[ARCScene[{{2, 0}, {0, 2}}], 0] === ARCScene[{{10, 0}, {0, 10}}]
     
     Unit tests:
     
@@ -4135,11 +4159,11 @@ ObjectWithinQ[object1_Association, object2_Association] :=
     \maintainer danielb
 *)
 Clear[ARCToMonochrome];
-ARCToMonochrome[image_] :=
-    Replace[image, Except[0, _Integer] :> 10, {3}]
+ARCToMonochrome[image_, backgroundColor_Integer] :=
+    Replace[image, Except[backgroundColor, _Integer] :> 10, {3}]
 
-ARCToMonochrome[ARCScene[image_]]
-    ARCScene[ARCToMonochrome[image]]
+ARCToMonochrome[ARCScene[image_], backgroundColor_Integer]
+    ARCScene[ARCToMonochrome[image], backgroundColor]
 
 (*!
     \function ARCColorize
@@ -4161,7 +4185,7 @@ ARCColorize[image_, color_] :=
     Replace[image, Except[0, _Integer] :> color, {3}]
 
 ARCColorize[ARCScene[image_, color_]]
-    ARCScene[ARCToMonochrome[image, color]]
+    ARCScene[ARCToMonochrome[image, 0], color]
 
 (*!
     \function SetTrainingDataKeyValue

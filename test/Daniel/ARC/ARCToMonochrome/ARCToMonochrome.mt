@@ -11,7 +11,9 @@
 *)
 
 Test[
-    Daniel`ARC`ARCToMonochrome[Daniel`ARC`ARCScene[{{2, 0}, {0, 2}}]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCToMonochrome[Daniel`ARC`ARCScene[{{2, 0}, {0, 2}}], 0]
+    ]
     ,
     Daniel`ARC`ARCScene[{{10, 0}, {0, 10}}]
     ,
