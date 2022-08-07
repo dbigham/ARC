@@ -196,6 +196,10 @@ $MyTrainingDirectory::usage = "$MyTrainingDirectory  "
 
 ARCConditionsGeneralityScore::usage = "ARCConditionsGeneralityScore  "
 
+ARCAddComponentsTransform::usage = "ARCAddComponentsTransform  "
+
+ARCObjectImageFromComponents::usage = "ARCObjectImageFromComponents  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1748,16 +1752,11 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
         
         If [!MissingQ[mappedToObject],
             (* We've found a composite object with a component that matches the object.
-               We will thus express its location relative to the object. *)
-            mappedToObject["Position"] =
-                <|
-                    "RelativePosition" ->
-                        mappedToObject["Position"] - object["Position"]
-                |>;
+               We add an AddComponents transform key. *)
             Return[
                 Rule[
                     Append[object, "OutputComponentUUID" -> matchingComponent["UUID"]],
-                    mappedToObject
+                    ARCAddComponentsTransform[object, mappedToObject, matchingComponent]
                 ],
                 Module
             ]
@@ -2303,7 +2302,11 @@ ARCFindRules[examplesIn_List] :=
             Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
         ];
         
-        ruleFindings
+        Reverse@
+        SortBy[
+            ruleFindings,
+            Length[#["MappedInputObjects"]] &
+        ]
     ]
 
 ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_Association, examples_List] :=
@@ -2358,38 +2361,35 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                 |>
             ];
         
+        If [!TrueQ[mutuallyExclusiveRules],
+            unhandled = DeleteDuplicates[preRules[[All, 2]]];
+        ];
+        
         (*ARCEcho[groupedByPattern];*)
         (*ARCEcho[SimplifyObjects[groupedByPattern]];*)
         
         (* Merge all instances of the same rule, forming "Examples" and "UseCount" properties. *)
         groupedByPattern = Function[{rhs},
             
-            {conclusion, theseUnhandled} =
+            {conclusion, unhandled} =
                 ReturnIfFailure@
-                ARCFindRules[rhs, referenceableInputObjects, examples, unhandled];
-            
-            (* Adding this Aug 6 2022 while working on "Shapes" support for 0uduqqj6f whereby
-               the different rhs's aren't mutually exclusive in terms of which input objects
-               they can match (and not match), whereby the 'unhandled' that gets returned
-               is relative rather than absolute, so we need to take the intersection to get the
-               absolute list of so-far unhandled objects. *)
-            If [!TrueQ[mutuallyExclusiveRules],
-                unhandled = Intersection[unhandled, theseUnhandled]
-                ,
-                unhandled = theseUnhandled
-            ];
+                ARCFindRules[
+                    rhs,
+                    referenceableInputObjects,
+                    examples,
+                    unhandled,
+                    mutuallyExclusiveRules
+                ];
             
             conclusion
             
         ] /@ groupedByPattern;
         
-        unhandled = Flatten[unhandled];
-        
         (*ARCEcho[SimplifyObjects[unhandled]];*)
         
         rules = Normal[DeleteMissing[groupedByPattern]];
         
-        If [Length[unhandled] > 0,
+        If [Length[unhandled] > 0 && property =!= None,
             (* We have mappings/conclusions that we weren't able to create rules for using
                explicit property values, so now we can look into trying property patterns
                of the form Except[_]. *)
@@ -2407,7 +2407,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                         rules[[All, 1, property]],
                         {
                             {singleValue_} :> singleValue,
-                            {multipleValues_} :> Alternatives @@ multipleValues,
+                            {multipleValues:Repeated[_, {2, Infinity}]} :> Alternatives[multipleValues],
                             (* No values. *)
                             {} :> Return[{}, Module]
                         }
@@ -2419,7 +2419,13 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             
             {conclusion, unhandled} =
                 ReturnIfFailure@
-                ARCFindRules[unhandled, referenceableInputObjects, examples, unhandled];
+                ARCFindRules[
+                    unhandled,
+                    referenceableInputObjects,
+                    examples,
+                    unhandled,
+                    mutuallyExclusiveRules
+                ];
             
             If [!MissingQ[conclusion],
                 rules = AppendTo[
@@ -2477,7 +2483,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
 
 (* `conclusionGroup` is a group of conclusion RHSs that might share the fact that the
    corresponding input objects had the same value for some property, etc. *)
-ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, examples_List, unhandledIn_List] :=
+ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, examples_List, unhandledIn_List, mutuallyExclusiveRules: True | False] :=
     Module[
         {
             unhandled = unhandledIn,
@@ -2547,18 +2553,33 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
                             examples. Should we instead _first_ check the number of examples,
                             and only if it's sufficient call ARCGeneralizeConclusions? *)
             If [conclusion["ExampleCount"] < 2,
-                unhandled =
-                    DeleteDuplicates@
-                    Join[
-                        unhandled,
-                        conclusionGroup
-                    ];
                 conclusion = Missing["NotFound", "InsufficientRuleSupport"]
             ]
             ,
             (* This pattern has multiple conflicting conclusions that we weren't able to
                generalize, so we'll drop this rule. *)
-            Missing["NotFound"]
+            conclusion = Missing["NotFound"]
+        ];
+        
+        If [MissingQ[conclusion],
+            (* A workable rule wasn't found. *)
+            If [TrueQ[mutuallyExclusiveRules],
+                (* In this mode, `uhandled` starts out empty, and each time we find that
+                   a rule can't handle its RHSs, we accumulate those RHSs in `unhandled`. *)
+                unhandled =
+                    DeleteDuplicates@
+                    Join[
+                        unhandled,
+                        conclusionGroup
+                    ]
+            ]
+            ,
+            (* A workable rule was found. *)
+            If [!TrueQ[mutuallyExclusiveRules],
+                (* In this mode, `uhandled` starts out containing all RHS, and each time we find
+                   a rule, we remove any RHSs that that rule can handle. *)
+                unhandled = Complement[unhandled, conclusionGroup]
+            ]
         ];
         
         {conclusion, unhandled}
@@ -2851,6 +2872,15 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Bl
                 )
             }
         ]
+    ]
+
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "AddComponents"}], objectIn_Association, objectOut_Association, scene_Association] :=
+    Module[{finalObject = objectIn},
+        finalObject["Components"] = Join[
+            Lookup[objectIn, "Components", {KeyTake[objectIn, {"Image", "Position"}]}],
+            value["Components"]
+        ];
+        ARCObjectImageFromComponents[finalObject]
     ]
 
 ARCApplyConclusion[key:"Transform", transform_, objectIn_Association, objectOut_Association, scene_Association] :=
@@ -3567,6 +3597,15 @@ $transformTypes = <|
                 "BlockedBy" -> <||>
             }
         }
+    |>,
+    "AddComponents" -> <|
+        "MinimumPropertySets" -> {
+            {
+                "Components" -> <|
+                    "ObjectGet" -> Function[#["Components"]]
+                |>
+            }
+        }
     |>
 |>;
 Clear[ARCGeneralizeConclusions];
@@ -3595,7 +3634,9 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 "$transformTypes doesn't specify details for the transform type " <> transformType <> "."
             ];
             workableTransforms = Function[{propertySet},
-                rule = Module[{},
+                rule =
+                ReturnIfFailure@
+                Module[{},
                     rule = <||>;
                     Function[{propertyNameAndAttributes},
                         property =
@@ -3626,7 +3667,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                         referenceableInputObjects,
                                         examples
                                     ],
-                                    Nothing :> Return[Missing["NotFound"], Module]
+                                    Nothing | _Missing :> Return[Missing["NotFound"], Module]
                                 ]
                             ]
                         ]
@@ -3636,7 +3677,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 If [!MissingQ[rule],
                     <|
                         "Transform" -> <|
-                            "Type" -> "Move",
+                            "Type" -> transformType,
                             rule
                         |>
                     |>
@@ -5543,6 +5584,117 @@ ARCConditionsGeneralityScore["Shape", _] := 1
 
 ARCConditionsGeneralityScore[Rule[property_, value_]] :=
     1
+
+(*!
+    \function ARCAddComponentsTransform
+    
+    \calltable
+        ARCAddComponentsTransform[inputObject, outputObject, outputComponent] '' Given an input object and the output object it maps to, as well as the output component it corresponds with, produces an output object with an AddComponents transform.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCAddComponentsTransform]
+    
+    \maintainer danielb
+*)
+Clear[ARCAddComponentsTransform];
+ARCAddComponentsTransform[inputObject_Association, outputObject_Association, outputComponent_Association] :=
+    Module[{newComponents},
+        
+        newComponents = DeleteCases[outputObject["Components"], outputComponent];
+        
+        Append[
+            outputObject,
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> Function[{component},
+                    Sett[
+                        component,
+                        "Position" -> <|
+                            "RelativePosition" -> component["Position"] - inputObject["Position"]
+                        |>
+                    ]
+                ] /@ KeyTake[newComponents, {"Image", "Position"}]
+            |>
+        ]
+    ]
+
+(*!
+    \function ARCObjectImageFromComponents
+    
+    \calltable
+        ARCObjectImageFromComponents[object] '' Given a composite object, infers what it's Image should be given its components. Also updates Position as necessary.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectImageFromComponents]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectImageFromComponents];
+ARCObjectImageFromComponents[object_Association] :=
+    Module[{components, minY, minX, maxY2 = 0, maxX2 = 0},
+        
+        (* Make all component positions relative. *)
+        components = Function[{component},
+            Sett[
+                component,
+                "Position" -> Replace[
+                    component["Position"],
+                    {
+                        KeyValuePattern["RelativePosition" -> _] :> component["Position", "RelativePosition"],
+                        {y_, x_} :> {y - object["Y"], x - object["X"]}
+                    }
+                ]
+            ]
+        ] /@ object["Components"];
+        
+        minY = Min[components[[All, "Position", 1]]];
+        minX = Min[components[[All, "Position", 2]]];
+        
+        (* The translation that needs to be applied to each of the components to update their
+           Position property values to be relative to {1, 1}. *)
+        translation = {1, 1} - {minY, minX};
+        
+        (* Compute maxY2 and maxX2, and update component positions to be relative to {1, 1}. *)
+        components = Function[{component},
+            maxY2 = Max[
+                maxY2,
+                component[["Position", 1]] + ImageHeight[component["Image"][[1]]] - 1
+            ];
+            maxX2 = Max[
+                maxX2,
+                component[["Position", 2]] + ImageWidth[component["Image"][[1]]] - 1
+            ];
+            Sett[
+                component,
+                "Position" -> component["Position"] + translation
+            ]
+        ] /@ components;
+        
+        width = maxX2 - minX + 1;
+        height = maxY2 - minY + 1;
+        
+        <|
+            "Image" -> ARCRenderScene[
+                <|
+                    "Background" -> $nonImageColor,
+                    "Height" -> height,
+                    "Width" -> width,
+                    "Objects" -> components
+                |>
+            ],
+            "Position" -> object["Position"] + {minY, minX}
+        |>
+    ]
 
 End[]
 

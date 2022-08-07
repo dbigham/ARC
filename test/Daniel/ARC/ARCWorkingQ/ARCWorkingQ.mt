@@ -145,3 +145,19 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220806-MGEZ75"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["2wfys5w64"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220807-3VAL6B"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["84f2aca1"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220807-FWSGSE"
+]
