@@ -13,20 +13,22 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput["Key" -> "TestIndex"][
-                DevTools`ERP`NormalizeOutput["Key" -> "AbsoluteTimeUsed"][
-                    DevTools`ERP`NormalizeOutput["Key" -> "CPUTimeUsed"][
-                        DevTools`ERP`NormalizeOutput["Key" -> "MemoryUsed"][
-                            With[
-                                {
-                                    examples = Daniel`ARC`ARCParseFile[file = "0ca9ddb6"][
-                                        "Train"
-                                    ]
-                                },
-                                Daniel`ARC`ARCTestRules[
-                                    examples[[1]],
-                                    Utility`ReturnIfFailure[
-                                        Daniel`ARC`ARCFindRules[examples]
+            Utility`BlockUUID[
+                DevTools`ERP`NormalizeOutput["Key" -> "TestIndex"][
+                    DevTools`ERP`NormalizeOutput["Key" -> "AbsoluteTimeUsed"][
+                        DevTools`ERP`NormalizeOutput["Key" -> "CPUTimeUsed"][
+                            DevTools`ERP`NormalizeOutput["Key" -> "MemoryUsed"][
+                                With[
+                                    {
+                                        examples = Daniel`ARC`ARCParseFile[file = "0ca9ddb6"][
+                                            "Train"
+                                        ]
+                                    },
+                                    Daniel`ARC`ARCTestRules[
+                                        examples[[1]],
+                                        Utility`ReturnIfFailure[
+                                            Daniel`ARC`ARCFindRules[examples]
+                                        ]
                                     ]
                                 ]
                             ]
@@ -75,15 +77,45 @@ Test[
                     |>["Input"],
                     {
                         <|"Colors" -> {2}|> -> <|
-                            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
-                            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+                            "Image" -> Daniel`ARC`ARCScene[
+                                {{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}
+                            ],
+                            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+                            "Examples" -> {1, 2, 3},
+                            "ExampleCount" -> 3,
+                            "UseCount" -> 4,
+                            "InputObjects" -> {
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e5",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e6",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742gc"
+                            }
                         |>,
                         <|"Colors" -> {1}|> -> <|
-                            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
-                            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+                            "Image" -> Daniel`ARC`ARCScene[
+                                {{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}
+                            ],
+                            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+                            "Examples" -> {1, 2, 3},
+                            "ExampleCount" -> 3,
+                            "UseCount" -> 4,
+                            "InputObjects" -> {
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e4",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742gb"
+                            }
                         |>,
-                        <|"Colors" -> {8}|> -> <|"Same" -> True|>,
-                        <|"Colors" -> {6}|> -> <|"Same" -> True|>
+                        <|"Colors" -> Except[{{2}, {1}}]|> -> <|
+                            "Same" -> True,
+                            "Examples" -> {2, 3},
+                            "ExampleCount" -> 2,
+                            "UseCount" -> 2,
+                            "InputObjects" -> {
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e7",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742gd"
+                            }
+                        |>
                     }
                 ]
             ],

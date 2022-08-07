@@ -22,7 +22,7 @@ Test[
     {
         <|
             "Input" -> <|
-                "Background" -> "Black",
+                "Background" -> 0,
                 "Width" -> 9,
                 "Height" -> 9,
                 "Objects" -> {
@@ -37,12 +37,37 @@ Test[
                             <|"Name" -> "Rectangle"|>
                         },
                         "Colors" -> {2},
+                        "Position" -> {4, 3},
+                        "Y" -> 4,
+                        "X" -> 3,
+                        "Y2" -> 4,
+                        "X2" -> 3,
                         "Width" -> 1,
                         "Height" -> 1,
-                        "Position" -> {4, 3},
+                        "Length" -> 1,
+                        "PrimarySizeDimension" -> "None",
                         "AspectRatio" -> 1,
                         "Area" -> 1,
-                        "FilledArea" -> 1
+                        "FilledArea" -> 1,
+                        "FilledProportion" -> 1.,
+                        "WidthRank" -> 1,
+                        "WidthInverseRank" -> 1,
+                        "HeightRank" -> 1,
+                        "HeightInverseRank" -> 1,
+                        "LengthRank" -> 1,
+                        "LengthInverseRank" -> 1,
+                        "YRank" -> 2,
+                        "YInverseRank" -> 1,
+                        "XRank" -> 2,
+                        "XInverseRank" -> 1,
+                        "Y2Rank" -> 2,
+                        "Y2InverseRank" -> 1,
+                        "X2Rank" -> 2,
+                        "X2InverseRank" -> 1,
+                        "PrimarySizeDimensionRank" -> 1,
+                        "PrimarySizeDimensionInverseRank" -> 1,
+                        "AspectRatioRank" -> 1,
+                        "AspectRatioInverseRank" -> 1
                     |>,
                     <|
                         "UUID" -> 0,
@@ -55,12 +80,37 @@ Test[
                             <|"Name" -> "Rectangle"|>
                         },
                         "Colors" -> {1},
+                        "Position" -> {7, 7},
+                        "Y" -> 7,
+                        "X" -> 7,
+                        "Y2" -> 7,
+                        "X2" -> 7,
                         "Width" -> 1,
                         "Height" -> 1,
-                        "Position" -> {7, 7},
+                        "Length" -> 1,
+                        "PrimarySizeDimension" -> "None",
                         "AspectRatio" -> 1,
                         "Area" -> 1,
-                        "FilledArea" -> 1
+                        "FilledArea" -> 1,
+                        "FilledProportion" -> 1.,
+                        "WidthRank" -> 1,
+                        "WidthInverseRank" -> 1,
+                        "HeightRank" -> 1,
+                        "HeightInverseRank" -> 1,
+                        "LengthRank" -> 1,
+                        "LengthInverseRank" -> 1,
+                        "YRank" -> 1,
+                        "YInverseRank" -> 2,
+                        "XRank" -> 1,
+                        "XInverseRank" -> 2,
+                        "Y2Rank" -> 1,
+                        "Y2InverseRank" -> 2,
+                        "X2Rank" -> 1,
+                        "X2InverseRank" -> 2,
+                        "PrimarySizeDimensionRank" -> 1,
+                        "PrimarySizeDimensionInverseRank" -> 1,
+                        "AspectRatioRank" -> 1,
+                        "AspectRatioInverseRank" -> 1
                     |>
                 },
                 "Scene" -> Daniel`ARC`ARCScene[
@@ -78,28 +128,35 @@ Test[
                 ]
             |>,
             "Output" -> <|
-                "Background" -> "Black",
+                "Background" -> 0,
                 "Width" -> 9,
                 "Height" -> 9,
                 "Objects" -> {
                     <|
                         "UUID" -> 0,
-                        "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
                         "PixelPositions" -> {{3, 2}, {3, 4}, {4, 3}, {5, 2}, {5, 4}},
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}
+                                    {{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}
                                 ]
                             |>
                         },
-                        "Colors" -> {4, 2},
+                        "Colors" -> {2, 4},
+                        "Position" -> {3, 2},
+                        "Y" -> 3,
+                        "X" -> 2,
+                        "Y2" -> 5,
+                        "X2" -> 4,
                         "Width" -> 3,
                         "Height" -> 3,
-                        "Position" -> {3, 2},
+                        "Length" -> 3,
+                        "PrimarySizeDimension" -> "None",
                         "AspectRatio" -> 1,
                         "Area" -> 9,
                         "FilledArea" -> 5,
+                        "FilledProportion" -> 0.5555555555555556,
                         "Components" -> {
                             <|
                                 "UUID" -> 0,
@@ -112,12 +169,19 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {4},
+                                "Position" -> {3, 2},
+                                "Y" -> 3,
+                                "X" -> 2,
+                                "Y2" -> 3,
+                                "X2" -> 2,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {3, 2},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -130,12 +194,19 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {4},
+                                "Position" -> {3, 4},
+                                "Y" -> 3,
+                                "X" -> 4,
+                                "Y2" -> 3,
+                                "X2" -> 4,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {3, 4},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -148,12 +219,19 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {2},
+                                "Position" -> {4, 3},
+                                "Y" -> 4,
+                                "X" -> 3,
+                                "Y2" -> 4,
+                                "X2" -> 3,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {4, 3},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -166,12 +244,19 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {4},
+                                "Position" -> {5, 2},
+                                "Y" -> 5,
+                                "X" -> 2,
+                                "Y2" -> 5,
+                                "X2" -> 2,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {5, 2},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -184,54 +269,93 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {4},
+                                "Position" -> {5, 4},
+                                "Y" -> 5,
+                                "X" -> 4,
+                                "Y2" -> 5,
+                                "X2" -> 4,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {5, 4},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>
-                        }
+                        },
+                        "WidthRank" -> 1,
+                        "WidthInverseRank" -> 1,
+                        "HeightRank" -> 1,
+                        "HeightInverseRank" -> 1,
+                        "LengthRank" -> 1,
+                        "LengthInverseRank" -> 1,
+                        "YRank" -> 2,
+                        "YInverseRank" -> 1,
+                        "XRank" -> 2,
+                        "XInverseRank" -> 1,
+                        "Y2Rank" -> 2,
+                        "Y2InverseRank" -> 1,
+                        "X2Rank" -> 2,
+                        "X2InverseRank" -> 1,
+                        "PrimarySizeDimensionRank" -> 1,
+                        "PrimarySizeDimensionInverseRank" -> 1,
+                        "AspectRatioRank" -> 1,
+                        "AspectRatioInverseRank" -> 1
                     |>,
                     <|
                         "UUID" -> 0,
-                        "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
                         "PixelPositions" -> {{6, 7}, {7, 6}, {7, 7}, {7, 8}, {8, 7}},
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}
+                                    {{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}
                                 ]
                             |>
                         },
-                        "Colors" -> {7, 1},
+                        "Colors" -> {1, 7},
+                        "Position" -> {6, 6},
+                        "Y" -> 6,
+                        "X" -> 6,
+                        "Y2" -> 8,
+                        "X2" -> 8,
                         "Width" -> 3,
                         "Height" -> 3,
-                        "Position" -> {6, 6},
+                        "Length" -> 3,
+                        "PrimarySizeDimension" -> "None",
                         "AspectRatio" -> 1,
                         "Area" -> 9,
                         "FilledArea" -> 5,
+                        "FilledProportion" -> 0.5555555555555556,
                         "Components" -> {
                             <|
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}
+                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
                                 ],
                                 "PixelPositions" -> {{6, 7}, {7, 6}, {7, 8}, {8, 7}},
                                 "Shapes" -> {
                                     <|
                                         "Image" -> Daniel`ARC`ARCScene[
-                                            {{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}
+                                            {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
                                         ]
                                     |>
                                 },
                                 "Colors" -> {7},
+                                "Position" -> {6, 6},
+                                "Y" -> 6,
+                                "X" -> 6,
+                                "Y2" -> 8,
+                                "X2" -> 8,
                                 "Width" -> 3,
                                 "Height" -> 3,
-                                "Position" -> {6, 6},
+                                "Length" -> 3,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 9,
-                                "FilledArea" -> 4
+                                "FilledArea" -> 4,
+                                "FilledProportion" -> 0.4444444444444444
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -244,14 +368,39 @@ Test[
                                     <|"Name" -> "Rectangle"|>
                                 },
                                 "Colors" -> {1},
+                                "Position" -> {7, 7},
+                                "Y" -> 7,
+                                "X" -> 7,
+                                "Y2" -> 7,
+                                "X2" -> 7,
                                 "Width" -> 1,
                                 "Height" -> 1,
-                                "Position" -> {7, 7},
+                                "Length" -> 1,
+                                "PrimarySizeDimension" -> "None",
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
-                                "FilledArea" -> 1
+                                "FilledArea" -> 1,
+                                "FilledProportion" -> 1.
                             |>
-                        }
+                        },
+                        "WidthRank" -> 1,
+                        "WidthInverseRank" -> 1,
+                        "HeightRank" -> 1,
+                        "HeightInverseRank" -> 1,
+                        "LengthRank" -> 1,
+                        "LengthInverseRank" -> 1,
+                        "YRank" -> 1,
+                        "YInverseRank" -> 2,
+                        "XRank" -> 1,
+                        "XInverseRank" -> 2,
+                        "Y2Rank" -> 1,
+                        "Y2InverseRank" -> 2,
+                        "X2Rank" -> 1,
+                        "X2InverseRank" -> 2,
+                        "PrimarySizeDimensionRank" -> 1,
+                        "PrimarySizeDimensionInverseRank" -> 1,
+                        "AspectRatioRank" -> 1,
+                        "AspectRatioInverseRank" -> 1
                     |>
                 },
                 "Scene" -> Daniel`ARC`ARCScene[

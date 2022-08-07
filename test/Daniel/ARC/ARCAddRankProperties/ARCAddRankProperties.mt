@@ -23,7 +23,18 @@ Test[
     <|
         "Colors" -> <|"Type" -> Repeated["Color"]|>,
         "Width" -> <|"Type" -> "Integer"|>,
-        "WidthRank" -> <|"Type" -> "Integer", "Rank" -> True, "RankOf" -> "Width"|>
+        "WidthRank" -> <|
+            "Type" -> "Integer",
+            "Rank" -> True,
+            "RankOf" -> "Width",
+            "InverseRankProperty" -> "WidthInverseRank"
+        |>,
+        "WidthInverseRank" -> <|
+            "Type" -> "Integer",
+            "Rank" -> True,
+            "InverseRank" -> True,
+            "RankOf" -> "Width"
+        |>
     |>
     ,
     TestID -> "ARCAddRankProperties-20220804-XPRFEH"

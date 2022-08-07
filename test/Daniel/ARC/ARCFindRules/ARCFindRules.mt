@@ -13,30 +13,48 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train"]]
+            Utility`BlockUUID[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train"]]
+            ]
         ]
     ]
     ,
     {
         <|"Colors" -> {2}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+            "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>,
             "Examples" -> {1, 2, 3},
             "ExampleCount" -> 3,
-            "UseCount" -> 4
+            "UseCount" -> 4,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e6",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742gc"
+            }
         |>,
         <|"Colors" -> {1}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>,
             "Examples" -> {1, 2, 3},
             "ExampleCount" -> 3,
-            "UseCount" -> 4
+            "UseCount" -> 4,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742gb"
+            }
         |>,
         <|"Colors" -> Except[{{2}, {1}}]|> -> <|
             "Same" -> True,
             "Examples" -> {2, 3},
             "ExampleCount" -> 2,
-            "UseCount" -> 2
+            "UseCount" -> 2,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742gd"
+            }
         |>
     }
     ,
@@ -52,20 +70,38 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "321b1fc6"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Utility`BlockUUID[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "321b1fc6"]["Train"]]
+            ]
+        ]
+    ]
     ,
     {
         <|"Colors" -> {8}|> -> <|
             "Image" -> Daniel`ARC`ObjectValue[<|"Colors" -> Except[{8}]|>, "Image"],
             "Examples" -> {1, 2},
             "ExampleCount" -> 2,
-            "UseCount" -> 6
+            "UseCount" -> 6,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d8",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d9",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742f5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742f6",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742g7"
+            }
         |>,
         <|"Colors" -> Except[{8}]|> -> <|
             "Transform" -> <|"Type" -> "Delete"|>,
             "Examples" -> {1, 2},
             "ExampleCount" -> 2,
-            "UseCount" -> 2
+            "UseCount" -> 2,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742ek",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742ga"
+            }
         |>
     }
     ,
@@ -73,7 +109,13 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Utility`BlockUUID[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train"]]
+            ]
+        ]
+    ]
     ,
     {
         <|"Colors" -> {2}|> -> <|
@@ -83,13 +125,23 @@ Test[
             |>,
             "Examples" -> {1, 2, 3},
             "ExampleCount" -> 3,
-            "UseCount" -> 3
+            "UseCount" -> 3,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742dm",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e4"
+            }
         |>,
         <|"Colors" -> {8}|> -> <|
             "Same" -> True,
             "Examples" -> {1, 2, 3},
             "ExampleCount" -> 3,
-            "UseCount" -> 3
+            "UseCount" -> 3,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742dn",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e5"
+            }
         |>
     }
     ,
@@ -100,16 +152,44 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`ARCSimplifyRules[
-                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "08ed6ac7"]["Train"]]
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "08ed6ac7"]["Train"]
+                    ]
+                ]
             ]
         ]
     ]
     ,
     {
-        <|"YRank" -> 4|> -> <|"Colors" -> {1}|>,
-        <|"YRank" -> 3|> -> <|"Colors" -> {2}|>,
-        <|"YRank" -> 2|> -> <|"Colors" -> {3}|>,
-        <|"YRank" -> 1|> -> <|"Colors" -> {4}|>
+        <|"HeightRank" -> 1|> -> <|
+            "Colors" -> {1},
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e8"
+            }
+        |>,
+        <|"HeightRank" -> 2|> -> <|
+            "Colors" -> {2},
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e9"
+            }
+        |>,
+        <|"HeightRank" -> 3|> -> <|
+            "Colors" -> {3},
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742ea"
+            }
+        |>,
+        <|"HeightRank" -> 4|> -> <|
+            "Colors" -> {4},
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742eb"
+            }
+        |>
     }
     ,
     TestID -> "ARCFindRules-20220804-KVISKF"

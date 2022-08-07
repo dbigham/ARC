@@ -41,7 +41,10 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-            |>
+            |>,
+            <|"Name" -> "L"|>,
+            <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
+            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
         },
         "Colors" -> {2},
         "Position" -> {1, 1},

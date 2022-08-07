@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    606532,      10314]
-NotebookOptionsPosition[    599449,      10148]
-NotebookOutlinePosition[    604937,      10284]
-CellTagsIndexPosition[    604894,      10281]
+NotebookDataLength[    608242,      10340]
+NotebookOptionsPosition[    601164,      10174]
+NotebookOutlinePosition[    606647,      10310]
+CellTagsIndexPosition[    606604,      10307]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCTestRules", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[106]:=",ExpressionUUID->"1899df75-771d-40c1-96c9-07c8a56c9614"],
+  "In[459]:=",ExpressionUUID->"1899df75-771d-40c1-96c9-07c8a56c9614"],
 
 Cell[CellGroupData[{
 
@@ -1238,7 +1238,7 @@ DynamicOutputSectionVariable2022722121812763, "ImageSize" -> {Full, {0,
 DynamicOutputSectionVariable2022722121812763 = "", ImageSize -> {100, 33}]}]},
           Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21., 27.}},
+  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable2022722121812763}]], "TestUI",
@@ -1253,43 +1253,47 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{
-  RowBox[{
-   RowBox[{"NormalizeOutput", "[", 
-    RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<TestIndex\>\""}], "]"}], 
-   "@", "\n", 
+  RowBox[{"BlockUUID", "@", "\n", 
    RowBox[{
     RowBox[{"NormalizeOutput", "[", 
-     RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<AbsoluteTimeUsed\>\""}],
-      "]"}], "@", "\n", 
+     RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<TestIndex\>\""}], "]"}],
+     "@", "\n", 
     RowBox[{
      RowBox[{"NormalizeOutput", "[", 
-      RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<CPUTimeUsed\>\""}], 
-      "]"}], "@", "\n", 
+      RowBox[{
+      "\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<AbsoluteTimeUsed\>\""}], "]"}],
+      "@", "\n", 
      RowBox[{
       RowBox[{"NormalizeOutput", "[", 
-       RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<MemoryUsed\>\""}], 
+       RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<CPUTimeUsed\>\""}], 
        "]"}], "@", "\n", 
-      RowBox[{"With", "[", 
-       RowBox[{
-        RowBox[{"{", 
-         RowBox[{"examples", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"NormalizeOutput", "[", 
+        RowBox[{"\"\<Key\>\"", " ", "\[Rule]", " ", "\"\<MemoryUsed\>\""}], 
+        "]"}], "@", "\n", 
+       RowBox[{"With", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"examples", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"ARCParseFile", "[", 
+             RowBox[{"file", " ", "=", " ", "\"\<0ca9ddb6\>\""}], "]"}], "[", 
+            "\"\<Train\>\"", "]"}]}], "}"}], ",", "\n", "\t", 
+         RowBox[{"ARCTestRules", "[", "\n", "\t\t", 
           RowBox[{
-           RowBox[{"ARCParseFile", "[", 
-            RowBox[{"file", " ", "=", " ", "\"\<0ca9ddb6\>\""}], "]"}], "[", 
-           "\"\<Train\>\"", "]"}]}], "}"}], ",", "\n", "\t", 
-        RowBox[{"ARCTestRules", "[", "\n", "\t\t", 
-         RowBox[{
-          RowBox[{"examples", "[", 
-           RowBox[{"[", "1", "]"}], "]"}], ",", "\n", "\t\t", 
-          RowBox[{"ReturnIfFailure", "@", "\n", "\t\t", 
-           RowBox[{"ARCFindRules", "[", "examples", "]"}]}]}], "\n", "\t", 
-         "]"}]}], "\n", "]"}]}]}]}]}], " ", "//", " ", "Indent2"}]}], "Code",
+           RowBox[{"examples", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", "\n", "\t\t", 
+           RowBox[{"ReturnIfFailure", "@", "\n", "\t\t", 
+            RowBox[{"ARCFindRules", "[", "examples", "]"}]}]}], "\n", "\t", 
+          "]"}]}], "\n", "]"}]}]}]}]}]}], " ", "//", " ", 
+  "Indent2"}]}], "Code",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellChangeTimes->{{3.8674950723682184`*^9, 3.867495130480879*^9}, {
    3.8674952677265205`*^9, 3.8674952697846403`*^9}, 3.867495390101754*^9, {
-   3.8674954916620846`*^9, 3.867495547378844*^9}},
- CellLabel->"In[60]:=",
+   3.8674954916620846`*^9, 3.867495547378844*^9}, {3.8688189539770794`*^9, 
+   3.8688189567393093`*^9}},
+ CellLabel->"In[457]:=",
  CellID->48056425,
  "TestId" -> 
  "ARCTestRules-20220722-0KB564",ExpressionUUID->"de36e5cc-2b0a-4a4b-a0dc-\
@@ -1319,22 +1323,42 @@ ARCScene[\\n                        {\\n                            {0, 0, 0, \
 0, 0, 0, 0, 0, 0, 0, 0}\\n                        }\\n                    \
 ]\\n                |>[\\\"Input\\\"],\\n                {\\n                 \
    <|\\\"Colors\\\" -> {2}|> -> <|\\n                        \\\"Image\\\" -> \
-ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],\\n                        \
-\\\"Position\\\" -> <|\\\"RelativePosition\\\" -> {-1, -1}|>\\n               \
-     |>,\\n                    <|\\\"Colors\\\" -> {1}|> -> <|\\n             \
-           \\\"Image\\\" -> ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],\\n   \
-                     \\\"Position\\\" -> <|\\\"RelativePosition\\\" -> {-1, \
--1}|>\\n                    |>,\\n                    <|\\\"Colors\\\" -> \
-{8}|> -> <|\\\"Same\\\" -> True|>,\\n                    <|\\\"Colors\\\" -> \
-{6}|> -> <|\\\"Same\\\" -> True|>\\n                }\\n            ]\\n      \
-  ],\\n        \\\"ExpectedOutput\\\" -> HoldForm[\\n            ARCScene[\\n \
-               {\\n                    {0, 0, 0, 0, 0, 0, 0, 0, 0},\\n        \
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},\\n                    {0, 4, 0, 4, \
-0, 0, 0, 0, 0},\\n                    {0, 0, 2, 0, 0, 0, 0, 0, 0},\\n         \
-           {0, 4, 0, 4, 0, 0, 0, 0, 0},\\n                    {0, 0, 0, 0, 0, \
-0, 7, 0, 0},\\n                    {0, 0, 0, 0, 0, 7, 1, 7, 0},\\n            \
-        {0, 0, 0, 0, 0, 0, 7, 0, 0},\\n                    {0, 0, 0, 0, 0, 0, \
-0, 0, 0}\\n                }\\n            ]\\n        ],\\n        \
+ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],\\n                        \\\
+\"Position\\\" -> <|\\\"RelativePosition\\\" -> {-1, -1}|>,\\n                \
+        \\\"Examples\\\" -> {1, 2, 3},\\n                        \
+\\\"ExampleCount\\\" -> 3,\\n                        \\\"UseCount\\\" -> \
+4,\\n                        \\\"InputObjects\\\" -> {\\n                     \
+       \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742d5\\\",\\n                       \
+     \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742e5\\\",\\n                         \
+   \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742e6\\\",\\n                           \
+ \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742gc\\\"\\n                        }\\n  \
+                  |>,\\n                    <|\\\"Colors\\\" -> {1}|> -> \
+<|\\n                        \\\"Image\\\" -> ARCScene[{{-1, 7, -1}, {7, 1, \
+7}, {-1, 7, -1}}],\\n                        \\\"Position\\\" -> \
+<|\\\"RelativePosition\\\" -> {-1, -1}|>,\\n                        \
+\\\"Examples\\\" -> {1, 2, 3},\\n                        \\\"ExampleCount\\\" \
+-> 3,\\n                        \\\"UseCount\\\" -> 4,\\n                     \
+   \\\"InputObjects\\\" -> {\\n                            \
+\\\"e7a71aa3-1a87-4e68-a1ce-009fa20742d4\\\",\\n                            \
+\\\"e7a71aa3-1a87-4e68-a1ce-009fa20742e3\\\",\\n                            \
+\\\"e7a71aa3-1a87-4e68-a1ce-009fa20742e4\\\",\\n                            \
+\\\"e7a71aa3-1a87-4e68-a1ce-009fa20742gb\\\"\\n                        }\\n   \
+                 |>,\\n                    <|\\\"Colors\\\" -> Except[{{2}, \
+{1}}]|> -> <|\\n                        \\\"Same\\\" -> True,\\n              \
+          \\\"Examples\\\" -> {2, 3},\\n                        \
+\\\"ExampleCount\\\" -> 2,\\n                        \\\"UseCount\\\" -> \
+2,\\n                        \\\"InputObjects\\\" -> {\\n                     \
+       \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742e7\\\",\\n                       \
+     \\\"e7a71aa3-1a87-4e68-a1ce-009fa20742gd\\\"\\n                        }\
+\\n                    |>\\n                }\\n            ]\\n        ],\\n \
+       \\\"ExpectedOutput\\\" -> HoldForm[\\n            ARCScene[\\n         \
+       {\\n                    {0, 0, 0, 0, 0, 0, 0, 0, 0},\\n                \
+    {0, 0, 0, 0, 0, 0, 0, 0, 0},\\n                    {0, 4, 0, 4, 0, 0, 0, \
+0, 0},\\n                    {0, 0, 2, 0, 0, 0, 0, 0, 0},\\n                  \
+  {0, 4, 0, 4, 0, 0, 0, 0, 0},\\n                    {0, 0, 0, 0, 0, 0, 7, 0, \
+0},\\n                    {0, 0, 0, 0, 0, 7, 1, 7, 0},\\n                    \
+{0, 0, 0, 0, 0, 0, 7, 0, 0},\\n                    {0, 0, 0, 0, 0, 0, 0, 0, \
+0}\\n                }\\n            ]\\n        ],\\n        \
 \\\"ActualOutput\\\" -> HoldForm[\\n            ARCScene[\\n                {\
 \\n                    {0, 0, 0, 0, 0, 0, 0, 0, 0},\\n                    {0, \
 0, 0, 0, 0, 0, 0, 0, 0},\\n                    {0, 4, 0, 4, 0, 0, 0, 0, \
@@ -1350,8 +1374,10 @@ _Quantity,\\n        \\\"MemoryUsed\\\" -> _Quantity\\n    |>\\n]\"\>"], \
  CellChangeTimes->{{3.867495115725486*^9, 3.86749513183803*^9}, {
   3.8674952648621397`*^9, 3.867495272151828*^9}, {3.8674953197378635`*^9, 
   3.8674953396698136`*^9}, {3.867495387962055*^9, 3.867495392987177*^9}, {
-  3.8674954958332567`*^9, 3.8674955478670344`*^9}},
- CellLabel->"Out[61]=",ExpressionUUID->"d1b239fa-42e4-4d94-a81f-e7ed5abf4dd7"]
+  3.8674954958332567`*^9, 3.8674955478670344`*^9}, {3.868818934427137*^9, 
+  3.868818957503474*^9}},
+ CellLabel->
+  "Out[458]=",ExpressionUUID->"6253b201-79a4-4b3e-b2b3-2560642e5251"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -10268,7 +10294,7 @@ TaggingRules->{
     "GenerateNotebookArgs" -> {"Function" -> Daniel`ARC`ARCTestRules}, 
     "ReturnNotebook" -> True}},
 InputAutoReplacements->{},
-FrontEndVersion->"12.2 for Microsoft Windows (64-bit) (December 12, 2020)",
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"b82f7b94-cdba-4f2d-a6d4-a781d2f0b885"
 ]
@@ -10284,36 +10310,36 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 84, 0, 96, "Title",ExpressionUUID->"6a0c43ba-3160-42a4-a42e-a496f8321ddd"],
-Cell[667, 24, 247, 6, 53, "Code",ExpressionUUID->"1899df75-771d-40c1-96c9-07c8a56c9614",
+Cell[580, 22, 84, 0, 98, "Title",ExpressionUUID->"6a0c43ba-3160-42a4-a42e-a496f8321ddd"],
+Cell[667, 24, 247, 6, 54, "Code",ExpressionUUID->"1899df75-771d-40c1-96c9-07c8a56c9614",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[939, 34, 794, 19, 143, "Input",ExpressionUUID->"b8b95d7e-39c7-4cb4-942d-60a8b6efdaad"],
-Cell[1736, 55, 63728, 1092, 62, "Output",ExpressionUUID->"7fae5b69-69be-4727-bd01-9d6018266afd"]
+Cell[939, 34, 794, 19, 150, "Input",ExpressionUUID->"b8b95d7e-39c7-4cb4-942d-60a8b6efdaad"],
+Cell[1736, 55, 63728, 1092, 68, "Output",ExpressionUUID->"7fae5b69-69be-4727-bd01-9d6018266afd"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[65501, 1152, 219, 4, 28, "Input",ExpressionUUID->"78451a32-83ea-4603-a92c-1e260811b9cc"],
-Cell[65723, 1158, 169, 3, 32, "Output",ExpressionUUID->"51a59e28-4925-4993-bede-4f12079c9a3c"]
+Cell[65501, 1152, 219, 4, 29, "Input",ExpressionUUID->"78451a32-83ea-4603-a92c-1e260811b9cc"],
+Cell[65723, 1158, 169, 3, 33, "Output",ExpressionUUID->"51a59e28-4925-4993-bede-4f12079c9a3c"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[65929, 1166, 79, 0, 67, "Section",ExpressionUUID->"90858fd0-47aa-4f6a-b298-b85207c4b30e"],
 Cell[CellGroupData[{
-Cell[66033, 1170, 3430, 79, 50, "TestUI",ExpressionUUID->"c8422c24-5b3c-40f8-80d4-419ebabc043c",
+Cell[66033, 1170, 3450, 79, 52, "TestUI",ExpressionUUID->"c8422c24-5b3c-40f8-80d4-419ebabc043c",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[69466, 1251, 1801, 44, 233, "Code",ExpressionUUID->"de36e5cc-2b0a-4a4b-a0dc-33e2608a5847",
+Cell[69486, 1251, 1933, 48, 252, "Code",ExpressionUUID->"de36e5cc-2b0a-4a4b-a0dc-33e2608a5847",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->48056425]
 }, Open  ]],
-Cell[71282, 1298, 4264, 55, 1667, "Output",ExpressionUUID->"d1b239fa-42e4-4d94-a81f-e7ed5abf4dd7"]
+Cell[71434, 1302, 5827, 77, 2274, "Output",ExpressionUUID->"6253b201-79a4-4b3e-b2b3-2560642e5251"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[75583, 1358, 157, 3, 67, "Section",ExpressionUUID->"fcaeb5dd-5541-4b35-b1ec-3e5472e51d42"],
-Cell[75743, 1363, 1335, 28, 179, "Code",ExpressionUUID->"6da574a0-9963-497d-aaa9-5686e26aa3c0",
+Cell[77298, 1384, 157, 3, 67, "Section",ExpressionUUID->"fcaeb5dd-5541-4b35-b1ec-3e5472e51d42"],
+Cell[77458, 1389, 1335, 28, 180, "Code",ExpressionUUID->"6da574a0-9963-497d-aaa9-5686e26aa3c0",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->347294011],
-Cell[77081, 1393, 522340, 8751, 585, "Output",ExpressionUUID->"34c854a5-2534-434a-9f10-d666543da1b6"]
+Cell[78796, 1419, 522340, 8751, 633, "Output",ExpressionUUID->"34c854a5-2534-434a-9f10-d666543da1b6"]
 }, Open  ]]
 }, Open  ]]
 }

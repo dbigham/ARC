@@ -11,7 +11,9 @@
 *)
 
 Test[
-    Daniel`ARC`ARCClassifyL[{{1, 0, 0}, {1, 0, 0}, {1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyL[{{1, -1, -1}, {1, -1, -1}, {1, 1, 1}}]
+    ]
     ,
     <|"Name" -> "L"|>
     ,

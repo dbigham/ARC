@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     12428,        316]
-NotebookOptionsPosition[      6116,        163]
-NotebookOutlinePosition[     11729,        302]
-CellTagsIndexPosition[     11686,        299]
+NotebookDataLength[     12659,        320]
+NotebookOptionsPosition[      6310,        165]
+NotebookOutlinePosition[     11960,        306]
+CellTagsIndexPosition[     11917,        303]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -112,7 +112,7 @@ DynamicOutputSectionVariable20228413262194372 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21., 27.}},
+  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable20228413262194372}]], "TestUI",
@@ -143,27 +143,30 @@ Cell[BoxData[{
  InitializationCell->False,
  CellChangeTimes->{{3.868622470445511*^9, 3.8686225014083652`*^9}, {
    3.8686225884907074`*^9, 3.868622589669543*^9}, 3.8686227807794123`*^9},
- CellLabel->"In[879]:=",
+ CellLabel->"In[131]:=",
  CellID->56779368,
  "TestId" -> 
  "ARCInferRankProperties-20220804-G0RK85",ExpressionUUID->"5cd3e0bf-4dad-404f-\
 b7dc-56d39bc08982"]
 }, Open  ]],
 
-Cell[BoxData["\<\"{\\n    <|\\\"Length\\\" -> 1, \\\"LengthRank\\\" -> \
-3|>,\\n    <|\\\"Length\\\" -> 5, \\\"LengthRank\\\" -> 2|>,\\n    \
-<|\\\"Length\\\" -> 10, \\\"LengthRank\\\" -> 1|>\\n}\"\>"], "Output",
+Cell[BoxData["\<\"{\\n    <|\\\"Length\\\" -> 1, \\\"LengthRank\\\" -> 3, \
+\\\"LengthInverseRank\\\" -> 1|>,\\n    <|\\\"Length\\\" -> 5, \\\"LengthRank\
+\\\" -> 2, \\\"LengthInverseRank\\\" -> 2|>,\\n    <|\\\"Length\\\" -> 10, \\\
+\"LengthRank\\\" -> 1, \\\"LengthInverseRank\\\" -> 3|>\\n}\"\>"], "Output",
  CellChangeTimes->{{3.8686225050666013`*^9, 3.8686225297575164`*^9}, {
-  3.8686225820919123`*^9, 3.8686226146544*^9}, {3.8686227355434723`*^9, 
-  3.8686227722463393`*^9}},
+   3.8686225820919123`*^9, 3.8686226146544*^9}, {3.8686227355434723`*^9, 
+   3.8686227722463393`*^9}, 3.868803990245886*^9, 3.8688040308769703`*^9, 
+   3.8688040916844435`*^9},
  CellLabel->
-  "Out[880]=",ExpressionUUID->"b18052c2-cb47-4908-8e92-7c3bb7cdc67d"]
+  "Out[132]=",ExpressionUUID->"364accca-0127-41f0-900e-36cddebd3a68"]
 }, Open  ]]
 }, Open  ]]
 },
 Evaluator->"Local",
 WindowSize->{958, 980},
 WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+Visible->True,
 DockedCells->{
   Cell[
    BoxData[
@@ -286,7 +289,8 @@ TaggingRules->{
     "GenerateNotebookArgs" -> {
      "Function" -> Daniel`ARC`ARCInferRankProperties}, "ReturnNotebook" -> 
     True}},
-FrontEndVersion->"12.2 for Microsoft Windows (64-bit) (December 12, 2020)",
+InputAutoReplacements->{},
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"22b35d43-4b09-4b37-8992-ee425551a552"
 ]
@@ -302,20 +306,20 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 94, 0, 96, "Title",ExpressionUUID->"ad284acf-f5e5-4893-b2f4-21c77e99dcdd"],
-Cell[677, 24, 257, 6, 53, "Code",ExpressionUUID->"9eb63b82-af65-417e-b001-11cd864d074e",
+Cell[580, 22, 94, 0, 98, "Title",ExpressionUUID->"ad284acf-f5e5-4893-b2f4-21c77e99dcdd"],
+Cell[677, 24, 257, 6, 54, "Code",ExpressionUUID->"9eb63b82-af65-417e-b001-11cd864d074e",
  InitializationCell->False],
 Cell[CellGroupData[{
 Cell[959, 34, 79, 0, 67, "Section",ExpressionUUID->"9d15911f-c48a-476c-a418-16861128b5c3"],
 Cell[CellGroupData[{
-Cell[1063, 38, 3594, 85, 50, "TestUI",ExpressionUUID->"162602a3-904d-4473-90b1-c18e155a1273",
+Cell[1063, 38, 3614, 85, 52, "TestUI",ExpressionUUID->"162602a3-904d-4473-90b1-c18e155a1273",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4660, 125, 946, 24, 161, "Code",ExpressionUUID->"5cd3e0bf-4dad-404f-b7dc-56d39bc08982",
+Cell[4680, 125, 946, 24, 162, "Code",ExpressionUUID->"5cd3e0bf-4dad-404f-b7dc-56d39bc08982",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->56779368]
 }, Open  ]],
-Cell[5621, 152, 467, 7, 109, "Output",ExpressionUUID->"b18052c2-cb47-4908-8e92-7c3bb7cdc67d"]
+Cell[5641, 152, 641, 9, 114, "Output",ExpressionUUID->"364accca-0127-41f0-900e-36cddebd3a68"]
 }, Open  ]]
 }, Open  ]]
 }

@@ -11,23 +11,37 @@
 *)
 
 Test[
-    Daniel`ARC`ARCClassifyFlippedImage[
-        {{1, 1, 1, 1}, {1, 0, 0, 0}, {1, 0, 0, 0}},
-        Daniel`ARC`ARCClassifyL
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyFlippedImage[
+            {{1, 1, 1, 1}, {1, -1, -1, -1}, {1, -1, -1, -1}},
+            Daniel`ARC`ARCClassifyL
+        ]
     ]
     ,
-    {<|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>}
+    {
+        {
+            <|"Name" -> "L"|>,
+            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
+        }
+    }
     ,
     TestID -> "ARCClassifyFlippedImage-20220717-CUJQHA"
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyFlippedImage[
-        {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {1, 1, 1}},
-        Daniel`ARC`ARCClassifyL
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyFlippedImage[
+            {{-1, -1, 1}, {-1, -1, 1}, {-1, -1, 1}, {1, 1, 1}},
+            Daniel`ARC`ARCClassifyL
+        ]
     ]
     ,
-    {<|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Horizontal"|>}
+    {
+        {
+            <|"Name" -> "L"|>,
+            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Horizontal"|>
+        }
+    }
     ,
     TestID -> "ARCClassifyFlippedImage-20220717-MUUUAF"
 ]

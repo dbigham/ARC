@@ -121,3 +121,27 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220806-2SYCRU"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["rcpwrfki1"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220806-UZTGCI"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["a61f2674"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220806-RDWJM6"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["0uduqqj6f"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220806-MGEZ75"
+]

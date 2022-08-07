@@ -25,11 +25,11 @@ Test[
     ,
     <|
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {4, 3}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+            "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {7, 7}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>
     |>
@@ -89,7 +89,7 @@ Test[
     ]
     ,
     <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {4, 3}|> -> <|
-        "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+        "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
         "Position" -> <|"RelativePosition" -> {-1, -1}|>
     |>
     ,
@@ -115,19 +115,19 @@ Test[
             "Position" -> {1, 4}
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {3, 7}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+            "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {4, 3}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {7, 7}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {8, 2}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+            "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> <|"RelativePosition" -> {-1, -1}|>
         |>
     |>
@@ -272,7 +272,7 @@ Test[
     ]
     ,
     <|"Image" -> Daniel`ARC`ARCScene[{{5}}], "Position" -> {3, 4}|> -> <|
-        "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, 0, 1}, {5, 1, 5}}],
+        "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
         "Position" -> <|"RelativePosition" -> {-1, -1}|>
     |>
     ,

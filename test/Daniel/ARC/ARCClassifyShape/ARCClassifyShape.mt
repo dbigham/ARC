@@ -19,7 +19,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{0, 0}, {0, 0}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[{{-1, -1}, {-1, -1}}]
+    ]
     ,
     {}
     ,
@@ -35,7 +37,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{1, 0, 0}, {1, 0, 0}, {1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[{{1, -1, -1}, {1, -1, -1}, {1, 1, 1}}]
+    ]
     ,
     {<|"Name" -> "L"|>}
     ,
@@ -44,10 +48,11 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Daniel`ARC`ARCClassifyShape[{{1, 1, 1}, {1, 0, 0}, {1, 0, 0}}]
+        Daniel`ARC`ARCClassifyShape[{{1, 1, 1}, {1, -1, -1}, {1, -1, -1}}]
     ]
     ,
     {
+        <|"Name" -> "L"|>,
         <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
         <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
     }

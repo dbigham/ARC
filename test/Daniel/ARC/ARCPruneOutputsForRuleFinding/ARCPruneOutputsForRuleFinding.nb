@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     93447,       1967]
-NotebookOptionsPosition[     87001,       1812]
-NotebookOutlinePosition[     92740,       1953]
-CellTagsIndexPosition[     92697,       1950]
+NotebookDataLength[     98817,       2058]
+NotebookOptionsPosition[     92371,       1903]
+NotebookOutlinePosition[     98110,       2044]
+CellTagsIndexPosition[     98067,       2041]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -112,7 +112,7 @@ DynamicOutputSectionVariable202271919594617980 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
+  ImageSizeCache->{840., {21.3544921875, 26.6455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable202271919594617980}]], "TestUI",
@@ -148,7 +148,7 @@ Cell[BoxData[{
    3.867681211470805*^9, 3.867681213968161*^9}, {3.8677467021449933`*^9, 
    3.867746702283037*^9}, {3.8677467584854803`*^9, 3.867746760612744*^9}, {
    3.8687291230099454`*^9, 3.8687291405418005`*^9}},
- CellLabel->"In[152]:=",
+ CellLabel->"In[465]:=",
  CellID->64092711,
  "TestId" -> 
  "ARCPruneOutputsForRuleFinding-20220719-L90VO7",ExpressionUUID->"9f720e02-\
@@ -309,15 +309,24 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"        \\\"YRank\\\" -> 5,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 5,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 2,\"\>"},
     {"\<\"        \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YRank\\\" -> 5,\"\>"},
+    {"\<\"        \\\"YInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"XRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"XInverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"Y2Rank\\\" -> 5,\"\>"},
+    {"\<\"        \\\"Y2InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"X2Rank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2InverseRank\\\" -> 3,\"\>"},
     {"\<\"        \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"AspectRatioRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioInverseRank\\\" -> 1\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {"\<\"        \\\"Same\\\" -> True,\"\>"},
     {"\<\"        \\\"Example\\\" -> 1,\"\>"},
@@ -473,15 +482,24 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"            \\\"YRank\\\" -> 5,\"\>"},
-    {"\<\"            \\\"XRank\\\" -> 2,\"\>"},
-    {"\<\"            \\\"Y2Rank\\\" -> 5,\"\>"},
-    {"\<\"            \\\"X2Rank\\\" -> 2,\"\>"},
     {"\<\"            \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YRank\\\" -> 5,\"\>"},
+    {"\<\"            \\\"YInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"XRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"XInverseRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"Y2Rank\\\" -> 5,\"\>"},
+    {"\<\"            \\\"Y2InverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"X2Rank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"X2InverseRank\\\" -> 3,\"\>"},
     {"\<\"            \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
-    {"\<\"            \\\"AspectRatioRank\\\" -> 1\"\>"},
+    {"\<\"            \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioInverseRank\\\" -> 1\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
     {"\<\"    <|\"\>"},
@@ -621,15 +639,24 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"        \\\"YRank\\\" -> 4,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 4,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"YInverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"XRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"XInverseRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"Y2Rank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"Y2InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"X2InverseRank\\\" -> 4,\"\>"},
     {"\<\"        \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {
@@ -643,10 +670,10 @@ Cell[BoxData[
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
                "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
-                 GrayLevel[0], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
-                 GrayLevel[0], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
-                 GrayLevel[0], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
-                 GrayLevel[0], {3, 3} -> RGBColor[1, 1, 0]}}, 
+                 GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
+                 GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
+                 GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
+                 GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -797,15 +824,24 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"            \\\"YRank\\\" -> 4,\"\>"},
-    {"\<\"            \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"            \\\"Y2Rank\\\" -> 4,\"\>"},
-    {"\<\"            \\\"X2Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"YInverseRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"XRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"XInverseRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"Y2Rank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"Y2InverseRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"X2Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"X2InverseRank\\\" -> 4,\"\>"},
     {"\<\"            \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
@@ -946,15 +982,24 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"        \\\"YRank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 3,\"\>"},
     {"\<\"        \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"YInverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"XRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"XInverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"Y2Rank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"Y2InverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"X2Rank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"X2InverseRank\\\" -> 2,\"\>"},
     {"\<\"        \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {
@@ -967,11 +1012,11 @@ Cell[BoxData[
               "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
-                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0], {2, 1} -> 
+               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
                  RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
-                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0], {3, 2} -> 
-                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0]}}, 
+                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
+                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -1122,15 +1167,24 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"            \\\"YRank\\\" -> 3,\"\>"},
-    {"\<\"            \\\"XRank\\\" -> 3,\"\>"},
-    {"\<\"            \\\"Y2Rank\\\" -> 3,\"\>"},
-    {"\<\"            \\\"X2Rank\\\" -> 3,\"\>"},
     {"\<\"            \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"YInverseRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"XRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"XInverseRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"Y2Rank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"Y2InverseRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"X2Rank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"X2InverseRank\\\" -> 2,\"\>"},
     {"\<\"            \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
@@ -1271,15 +1325,24 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"        \\\"YRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"YInverseRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"XRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"XInverseRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"Y2Rank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"Y2InverseRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"X2InverseRank\\\" -> 4,\"\>"},
     {"\<\"        \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {
@@ -1292,11 +1355,11 @@ Cell[BoxData[
               "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
-                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0], {2, 1} -> 
+               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
                  RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
-                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0], {3, 2} -> 
-                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0]}}, 
+                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
+                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -1447,15 +1510,24 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"            \\\"YRank\\\" -> 2,\"\>"},
-    {"\<\"            \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"            \\\"Y2Rank\\\" -> 2,\"\>"},
-    {"\<\"            \\\"X2Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"YInverseRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"XRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"XInverseRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"Y2Rank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"Y2InverseRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"X2Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"X2InverseRank\\\" -> 4,\"\>"},
     {"\<\"            \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
@@ -1596,15 +1668,24 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"        \\\"YRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 4,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 4,\"\>"},
     {"\<\"        \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"YInverseRank\\\" -> 5,\"\>"},
+    {"\<\"        \\\"XRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"XInverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"Y2Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"Y2InverseRank\\\" -> 5,\"\>"},
+    {"\<\"        \\\"X2Rank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"X2InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {
@@ -1618,10 +1699,10 @@ Cell[BoxData[
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
                "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
-                 GrayLevel[0], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
-                 GrayLevel[0], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
-                 GrayLevel[0], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
-                 GrayLevel[0], {3, 3} -> RGBColor[1, 1, 0]}}, 
+                 GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
+                 GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
+                 GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
+                 GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -1772,15 +1853,24 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
-    {"\<\"            \\\"YRank\\\" -> 1,\"\>"},
-    {"\<\"            \\\"XRank\\\" -> 4,\"\>"},
-    {"\<\"            \\\"Y2Rank\\\" -> 1,\"\>"},
-    {"\<\"            \\\"X2Rank\\\" -> 4,\"\>"},
     {"\<\"            \\\"WidthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"WidthInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"HeightRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"HeightInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"LengthRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"LengthInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"YInverseRank\\\" -> 5,\"\>"},
+    {"\<\"            \\\"XRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"XInverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"Y2Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"Y2InverseRank\\\" -> 5,\"\>"},
+    {"\<\"            \\\"X2Rank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"X2InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimensionRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"PrimarySizeDimensionInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatioRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"AspectRatioInverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"OutputComponentUUID\\\" -> _String\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>\"\>"},
@@ -1804,9 +1894,10 @@ Cell[BoxData[
    3.8686239515097857`*^9, 3.8686239724977207`*^9}, 3.868624029772375*^9, {
    3.86862406298702*^9, 3.868624085342762*^9}, 3.868624147612296*^9, 
    3.868718627294958*^9, {3.8687189703157997`*^9, 3.8687189879379134`*^9}, {
-   3.868729110899764*^9, 3.86872914140666*^9}, 3.868785851163267*^9},
+   3.868729110899764*^9, 3.86872914140666*^9}, 3.868785851163267*^9, 
+   3.8688190373272963`*^9},
  CellLabel->
-  "Out[153]=",ExpressionUUID->"8619cef9-f8af-477d-a4ba-1c16222bcb09"]
+  "Out[466]=",ExpressionUUID->"bd520aa2-2dbe-4248-a000-bf3f8dbc3c0b"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -1959,14 +2050,14 @@ Cell[684, 24, 264, 6, 54, "Code",ExpressionUUID->"172f85b6-a1fa-4c6b-97c9-78a643
 Cell[CellGroupData[{
 Cell[973, 34, 79, 0, 67, "Section",ExpressionUUID->"80f0697d-d7d7-4fc2-9a7a-29c4c4404c7a"],
 Cell[CellGroupData[{
-Cell[1077, 38, 3680, 85, 52, "TestUI",ExpressionUUID->"a803b983-a193-4b19-9c82-54f0f0d56eab",
+Cell[1077, 38, 3680, 85, 50, "TestUI",ExpressionUUID->"a803b983-a193-4b19-9c82-54f0f0d56eab",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
 Cell[4760, 125, 1332, 29, 162, "Code",ExpressionUUID->"9f720e02-2fe0-47d5-98bc-672797dd844d",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->64092711]
 }, Open  ]],
-Cell[6107, 157, 80866, 1651, 5929, "Output",ExpressionUUID->"8619cef9-f8af-477d-a4ba-1c16222bcb09"]
+Cell[6107, 157, 86236, 1742, 7459, "Output",ExpressionUUID->"bd520aa2-2dbe-4248-a000-bf3f8dbc3c0b"]
 }, Open  ]]
 }, Open  ]]
 }

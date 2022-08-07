@@ -194,6 +194,8 @@ ARCMyTrainingFiles::usage = "ARCMyTrainingFiles  "
 
 $MyTrainingDirectory::usage = "$MyTrainingDirectory  "
 
+ARCConditionsGeneralityScore::usage = "ARCConditionsGeneralityScore  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -972,6 +974,20 @@ $properties = <|
         "Type" -> Repeated["Shape"],
         "Type2" -> "Shape"
     |>,
+    (* We'll put properties like Height above properties like Y, since properties like
+       Height and HeightRank seem better than properties like Y for producing rules. *)
+    "Width" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "SizeDimensionValue"
+    |>,
+    "Height" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "SizeDimensionValue"
+    |>,
+    "Length" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "SizeDimensionValue"
+    |>,
     "Position" -> <|
         "Type" -> "Position",
         "Type2" -> "Position"
@@ -991,18 +1007,6 @@ $properties = <|
     "X2" -> <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue"
-    |>,
-    "Width" -> <|
-        "Type" -> "Integer",
-        "Type2" -> "SizeDimensionValue"
-    |>,
-    "Height" -> <|
-        "Type" -> "Integer",
-        "Type2" -> "SizeDimensionValue"
-    |>,
-    "Length" -> <|
-        "Type" -> "Integer",
-        "Type2" -> "SizeDimensionValue"
     |>,
     "PrimarySizeDimension" -> <|
         "Type" -> "Integer",
@@ -1049,6 +1053,8 @@ $properties = ARCAddRankProperties[$properties];
 Clear[ARCClassifyShape];
 ARCClassifyShape[image_List] :=
     Module[{},
+        DeleteDuplicates@
+        Flatten@
         {
             ARCClassifyPixel[image],
             ARCClassifyLine[image],
@@ -1095,6 +1101,9 @@ ARCClassifySquare[image_List] :=
     \calltable
         ARCClassifyRectange[image] '' Checks whether the given image can be classified as a rectangle.
     
+    NOTE: As of Aug 6 2022, we're not including any metadata to indicate whether the rectangle
+          is filled or empty.
+    
     Examples:
     
     ARCClassifyRectange[{{1, 1}, {1, 1}}] === <|"Name" -> "Rectangle"|>
@@ -1111,11 +1120,29 @@ ARCClassifyRectange[image_List] :=
                  designation in addition to "Line"? *)
     If [MatchQ[
             image,
-            List[
-                Repeated[
-                    List[
-                        c:Repeated[Except[0]]
+            Alternatives[
+                (* Filled rectangle. *)
+                List[
+                    Repeated[
+                        List[
+                            Repeated[c:Except[$nonImageColor]]
+                        ]
                     ]
+                ],
+                (* Empty rectangle. *)
+                List[
+                    (* Horizontal line. *)
+                    List[Repeated[c:Except[$nonImageColor]]],
+                    Repeated[
+                        List[
+                            Except[$nonImageColor],
+                            Repeated[$nonImageColor, {0, Infinity}],
+                            Except[$nonImageColor]
+                        ],
+                        {0, Infinity}
+                    ],
+                    (* Horizontal line. *)
+                    List[Repeated[c:Except[$nonImageColor]]]
                 ]
             ]
         ],
@@ -1178,8 +1205,8 @@ ARCClassifyL[image_List] :=
                 List[
                     Repeated[
                         List[
-                            Except[0],
-                            c:Repeated[0]
+                            Except[$nonImageColor],
+                            c:Repeated[$nonImageColor]
                         ]
                     ]
                 ]
@@ -1187,7 +1214,7 @@ ARCClassifyL[image_List] :=
             (* Horizontal line *)
             MatchQ[
                 Last[image],
-                List[Repeated[c:Except[0]]]
+                List[Repeated[c:Except[$nonImageColor]]]
             ]
         ],
         <|"Name" -> "L"|>
@@ -1222,12 +1249,15 @@ ARCClassifyRotatedImage[imageIn_List, classifyFunction_] :=
             (* Rotate by 90 degrees. *)
             image = RotateImage[image, 90];
             If [(classification = classifyFunction[image]) =!= Nothing,
-                Join[
+                {
                     classification,
-                    <|
-                        "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>
-                    |>
-                ]
+                    Join[
+                        classification,
+                        <|
+                            "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>
+                        |>
+                    ]
+                }
                 ,
                 Nothing
             ]
@@ -1261,10 +1291,13 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
             (* Rotate by 90 degrees. *)
             image = transform["Function"][imageIn];
             If [(classification = classifyFunction[image]) =!= Nothing,
-                Join[
+                {
                     classification,
-                    KeyDrop[transform, "Function"]
-                ]
+                    Join[
+                        classification,
+                        KeyDrop[transform, "Function"]
+                    ]
+                }
                 ,
                 Nothing
             ]
@@ -1824,6 +1857,18 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
                 Null
         ];
         
+        (* Check if the object changed color. *)
+        Replace[
+            SelectFirst[
+                objectsToMapTo,
+                #["PixelPositions"] === object["PixelPositions"] &
+            ],
+            mappedToObject: Except[_Missing] :> Return[
+                object -> mappedToObject,
+                Module
+            ]
+        ];
+        
         (* Check if the object was replaced. *)
         Replace[
             Select[
@@ -2063,7 +2108,8 @@ ARCFindRules[examplesIn_List] :=
             objectMappings,
             preRules,
             rules,
-            transform
+            transform,
+            mappedInputObjects
         },
         
         examples =
@@ -2121,11 +2167,6 @@ ARCFindRules[examplesIn_List] :=
         (*ARCEcho[SimplifyObjects[objectMappings]];*)
         (*ARCEcho[objectMappings];*)
         
-        (* For now, if there are any removed/unampped objects, just give up. *)
-        (*If [Cases[objectMappings, _Missing, {2}] =!= {},
-            Return[{}, Module]
-        ];*)
-        
         (* Prepare mappings for rule finding. *)
         preRules =
             Flatten@
@@ -2137,6 +2178,7 @@ ARCFindRules[examplesIn_List] :=
                 objectMappings
             ];
         
+        (*ARCEcho[SimplifyObjects[preRules]];*)
         (*ARCEcho[SimplifyObjects[preRules[[All, 2]]]];*)
         (*ARCEcho[preRules[[All, 2]]];*)
         
@@ -2162,39 +2204,118 @@ ARCFindRules[examplesIn_List] :=
         
         (*ARCEcho[referenceableInputObjects];*)
         
-        Function[{property},
-            rules = ARCFindRules[preRules, property, referenceableInputObjects, examples];
-            If [TrueQ[ARCGoodRulesQ[rules, examples]], Return[rules, Module]];
-        ] /@ DeleteCases[
-            Prepend[
-                If [False,
-                    {"Y2"}
-                    ,
-                    Keys[$properties]
-                ],
-                (* See if one rule can be used to transform all objects. *)
-                None
+        inputObjectsNeedingMapping = preRules[[All, 2, "Input", "UUID"]];
+        
+        (*Echo[Length[inputObjectsNeedingMapping]];*)
+        
+        (*EchoIndented[Counts[preRules[[All, 2, "Transform"]]]];*)
+        
+        ruleFindings =
+            Association@
+            Flatten[
+                Function[{property},
+                    
+                    rules =
+                        ReturnIfFailure@
+                        ARCFindRules[preRules, property, referenceableInputObjects, examples];
+                    
+                    (* Echo[property -> Length[Flatten[rules[[All, 2, "InputObjects"]]]]]; *)
+                    
+                    If [SameQ[
+                            Length[
+                                mappedInputObjects =
+                                    (* The DeleteDuplicates is needed for cases like Shapes that
+                                       might produce multiple rules that apply to the same input
+                                       object. (which yes, isn't ideal) *)
+                                    DeleteDuplicates@
+                                    Flatten[rules[[All, 2, "InputObjects"]]]
+                            ],
+                            Length[inputObjectsNeedingMapping]
+                        ],
+                        (* The rules formed using this property handle the mapping of every input
+                           object in every training example. *)
+                        Return[rules, Module]
+                        ,
+                        (* The rules formed using this property do not handle the mapping of every
+                           input object across all training example. *)
+                        If [rules =!= {},
+                            property -> <|
+                                "MappedInputObjects" -> mappedInputObjects,
+                                With[{unmappedObjects = Complement[inputObjectsNeedingMapping, mappedInputObjects]},
+                                    (*ARCEcho[
+                                        Select[
+                                            preRules[[All, 2, "Input"]],
+                                            MemberQ[unmappedObjects, #["UUID"]] &
+                                        ]
+                                    ];*)
+                                    "UnmappedInputObjects" -> unmappedObjects
+                                ],
+                                "Rules" -> rules
+                            |>
+                            ,
+                            Nothing
+                        ]
+                    ]
+                    (*If [TrueQ[ARCGoodRulesQ[rules, examples]],
+                        Return[rules, Module]
+                    ];*)
+                ] /@ DeleteCases[
+                    (* UNDOME *)
+                    If [False,
+                        {"Shapes"}
+                        ,
+                        Prepend[
+                            Keys[$properties],
+                            (* See if one rule can be used to transform all objects. *)
+                            None
+                        ]
+                    ],
+                    Alternatives[
+                        "PixelPositions",
+                        (* TODO *)
+                        "Dimensions"
+                    ]
+                ]
+            ];
+        
+        (* If none of the properties produced rules that span all input objects, try combining
+           properties like HeightRank and HeightInverseRank to see if they can together span
+           all inputs. *)
+        KeyValueMap[
+            Function[{rankPropertyName, rankPropertyAttributes},
+                mappedInputObjects = Union[
+                    ruleFindings[rankPropertyName, "MappedInputObjects"] /. _Missing :> {},
+                    ruleFindings[rankPropertyAttributes["InverseRankProperty"], "MappedInputObjects"] /. _Missing :> {}
+                ];
+                If [SameQ[
+                        Length[mappedInputObjects],
+                        Length[inputObjectsNeedingMapping]
+                    ],
+                    Return[
+                        Join[
+                            ruleFindings[rankPropertyName, "Rules"],
+                            ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
+                        ],
+                        Module
+                    ]
+                ];
             ],
-            Alternatives[
-                (* TODO *)
-                "Shapes",
-                "PixelPositions",
-                (* TODO *)
-                "Dimensions"
-            ]
+            Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
         ];
         
-        {}
+        ruleFindings
     ]
 
 ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_Association, examples_List] :=
     Module[
         {
             unhandled,
+            theseUnhandled,
             groupedByPattern,
             conclusion,
             rules,
-            pattern
+            pattern,
+            mutuallyExclusiveRules = True
         },
         
         (*Echo[property];*)
@@ -2202,6 +2323,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         unhandled = {};
         
         (*ARCEcho[preRules];*)
+        (*ARCEcho[SimplifyObjects[preRules]];*)
         
         (* Question: Here we are first grouping by the property-value pair, and then below
                      we later group by the transformation type, and finally look for
@@ -2213,9 +2335,19 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         groupedByPattern =
             If [StringQ[property],
                 GroupBy[
-                    Function[{item},
-                        <|property -> item[[1, property]]|> -> item[[2]]
-                    ] /@ preRules
+                    Flatten[
+                        Function[{item},
+                            propertyValue = item[[1, property]];
+                            If [MemberQ[{"Shapes"}, property],
+                                mutuallyExclusiveRules = False;
+                                Function[{value},
+                                    <|property -> value|> -> item[[2]]
+                                ] /@ propertyValue
+                                ,
+                                <|property -> propertyValue|> -> item[[2]]
+                            ]
+                        ] /@ preRules
+                    ]
                     ,
                     First -> Last
                 ]
@@ -2227,13 +2359,25 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ];
         
         (*ARCEcho[groupedByPattern];*)
+        (*ARCEcho[SimplifyObjects[groupedByPattern]];*)
         
         (* Merge all instances of the same rule, forming "Examples" and "UseCount" properties. *)
         groupedByPattern = Function[{rhs},
             
-            {conclusion, unhandled} =
+            {conclusion, theseUnhandled} =
                 ReturnIfFailure@
                 ARCFindRules[rhs, referenceableInputObjects, examples, unhandled];
+            
+            (* Adding this Aug 6 2022 while working on "Shapes" support for 0uduqqj6f whereby
+               the different rhs's aren't mutually exclusive in terms of which input objects
+               they can match (and not match), whereby the 'unhandled' that gets returned
+               is relative rather than absolute, so we need to take the intersection to get the
+               absolute list of so-far unhandled objects. *)
+            If [!TrueQ[mutuallyExclusiveRules],
+                unhandled = Intersection[unhandled, theseUnhandled]
+                ,
+                unhandled = theseUnhandled
+            ];
             
             conclusion
             
@@ -2285,6 +2429,49 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ]
         ];
         
+        If [!TrueQ[mutuallyExclusiveRules],
+            (* Delete rules if there are other rules that can handle as much and more than they
+               do. *)
+            rules = Select[
+                rules,
+                Function[{rule},
+                    MissingQ[
+                        SelectFirst[
+                            DeleteCases[rules, rule],
+                            And[
+                                Length[#[[2, "InputObjects"]]] > Length[rule[[2, "InputObjects"]]],
+                                Complement[rule[[2, "InputObjects"]], #[[2, "InputObjects"]]] === {}
+                            ] &
+                        ]
+                    ]
+                ]
+            ];
+            
+            (* If there are multiple rules that can handle the same objects, then take the one
+               that is more general. *)
+            rules = Select[
+                rules,
+                Function[{rule},
+                    With[{ruleGeneralityScore = ARCConditionsGeneralityScore[rule[[1]]]},
+                        MissingQ[
+                            SelectFirst[
+                                DeleteCases[rules, rule],
+                                And[
+                                    Length[#[[2, "InputObjects"]]] === Length[rule[[2, "InputObjects"]]],
+                                    (* Lower is better. *)
+                                    ruleGeneralityScore > ARCConditionsGeneralityScore[#[[1]]]
+                                ] &
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        ];
+        
+        (* Perhaps we should return not just the rules here, but also `unhandled` so that:
+           1) Downstream code can more easily check whether there were any unhandled cases. 
+           2) Downstream code can more easily take the unhandled cases and do more processing
+              to try to find rules. *)
         rules
     ]
 
@@ -2306,11 +2493,12 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
         ];
         
         (*ARCEcho[SimplifyObjects[groupedByConclusion]];*)
+        (*ARCEcho[groupedByConclusion];*)
         
         Which[
             Length[groupedByConclusion] > 1,
                 (* This pattern has multiple possible conclusions, but before we discard it,
-                    we should see whether it's possible to generalize those conclusions. *)
+                   we should see whether it's possible to generalize those conclusions. *)
                 conclusion =
                     ReturnIfFailure@
                     ARCGeneralizeConclusions[
@@ -2328,8 +2516,6 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
                 ...*)
         ];
         
-        (*ARCEcho[groupedByConclusion];*)
-        
         If [AssociationQ[conclusion],
             (* Form the "Examples" and "UseCount" properties. *)
             conclusion = Join[
@@ -2346,8 +2532,10 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
                     (* The number of training examples that this rule can be applied to. *)
                     "ExampleCount" -> Length[theseExamples],
                     (* The number of objects across all training examples that this rule
-                        can be applied to. *)
-                    "UseCount" -> Length[exampleInstances]
+                       can be applied to. *)
+                    "UseCount" -> Length[exampleInstances],
+                    (* The input objects (across all trianing examples) this rule can be applied to. *)
+                    "InputObjects" -> Flatten[Values[groupedByConclusion]][[All, "Input", "UUID"]]
                 |>
             ];
             
@@ -2490,7 +2678,18 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
                     (* Does this pattern apply to all objects? *)
                     pattern === <||>,
                     (* Does this pattern match our object? *)
-                    MatchQ[objectIn, KeyValuePattern @@ Normal[pattern]]
+                    MatchQ[
+                        objectIn,
+                        KeyValuePattern @@
+                        Replace[
+                            Normal[pattern],
+                            HoldPattern[Rule]["Shapes", shape_] :> (
+                                (* We want the object to have this shape as one of its shapes. *)
+                                "Shapes" -> {___, shape, ___}
+                            ),
+                            {1}
+                        ]
+                    ]
                 ],
                 !MatchQ[conclusion, KeyValuePattern["Same" -> True]]
             ],
@@ -3813,12 +4012,18 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer] :=
             ReturnIfFailure@
             ARCFindRules[parsedFile["Train"]];
         
-        output = ARCApplyRules[
-            parsedFile[trainOrTest, exampleIndex, "Input"],
-            rules
+        If [ListQ[rules],
+            output = ARCApplyRules[
+                parsedFile[trainOrTest, exampleIndex, "Input"],
+                rules
+            ];
+            
+            successQ = (output === parsedFile[trainOrTest, exampleIndex, "Output"]);
+            ,
+            (* We weren't able to come up with a workable rule set. *)
+            output = Null;
+            successQ = False
         ];
-        
-        successQ = (output === parsedFile[trainOrTest, exampleIndex, "Output"]);
         
         <|
             "Result" ->
@@ -4855,7 +5060,20 @@ ARCAddRankProperties[properties_Association] :=
             properties,
             Association[
                 Function[{propertyName},
-                    propertyName <> "Rank" -> <|"Type" -> "Integer", "Rank" -> True, "RankOf" -> propertyName|>
+                    {
+                        StringJoin[propertyName, "Rank"] -> <|
+                            "Type" -> "Integer",
+                            "Rank" -> True,
+                            "RankOf" -> propertyName,
+                            "InverseRankProperty" -> propertyName <> "InverseRank"
+                        |>,
+                        StringJoin[propertyName, "InverseRank"] -> <|
+                            "Type" -> "Integer",
+                            "Rank" -> True,
+                            "InverseRank" -> True,
+                            "RankOf" -> propertyName
+                        |>
+                    }
                 ] /@ Keys[numericProperties]
             ]
         ]
@@ -4887,35 +5105,41 @@ ARCAddRankProperties[properties_Association] :=
 *)
 Clear[ARCInferRankProperties];
 ARCInferRankProperties[objectsIn_List] :=
-    Module[{objects = objectsIn, rankProperties, sortedValues},
+    Module[{objects = objectsIn, rankProperties, property, sortedValues},
         
         rankProperties = Select[$properties, TrueQ[#["Rank"]] &];
         
-        Function[{rankProperty},
-            
-            property = rankProperty["RankOf"];
-            
-            sortedValues = ReverseSort[
-                DeleteDuplicates[
-                    DeleteMissing[
-                        objects[[All, property]]
+        KeyValueMap[
+            Function[{rankPropertyName, rankPropertyAttributes},
+                
+                property = rankPropertyAttributes["RankOf"];
+                
+                sortedValues = ReverseSort[
+                    DeleteDuplicates[
+                        DeleteMissing[
+                            objects[[All, property]]
+                        ]
                     ]
-                ]
-            ];
-            
-            objects = Function[{object},
-                If [!MissingQ[object[property]],
-                    Sett[
-                        object,
-                        property <> "Rank" ->
-                            Position[sortedValues, object[property]][[1, 1]]
+                ];
+                
+                If [TrueQ[rankPropertyAttributes["InverseRank"]],
+                    sortedValues = Reverse[sortedValues]
+                ];
+                
+                objects = Function[{object},
+                    If [!MissingQ[object[property]],
+                        Sett[
+                            object,
+                            rankPropertyName ->
+                                Position[sortedValues, object[property]][[1, 1]]
+                        ]
+                        ,
+                        object
                     ]
-                    ,
-                    object
-                ]
-            ] /@ objects;
-            
-        ] /@ rankProperties;
+                ] /@ objects;
+            ],
+            rankProperties
+        ];
         
         objects
     ]
@@ -5283,6 +5507,42 @@ ARCSetGroupProperties[components_List, backgroundColor_Integer] :=
             "Components" -> components
         |>
     ]
+
+(*!
+    \function ARCConditionsGeneralityScore
+    
+    \calltable
+        ARCConditionsGeneralityScore[pattern] '' Given a pattern for a rule, returns a score that indicates how general the rule is. Lower scores are better.
+    
+    Examples:
+    
+    ARCConditionsGeneralityScore[<|"Shapes" -> <|"Name" -> "Square"|>|>] === 1.1
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCConditionsGeneralityScore]
+    
+    \maintainer danielb
+*)
+Clear[ARCConditionsGeneralityScore];
+ARCConditionsGeneralityScore[pattern_Association] :=
+    Total[
+        ARCConditionsGeneralityScore /@ Normal[pattern]
+    ]
+
+ARCConditionsGeneralityScore[Rule["Shapes", value_]] :=
+    Plus[
+        ARCConditionsGeneralityScore["Shape", value["Name"]],
+        (* Additional shape attributes. *)
+        0.5 * (Length[value] - 1)
+    ]
+
+(* A square is less general than a rectangle. *)
+ARCConditionsGeneralityScore["Shape", "Square"] := 1.1
+ARCConditionsGeneralityScore["Shape", _] := 1
+
+ARCConditionsGeneralityScore[Rule[property_, value_]] :=
+    1
 
 End[]
 

@@ -74,32 +74,33 @@ Test[
                 "Components" -> {
                     <|
                         "UUID" -> 0,
-                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}],
                         "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}},
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}
+                                    {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}
                                 ]
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{2, 2, 2}, {0, 0, 2}, {0, 0, 2}}
+                                    {{2, 2, 2}, {-1, -1, 2}, {-1, -1, 2}}
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{0, 0, 2}, {0, 0, 2}, {2, 2, 2}}
+                                    {{-1, -1, 2}, {-1, -1, 2}, {2, 2, 2}}
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{2, 0, 0}, {2, 0, 0}, {2, 2, 2}}
+                                    {{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                             |>,
+                            <|"Name" -> "L"|>,
                             <|
                                 "Name" -> "L",
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
@@ -152,22 +153,23 @@ Test[
                     |>,
                     <|
                         "UUID" -> 0,
-                        "Image" -> Daniel`ARC`ARCScene[{{0, 8}, {8, 8}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 8}, {8, 8}}],
                         "PixelPositions" -> {{2, 3}, {3, 2}, {3, 3}},
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{0, 8}, {8, 8}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{-1, 8}, {8, 8}}]|>,
                             <|
-                                "Image" -> Daniel`ARC`ARCScene[{{8, 0}, {8, 8}}],
+                                "Image" -> Daniel`ARC`ARCScene[{{8, -1}, {8, 8}}],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                             |>,
                             <|
-                                "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, 0}}],
+                                "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, -1}}],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                             |>,
                             <|
-                                "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {0, 8}}],
+                                "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {-1, 8}}],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                             |>,
+                            <|"Name" -> "L"|>,
                             <|
                                 "Name" -> "L",
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
@@ -194,15 +196,24 @@ Test[
                         "FilledProportion" -> 0.75
                     |>
                 },
-                "YRank" -> 1,
-                "XRank" -> 1,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 1,
+                "YRank" -> 1,
+                "YInverseRank" -> 1,
+                "XRank" -> 1,
+                "XInverseRank" -> 1,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 1,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 1,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]
@@ -229,10 +240,12 @@ Test[
         "Objects" -> {
             <|
                 "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}],
+                "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
                 "PixelPositions" -> {{3, 2}, {3, 4}, {4, 3}, {5, 2}, {5, 4}},
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{4, 0, 4}, {0, 2, 0}, {4, 0, 4}}]|>
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]
+                    |>
                 },
                 "Colors" -> {2, 4},
                 "Position" -> {3, 2},
@@ -375,22 +388,33 @@ Test[
                         "FilledProportion" -> 1.
                     |>
                 },
-                "YRank" -> 2,
-                "XRank" -> 2,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 2,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 1,
+                "YRank" -> 2,
+                "YInverseRank" -> 1,
+                "XRank" -> 2,
+                "XInverseRank" -> 1,
+                "Y2Rank" -> 2,
+                "Y2InverseRank" -> 1,
+                "X2Rank" -> 2,
+                "X2InverseRank" -> 1,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}],
+                "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
                 "PixelPositions" -> {{6, 7}, {7, 6}, {7, 7}, {7, 8}, {8, 7}},
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 1, 7}, {0, 7, 0}}]|>
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]
+                    |>
                 },
                 "Colors" -> {1, 7},
                 "Position" -> {6, 6},
@@ -409,12 +433,12 @@ Test[
                 "Components" -> {
                     <|
                         "UUID" -> 0,
-                        "Image" -> Daniel`ARC`ARCScene[{{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
                         "PixelPositions" -> {{6, 7}, {7, 6}, {7, 8}, {8, 7}},
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{0, 7, 0}, {7, 0, 7}, {0, 7, 0}}
+                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
                                 ]
                             |>
                         },
@@ -459,15 +483,24 @@ Test[
                         "FilledProportion" -> 1.
                     |>
                 },
-                "YRank" -> 1,
-                "XRank" -> 1,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 1,
+                "YRank" -> 1,
+                "YInverseRank" -> 2,
+                "XRank" -> 1,
+                "XInverseRank" -> 2,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 2,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 2,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[
@@ -508,12 +541,12 @@ Test[
                 "UUID" -> 0,
                 "Image" -> Daniel`ARC`ARCScene[
                     {
-                        {7, 0, 0, 0, 0, 0},
-                        {0, 5, 5, 5, 5, 5},
-                        {0, 5, 0, 0, 5, 5},
-                        {0, 5, 0, 0, 5, 5},
-                        {0, 5, 5, 5, 5, 5},
-                        {0, 5, 5, 5, 5, 5}
+                        {7, -1, -1, -1, -1, -1},
+                        {-1, 5, 5, 5, 5, 5},
+                        {-1, 5, -1, -1, 5, 5},
+                        {-1, 5, -1, -1, 5, 5},
+                        {-1, 5, 5, 5, 5, 5},
+                        {-1, 5, 5, 5, 5, 5}
                     }
                 ],
                 "PixelPositions" -> {
@@ -544,24 +577,24 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
                             {
-                                {7, 0, 0, 0, 0, 0},
-                                {0, 5, 5, 5, 5, 5},
-                                {0, 5, 0, 0, 5, 5},
-                                {0, 5, 0, 0, 5, 5},
-                                {0, 5, 5, 5, 5, 5},
-                                {0, 5, 5, 5, 5, 5}
+                                {7, -1, -1, -1, -1, -1},
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, 5, 5, 5, 5}
                             }
                         ]
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
                             {
-                                {0, 0, 0, 0, 0, 7},
-                                {5, 5, 5, 5, 5, 0},
-                                {5, 5, 0, 0, 5, 0},
-                                {5, 5, 0, 0, 5, 0},
-                                {5, 5, 5, 5, 5, 0},
-                                {5, 5, 5, 5, 5, 0}
+                                {-1, -1, -1, -1, -1, 7},
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, 5, 5, 5, -1}
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
@@ -569,12 +602,12 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
                             {
-                                {5, 5, 5, 5, 5, 0},
-                                {5, 5, 5, 5, 5, 0},
-                                {5, 5, 0, 0, 5, 0},
-                                {5, 5, 0, 0, 5, 0},
-                                {5, 5, 5, 5, 5, 0},
-                                {0, 0, 0, 0, 0, 7}
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, 5, 5, 5, -1},
+                                {-1, -1, -1, -1, -1, 7}
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
@@ -582,12 +615,12 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
                             {
-                                {0, 5, 5, 5, 5, 5},
-                                {0, 5, 5, 5, 5, 5},
-                                {0, 5, 0, 0, 5, 5},
-                                {0, 5, 0, 0, 5, 5},
-                                {0, 5, 5, 5, 5, 5},
-                                {7, 0, 0, 0, 0, 0}
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, 5, 5, 5, 5},
+                                {7, -1, -1, -1, -1, -1}
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
@@ -638,8 +671,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[
                             {
                                 {5, 5, 5, 5, 5},
-                                {5, 0, 0, 5, 5},
-                                {5, 0, 0, 5, 5},
+                                {5, -1, -1, 5, 5},
+                                {5, -1, -1, 5, 5},
                                 {5, 5, 5, 5, 5},
                                 {5, 5, 5, 5, 5}
                             }
@@ -672,8 +705,8 @@ Test[
                                 "Image" -> Daniel`ARC`ARCScene[
                                     {
                                         {5, 5, 5, 5, 5},
-                                        {5, 0, 0, 5, 5},
-                                        {5, 0, 0, 5, 5},
+                                        {5, -1, -1, 5, 5},
+                                        {5, -1, -1, 5, 5},
                                         {5, 5, 5, 5, 5},
                                         {5, 5, 5, 5, 5}
                                     }
@@ -683,8 +716,8 @@ Test[
                                 "Image" -> Daniel`ARC`ARCScene[
                                     {
                                         {5, 5, 5, 5, 5},
-                                        {5, 5, 0, 0, 5},
-                                        {5, 5, 0, 0, 5},
+                                        {5, 5, -1, -1, 5},
+                                        {5, 5, -1, -1, 5},
                                         {5, 5, 5, 5, 5},
                                         {5, 5, 5, 5, 5}
                                     }
@@ -696,8 +729,8 @@ Test[
                                     {
                                         {5, 5, 5, 5, 5},
                                         {5, 5, 5, 5, 5},
-                                        {5, 5, 0, 0, 5},
-                                        {5, 5, 0, 0, 5},
+                                        {5, 5, -1, -1, 5},
+                                        {5, 5, -1, -1, 5},
                                         {5, 5, 5, 5, 5}
                                     }
                                 ],
@@ -708,8 +741,8 @@ Test[
                                     {
                                         {5, 5, 5, 5, 5},
                                         {5, 5, 5, 5, 5},
-                                        {5, 0, 0, 5, 5},
-                                        {5, 0, 0, 5, 5},
+                                        {5, -1, -1, 5, 5},
+                                        {5, -1, -1, 5, 5},
                                         {5, 5, 5, 5, 5}
                                     }
                                 ],
@@ -732,15 +765,24 @@ Test[
                         "FilledProportion" -> 0.84
                     |>
                 },
-                "YRank" -> 5,
-                "XRank" -> 5,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 3,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 3,
                 "HeightRank" -> 1,
+                "HeightInverseRank" -> 4,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 3,
+                "YRank" -> 5,
+                "YInverseRank" -> 1,
+                "XRank" -> 5,
+                "XInverseRank" -> 1,
+                "Y2Rank" -> 2,
+                "Y2InverseRank" -> 3,
+                "X2Rank" -> 3,
+                "X2InverseRank" -> 2,
                 "PrimarySizeDimensionRank" -> 2,
-                "AspectRatioRank" -> 2
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 2,
+                "AspectRatioInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -773,15 +815,24 @@ Test[
                 "Area" -> 2,
                 "FilledArea" -> 2,
                 "FilledProportion" -> 1.,
-                "YRank" -> 5,
-                "XRank" -> 1,
-                "Y2Rank" -> 4,
-                "X2Rank" -> 1,
                 "WidthRank" -> 2,
+                "WidthInverseRank" -> 2,
                 "HeightRank" -> 4,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 2,
+                "LengthInverseRank" -> 2,
+                "YRank" -> 5,
+                "YInverseRank" -> 1,
+                "XRank" -> 1,
+                "XInverseRank" -> 5,
+                "Y2Rank" -> 4,
+                "Y2InverseRank" -> 1,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 4,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 2,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -814,15 +865,24 @@ Test[
                 "Area" -> 2,
                 "FilledArea" -> 2,
                 "FilledProportion" -> 1.,
-                "YRank" -> 4,
-                "XRank" -> 2,
-                "Y2Rank" -> 3,
-                "X2Rank" -> 2,
                 "WidthRank" -> 2,
+                "WidthInverseRank" -> 2,
                 "HeightRank" -> 4,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 2,
+                "LengthInverseRank" -> 2,
+                "YRank" -> 4,
+                "YInverseRank" -> 2,
+                "XRank" -> 2,
+                "XInverseRank" -> 4,
+                "Y2Rank" -> 3,
+                "Y2InverseRank" -> 2,
+                "X2Rank" -> 2,
+                "X2InverseRank" -> 3,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 2,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -848,20 +908,29 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
-                "YRank" -> 3,
-                "XRank" -> 1,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 2,
                 "WidthRank" -> 3,
+                "WidthInverseRank" -> 1,
                 "HeightRank" -> 4,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 3,
+                "LengthInverseRank" -> 1,
+                "YRank" -> 3,
+                "YInverseRank" -> 3,
+                "XRank" -> 1,
+                "XInverseRank" -> 5,
+                "Y2Rank" -> 2,
+                "Y2InverseRank" -> 3,
+                "X2Rank" -> 2,
+                "X2InverseRank" -> 3,
                 "PrimarySizeDimensionRank" -> 2,
-                "AspectRatioRank" -> 2
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 2,
+                "AspectRatioInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
                 "Image" -> Daniel`ARC`ARCScene[
-                    {{7, 5, 5, 5, 5, 5}, {0, 5, 5, 0, 0, 5}, {0, 5, 5, 5, 5, 5}}
+                    {{7, 5, 5, 5, 5, 5}, {-1, 5, 5, -1, -1, 5}, {-1, 5, 5, 5, 5, 5}}
                 ],
                 "PixelPositions" -> {
                     {8, 5},
@@ -882,17 +951,17 @@ Test[
                 "Shapes" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
-                            {{7, 5, 5, 5, 5, 5}, {0, 5, 5, 0, 0, 5}, {0, 5, 5, 5, 5, 5}}
+                            {{7, 5, 5, 5, 5, 5}, {-1, 5, 5, -1, -1, 5}, {-1, 5, 5, 5, 5, 5}}
                         ]
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
                             {
-                                {0, 0, 7},
+                                {-1, -1, 7},
                                 {5, 5, 5},
                                 {5, 5, 5},
-                                {5, 0, 5},
-                                {5, 0, 5},
+                                {5, -1, 5},
+                                {5, -1, 5},
                                 {5, 5, 5}
                             }
                         ],
@@ -900,7 +969,7 @@ Test[
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
-                            {{5, 5, 5, 5, 5, 0}, {5, 0, 0, 5, 5, 0}, {5, 5, 5, 5, 5, 7}}
+                            {{5, 5, 5, 5, 5, -1}, {5, -1, -1, 5, 5, -1}, {5, 5, 5, 5, 5, 7}}
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                     |>,
@@ -908,11 +977,11 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[
                             {
                                 {5, 5, 5},
-                                {5, 0, 5},
-                                {5, 0, 5},
+                                {5, -1, 5},
+                                {5, -1, 5},
                                 {5, 5, 5},
                                 {5, 5, 5},
-                                {7, 0, 0}
+                                {7, -1, -1}
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
@@ -961,7 +1030,7 @@ Test[
                     <|
                         "UUID" -> 0,
                         "Image" -> Daniel`ARC`ARCScene[
-                            {{5, 5, 5, 5, 5}, {5, 5, 0, 0, 5}, {5, 5, 5, 5, 5}}
+                            {{5, 5, 5, 5, 5}, {5, 5, -1, -1, 5}, {5, 5, 5, 5, 5}}
                         ],
                         "PixelPositions" -> {
                             {8, 6},
@@ -981,24 +1050,36 @@ Test[
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{5, 5, 5, 5, 5}, {5, 5, 0, 0, 5}, {5, 5, 5, 5, 5}}
+                                    {{5, 5, 5, 5, 5}, {5, 5, -1, -1, 5}, {5, 5, 5, 5, 5}}
                                 ]
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{5, 5, 5}, {5, 5, 5}, {5, 0, 5}, {5, 0, 5}, {5, 5, 5}}
+                                    {
+                                        {5, 5, 5},
+                                        {5, 5, 5},
+                                        {5, -1, 5},
+                                        {5, -1, 5},
+                                        {5, 5, 5}
+                                    }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{5, 5, 5, 5, 5}, {5, 0, 0, 5, 5}, {5, 5, 5, 5, 5}}
+                                    {{5, 5, 5, 5, 5}, {5, -1, -1, 5, 5}, {5, 5, 5, 5, 5}}
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{5, 5, 5}, {5, 0, 5}, {5, 0, 5}, {5, 5, 5}, {5, 5, 5}}
+                                    {
+                                        {5, 5, 5},
+                                        {5, -1, 5},
+                                        {5, -1, 5},
+                                        {5, 5, 5},
+                                        {5, 5, 5}
+                                    }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                             |>
@@ -1019,15 +1100,24 @@ Test[
                         "FilledProportion" -> 0.8666666666666667
                     |>
                 },
-                "YRank" -> 2,
-                "XRank" -> 3,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 3,
                 "HeightRank" -> 2,
+                "HeightInverseRank" -> 3,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 3,
+                "YRank" -> 2,
+                "YInverseRank" -> 4,
+                "XRank" -> 3,
+                "XInverseRank" -> 3,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 4,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 4,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 2,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -1052,15 +1142,24 @@ Test[
                 "Area" -> 4,
                 "FilledArea" -> 4,
                 "FilledProportion" -> 1.,
-                "YRank" -> 1,
-                "XRank" -> 4,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 4,
                 "WidthRank" -> 2,
+                "WidthInverseRank" -> 2,
                 "HeightRank" -> 3,
+                "HeightInverseRank" -> 2,
                 "LengthRank" -> 2,
+                "LengthInverseRank" -> 2,
+                "YRank" -> 1,
+                "YInverseRank" -> 5,
+                "XRank" -> 4,
+                "XInverseRank" -> 2,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 4,
+                "X2Rank" -> 4,
+                "X2InverseRank" -> 1,
                 "PrimarySizeDimensionRank" -> 2,
-                "AspectRatioRank" -> 2
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 2,
+                "AspectRatioInverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[
@@ -1123,34 +1222,46 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
-                "YRank" -> 1,
-                "XRank" -> 1,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 2,
                 "WidthRank" -> 3,
+                "WidthInverseRank" -> 1,
                 "HeightRank" -> 3,
+                "HeightInverseRank" -> 1,
                 "LengthRank" -> 3,
+                "LengthInverseRank" -> 1,
+                "YRank" -> 1,
+                "YInverseRank" -> 2,
+                "XRank" -> 1,
+                "XInverseRank" -> 2,
+                "Y2Rank" -> 2,
+                "Y2InverseRank" -> 1,
+                "X2Rank" -> 2,
+                "X2InverseRank" -> 1,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}],
+                "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}],
                 "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}},
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 0, 0}, {2, 0, 0}}]|>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {0, 0, 2}, {0, 0, 2}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}]
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {-1, -1, 2}, {-1, -1, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{0, 0, 2}, {0, 0, 2}, {2, 2, 2}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 2}, {-1, -1, 2}, {2, 2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{2, 0, 0}, {2, 0, 0}, {2, 2, 2}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
+                    <|"Name" -> "L"|>,
                     <|
                         "Name" -> "L",
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
@@ -1171,34 +1282,44 @@ Test[
                 "Area" -> 9,
                 "FilledArea" -> 5,
                 "FilledProportion" -> 0.5555555555555556,
-                "YRank" -> 2,
-                "XRank" -> 2,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
                 "WidthRank" -> 1,
+                "WidthInverseRank" -> 3,
                 "HeightRank" -> 1,
+                "HeightInverseRank" -> 3,
                 "LengthRank" -> 1,
+                "LengthInverseRank" -> 3,
+                "YRank" -> 2,
+                "YInverseRank" -> 1,
+                "XRank" -> 2,
+                "XInverseRank" -> 1,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 2,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 2,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{0, 8}, {8, 8}}],
+                "Image" -> Daniel`ARC`ARCScene[{{-1, 8}, {8, 8}}],
                 "PixelPositions" -> {{2, 3}, {3, 2}, {3, 3}},
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{0, 8}, {8, 8}}]|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{-1, 8}, {8, 8}}]|>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{8, 0}, {8, 8}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{8, -1}, {8, 8}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, 0}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, -1}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {0, 8}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {-1, 8}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
+                    <|"Name" -> "L"|>,
                     <|
                         "Name" -> "L",
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
@@ -1219,15 +1340,24 @@ Test[
                 "Area" -> 4,
                 "FilledArea" -> 3,
                 "FilledProportion" -> 0.75,
-                "YRank" -> 1,
-                "XRank" -> 1,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
                 "WidthRank" -> 2,
+                "WidthInverseRank" -> 2,
                 "HeightRank" -> 2,
+                "HeightInverseRank" -> 2,
                 "LengthRank" -> 2,
+                "LengthInverseRank" -> 2,
+                "YRank" -> 1,
+                "YInverseRank" -> 2,
+                "XRank" -> 1,
+                "XInverseRank" -> 2,
+                "Y2Rank" -> 1,
+                "Y2InverseRank" -> 2,
+                "X2Rank" -> 1,
+                "X2InverseRank" -> 2,
                 "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
+                "PrimarySizeDimensionInverseRank" -> 1,
+                "AspectRatioRank" -> 1,
+                "AspectRatioInverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]
@@ -1255,19 +1385,19 @@ Test[
         "Height" -> 9,
         "Objects" -> {
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, 0, 1}, {5, 1, 5}}],
+                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
                 "Position" -> {1, 1}
             |>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, 0, 1}, {5, 1, 5}}],
+                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
                 "Position" -> {3, 4}
             |>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, 0, 1}, {5, 1, 5}}],
+                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
                 "Position" -> {5, 7}
             |>,
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, 0, 1}, {5, 1, 5}}],
+                "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
                 "Position" -> {7, 2}
             |>
         },
@@ -1307,10 +1437,22 @@ Test[
         "Width" -> 10,
         "Height" -> 10,
         "Objects" -> {
-            <|"Image" -> Daniel`ARC`ARCScene[{{8, 8, 0}, {8, 8, 8}}], "Position" -> {2, 2}|>,
-            <|"Image" -> Daniel`ARC`ARCScene[{{8, 8, 0}, {8, 8, 8}}], "Position" -> {3, 7}|>,
-            <|"Image" -> Daniel`ARC`ARCScene[{{8, 8, 0}, {8, 8, 8}}], "Position" -> {8, 4}|>,
-            <|"Image" -> Daniel`ARC`ARCScene[{{7, 7, 0}, {6, 6, 6}}], "Position" -> {6, 6}|>
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{8, 8, -1}, {8, 8, 8}}],
+                "Position" -> {2, 2}
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{8, 8, -1}, {8, 8, 8}}],
+                "Position" -> {3, 7}
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{8, 8, -1}, {8, 8, 8}}],
+                "Position" -> {8, 4}
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{7, 7, -1}, {6, 6, 6}}],
+                "Position" -> {6, 6}
+            |>
         },
         "Scene" -> Daniel`ARC`ARCScene[
             {
@@ -1332,8 +1474,16 @@ Test[
 ]
 
 Test[
-    DevTools`ERP`NormalizeOutput[
-        Daniel`ARC`ARCParseScene[Daniel`ARC`ARCParseFile["ihiz27k2n"]["Train", 1, "Output"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCParseScene[
+                        Daniel`ARC`ARCParseFile["ihiz27k2n"]["Train", 1, "Output"]
+                    ]
+                ]
+            ]
+        ]
     ]
     ,
     <|
@@ -1341,142 +1491,10 @@ Test[
         "Width" -> 10,
         "Height" -> 10,
         "Objects" -> {
-            <|
-                "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{1}}],
-                "PixelPositions" -> {{2, 2}},
-                "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
-                    <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
-                },
-                "Colors" -> {1},
-                "Position" -> {2, 2},
-                "Y" -> 2,
-                "X" -> 2,
-                "Y2" -> 2,
-                "X2" -> 2,
-                "Width" -> 1,
-                "Height" -> 1,
-                "Length" -> 1,
-                "PrimarySizeDimension" -> "None",
-                "AspectRatio" -> 1,
-                "Area" -> 1,
-                "FilledArea" -> 1,
-                "FilledProportion" -> 1.,
-                "YRank" -> 2,
-                "XRank" -> 2,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 2,
-                "WidthRank" -> 1,
-                "HeightRank" -> 1,
-                "LengthRank" -> 1,
-                "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
-            |>,
-            <|
-                "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{3}}],
-                "PixelPositions" -> {{2, 9}},
-                "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{3}}]|>,
-                    <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
-                },
-                "Colors" -> {3},
-                "Position" -> {2, 9},
-                "Y" -> 2,
-                "X" -> 9,
-                "Y2" -> 2,
-                "X2" -> 9,
-                "Width" -> 1,
-                "Height" -> 1,
-                "Length" -> 1,
-                "PrimarySizeDimension" -> "None",
-                "AspectRatio" -> 1,
-                "Area" -> 1,
-                "FilledArea" -> 1,
-                "FilledProportion" -> 1.,
-                "YRank" -> 2,
-                "XRank" -> 1,
-                "Y2Rank" -> 2,
-                "X2Rank" -> 1,
-                "WidthRank" -> 1,
-                "HeightRank" -> 1,
-                "LengthRank" -> 1,
-                "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
-            |>,
-            <|
-                "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{3}}],
-                "PixelPositions" -> {{9, 2}},
-                "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{3}}]|>,
-                    <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
-                },
-                "Colors" -> {3},
-                "Position" -> {9, 2},
-                "Y" -> 9,
-                "X" -> 2,
-                "Y2" -> 9,
-                "X2" -> 2,
-                "Width" -> 1,
-                "Height" -> 1,
-                "Length" -> 1,
-                "PrimarySizeDimension" -> "None",
-                "AspectRatio" -> 1,
-                "Area" -> 1,
-                "FilledArea" -> 1,
-                "FilledProportion" -> 1.,
-                "YRank" -> 1,
-                "XRank" -> 2,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 2,
-                "WidthRank" -> 1,
-                "HeightRank" -> 1,
-                "LengthRank" -> 1,
-                "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
-            |>,
-            <|
-                "UUID" -> 0,
-                "Image" -> Daniel`ARC`ARCScene[{{1}}],
-                "PixelPositions" -> {{9, 9}},
-                "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
-                    <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
-                },
-                "Colors" -> {1},
-                "Position" -> {9, 9},
-                "Y" -> 9,
-                "X" -> 9,
-                "Y2" -> 9,
-                "X2" -> 9,
-                "Width" -> 1,
-                "Height" -> 1,
-                "Length" -> 1,
-                "PrimarySizeDimension" -> "None",
-                "AspectRatio" -> 1,
-                "Area" -> 1,
-                "FilledArea" -> 1,
-                "FilledProportion" -> 1.,
-                "YRank" -> 1,
-                "XRank" -> 1,
-                "Y2Rank" -> 1,
-                "X2Rank" -> 1,
-                "WidthRank" -> 1,
-                "HeightRank" -> 1,
-                "LengthRank" -> 1,
-                "PrimarySizeDimensionRank" -> 1,
-                "AspectRatioRank" -> 1
-            |>
+            <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {2, 2}|>,
+            <|"Image" -> Daniel`ARC`ARCScene[{{3}}], "Position" -> {2, 9}|>,
+            <|"Image" -> Daniel`ARC`ARCScene[{{3}}], "Position" -> {9, 2}|>,
+            <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {9, 9}|>
         },
         "Scene" -> Daniel`ARC`ARCScene[
             {
