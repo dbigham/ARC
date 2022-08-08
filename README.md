@@ -10,7 +10,7 @@ https://github.com/fchollet/ARC
 ### Core ARC Training Tasks
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
-* 3c9b0459
+* [3c9b0459](TaskNotes/3c9b0459/notes.md)
 * 1caeab9d
 * b60334d2
 * 25ff71a9

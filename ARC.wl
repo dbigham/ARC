@@ -1397,7 +1397,7 @@ ARCIndent[expr_, opts:OptionsPattern[]] :=
             ],
             "FormattedHeads" -> {ARCScene, RGBColor, GrayLevel, TestResultObject},
             opts,
-            "ColumnsAvailable" -> 120
+            "ColumnsAvailable" -> 90
         ]
     ]
 
@@ -6291,7 +6291,7 @@ ARCTaskMarkdown[name_String] :=
         ReturnIfFailure@
         Export[
             FileNameJoin[{absoluteDirectory, "rules.png"}],
-            ARCIndent[ARCSimplifyRules[rules], "ColumnsAvailable" -> 100],
+            ARCIndent[ARCSimplifyRules[rules]],
             "PNG"
         ];
         

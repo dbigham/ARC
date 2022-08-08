@@ -24,7 +24,7 @@
 
 In cases where an output object contains a component which was an object in the input, we produce a mapping between the objects, and specify an AddComponents transform.
 
-For example:
+e.g.
 
 
 ![image 2](image2.png?raw=true)
