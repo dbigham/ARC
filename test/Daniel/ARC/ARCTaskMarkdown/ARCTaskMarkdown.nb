@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     11187,        277]
-NotebookOptionsPosition[      4587,        121]
-NotebookOutlinePosition[     10095,        257]
-CellTagsIndexPosition[     10052,        254]
+NotebookDataLength[     10981,        281]
+NotebookOptionsPosition[      4289,        124]
+NotebookOutlinePosition[      9797,        260]
+CellTagsIndexPosition[      9754,        257]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -61,7 +61,7 @@ ce31f74261ba"],
 Cell[BoxData[
  RowBox[{"<<", " ", "Daniel`ARC`"}]], "Input",
  CellChangeTimes->{{3.8689611597062044`*^9, 3.8689611619622364`*^9}},
- CellLabel->"In[3]:=",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+ CellLabel->"In[40]:=",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
 
 Cell[BoxData[{
  RowBox[{
@@ -81,6 +81,17 @@ Cell[BoxData[{
    3.868965012385483*^9, 3.8689652453048477`*^9},
  CellLabel->"In[36]:=",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
 
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<84f2aca1\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
+   3.868965012385483*^9, 3.8689652453048477`*^9, 3.868967307532199*^9, {
+   3.868967344660019*^9, 3.868967511631118*^9}},
+ CellLabel->
+  "In[120]:=",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
+
 Cell[CellGroupData[{
 
 Cell[BoxData[{
@@ -91,29 +102,21 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
    3.8689650111231766`*^9, 3.8689650115775943`*^9}},
- CellLabel->"In[11]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellLabel->
+  "In[122]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
-Cell[BoxData["\<\"# 0ca9ddb6\\n\\n## Examples\\n\\n![ARC examples for \
-0ca9ddb6](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-0ca9ddb6](rules.png?raw=true)\\n\\n## Notes\\n\\n### Finding \
-Rules\\n\\n\\n#### Scene Parsing\\n\\n* We parse the input and output scenes \
-into objects.\\n* In the output scenes, the multi-color objects are parsed \
-into a form that specifies their colored components:\\n\\n![image \
-1](image1.png?raw=true)\\n\\n#### Mapping Input Objects to Output \
-Objects\\n\\nIn cases where an output object contains a component which was \
-an object in the input, we produce a mapping between the objects, and specify \
-an AddComponents transform.\\n\\ne.g.\\n\\n\\n![image 2](image2.png?raw=true)\
-\\n\\n#### Finding Rules from Object Mappings\\n\\n* We notice that if we \
-group the object mappings by the color of their input object, the \
-transformation applied is consistent.\\n   * For red, a particular \
-AddComponents transform is needed.\\n   * For blue, a particular \
-AddComponents transform is needed.\\n   * For any other color, the output \
-object is the same as the input object.\"\>"], "Output",
+Cell[BoxData["\<\"# 84f2aca1\\n\\n## Examples\\n\\n![ARC examples for \
+84f2aca1](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+84f2aca1](rules.png?raw=true)\\n\\n\"\>"], "Output",
  CellChangeTimes->{
   3.8689649449325647`*^9, 3.8689651032264614`*^9, 3.868965255880374*^9, {
    3.8689656346787014`*^9, 3.8689656388795834`*^9}, 3.8689659650549088`*^9, 
-   3.868966853023559*^9, 3.86896689213899*^9},
- CellLabel->"Out[12]=",ExpressionUUID->"1093b55c-8918-4356-b4d5-e9cb33402a93"]
+   3.868966853023559*^9, 3.86896689213899*^9, {3.868966953221799*^9, 
+   3.8689670088189487`*^9}, 3.86896706914168*^9, {3.8689671609215584`*^9, 
+   3.8689672071654654`*^9}, 3.868967311405991*^9, {3.8689673495128994`*^9, 
+   3.8689675138842382`*^9}},
+ CellLabel->
+  "Out[123]=",ExpressionUUID->"498c8d65-b202-44a8-a4d4-7ae2f4c6bd26"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -268,13 +271,14 @@ Cell[CellGroupData[{
 Cell[1330, 47, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
 Cell[CellGroupData[{
 Cell[1434, 51, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
-Cell[1703, 60, 208, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
-Cell[1914, 65, 386, 7, 48, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
-Cell[2303, 74, 363, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
+Cell[1703, 60, 209, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell[1915, 65, 386, 7, 48, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
+Cell[2304, 74, 363, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
+Cell[2670, 83, 439, 9, 48, "Input",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
 Cell[CellGroupData[{
-Cell[2691, 85, 392, 8, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[3134, 96, 396, 9, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[3086, 95, 1449, 20, 794, "Output",ExpressionUUID->"1093b55c-8918-4356-b4d5-e9cb33402a93"]
+Cell[3533, 107, 704, 11, 223, "Output",ExpressionUUID->"498c8d65-b202-44a8-a4d4-7ae2f4c6bd26"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
