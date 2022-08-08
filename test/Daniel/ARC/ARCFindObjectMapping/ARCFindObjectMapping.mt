@@ -26,11 +26,76 @@ Test[
     <|
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {4, 3}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {3, 2},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {7, 7}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {6, 6},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>
     |>
     ,
@@ -90,7 +155,56 @@ Test[
     ,
     <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {4, 3}|> -> <|
         "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-        "Position" -> <|"RelativePosition" -> {-1, -1}|>
+        "Position" -> {3, 2},
+        "Transform" -> <|
+            "Type" -> "AddComponents",
+            "Components" -> {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                    "Position" -> <|
+                        "RelativePosition" -> <|
+                            "Y" -> -1,
+                            "X" -> -1,
+                            "YInverse" -> -1,
+                            "XInverse" -> -1
+                        |>
+                    |>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                    "Position" -> <|
+                        "RelativePosition" -> <|
+                            "Y" -> -1,
+                            "X" -> 1,
+                            "YInverse" -> -1,
+                            "XInverse" -> 1
+                        |>
+                    |>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                    "Position" -> <|
+                        "RelativePosition" -> <|
+                            "Y" -> 1,
+                            "X" -> -1,
+                            "YInverse" -> 1,
+                            "XInverse" -> -1
+                        |>
+                    |>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                    "Position" -> <|
+                        "RelativePosition" -> <|
+                            "Y" -> 1,
+                            "X" -> 1,
+                            "YInverse" -> 1,
+                            "XInverse" -> 1
+                        |>
+                    |>
+                |>
+            }
+        |>
     |>
     ,
     TestID -> "ARCFindObjectMapping-20220719-UDWGW3"
@@ -116,19 +230,149 @@ Test[
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {3, 7}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {2, 6},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {4, 3}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {3, 2},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {7, 7}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {6, 6},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {8, 2}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>
+            "Position" -> {7, 1},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>
+                }
+            |>
         |>
     |>
     ,

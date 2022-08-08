@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     19574,        480]
-NotebookOptionsPosition[     13262,        327]
-NotebookOutlinePosition[     18871,        466]
-CellTagsIndexPosition[     18828,        463]
+NotebookDataLength[     22077,        532]
+NotebookOptionsPosition[     15738,        378]
+NotebookOutlinePosition[     21373,        518]
+CellTagsIndexPosition[     21330,        515]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -131,10 +131,13 @@ Cell[BoxData[{
    RowBox[{"ARCAddComponentsTransform", "[", "\n", "\t", 
     RowBox[{
      RowBox[{"<|", "\n", "\t\t", 
-      RowBox[{"\"\<Position\>\"", " ", "->", " ", 
-       RowBox[{"{", 
-        RowBox[{"2", ",", " ", "2"}], "}"}]}], "\n", "\t", "|>"}], ",", "\n", 
-     "\t", 
+      RowBox[{
+       RowBox[{"\"\<Position\>\"", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", " ", "2"}], "}"}]}], ",", "\n", "\t\t", 
+       RowBox[{"\"\<Y2\>\"", " ", "->", " ", "4"}], ",", "\n", "\t\t", 
+       RowBox[{"\"\<X2\>\"", " ", "->", " ", "4"}]}], "\n", "\t", "|>"}], ",",
+      "\n", "\t", 
      RowBox[{"<|", "\n", "\t\t", 
       RowBox[{
        RowBox[{"\"\<Image\>\"", " ", "->", " ", 
@@ -167,8 +170,11 @@ Cell[BoxData[{
                RowBox[{"{", "2", "}"}], "}"}], "]"}]}], ",", "\n", "\t\t\t\t", 
             RowBox[{"\"\<Position\>\"", " ", "->", " ", 
              RowBox[{"{", 
-              RowBox[{"1", ",", " ", "2"}], "}"}]}]}], "\n", "\t\t\t", "|>"}],
-           ",", "\n", "\t\t\t", 
+              RowBox[{"1", ",", " ", "2"}], "}"}]}], ",", "\n", "\t\t\t\t", 
+            RowBox[{"\"\<Y2\>\"", " ", "->", " ", "1"}], ",", "\n", 
+            "\t\t\t\t", 
+            RowBox[{"\"\<X2\>\"", " ", "->", " ", "2"}]}], "\n", "\t\t\t", 
+           "|>"}], ",", "\n", "\t\t\t", 
           RowBox[{"<|", "\n", "\t\t\t\t", 
            RowBox[{
             RowBox[{"\"\<Image\>\"", " ", "->", " ", 
@@ -185,7 +191,10 @@ Cell[BoxData[{
               "]"}]}], ",", "\n", "\t\t\t\t", 
             RowBox[{"\"\<Position\>\"", " ", "->", " ", 
              RowBox[{"{", 
-              RowBox[{"2", ",", " ", "2"}], "}"}]}]}], "\n", "\t\t\t", 
+              RowBox[{"2", ",", " ", "2"}], "}"}]}], ",", "\n", "\t\t\t\t", 
+            RowBox[{"\"\<Y2\>\"", " ", "->", " ", "4"}], ",", "\n", 
+            "\t\t\t\t", 
+            RowBox[{"\"\<X2\>\"", " ", "->", " ", "4"}]}], "\n", "\t\t\t", 
            "|>"}]}], "\n", "\t\t", "}"}]}]}], "\n", "\t", "|>"}], ",", "\n", 
      "\t", 
      RowBox[{"<|", "\n", "\t\t", 
@@ -209,8 +218,10 @@ Cell[BoxData[{
   "ARCIndent"}]}], "Code",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
- CellChangeTimes->{{3.86888526001414*^9, 3.868885391590309*^9}},
- CellLabel->"In[1051]:=",
+ CellChangeTimes->{{3.86888526001414*^9, 3.868885391590309*^9}, {
+  3.8689070231534076`*^9, 3.8689070582457256`*^9}, {3.868907097172007*^9, 
+  3.8689071423359575`*^9}},
+ CellLabel->"In[1616]:=",
  CellID->93050366,
  "TestId" -> 
  "ARCAddComponentsTransform-20220807-6CUFJO",ExpressionUUID->"1e32c90c-c9c5-\
@@ -265,8 +276,8 @@ Cell[BoxData[
              FrameStyle -> {
                AbsoluteThickness[1], 
                GrayLevel[0.5]}], "Grid"], 
-           "\", \\\"Position\\\" -> {1, 2}|>\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
+           "\", \\\"Position\\\" -> {1, 2}, \\\"Y2\\\" -> 1, \\\"X2\\\" -> \
+2|>\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
     {
      TemplateBox[{"\"        \"", 
@@ -287,30 +298,68 @@ Cell[BoxData[
             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
            FrameStyle -> {
              AbsoluteThickness[1], 
-             GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> {2, 2}|>\""},
-         "RowDefault"]},
+             GrayLevel[0.5]}], "Grid"], 
+         "\", \\\"Position\\\" -> {2, 2}, \\\"Y2\\\" -> 4, \\\"X2\\\" -> \
+4|>\""}, "RowDefault"]},
       "RowDefault"]},
     {"\<\"    },\"\>"},
     {"\<\"    \\\"Transform\\\" -> <|\"\>"},
     {"\<\"        \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
+    {"\<\"        \\\"Components\\\" -> {\"\>"},
+    {"\<\"            <|\"\>"},
     {
-     TemplateBox[{"\"        \"", 
-       TemplateBox[{"\"\\\"Components\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
-         TagBox[
-          
-          GridBox[{{"\"\""}}, AutoDelete -> False, 
-           GridBoxBackground -> {
-            "Columns" -> {{None}}, "Rows" -> {{None}}, 
-             "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 0, 0]}}, 
-           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
-            GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-           FrameStyle -> {
-             AbsoluteThickness[1], 
-             GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-         "\"<|\\\"RelativePosition\\\" -> {-1, 0}|>\"", "\"|>\"", "\"}\""}, 
-        "RowDefault"]},
+     TemplateBox[{
+       TemplateBox[{"\"                \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 0, 0]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
       "RowDefault"]},
+    {"\<\"                \\\"Position\\\" -> <|\\\"RelativePosition\\\" -> \
+<|\\\"Y\\\" -> -1, \\\"X\\\" -> 0, \\\"YInverse\\\" -> -3, \\\"XInverse\\\" \
+-> -2|>|>\"\>"},
+    {"\<\"            |>,\"\>"},
+    {"\<\"            <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.5], {1, 2} -> 
+                 GrayLevel[0.5], {1, 3} -> GrayLevel[0.5], {2, 1} -> 
+                 GrayLevel[0.5], {2, 2} -> GrayLevel[0.2], {2, 3} -> 
+                 GrayLevel[0.5], {3, 1} -> GrayLevel[0.5], {3, 2} -> 
+                 GrayLevel[0.5], {3, 3} -> GrayLevel[0.5]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
+    {"\<\"                \\\"Position\\\" -> <|\\\"RelativePosition\\\" -> \
+<|\\\"Y\\\" -> 0, \\\"X\\\" -> 0, \\\"YInverse\\\" -> -2, \\\"XInverse\\\" -> \
+-2|>|>\"\>"},
+    {"\<\"            |>\"\>"},
+    {"\<\"        }\"\>"},
     {"\<\"    |>\"\>"},
     {"\<\"|>\"\>"}
    },
@@ -319,15 +368,18 @@ Cell[BoxData[
    GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
   "Column"]], "Output",
  CellChangeTimes->{{3.8688852577666063`*^9, 3.8688852702613907`*^9}, 
-   3.8688853408258624`*^9, 3.868885384905675*^9},
+   3.8688853408258624`*^9, 3.868885384905675*^9, {3.8689070157517967`*^9, 
+   3.8689070386604333`*^9}, 3.8689071028002825`*^9, {3.8689071334045057`*^9, 
+   3.8689071500534935`*^9}},
  CellLabel->
-  "Out[1052]=",ExpressionUUID->"b8c55688-b58a-4c2f-acea-50dbad94af26"]
+  "Out[1617]=",ExpressionUUID->"7b713e75-19b1-4130-bad1-f5170124d200"]
 }, Open  ]]
 }, Open  ]]
 },
 Evaluator->"Local",
 WindowSize->{958, 980},
 WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+Visible->True,
 DockedCells->{
   Cell[
    BoxData[
@@ -381,7 +433,6 @@ DynamicOutputSectionVariable20228714145819004]], ImageSize -> {162.5, 40},
                "Capture", 
                DevTools`TestingTools`FunctionCapture`EnableFunctionCapture[
                 Daniel`ARC`ARCAddComponentsTransform]; 
-               
                DevTools`TestingTools`FunctionCapture`\
 RegisterFunctionCaptureNotebook[Daniel`ARC`ARCAddComponentsTransform, 
                  InputNotebook[]]; 
@@ -450,6 +501,7 @@ TaggingRules->{
     "GenerateNotebookArgs" -> {
      "Function" -> Daniel`ARC`ARCAddComponentsTransform}, "ReturnNotebook" -> 
     True}},
+InputAutoReplacements->{},
 FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"1f474307-d18c-4042-bbe8-a3a711919afe"
@@ -474,12 +526,12 @@ Cell[966, 34, 79, 0, 67, "Section",ExpressionUUID->"edbf0c2c-827f-49aa-a1ea-cdc5
 Cell[CellGroupData[{
 Cell[1070, 38, 3646, 85, 52, "TestUI",ExpressionUUID->"c1a531d5-4ed7-4bc2-9b7d-55f109b92fad",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4719, 125, 3731, 91, 450, "Code",ExpressionUUID->"1e32c90c-c9c5-40b2-898d-951b0b7a6765",
+Cell[4719, 125, 4350, 102, 558, "Code",ExpressionUUID->"1e32c90c-c9c5-40b2-898d-951b0b7a6765",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->93050366]
 }, Open  ]],
-Cell[8465, 219, 4769, 104, 403, "Output",ExpressionUUID->"b8c55688-b58a-4c2f-acea-50dbad94af26"]
+Cell[9084, 230, 6626, 144, 619, "Output",ExpressionUUID->"7b713e75-19b1-4130-bad1-f5170124d200"]
 }, Open  ]]
 }, Open  ]]
 }

@@ -77,10 +77,55 @@ Test[
                     |>["Input"],
                     {
                         <|"Colors" -> {2}|> -> <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}
-                            ],
-                            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+                            "Transform" -> <|
+                                "Type" -> "AddComponents",
+                                "Components" -> {
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                                        "Position" -> <|
+                                            "RelativePosition" -> <|
+                                                "Y" -> -1,
+                                                "X" -> -1,
+                                                "YInverse" -> -1,
+                                                "XInverse" -> -1
+                                            |>
+                                        |>
+                                    |>,
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                                        "Position" -> <|
+                                            "RelativePosition" -> <|
+                                                "Y" -> -1,
+                                                "X" -> 1,
+                                                "YInverse" -> -1,
+                                                "XInverse" -> 1
+                                            |>
+                                        |>
+                                    |>,
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                                        "Position" -> <|
+                                            "RelativePosition" -> <|
+                                                "Y" -> 1,
+                                                "X" -> -1,
+                                                "YInverse" -> 1,
+                                                "XInverse" -> -1
+                                            |>
+                                        |>
+                                    |>,
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                                        "Position" -> <|
+                                            "RelativePosition" -> <|
+                                                "Y" -> 1,
+                                                "X" -> 1,
+                                                "YInverse" -> 1,
+                                                "XInverse" -> 1
+                                            |>
+                                        |>
+                                    |>
+                                }
+                            |>,
                             "Examples" -> {1, 2, 3},
                             "ExampleCount" -> 3,
                             "UseCount" -> 4,
@@ -92,21 +137,35 @@ Test[
                             }
                         |>,
                         <|"Colors" -> {1}|> -> <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}
-                            ],
-                            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+                            "Transform" -> <|
+                                "Type" -> "AddComponents",
+                                "Components" -> {
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[
+                                            {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                        ],
+                                        "Position" -> <|
+                                            "RelativePosition" -> <|
+                                                "Y" -> -1,
+                                                "X" -> -1,
+                                                "YInverse" -> -1,
+                                                "XInverse" -> -1
+                                            |>
+                                        |>
+                                    |>
+                                }
+                            |>,
                             "Examples" -> {1, 2, 3},
                             "ExampleCount" -> 3,
                             "UseCount" -> 4,
                             "InputObjects" -> {
                                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
-                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
                                 "e7a71aa3-1a87-4e68-a1ce-009fa20742e4",
+                                "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
                                 "e7a71aa3-1a87-4e68-a1ce-009fa20742gb"
                             }
                         |>,
-                        <|"Colors" -> Except[{{2}, {1}}]|> -> <|
+                        <|"Colors" -> Except[{2} | {1}]|> -> <|
                             "Same" -> True,
                             "Examples" -> {2, 3},
                             "ExampleCount" -> 2,

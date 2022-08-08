@@ -200,6 +200,8 @@ ARCAddComponentsTransform::usage = "ARCAddComponentsTransform  "
 
 ARCObjectImageFromComponents::usage = "ARCObjectImageFromComponents  "
 
+ToPosition::usage = "ToPosition  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -2839,7 +2841,6 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Of
         }
     ]
 
-(* HERE *)
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "BlockedBy" -> blockingObject_}], objectIn_Association, objectOut_Association, scene_Association] :=
     Module[{blockingDirection},
         Sett[
@@ -3572,12 +3573,8 @@ $transformTypes = <|
             {
                 "Offset" -> <|
                     "SubProperties" -> <|
-                        "Y" -> <|
-                            "ObjectGet" -> Function[#["Y"]]
-                        |>,
-                        "X" -> <|
-                            "ObjectGet" -> Function[#["X"]]
-                        |>
+                        "Y" -> <||>,
+                        "X" -> <||>
                     |>
                 |>
             },
@@ -3602,7 +3599,19 @@ $transformTypes = <|
         "MinimumPropertySets" -> {
             {
                 "Components" -> <|
-                    "ObjectGet" -> Function[#["Components"]]
+                    "SubProperties" -> <|
+                        "Image" -> <||>,
+                        "Position" -> <|
+                            "SubProperties" -> <|
+                                "RelativePosition" -> <|
+                                    "SubProperties" -> <|
+                                        "Y" -> <||>,
+                                        "X" -> <||>
+                                    |>
+                                |>
+                            |>
+                        |>
+                    |>
                 |>
             }
         }
@@ -3653,21 +3662,60 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                can determine how to produce it dynamically. *)
                             rule = Append[
                                 rule,
-                                Replace[
-                                    ReturnIfFailure@
-                                    ARCGeneralizeConclusionValue[
-                                        {property},
-                                        propertyNameAndAttributes[[2]],
-                                        Function[{conclusion},
-                                            Prepend[
-                                                KeyTake[conclusion, {"Example", "Input"}],
-                                                "Value" -> conclusion["Transform", property]
-                                            ]
-                                        ] /@ conclusions,
-                                        referenceableInputObjects,
-                                        examples
+                                If [And[
+                                        ListQ[conclusions[[1, "Transform", property]]],
+                                        AssociationQ[propertyNameAndAttributes[[2, "SubProperties"]]]
                                     ],
-                                    Nothing | _Missing :> Return[Missing["NotFound"], Module]
+                                    (* This property's values are actually lists of
+                                        nested objects, so we need to process them
+                                        specially. *)
+                                    valueCounts = Length /@ conclusions[[All, "Transform", property]];
+                                    If [Length[DeleteDuplicates[valueCounts]] =!= 1,
+                                        (* Not all lists are of the same size, so for now we'll
+                                            give up on this case. *)
+                                        Return[Missing["NotImplemented", "ListsOfDifferingSizes"], Module]
+                                        ,
+                                        Replace[
+                                            Function[{listPosition},
+                                                Replace[
+                                                    ReturnIfFailure@
+                                                    ARCGeneralizeConclusionValue[
+                                                        {property},
+                                                        (* Attributes *)
+                                                        propertyNameAndAttributes[[2]],
+                                                        Function[{conclusion},
+                                                            Prepend[
+                                                                KeyTake[conclusion, {"Example", "Input"}],
+                                                                "Value" -> conclusion[["Transform", property, listPosition]]
+                                                            ]
+                                                        ] /@ conclusions,
+                                                        referenceableInputObjects,
+                                                        examples
+                                                    ],
+                                                    Nothing | _Missing :> Return[Missing["NotFound"], Module]
+                                                ]
+                                            ] /@ Range[valueCounts[[1]]],
+                                            list: {Repeated[key_ -> value_]} :> property -> list[[All, 2]]
+                                        ]
+                                    ]
+                                    ,
+                                    Replace[
+                                        ReturnIfFailure@
+                                        ARCGeneralizeConclusionValue[
+                                            {property},
+                                            (* Attributes *)
+                                            propertyNameAndAttributes[[2]],
+                                            Function[{conclusion},
+                                                Prepend[
+                                                    KeyTake[conclusion, {"Example", "Input"}],
+                                                    "Value" -> conclusion["Transform", property]
+                                                ]
+                                            ] /@ conclusions,
+                                            referenceableInputObjects,
+                                            examples
+                                        ],
+                                        Nothing | _Missing :> Return[Missing["NotFound"], Module]
+                                    ]
                                 ]
                             ]
                         ]
@@ -3744,6 +3792,36 @@ ToXY[positionOrOffset: {y_, x_}] :=
     <|"Y" -> y, "X" -> x|>
 
 (*!
+    \function ToPosition
+    
+    \calltable
+        ToPosition[positionAssoc] '' Converts a position from association from to list form.
+    
+    Examples:
+    
+    ToPosition[<|"Y" -> 1, "X" -> 2|>] === {1, 2}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ToPosition]
+    
+    \maintainer danielb
+*)
+Clear[ToPosition];
+ToPosition[position: KeyValuePattern[{"Y" -> y_, "X" -> x_}]] :=
+    {y, x}
+
+(* Already a position. *)
+ToPosition[position:{_, _}] := position
+
+ToPosition[expr_] :=
+    ReturnFailure[
+        "ToPositionFailure",
+        "Unable to convert the given expression to a position.",
+        "Position" -> expr
+    ]
+
+(*!
     \function ARCGeneralizeConclusionValue
     
     \calltable
@@ -3765,6 +3843,10 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
+        If [!FreeQ[values, _Missing],
+            Return[Missing["NotInferrable", "RequiredValuesMissing"], Module]
+        ];
+        
         If [Length[uniqueValue = DeleteDuplicates[values]] === 1,
             (* This property has a predictable value. *)
             Return[Last[propertyPath] -> uniqueValue[[1]], Module]
@@ -3773,7 +3855,17 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         If [AssociationQ[conclusions[[1, "Value"]]],
             (* The values are actually associations, so we will iterate over each of their
                keys and try to infer them separately. *)
-            subProperties = Keys[values[[1]]];
+            subProperties =
+                If [AssociationQ[propertyAttributes["SubProperties"]],
+                    (* $transformTypes specifies which sub-properties we need to be able to
+                       infer, so we loop over them. *)
+                    Keys[propertyAttributes["SubProperties"]]
+                    ,
+                    (* $transformTypes doesn't specify which sub-properties we need to be able
+                       to infer -- which it really should. As a fallback, we'll just try iterating
+                       over the keys that are specified in this conclusion association. *)
+                    Keys[values[[1]]]
+                ];
             Last[propertyPath] ->
                 Association[
                     Function[{subProperty},
@@ -3821,23 +3913,24 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                     ,
                     propertyAttributes["ObjectGet"]
                 ];
-            If [!MatchQ[getFunction, _Function],
-                ReturnFailure[
-                    "MissingObjectGetFunction",
-                    "The transformation property (or sub-property) doesn't specify its ObjectGet function.",
-                    "PropertyPath" -> propertyPath,
-                    "PropertyAttributes" -> propertyAttributes
-                ]
-            ];
-            
-            (* The first thing we should check is to ensure that these sub-properties actually
-               change from the values they have in the inputs. If not, we can actually just
-               drop this key from our rule conclusion. *)
-            If [SameQ[
-                    values,
-                    getFunction /@ conclusions[[All, "Input"]]
-                ],
-                Return[Nothing, Module]
+            Which[
+                !MatchQ[getFunction, _Function | _Missing],
+                    ReturnFailure[
+                        "MissingObjectGetFunction",
+                        "The transformation property (or sub-property) doesn't specify its ObjectGet function.",
+                        "PropertyPath" -> propertyPath,
+                        "PropertyAttributes" -> propertyAttributes
+                    ],
+                MatchQ[getFunction, _Function],
+                    (* The first thing we should check is to ensure that these sub-properties actually
+                       change from the values they have in the inputs. If not, we can actually just
+                       drop this key from our rule conclusion. *)
+                    If [SameQ[
+                            values,
+                            getFunction /@ conclusions[[All, "Input"]]
+                        ],
+                        Return[Nothing, Module]
+                    ]
             ];
             
             (* Check whether any of the referenceable objects can be used to infer the values. *)
@@ -5615,7 +5708,14 @@ ARCAddComponentsTransform[inputObject_Association, outputObject_Association, out
                     Sett[
                         component,
                         "Position" -> <|
-                            "RelativePosition" -> component["Position"] - inputObject["Position"]
+                            "RelativePosition" ->
+                                Join[
+                                    ToXY[component["Position"] - inputObject["Position"]],
+                                    <|
+                                        "YInverse" -> component[["Position", 1]] - inputObject["Y2"],
+                                        "XInverse" -> component[["Position", 2]] - inputObject["X2"]
+                                    |>
+                                ]
                         |>
                     ]
                 ] /@ KeyTake[newComponents, {"Image", "Position"}]
@@ -5650,7 +5750,10 @@ ARCObjectImageFromComponents[object_Association] :=
                 "Position" -> Replace[
                     component["Position"],
                     {
-                        KeyValuePattern["RelativePosition" -> _] :> component["Position", "RelativePosition"],
+                        KeyValuePattern["RelativePosition" -> _] :>
+                            ToPosition[
+                                component["Position", "RelativePosition"]
+                            ],
                         {y_, x_} :> {y - object["Y"], x - object["X"]}
                     }
                 ]

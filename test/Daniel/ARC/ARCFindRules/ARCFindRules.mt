@@ -26,19 +26,47 @@ Test[
                 "Components" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
-                        "Position" -> <|"RelativePosition" -> {-1, -1}|>
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
-                        "Position" -> <|"RelativePosition" -> {-1, 1}|>
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
-                        "Position" -> <|"RelativePosition" -> {1, -1}|>
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
-                        "Position" -> <|"RelativePosition" -> {1, 1}|>
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
                     |>
                 }
             |>,
@@ -58,7 +86,14 @@ Test[
                 "Components" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
-                        "Position" -> <|"RelativePosition" -> {-1, -1}|>
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
                     |>
                 }
             |>,

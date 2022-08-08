@@ -161,7 +161,56 @@ Test[
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+            "Position" -> {2, 6},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>
+                }
+            |>,
             "Example" -> 1,
             "Input" -> <|
                 "UUID" -> 0,
@@ -252,7 +301,23 @@ Test[
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+            "Position" -> {3, 2},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>
+                }
+            |>,
             "Example" -> 1,
             "Input" -> <|
                 "UUID" -> 0,
@@ -343,7 +408,23 @@ Test[
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+            "Position" -> {6, 6},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>
+                }
+            |>,
             "Example" -> 1,
             "Input" -> <|
                 "UUID" -> 0,
@@ -434,7 +515,56 @@ Test[
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Position" -> <|"RelativePosition" -> {-1, -1}|>,
+            "Position" -> {7, 1},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> -1,
+                                "YInverse" -> -1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> -1,
+                                "X" -> 1,
+                                "YInverse" -> -1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> -1,
+                                "YInverse" -> 1,
+                                "XInverse" -> -1
+                            |>
+                        |>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 1,
+                                "X" -> 1,
+                                "YInverse" -> 1,
+                                "XInverse" -> 1
+                            |>
+                        |>
+                    |>
+                }
+            |>,
             "Example" -> 1,
             "Input" -> <|
                 "UUID" -> 0,
