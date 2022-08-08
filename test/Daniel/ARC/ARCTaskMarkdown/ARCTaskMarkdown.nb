@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     15624,        345]
-NotebookOptionsPosition[      8928,        188]
-NotebookOutlinePosition[     14436,        324]
-CellTagsIndexPosition[     14393,        321]
+NotebookDataLength[     14460,        330]
+NotebookOptionsPosition[      7765,        173]
+NotebookOutlinePosition[     13273,        309]
+CellTagsIndexPosition[     13230,        306]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -71,7 +71,8 @@ Cell[BoxData[{
   RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
    3.868965012385483*^9, 3.8689652453048477`*^9, 3.8689656304820895`*^9},
- CellLabel->"In[5]:=",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
+ CellLabel->
+  "In[316]:=",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
 
 Cell[BoxData[{
  RowBox[{
@@ -84,7 +85,8 @@ Cell[BoxData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<a61f2674\>\""}], ";"}], "\n", 
+  RowBox[{"example", " ", "=", " ", "\"\<2wfys5w64-relative-right-side\>\""}],
+   ";"}], "\n", 
  RowBox[{
   RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
@@ -93,9 +95,10 @@ Cell[BoxData[{
    3.868977099262747*^9, 3.868977891746933*^9, {3.8689789436069107`*^9, 
    3.868978943919848*^9}, 3.868979118437803*^9, 3.868979236910008*^9, 
    3.868979644227228*^9, 3.868980051438182*^9, 3.86898084626181*^9, 
-   3.8689817710006275`*^9, 3.8689826203856926`*^9},
+   3.8689817710006275`*^9, 3.8689826203856926`*^9, 3.8689841961282263`*^9, {
+   3.868984620002985*^9, 3.8689846202679787`*^9}, 3.868985023017642*^9},
  CellLabel->
-  "In[262]:=",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
+  "In[320]:=",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
 
 Cell[CellGroupData[{
 
@@ -108,63 +111,43 @@ Cell[BoxData[{
   3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
    3.8689650111231766`*^9, 3.8689650115775943`*^9}},
  CellLabel->
-  "In[273]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+  "In[322]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
-Cell[BoxData["\<\"# a61f2674\\n\\n## Examples\\n\\n![ARC examples for \
-a61f2674](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-a61f2674](rules.png?raw=true)\\n\\n## Notes\\n\\n### Finding \
-Rules\\n\\n\\n#### Scene Parsing\\n\\nWe parse the input and output scenes \
-into objects.\\n\\n\\n#### Mapping Input Objects to Output Objects\\n\\nFor \
-each input object, there are two cases:\\n\\n* There is only one object in \
-the output scene with a matching position and shape.\\n* There object doesn\
-\[CloseCurlyQuote]t occur in the output and should be \
-deleted.\\ne.g.\\n\\n\\n![image 1](image1.png?raw=true)\\n\\n\\n#### Finding \
-Rules from Object Mappings\\n\\n* Before looking for rules, we prune the \
-outputs of the mappings to keep only those properties that are being \
-modified. We notice that the shape is always the same, it is just the \
-\[OpenCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] property that is \
-changing.\\n* When the objects are grouped by HeightRank, we notice that the \
-\[OpenCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] property can be \
-determined if the HeightRank is 1 (shortest object), and we notice that the \
-2nd and 3rd shortest objects are always deleted.\\n* When the objects are \
-grouped by HeightInverseRank, we notice that the \
-\[OpenCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] property can be \
-determined if the HeightInverseRank is 1 (tallest object), and we notice that \
-the 2nd and 3rd tallest objects are always deleted.\\n\\n![image \
-2](image2.png?raw=true)\\n\\n* Unfortunately, the rules currently being \
-produced for the deletion cases rely on particular HeightRank or \
-HeightInverseRank values, which will only work if there are at most 6 input \
-objects. Ideally we\[CloseCurlyQuote]d like a single deletion rule that is \
-sufficiently general.\\n* As of August 8th 2022, we are only accepting and \
-returning a set of rules if the property used in rule patterns is the same \
-for every rule. (e.g. All rules must only use HeightRank in their pattern, or \
-only use HeightInverseRank in their pattern, but not a mixture) I know this \
-is too restrictive, but I\[CloseCurlyQuote]m doing that for now since \
-otherwise we can get an explosion of bad rules being discovered, and it\
-\[CloseCurlyQuote]s not clear how to safely combine rules with patterns that \
-use different properties without drowning in a sea of bad rulesets.\\n* The \
-above is problematic here, because we need rules where some of them use \
-HeightRank in their pattern, and some of them use HeightInverseRank.\\n* I\
-\[CloseCurlyQuote]ve worked around this by adding a heuristic that says that \
-using rules for both the Rank and InverseRank of the same property is \
-OK.\\n\\n#### Possible Improvements to Rules\\n\\n* Ideally we'd like a \
-single deletion rule, such as:\[LineSeparator]<|\\\"HeightRank\\\" -> \
-Except[1], \\\"HeightInverseRank\\\" -> Except[1]|> -> <|\\\"Transform\\\" -> \
-<|\\\"Type\\\" -> \\\"Delete\\\"|>|>\\n* Another approach here would be to \
-notice that besides the HeightRank 1 and HeightInverseRank 1 objects, all \
-other objects should be deleted, similar to an ELSE clause of an IF \
-statement. i.e. This fallthrough rule could use a pattern like:\
-\[LineSeparator] \[OpenCurlyDoubleQuote]Else\[CloseCurlyDoubleQuote] -> <|\
-\[CloseCurlyDoubleQuote]Transform\[CloseCurlyDoubleQuote] -> <|\
-\[CloseCurlyDoubleQuote]Type\[CloseCurlyDoubleQuote] -> \
-\[OpenCurlyDoubleQuote]Delete\[CloseCurlyDoubleQuote]|>|>\\n* I\
-\[CloseCurlyQuote]ll need to put more thought into how to detect when an ELSE \
-rule could be used. Some initial thoughts:\\n   * Some property values can \
-only be assigned to one object in a scene. The Rank and InverseRank \
-properties are examples of such properties.\\n   * Thus, if there are a set \
-of rules S with the same conclusion, and all other rules involve patterns \
-that can match at most one object, perhaps the set of rules S could be \
-unified into an ELSE rule.\"\>"], "Output",
+Cell[BoxData["\<\"# 2wfys5w64-relative-right-side\\n\\n## Examples\\n\\n![ARC \
+examples for 2wfys5w64-relative-right-side](examples.png?raw=true)\\n\\n## \
+Rules (DSL)\\n\\n![DSL rules for \
+2wfys5w64-relative-right-side](rules.png?raw=true)\\n\\n## Notes\\n\\n### \
+Finding Rules\\n\\n\\n#### Finding Rules from Object Mappings\\n\\n* As noted \
+elsewhere, we make use of metadata in $transformTypes to specify, for a given \
+transform type, what the minimum property sets are. i.e. What parameters of a \
+transform do we need to be able to dependably infer in order to be able to \
+apply a rule to all instances that match its pattern?\\n* The AddComponents \
+$transformType metadata looks like this:\\n![image 1](image1.png?raw=true)\\n\
+\\n* Things to notice:\\n   * We need both the Image and Position of a \
+component to know where to add it to the output scene.\\n   * If the position \
+is relative (\[CloseCurlyDoubleQuote]Position\[CloseCurlyDoubleQuote] -> <|\
+\[CloseCurlyDoubleQuote]RelativePosition\[CloseCurlyDoubleQuote] -> ...|>), \
+as would typically be the case with an AddComponents transform, then we need \
+to be able to specify the parameters of the RelativePosition.\\n   * When we \
+say \[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] | \
+\[OpenCurlyDoubleQuote]YInverse\[CloseCurlyDoubleQuote], we mean that we need \
+to specify either \[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] or \
+\[OpenCurlyDoubleQuote]YInverse\[CloseCurlyDoubleQuote]. (and likewise for \
+\[OpenCurlyDoubleQuote]X\[CloseCurlyDoubleQuote] and \
+\[OpenCurlyDoubleQuote]XInverse\[CloseCurlyDoubleQuote])\\n       * \
+\[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] is the Y component of the \
+top of the object, typically relative to the top of the scene (or in this \
+case, relative to the top of the image we\[CloseCurlyQuote]re adding \
+components to).\\n       * \[OpenCurlyDoubleQuote]YInverse\
+\[CloseCurlyDoubleQuote] is the Y component of the top of the object, \
+typically relative to the top of the scene (or in this case, relative to the \
+top of the image we\[CloseCurlyQuote]re adding components to).\\n   * Given a \
+set of output objects that we\[CloseCurlyQuote]d like to cover with a rule, \
+our implementation tries to find a minimum property set. It works its way \
+down through the nested sub-properties of the transform, trying to determine \
+how they can be inferred. Each time it gets to an Alternatives, it will \
+consider whether one of the alternatives can be inferred, and if so, it will \
+specify the inferrable sub-property.\"\>"], "Output",
  CellChangeTimes->{
   3.8689649449325647`*^9, 3.8689651032264614`*^9, 3.868965255880374*^9, {
    3.8689656346787014`*^9, 3.8689656388795834`*^9}, 3.8689659650549088`*^9, 
@@ -178,9 +161,11 @@ unified into an ELSE rule.\"\>"], "Output",
    3.8689799044929323`*^9, 3.8689799416723495`*^9, 3.868980053996606*^9, 
    3.8689802964063625`*^9, 3.868980387084422*^9, 3.8689815327577944`*^9, 
    3.8689817425868883`*^9, 3.868982223234877*^9, 3.868982479082567*^9, 
-   3.86898324877942*^9, 3.8689837610104523`*^9},
+   3.86898324877942*^9, 3.8689837610104523`*^9, 3.868984201215054*^9, 
+   3.868984549238701*^9, 3.868984622898755*^9, 3.868984741770414*^9, {
+   3.8689859334555855`*^9, 3.868985958101139*^9}},
  CellLabel->
-  "Out[274]=",ExpressionUUID->"bd25fa22-541e-464f-9627-64e44e4c7d77"]
+  "Out[323]=",ExpressionUUID->"50c3b7c0-6fa0-4f51-b409-e4816b0e9e62"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -336,13 +321,13 @@ Cell[1334, 48, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485
 Cell[CellGroupData[{
 Cell[1438, 52, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
 Cell[1707, 61, 209, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
-Cell[1919, 66, 386, 7, 48, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
-Cell[2308, 75, 363, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
-Cell[2674, 84, 728, 13, 48, "Input",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
+Cell[1919, 66, 391, 8, 48, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
+Cell[2313, 76, 363, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
+Cell[2679, 85, 850, 15, 48, "Input",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
 Cell[CellGroupData[{
-Cell[3427, 101, 396, 9, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[3554, 104, 396, 9, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[3826, 112, 5050, 70, 1536, "Output",ExpressionUUID->"bd25fa22-541e-464f-9627-64e44e4c7d77"]
+Cell[3953, 115, 3760, 52, 851, "Output",ExpressionUUID->"50c3b7c0-6fa0-4f51-b409-e4816b0e9e62"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

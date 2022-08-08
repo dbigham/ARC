@@ -6238,7 +6238,7 @@ ARCTaskMarkdown[name_String] :=
                         RawBoxes[cell],
                         "PNG"
                     ];
-                    "![image " <> ToString[imageCounter] <> "](image" <> ToString[imageCounter] <> ".png?raw=true)\n"
+                    "\n![image " <> ToString[imageCounter] <> "](image" <> ToString[imageCounter] <> ".png?raw=true)\n"
                 ];
             
             notes = StringRiffle[
