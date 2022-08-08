@@ -6291,7 +6291,7 @@ ARCTaskMarkdown[name_String] :=
         ReturnIfFailure@
         Export[
             FileNameJoin[{absoluteDirectory, "rules.png"}],
-            ARCIndent[ARCSimplifyRules[rules]],
+            ARCIndent[ARCSimplifyRules[rules], "ColumnsAvailable" -> 120],
             "PNG"
         ];
         
