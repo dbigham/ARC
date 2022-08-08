@@ -1395,8 +1395,6 @@ ARCClassifyLine[image_List] :=
     \calltable
         ARCInferBackgroundColor[example] '' Given an ARC example, tries to infer the background color.
     
-    TODO: Not yet implemented
-    
     Example:
     
     (ARCInferBackgroundColor[ARCParseFile[#1]] & ) /@ $examples === $examples
@@ -3826,7 +3824,7 @@ ToPosition[position: KeyValuePattern[{("Y" | "YInverse") -> y_, ("X" | "XInverse
     }
 
 (* Already a position. *)
-ToPosition[position:{_, _}] := position
+ToPosition[position:{_, _}, parentObject_ : Null] := position
 
 ToPosition[expr_, parentObject_ : Null] :=
     ReturnFailure[
