@@ -6216,7 +6216,7 @@ ARCTaskMarkdown[name_String] :=
             ]
         ];
         
-        notesCells = Global`djb = ARCPublicNotesSection[name];
+        notesCells = ARCPublicNotesSection[name];
         
         If [ListQ[notesCells],
             
@@ -6291,7 +6291,7 @@ ARCTaskMarkdown[name_String] :=
         ReturnIfFailure@
         Export[
             FileNameJoin[{absoluteDirectory, "rules.png"}],
-            ARCIndent[ARCSimplifyRules[rules]],
+            ARCIndent[ARCSimplifyRules[rules], "ColumnsAvailable" -> 100],
             "PNG"
         ];
         

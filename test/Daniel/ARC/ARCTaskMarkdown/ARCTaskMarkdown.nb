@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      9175,        222]
-NotebookOptionsPosition[      3105,         75]
-NotebookOutlinePosition[      8610,        211]
-CellTagsIndexPosition[      8567,        208]
+NotebookDataLength[      9908,        246]
+NotebookOptionsPosition[      3619,         95]
+NotebookOutlinePosition[      9127,        231]
+CellTagsIndexPosition[      9084,        228]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -33,20 +33,42 @@ Cell[CellGroupData[{
 
 Cell["Tests", "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
 
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ StyleBox["NOTE",
+  FontWeight->"Bold"],
+ ": I\[CloseCurlyQuote]ve been struggling with Mathematica freezing."
+}], "Item",
+ CellChangeTimes->{{3.8689650148319726`*^9, 
+  3.868965023091016*^9}},ExpressionUUID->"ee490cc3-75ae-4390-9f99-\
+ce31f74261ba"],
+
 Cell[BoxData[
  RowBox[{"<<", " ", "Daniel`ARC`"}]], "Input",
  CellChangeTimes->{{3.8689611597062044`*^9, 3.8689611619622364`*^9}},
  CellLabel->"In[3]:=",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<0ca9ddb6\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
+   3.868965012385483*^9},
+ CellLabel->"In[4]:=",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
- RowBox[{"ARCTaskMarkdown", "[", "\"\<0ca9ddb6\>\"", "]"}]}], "Code",
+ RowBox[{"ARCTaskMarkdown", "[", "example", "]"}]}], "Code",
  InitializationCell->False,
- CellChangeTimes->{3.8689542974348593`*^9},
- CellLabel->"In[50]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellChangeTimes->{
+  3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
+   3.8689650111231766`*^9, 3.8689650115775943`*^9}},
+ CellLabel->"In[6]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
 Cell[BoxData["\<\"# 0ca9ddb6\\n\\n## Examples\\n\\n![ARC examples for \
 0ca9ddb6](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
@@ -64,17 +86,15 @@ object, the transformation applied is consistent.\\n   * For red, a \
 particular AddComponents transform is needed.\\n   * For blue, a particular \
 AddComponents transform is needed.\\n   * For any other color, the output \
 object is the same as the input object.\"\>"], "Output",
- CellChangeTimes->{{3.8689621725307255`*^9, 3.8689622550835342`*^9}, 
-   3.8689624646901927`*^9, 3.8689625233010707`*^9, 3.868962622615636*^9, 
-   3.8689626534951897`*^9, 3.8689627040104666`*^9, 3.868962793031365*^9, 
-   3.8689628453877563`*^9, 3.8689629702601967`*^9, 3.8689630698941708`*^9},
- CellLabel->"Out[51]=",ExpressionUUID->"59c648b4-c4ac-49ba-a01f-07714c47c47a"]
+ CellChangeTimes->{3.8689649449325647`*^9, 3.8689651032264614`*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"52969ee6-7d85-48cd-970a-cf44eaff98f4"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 Evaluator->"Local",
-WindowSize->{900, 722},
+WindowSize->{718.5, 735.},
 WindowMargins->{{-5.25, Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
@@ -216,11 +236,15 @@ Cell[670, 24, 225, 5, 52, "Code",ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbded
  InitializationCell->False],
 Cell[CellGroupData[{
 Cell[920, 33, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
-Cell[1002, 35, 208, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
 Cell[CellGroupData[{
-Cell[1235, 42, 294, 6, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[1024, 37, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
+Cell[1293, 46, 208, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell[1504, 51, 338, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
+Cell[CellGroupData[{
+Cell[1867, 62, 391, 8, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[1532, 50, 1533, 20, 775, "Output",ExpressionUUID->"59c648b4-c4ac-49ba-a01f-07714c47c47a"]
+Cell[2261, 72, 1306, 17, 794, "Output",ExpressionUUID->"52969ee6-7d85-48cd-970a-cf44eaff98f4"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
