@@ -3572,22 +3572,19 @@ $transformTypes = <|
         "MinimumPropertySets" -> {
             {
                 "Offset" -> <|
-                    "SubProperties" -> <|
-                        "Y" -> <||>,
-                        "X" -> <||>
-                    |>
+                    "SubProperties" -> {"Y", "X"}
                 |>
             },
             {
                 "Position" -> <|
-                    "SubProperties" -> <|
+                    "SubProperties" -> {
                         "Y" -> <|
                             "ObjectGet" -> Function[#["Y"]]
                         |>,
                         "X" -> <|
                             "ObjectGet" -> Function[#["X"]]
                         |>
-                    |>
+                    }
                 |>
             },
             {
@@ -3599,19 +3596,19 @@ $transformTypes = <|
         "MinimumPropertySets" -> {
             {
                 "Components" -> <|
-                    "SubProperties" -> <|
+                    "SubProperties" -> {
                         "Image" -> <||>,
                         "Position" -> <|
-                            "SubProperties" -> <|
+                            "SubProperties" -> {
                                 "RelativePosition" -> <|
-                                    "SubProperties" -> <|
-                                        "Y" -> <||>,
-                                        "X" -> <||>
-                                    |>
+                                    "SubProperties" -> {
+                                        "Y" | "YInverse",
+                                        "X" | "XInverse"
+                                    }
                                 |>
-                            |>
+                            }
                         |>
-                    |>
+                    }
                 |>
             }
         }
@@ -3664,7 +3661,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                 rule,
                                 If [And[
                                         ListQ[conclusions[[1, "Transform", property]]],
-                                        AssociationQ[propertyNameAndAttributes[[2, "SubProperties"]]]
+                                        ListQ[propertyNameAndAttributes[[2, "SubProperties"]]]
                                     ],
                                     (* This property's values are actually lists of
                                         nested objects, so we need to process them
@@ -3839,7 +3836,16 @@ ToPosition[expr_] :=
 *)
 Clear[ARCGeneralizeConclusionValue];
 ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableInputObjects_Association, examples_List] :=
-    Module[{uniqueValue, subProperties, getFunction},
+    (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
+    Module[
+        {
+            uniqueValue,
+            subProperties,
+            subPropertyAlternatives,
+            subPropertyResult,
+            successForSubPropertyAlternatives,
+            getFunction
+        },
         
         values = conclusions[[All, "Value"]];
         
@@ -3856,51 +3862,96 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             (* The values are actually associations, so we will iterate over each of their
                keys and try to infer them separately. *)
             subProperties =
-                If [AssociationQ[propertyAttributes["SubProperties"]],
+                If [ListQ[propertyAttributes["SubProperties"]],
                     (* $transformTypes specifies which sub-properties we need to be able to
                        infer, so we loop over them. *)
-                    Keys[propertyAttributes["SubProperties"]]
+                    propertyAttributes["SubProperties"]
                     ,
-                    (* $transformTypes doesn't specify which sub-properties we need to be able
-                       to infer -- which it really should. As a fallback, we'll just try iterating
-                       over the keys that are specified in this conclusion association. *)
-                    Keys[values[[1]]]
+                    If [!MissingQ[propertyAttributes["SubProperties"]],
+                        ReturnFailure[
+                            "InvalidSubProperties",
+                            "The SubProperties specification is invalid. It should be a list.",
+                            "SubProperties" -> propertyAttributes["SubProperties"]
+                        ]
+                        ,
+                        (* $transformTypes doesn't specify which sub-properties we need to be able
+                           to infer -- which it really should. As a fallback, we'll just try iterating
+                           over the keys that are specified in this conclusion association. *)
+                        Keys[values[[1]]]
+                    ]
                 ];
             Last[propertyPath] ->
                 Association[
-                    Function[{subProperty},
-                        Replace[
-                            ReturnIfFailure@
-                            ARCGeneralizeConclusionValue[
-                                Append[propertyPath, subProperty],
-                                Replace[
-                                    propertyAttributes["SubProperties"],
-                                    {
-                                        Except[_Association] :> <||>,
-                                        _Association :> (
-                                            Replace[
-                                                propertyAttributes["SubProperties", subProperty],
-                                                Except[_Association] :> <||>
-                                            ]
+                    Function[{subPropertySpec},
+                        
+                        subPropertyAlternatives = Replace[
+                            subPropertySpec,
+                            {
+                                values_Alternatives :> List @@ values,
+                                other_ :> {other}
+                            }
+                        ];
+                        
+                        subPropertyAlternatives =
+                            Association@
+                            Replace[
+                                subPropertyAlternatives,
+                                propertyName_String :> propertyName -> <||>,
+                                {1}
+                            ];
+                        
+                        subPropertyResult = Block[{},
+                            successForSubPropertyAlternatives = False;
+                            KeyValueMap[
+                                Function[{subPropertyName, subPropertyAttributes},
+                                    Replace[
+                                        ReturnIfFailure@
+                                        ARCGeneralizeConclusionValue[
+                                            Append[propertyPath, subPropertyName],
+                                            (* Property attributes *)
+                                            subPropertyAttributes,
+                                            AssociationApply[
+                                                conclusions,
+                                                <|
+                                                    "Value" -> Function[
+                                                        #[subPropertyName]
+                                                    ]
+                                                |>
+                                            ],
+                                            referenceableInputObjects,
+                                            examples
+                                        ],
+                                        res:Except[_Missing] :> (
+                                            (* We found an alternative subproperty that we can infer.
+                                               For now we'll assume we want to use it rather than
+                                               considering other subproperties. *)
+                                            successForSubPropertyAlternatives = True;
+                                            Return[res, Block]
                                         )
-                                    }
+                                    ]
                                 ],
-                                AssociationApply[
-                                    conclusions,
-                                    <|
-                                        "Value" -> Function[
-                                            #[subProperty]
-                                        ]
-                                    |>
+                                subPropertyAlternatives
+                            ]
+                        ];
+                        
+                        If [TrueQ[successForSubPropertyAlternatives],
+                            subPropertyResult
+                            ,
+                            Return[
+                                Missing[
+                                    "NotInferrable",
+                                    Replace[
+                                        subPropertyAlternatives,
+                                        {
+                                            {item} :> item[[1]],
+                                            items_List :> Alternatives @@ items[[All, 1]]
+                                        }
+                                    ]
                                 ],
-                                referenceableInputObjects,
-                                examples
-                            ],
-                            _Missing :>
-                                (* Note that this doesn't return from this function but rather the
-                                   Module for this property set. *)
-                                Return[Nothing, Module]
+                                Module
+                            ]
                         ]
+                        
                     ] /@ subProperties
                 ]
             ,
