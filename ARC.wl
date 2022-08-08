@@ -6399,57 +6399,65 @@ ARCPublicNotesSection[exampleName_String] :=
 *)
 Clear[ARCImplementedTasksMarkdown];
 ARCImplementedTasksMarkdown[] :=
-    Module[{},
+    Module[
+        {
+            implementedARCTrainingTasks,
+            implementedPersonallyCreatedTrainingTasks,
+            arcTrainingTasksPassingDueToGeneralization,
+            arcEvaluationTasksPassingDueToGeneralization
+        },
+        
+        implementedARCTrainingTasks = Select[
+            ARCTaskLog[],
+            Function[
+                !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]]
+            ]
+        ][[All, "ExampleImplemented"]];
+        
+        implementedPersonallyCreatedTrainingTasks = Select[
+            ARCTaskLog[],
+            Function[
+                TrueQ[#["PersonalExample"]]
+            ]
+        ][[All, "ExampleImplemented"]];
+        
+        arcTrainingTasksPassingDueToGeneralization = Select[
+            ARCTaskLog[],
+            Function[
+                !TrueQ[#["PersonalExample"]] && TrueQ[#["GeneralizedSuccess"]]
+            ]
+        ][[All, "ExampleImplemented"]];
+        
+        arcEvaluationTasksPassingDueToGeneralization =
+            Flatten@
+            Cases[ARCTaskLog[][[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]];
+        
         StringRiffle[
             Flatten@
             {
                 "## Tasks Implemented",
                 "",
-                "### Core ARC Training Tasks",
+                "### Core ARC Training Tasks (" <> ToString[Length[implementedARCTrainingTasks]] <> ")",
                 "",
-                tasksToMarkdown[
-                    Select[
-                        ARCTaskLog[],
-                        Function[
-                            !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]]
-                        ]
-                    ][[All, "ExampleImplemented"]]
-                ],
+                tasksToMarkdown[implementedARCTrainingTasks],
                 "",
-                "### Personally Created Training Tasks",
+                "### Personally Created Training Tasks (" <> ToString[Length[implementedPersonallyCreatedTrainingTasks]] <> ")",
                 "",
-                tasksToMarkdown[
-                    Select[
-                        ARCTaskLog[],
-                        Function[
-                            TrueQ[#["PersonalExample"]]
-                        ]
-                    ][[All, "ExampleImplemented"]]
-                ],
+                tasksToMarkdown[implementedPersonallyCreatedTrainingTasks],
                 "",
                 "## Tasks Passing via Generalization",
                 "",
-                "### Training Tasks",
+                "### Training Tasks (" <> ToString[Length[arcTrainingTasksPassingDueToGeneralization]] <> ")",
                 "",
                 "The following ARC training tasks started passing after some different task was implemented.",
                 "",
-                tasksToMarkdown[
-                    Select[
-                        ARCTaskLog[],
-                        Function[
-                            !TrueQ[#["PersonalExample"]] && TrueQ[#["GeneralizedSuccess"]]
-                        ]
-                    ][[All, "ExampleImplemented"]]
-                ],
+                tasksToMarkdown[arcTrainingTasksPassingDueToGeneralization],
                 "",
-                "### Evaluation Tasks",
+                "### Evaluation Tasks (" <> ToString[Length[arcEvaluationTasksPassingDueToGeneralization]] <> ")",
                 "",
                 "The following ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or implemented specifically.",
                 "",
-                tasksToMarkdown[
-                    Flatten@
-                    Cases[ARCTaskLog[][[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]]
-                ]
+                tasksToMarkdown[arcEvaluationTasksPassingDueToGeneralization]
             },
             "\n"
         ]
