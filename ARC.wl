@@ -202,6 +202,16 @@ ARCObjectImageFromComponents::usage = "ARCObjectImageFromComponents  "
 
 ToPosition::usage = "ToPosition  "
 
+ARCTaskLog::usage = "ARCTaskLog  "
+
+ARCTaskMarkdown::usage = "ARCTaskMarkdown  "
+
+ARCFormatExamples::usage = "ARCFormatExamples  "
+
+ARCCleanRules::usage = "ARCCleanRules  "
+
+ARCPublicNotesSection::usage = "ARCPublicNotesSection  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -223,6 +233,7 @@ Indent3 = EntityLink`Indent3;
 AssociationApply = Utility`AssociationApply;
 ProcessOneByOne = DevTools`NotebookTools`ProcessOneByOne;
 CreateNamedNotebook2 = DevTools`NotebookTools`CreateNamedNotebook2;
+CreateDirectoryIfDoesntExist = Utility`CreateDirectoryIfDoesntExist;
 
 $UnitTestDir = FileNameJoin[{FileNameDrop[FindFile["Daniel`ARC`"], -1], "test", "Daniel", "ARC"}];
 
@@ -400,27 +411,7 @@ MakeBoxes[example_ARCExample, StandardForm] :=
                         Style[FileBaseName[example["File"]], FontSize -> 24],
                         ""
                     },
-                    Function[{input},
-                        Row[
-                            {
-                                input["Input"],
-                                " ",
-                                input["Output"]
-                            },
-                            Background -> GrayLevel[0.8]
-                        ]
-                    ] /@ example["Train"]
-                    ,
-                    Function[{input},
-                        Row[
-                            {
-                                input["Input"],
-                                " ",
-                                input["Output"]
-                            },
-                            Background -> Gray
-                        ]
-                    ] /@ example["Test"]
+                    ARCFormatExamples[example][[1]]
                 ]
             ];
         
@@ -428,6 +419,52 @@ MakeBoxes[example_ARCExample, StandardForm] :=
     ]
 
 example_ARCExample[keys___] := example[[1, keys]]
+
+(*!
+    \function ARCFormatExamples
+    
+    \calltable
+        ARCFormatExamples[example] '' Given an ARC task, formats its training and test pairs.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFormatExamples]
+    
+    \maintainer danielb
+*)
+Clear[ARCFormatExamples];
+ARCFormatExamples[example_ARCExample] :=
+    Module[{},
+        Column[
+            Join[
+                Function[{input},
+                    Row[
+                        {
+                            input["Input"],
+                            " ",
+                            input["Output"]
+                        },
+                        Background -> GrayLevel[0.8]
+                    ]
+                ] /@ example["Train"]
+                ,
+                Function[{input},
+                    Row[
+                        {
+                            input["Input"],
+                            " ",
+                            input["Output"]
+                        },
+                        Background -> Gray
+                    ]
+                ] /@ example["Test"]
+            ]
+        ]
+    ]
 
 (*!
     \function ARCTrainingFiles
@@ -1336,13 +1373,19 @@ ARCIndent[expr_, opts:OptionsPattern[]] :=
             Replace2[
                 expr,
                 temporaryAssociationSymbol,
-                assoc:temporaryAssociationSymbol[a___, "Colors" -> colors_List, b___] :> (
-                    <|
-                        a,
-                        "Colors" -> Values[KeyTake[$integerToColor, colors]],
-                        b
-                    |>
-                ),
+                {
+                    assoc:temporaryAssociationSymbol[a___, "Colors" -> value_, b___] :> (
+                        <|
+                            a,
+                            "Colors" -> Replace[
+                                value,
+                                list:{__Integer} :> Values[KeyTake[$integerToColor, list]],
+                                {0, Infinity}
+                            ],
+                            b
+                        |>
+                    )
+                },
                 {0, Infinity},
                 Heads -> True
             ],
@@ -1939,15 +1982,24 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
     \maintainer danielb
 *)
 Clear[SimplifyObjects];
-SimplifyObjects[expr_] :=
+Options[SimplifyObjects] =
+{
+    "ExtraKeys" -> {}       (* Additional keys to keep. *)
+};
+SimplifyObjects[expr: Except[Rule[_String, _]], OptionsPattern[]] :=
     Module[{temporaryAssociationSymbol},
         Replace2[
             expr,
             temporaryAssociationSymbol,
             object:temporaryAssociationSymbol[___, "UUID" -> _, ___] :>
-                KeyTake[Association @@ object, {"Image", "Position", "Transform"}],
+                KeyTake[Association @@ object, {"Image", "Position", "Transform", Sequence @@ OptionValue["ExtraKeys"]}],
             {0, Infinity}
         ]
+    ]
+
+SimplifyObjects[opts:OptionsPattern[]] :=
+    Function[{expr},
+        SimplifyObjects[expr, opts]
     ]
 
 (*!
@@ -2099,6 +2151,7 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
 *)
 Clear[ARCFindRules];
 ARCFindRules[examplesIn_List] :=
+    ARCCleanRules@
     Module[
         {
             examples = examplesIn,
@@ -5022,7 +5075,7 @@ ARCSimplifyRules[rules_List] :=
     Replace[
         rules,
         assoc: KeyValuePattern["Examples" -> _] :>
-            KeyDrop[assoc, {"Examples", "ExampleCount", "UseCount"}],
+            KeyDrop[assoc, {"Examples", "ExampleCount", "UseCount", "InputObjects"}],
         {0, Infinity}
     ]
 
@@ -5864,6 +5917,470 @@ ARCObjectImageFromComponents[object_Association] :=
             ],
             "Position" -> object["Position"] + {minY, minX}
         |>
+    ]
+
+(*!
+    \function ARCTaskLog
+    
+    \calltable
+        ARCTaskLog[] '' Which training tasks I've implemented, and information about them.
+    
+    \maintainer danielb
+*)
+Clear[ARCTaskLog];
+ARCTaskLog[] :=
+    {
+        <|
+            (* When I finished implementing ExampleImplemented. *)
+            "Timestamp" -> Missing["NotRecorded"],
+            (* Whether the ExampleImplemented isn't one from the ARC corpus but rather one that I
+               invented for the purpose of development / testing. *)
+            "PersonalExample" -> False,
+            (* Whether ExampleImplemented wasn't actually implemented specifically by me but rather
+               started working 'for free' after implementing a different task. *)
+            "GeneralizedSuccess" -> False,
+            (* How many training tasks are currently passing. *)
+            "SucessCount" -> 1,
+            (* How long it is currently taking to run all of the training tasks. *)
+            "Runtime" -> Quantity[1.5, "Minutes"],
+            (* The number of lines of code I've now written. *)
+            "CodeLength" -> Missing["NotRecorded"],
+            (* Which task/example I just implemented. *)
+            "ExampleImplemented" -> "0ca9ddb6",
+            (* How many additional training tasks started passing after implementing the above task. *)
+            "NewGeneralizedSuccesses" -> 0,
+            (* How many training tasks in total are now passing which I didn't work on specifically. *)
+            "TotalGeneralizedSuccesses" -> 0,
+            (* How many evaluation tasks started passing after implementing the above task. *)
+            "NewEvaluationSuccesses" -> 0,
+            (* How many evaluation tasks in total are now passing (all of which I didn't work on specifically). *)
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "SucessCount" -> 2,
+            "Runtime" -> Quantity[1.5, "Minutes"],
+            "ExampleImplemented" -> "3c9b0459",
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 24}],
+            "SucessCount" -> 3,
+            "Runtime" -> Quantity[2.8, "Minutes"],
+            "RuntimeComment" -> "Slowed down from 1.5 minutes to 2.8 minutes July 24 2022 when we implemented \"Forming Composite Objects Can't Assume\" for 1caeab9d.",
+            "CodeLength" -> 3034,
+            "ExampleImplemented" -> "1caeab9d",
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 4,
+            "Runtime" -> Quantity[3, "Minutes"],
+            "CodeLength" -> 3491,
+            "ExampleImplemented" -> "b60334d2",
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 5,
+            "Runtime" -> Quantity[3.8, "Minutes"],
+            "RuntimeComment" -> "I'm surprised this went up for this input. Did I just not notice it going up for the previous input, or did I really make a change here that slowed things down?",
+            "CodeLength" -> 3549,
+            "ExampleImplemented" -> "25ff71a9",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 6,
+            "Runtime" -> Quantity[3, "Minutes"],
+            "RuntimeComment" -> "I'm now explicitly skipping inputs where the input and output grids are different sizes.",
+            "CodeLength" -> 3618,
+            "ExampleImplemented" -> "3ac3eb23",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 7,
+            "Runtime" -> Quantity[3, "Minutes"],
+            "CodeLength" -> 3697,
+            "ExampleImplemented" -> "e76a88a6",
+            "ImplementationTime" -> Quantity[1.8, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 8,
+            "Runtime" -> Quantity[3, "Minutes"],
+            "CodeLength" -> 3698,
+            "Comment" -> "I also took the opportunity to expand the list of properties we consider for rule formation to include: Width, Height, Position, Y, X, AspectRatio, Area, FilledArea. Still notably absent: Shapes",
+            "ExampleImplemented" -> "c0f76784",
+            "ImplementationTime" -> Quantity[3, "Minutes"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 7, 25}],
+            "SucessCount" -> 9,
+            "Runtime" -> Quantity[4.1, "Minutes"],
+            "RuntimeComment" -> "ARCFindRules was enhanced to also consider Except[_] rules, which presumably adds runtime.",
+            "CodeLength" -> 3869,
+            "ExampleImplemented" -> "321b1fc6",
+            "ImplementationTime" -> Quantity[1.8, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 4}],
+            "SucessCount" -> 10,
+            "Runtime" -> Quantity[3.7, "Minutes"],
+            "CodeLength" -> 4505,
+            "ExampleImplemented" -> "05f2a901",
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 5}],
+            "SucessCount" -> 11,
+            "Runtime" -> Quantity[3.7, "Minutes"],
+            "CodeLength" -> 4799,
+            "ExampleImplemented" -> "08ed6ac7",
+            "ImplementationTime" -> Quantity[1.75, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SucessCount" -> 11,
+            "ExampleImplemented" -> "jnohuorzh-easier",
+            "ImplementationTime" -> Quantity[0.25, "Hours"]
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SucessCount" -> 11,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 5226,
+            "ExampleImplemented" -> "ihiz27k2n",
+            "ImplementationTime" -> Quantity[2.75, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 6, 8}],
+            "SucessCount" -> 11,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 5291,
+            "ExampleImplemented" -> "jnohuorzh",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 0,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 6, 8}],
+            "SucessCount" -> 12,
+            "Runtime" -> Quantity[3.6, "Minutes"],
+            "CodeLength" -> 5386,
+            "ExampleImplemented" -> "a61f2674",
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "NewGeneralizedSuccesses" -> {"ea32f347"},
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 6, 8}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.6, "Minutes"],
+            "CodeLength" -> 5386,
+            "ExampleImplemented" -> "ea32f347",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 6, 8}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3, "Minutes"],
+            "CodeLength" -> 5551,
+            "ExampleImplemented" -> "0uduqqj6f",
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 0
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 7}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 5703,
+            "ExampleImplemented" -> "2wfys5w64",
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> {"84f2aca1"},
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 7}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 5875,
+            "ExampleImplemented" -> "2wfys5w64-relative-right-side",
+            "ImplementationTime" -> Quantity[2.7, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 7}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 5875,
+            "ExampleImplemented" -> "n1hczotml",
+            "ImplementationTime" -> Quantity[5, "Minutes"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>
+    }
+
+(*!
+    \function ARCTaskMarkdown
+    
+    \calltable
+        ARCTaskMarkdown[name] '' Produces markdown for an ARC task.
+    
+    \maintainer danielb
+*)
+Clear[ARCTaskMarkdown];
+ARCTaskMarkdown[name_String] :=
+    Module[
+        {
+            parsedFile,
+            relativeDirectory,
+            absoluteDirectory,
+            rules,
+            markdown,
+            notesCells,
+            produceImageForCell,
+            notes = ""
+        },
+        
+        parsedFile = ReturnIfFailure[ARCParseFile[name]];
+        
+        relativeDirectory = "TaskNotes/" <> name;
+        absoluteDirectory = FileNameJoin[{$arcDirectory, relativeDirectory}];
+        ReturnIfFailure@
+        CreateDirectoryIfDoesntExist[absoluteDirectory];
+        
+        rules =
+            ReturnIfFailure@
+            ARCFindRules[parsedFile["Train"]];
+        
+        If [rules === {},
+            ReturnFailure[
+                "NoRulesFound",
+                "No rules were found for " <> name <> "."
+            ]
+        ];
+        
+        notesCells = Global`djb = ARCPublicNotesSection[name];
+        
+        If [ListQ[notesCells],
+            
+            produceImageForCell[cell_] :=
+                Module[{},
+                    ++imageCounter;
+                    ReturnIfFailure@
+                    Export[
+                        FileNameJoin[{absoluteDirectory, "image" <> ToString[imageCounter] <> ".png"}],
+                        RawBoxes[cell],
+                        "PNG"
+                    ];
+                    "![image " <> ToString[imageCounter] <> "](image" <> ToString[imageCounter] <> ".png?raw=true)"
+                ];
+            
+            notes = StringRiffle[
+                Join[
+                    {
+                        "## Notes"
+                    },
+                    ReturnIfFailure@
+                    Internal`InheritedBlock[
+                        {
+                            DevTools`NotebookTools`Private`indentStr = "  ",
+                            DevTools`NotebookTools`Private`cellToMarkdown,
+                            imageCounter = 0
+                        },
+                        DevTools`NotebookTools`Private`cellToMarkdown[cell_, "Output"] := produceImageForCell[cell];
+                        (* By default we won't show input cells but will instead just show their
+                           output. *)
+                        DevTools`NotebookTools`Private`cellToMarkdown[cell_, "Input"] := "";
+                        (* That said, we will show code cells, so if there is some input we do want
+                           to show, we'll make it a code cell. *)
+                        DevTools`NotebookTools`Private`cellToMarkdown[cell_, "Code"] := produceImageForCell[cell];
+                        
+                        Function[{cell},
+                            ReturnIfFailure@
+                            DevTools`NotebookTools`Private`cellToMarkdown[cell, cell[[2]]]
+                        ] /@ notesCells
+                    ]
+                ],
+                "\n"
+            ]
+        ];
+        
+        markdown = StringRiffle[
+            {
+                "# " <> name,
+                "",
+                "## Examples",
+                "",
+                "![ARC examples for " <> name <> "](examples.png?raw=true)",
+                "",
+                "## Rules (DSL)",
+                "",
+                "![DSL rules for " <> name <> "](rules.png?raw=true)",
+                "",
+                notes
+            },
+            "\n"
+        ];
+        
+        (* Write the example image file. *)
+        ReturnIfFailure@
+        Export[
+            FileNameJoin[{absoluteDirectory, "examples.png"}],
+            ARCFormatExamples[parsedFile],
+            "PNG"
+        ];
+        
+        (* Write the rules image file. *)
+        ReturnIfFailure@
+        Export[
+            FileNameJoin[{absoluteDirectory, "rules.png"}],
+            ARCIndent[ARCSimplifyRules[rules]],
+            "PNG"
+        ];
+        
+        (* Write the markdown file. *)
+        ReturnIfFailure@
+        Export[
+            FileNameJoin[{absoluteDirectory, "notes.md"}],
+            markdown,
+            "Text"
+        ];
+        
+        markdown
+    ]
+
+(*!
+    \function ARCCleanRules
+    
+    \calltable
+        ARCCleanRules[rules] '' Given some rules, performs some cleaning operations.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCleanRules]
+    
+    \maintainer danielb
+*)
+Clear[ARCCleanRules];
+ARCCleanRules[rules_List] :=
+    Module[{},
+        Replace[
+            rules,
+            assoc: KeyValuePattern[
+                "RelativePosition" -> relativePosition: KeyValuePattern[
+                    {"Y" -> _, "X" -> _, "YInverse" -> _, "XInverse" -> _}
+                ]
+            ] :>
+                (* We set extra keys for RelativePositions, but if they weren't needed,
+                   we can trim them away. *)
+                Sett[
+                    assoc,
+                    "RelativePosition" -> KeyTake[relativePosition, {"Y", "X"}]
+                ],
+            {0, Infinity},
+            Heads -> True
+        ]
+    ]
+
+ARCCleanRules[other_] := other
+
+(*!
+    \function ARCPublicNotesSection
+    
+    \calltable
+        ARCPublicNotesSection[exampleName] '' Given an ARC task / example name, checks to see if there is a notebook with a 'Public Notes' section, and if so, returns it.
+    
+    NOTE: This function seems to cause Mathematica to hang quite frequently when run in 12.3.1,
+          but seems to work OK in 13.1.
+    
+    Examples:
+    
+    See function notebook
+    
+    \maintainer danielb
+*)
+Clear[ARCPublicNotesSection];
+ARCPublicNotesSection[exampleName_String] :=
+    Module[{notebook},
+        
+        notebook = Lui`Parse`LuiParse[exampleName];
+        Replace[
+            notebook,
+            {
+                HoldComplete[DevTools`NotebookTools`OpenNotebook[file_]] :> (
+                    DevTools`NotebookTools`WithNotebook[
+                        file,
+                        Function[{nb},
+                            sectionCellObject =
+                                ReturnIfMissing@
+                                DevTools`NotebookTools`SectionCellObject[nb, "Public Notes"];
+                            cells =
+                                NotebookRead /@
+                                    DevTools`NotebookTools`CellObjects[sectionCellObject]
+                        ],
+                        (* Ideally we'd prefer not to make the notebook visible, but without
+                           this it seems to misbehave at times. *)
+                        "Visible" -> True
+                    ]
+                ),
+                _ :> Missing["NotFound"]
+            }
+        ]
     ]
 
 End[]
