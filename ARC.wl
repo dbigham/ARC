@@ -3664,12 +3664,12 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                         ListQ[propertyNameAndAttributes[[2, "SubProperties"]]]
                                     ],
                                     (* This property's values are actually lists of
-                                        nested objects, so we need to process them
-                                        specially. *)
+                                       nested objects, so we need to process them
+                                       specially. *)
                                     valueCounts = Length /@ conclusions[[All, "Transform", property]];
                                     If [Length[DeleteDuplicates[valueCounts]] =!= 1,
                                         (* Not all lists are of the same size, so for now we'll
-                                            give up on this case. *)
+                                           give up on this case. *)
                                         Return[Missing["NotImplemented", "ListsOfDifferingSizes"], Module]
                                         ,
                                         Replace[
@@ -3692,7 +3692,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                                     Nothing | _Missing :> Return[Missing["NotFound"], Module]
                                                 ]
                                             ] /@ Range[valueCounts[[1]]],
-                                            list: {Repeated[key_ -> value_]} :> property -> list[[All, 2]]
+                                            list: {Repeated[_ -> _]} :> property -> list[[All, 2]]
                                         ]
                                     ]
                                     ,
