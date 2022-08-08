@@ -3,79 +3,76 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Mathematica 12.3' *)
+(* CreatedBy='Mathematica 13.1' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      9175,        222]
-NotebookOptionsPosition[      3105,         75]
-NotebookOutlinePosition[      8610,        211]
-CellTagsIndexPosition[      8567,        208]
+NotebookDataLength[      8943,        221]
+NotebookOptionsPosition[      2847,         72]
+NotebookOutlinePosition[      8469,        211]
+CellTagsIndexPosition[      8426,        208]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 
 Cell[CellGroupData[{
-Cell["ARCTaskMarkdown", "Title",ExpressionUUID->"97ccada2-3a43-4e8a-a228-426aa37480ee"],
+Cell["ARCImplementedTasksMarkdown", "Title",ExpressionUUID->"fe3416a8-2723-4e9f-b090-12335c6842d0"],
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
- RowBox[{"RunUnitTests", "[", "ARCTaskMarkdown", "]"}]}], "Code",
+ RowBox[{"RunUnitTests", "[", "ARCImplementedTasksMarkdown", "]"}]}], "Code",
  InitializationCell->
-  False,ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbdedf317b7"],
+  False,ExpressionUUID->"d77e5628-2add-4172-ba75-063b9d9334b1"],
 
 Cell[CellGroupData[{
 
-Cell["Tests", "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
-
-Cell[BoxData[
- RowBox[{"<<", " ", "Daniel`ARC`"}]], "Input",
- CellChangeTimes->{{3.8689611597062044`*^9, 3.8689611619622364`*^9}},
- CellLabel->"In[3]:=",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell["Tests", "Section",ExpressionUUID->"578486c2-b286-42c7-bbc9-f764a16a30ed"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
- RowBox[{"ARCTaskMarkdown", "[", "\"\<0ca9ddb6\>\"", "]"}]}], "Code",
+ RowBox[{
+  RowBox[{"res", " ", "=", " ", 
+   RowBox[{"ARCImplementedTasksMarkdown", "[", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CopyToClipboard", "[", "res", "]"}], ";"}], "\n", "res"}], "Code",
  InitializationCell->False,
- CellChangeTimes->{3.8689542974348593`*^9},
- CellLabel->"In[50]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellChangeTimes->{{3.8689646210938005`*^9, 3.868964627988933*^9}},
+ CellLabel->"In[47]:=",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa"],
 
-Cell[BoxData["\<\"# 0ca9ddb6\\n\\n## Examples\\n\\n![ARC examples for \
-0ca9ddb6](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-0ca9ddb6](rules.png?raw=true)\\n\\n## Notes\\n\\n### Finding \
-Rules\\n\\n\\n#### Scene Parsing\\n\\n* We parse the input and output scenes \
-into objects.\\n* In the output scenes, the multi-color objects are parsed \
-into a form that specifies their colored components:\\n\\n![image \
-1](image1.png?raw=true)\\n\\n#### Mapping Input Objects to Output \
-Objects\\n\\nIn cases where an output object contains a component which was \
-an object in the input, we produce a mapping between the objects, and specify \
-an AddComponents transform.\\n\\nFor example:\\n\\n\\n![image \
-2](image2.png?raw=true)\\n\\n#### Finding Rules from Object Mappings\\n\\n* \
-We notice that if we group the object mappings by the color of their input \
-object, the transformation applied is consistent.\\n   * For red, a \
-particular AddComponents transform is needed.\\n   * For blue, a particular \
-AddComponents transform is needed.\\n   * For any other color, the output \
-object is the same as the input object.\"\>"], "Output",
- CellChangeTimes->{{3.8689621725307255`*^9, 3.8689622550835342`*^9}, 
-   3.8689624646901927`*^9, 3.8689625233010707`*^9, 3.868962622615636*^9, 
-   3.8689626534951897`*^9, 3.8689627040104666`*^9, 3.868962793031365*^9, 
-   3.8689628453877563`*^9, 3.8689629702601967`*^9, 3.8689630698941708`*^9},
- CellLabel->"Out[51]=",ExpressionUUID->"59c648b4-c4ac-49ba-a01f-07714c47c47a"]
+Cell[BoxData["\<\"## Tasks Implemented\\n\\n### Core ARC Training \
+Tasks\\n\\n* [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)\\n* 3c9b0459\\n* \
+1caeab9d\\n* b60334d2\\n* 25ff71a9\\n* 3ac3eb23\\n* e76a88a6\\n* c0f76784\\n* \
+321b1fc6\\n* 05f2a901\\n* 08ed6ac7\\n* a61f2674\\n\\n### Personally Created \
+Training Tasks\\n\\n* jnohuorzh-easier\\n* ihiz27k2n\\n* jnohuorzh\\n* \
+0uduqqj6f\\n* 2wfys5w64\\n* 2wfys5w64-relative-right-side\\n* \
+n1hczotml\\n\\n## Tasks Passing via Generalization\\n\\n### Training Tasks\\n\
+\\nThe following ARC training tasks started passing after some different task \
+was implemented.\\n\\n* ea32f347\\n\\n### Evaluation Tasks\\n\\nThe following \
+ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or \
+implemented specifically.\\n\\n* 84f2aca1\"\>"], "Output",
+ CellChangeTimes->{
+  3.868963274491413*^9, 3.868963354403633*^9, {3.8689637509692574`*^9, 
+   3.8689637849733963`*^9}, 3.868963861963874*^9, {3.868963909338173*^9, 
+   3.8689639390164165`*^9}, {3.8689639711675625`*^9, 3.868964024133667*^9}, {
+   3.868964386692843*^9, 3.8689644208448353`*^9}, {3.868964456606146*^9, 
+   3.868964482799322*^9}, {3.868964548504091*^9, 3.868964592362439*^9}, 
+   3.868964628694541*^9},
+ CellLabel->"Out[50]=",ExpressionUUID->"eb3be22e-48c2-4fef-b291-bd91a69936ce"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 Evaluator->"Local",
 WindowSize->{900, 722},
-WindowMargins->{{-5.25, Automatic}, {Automatic, 0}},
+WindowMargins->{{-7., Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
   Cell[
@@ -88,32 +85,35 @@ DockedCells->{
            
            DevTools`NotebookTools`\
 RedirectPrintsAndMessagesToDynamicOutputSection[
-            DevTools`TestingTools`NewFunctionCell[Daniel`ARC`ARCTaskMarkdown], 
+            DevTools`TestingTools`NewFunctionCell[
+            Daniel`ARC`ARCImplementedTasksMarkdown], 
             HoldComplete[
             DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687]], ImageSize -> {95., 40}, 
-           Method -> "Queued"], " ", 
+DynamicOutputSectionVariable202288120354581]], ImageSize -> {95., 40}, Method -> 
+           "Queued"], " ", 
           Button["Add Tests to File", 
            
            DevTools`NotebookTools`\
 RedirectPrintsAndMessagesToDynamicOutputSection[
             DevTools`TestingTools`CreateUnitTests[
-            Daniel`ARC`ARCTaskMarkdown, "SubTest" -> None], 
+            Daniel`ARC`ARCImplementedTasksMarkdown, "SubTest" -> None], 
             HoldComplete[
             DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687]], ImageSize -> {162.5, 40}, 
+DynamicOutputSectionVariable202288120354581]], ImageSize -> {162.5, 40}, 
            Method -> "Queued"], " ", 
           Button[
           "Run Tests", 
            DevTools`TestingTools`RunUnitTestsInNotebook[
-            Daniel`ARC`ARCTaskMarkdown]; Null, ImageSize -> {102.5, 40}, 
-           Method -> "Queued"], " ", 
+            Daniel`ARC`ARCImplementedTasksMarkdown]; Null, 
+           ImageSize -> {102.5, 40}, Method -> "Queued"], " ", 
           Button["Edit Tests", 
-           DevTools`TestingTools`EditUnitTests[Daniel`ARC`ARCTaskMarkdown], 
-           ImageSize -> {110., 40}, Method -> "Queued"], " ", 
+           DevTools`TestingTools`EditUnitTests[
+           Daniel`ARC`ARCImplementedTasksMarkdown], ImageSize -> {110., 40}, 
+           Method -> "Queued"], " ", 
           Button["Edit Function", 
-           DevTools`SourceTools`EditFunction[Daniel`ARC`ARCTaskMarkdown], 
-           ImageSize -> {132.5, 40}, Method -> "Queued"], " ", 
+           DevTools`SourceTools`EditFunction[
+           Daniel`ARC`ARCImplementedTasksMarkdown], ImageSize -> {132.5, 40}, 
+           Method -> "Queued"], " ", 
           Row[{
             
             DynamicModule[{
@@ -126,14 +126,14 @@ DynamicOutputSectionVariable202288926101536687]], ImageSize -> {162.5, 40},
               DevTools`TestingTools`FunctionCapture`Private`buttonLabel === 
                "Capture", 
                DevTools`TestingTools`FunctionCapture`EnableFunctionCapture[
-                Daniel`ARC`ARCTaskMarkdown]; 
+                Daniel`ARC`ARCImplementedTasksMarkdown]; 
                DevTools`TestingTools`FunctionCapture`\
-RegisterFunctionCaptureNotebook[Daniel`ARC`ARCTaskMarkdown, 
+RegisterFunctionCaptureNotebook[Daniel`ARC`ARCImplementedTasksMarkdown, 
                  InputNotebook[]]; 
                DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
                 "Release"; Null, 
                DevTools`TestingTools`FunctionCapture`DisableFunctionCapture[
-                Daniel`ARC`ARCTaskMarkdown]; 
+                Daniel`ARC`ARCImplementedTasksMarkdown]; 
                DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
                 "Capture"; Null], ImageSize -> {100, 40}, Method -> "Queued"],
               DynamicModuleValues :> {}], 
@@ -148,15 +148,15 @@ RegisterFunctionCaptureNotebook[Daniel`ARC`ARCTaskMarkdown,
              DevTools`NotebookTools`MoveNotebook["Right"], 
              ImageSize -> {42.5, 40}, Method -> "Queued"]}]}], 
         DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687; If[
+DynamicOutputSectionVariable202288120354581; If[
           And[
            ValueQ[
            DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687], 
+DynamicOutputSectionVariable202288120354581], 
            DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687 =!= "", 
+DynamicOutputSectionVariable202288120354581 =!= "", 
            DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687 =!= Null], 
+DynamicOutputSectionVariable202288120354581 =!= Null], 
           (If[
            TrueQ[
             OptionValue[
@@ -169,7 +169,7 @@ DynamicOutputSectionVariable202288926101536687 =!= Null],
            Grid[{{
               Pane[
               DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687, "ImageSize" -> {Full, {0, 
+DynamicOutputSectionVariable202288120354581, "ImageSize" -> {Full, {0, 
                   OptionValue[
                   DevTools`NotebookTools`DynamicOutputSection, {
                    "MaxHeight" -> 300}, "MaxHeight"]}}, Scrollbars -> 
@@ -182,22 +182,22 @@ DynamicOutputSectionVariable202288926101536687, "ImageSize" -> {Full, {0,
               Apply[Sequence, {}], {
                Button[
                "OK", DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687 = "", 
-                ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
-            Alignment -> {Left, Top}]], 
+DynamicOutputSectionVariable202288120354581 = "", ImageSize -> {100, 33}]}]}, 
+            Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
           Apply[Sequence, {}]]}], StandardForm], 
      TrackedSymbols :> {
       DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable202288926101536687}]], "DockedCell"]},
+DynamicOutputSectionVariable202288120354581}]], "DockedCell"]},
 TaggingRules->{
  "CreateNamedNotebook2Args" -> {
-   "ARCTaskMarkdown", "Type" -> "Function", 
-    "GenerateNotebookArgs" -> {"Function" -> Daniel`ARC`ARCTaskMarkdown}, 
-    "ReturnNotebook" -> True}},
+   "ARCImplementedTasksMarkdown", "Type" -> "Function", 
+    "GenerateNotebookArgs" -> {
+     "Function" -> Daniel`ARC`ARCImplementedTasksMarkdown}, "ReturnNotebook" -> 
+    True}},
 InputAutoReplacements->{},
 FrontEndVersion->"13.1 for Microsoft Windows (64-bit) (June 16, 2022)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"09946e10-fd80-464b-ae3e-deb44a6ed03e"
+ExpressionUUID->"a12cb916-bc91-4726-8b95-10beea622b0f"
 ]
 (* End of Notebook Content *)
 
@@ -211,16 +211,15 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 87, 0, 98, "Title",ExpressionUUID->"97ccada2-3a43-4e8a-a228-426aa37480ee"],
-Cell[670, 24, 225, 5, 52, "Code",ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbdedf317b7",
+Cell[580, 22, 99, 0, 98, "Title",ExpressionUUID->"fe3416a8-2723-4e9f-b090-12335c6842d0"],
+Cell[682, 24, 237, 5, 52, "Code",ExpressionUUID->"d77e5628-2add-4172-ba75-063b9d9334b1",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[920, 33, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
-Cell[1002, 35, 208, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell[944, 33, 79, 0, 67, "Section",ExpressionUUID->"578486c2-b286-42c7-bbc9-f764a16a30ed"],
 Cell[CellGroupData[{
-Cell[1235, 42, 294, 6, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[1048, 37, 449, 10, 87, "Code",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa",
  InitializationCell->False],
-Cell[1532, 50, 1533, 20, 775, "Output",ExpressionUUID->"59c648b4-c4ac-49ba-a01f-07714c47c47a"]
+Cell[1500, 49, 1307, 18, 794, "Output",ExpressionUUID->"eb3be22e-48c2-4fef-b291-bd91a69936ce"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

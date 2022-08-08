@@ -212,6 +212,12 @@ ARCCleanRules::usage = "ARCCleanRules  "
 
 ARCPublicNotesSection::usage = "ARCPublicNotesSection  "
 
+ARCImplementedTasksMarkdown::usage = "ARCImplementedTasksMarkdown  "
+
+ARCTaskNotesDirectory::usage = "ARCTaskNotesDirectory  "
+
+ARCTaskNotesFile::usage = "ARCTaskNotesFile  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -6194,7 +6200,7 @@ ARCTaskMarkdown[name_String] :=
         
         parsedFile = ReturnIfFailure[ARCParseFile[name]];
         
-        relativeDirectory = "TaskNotes/" <> name;
+        relativeDirectory = ARCTaskNotesDirectory[name];
         absoluteDirectory = FileNameJoin[{$arcDirectory, relativeDirectory}];
         ReturnIfFailure@
         CreateDirectoryIfDoesntExist[absoluteDirectory];
@@ -6292,7 +6298,7 @@ ARCTaskMarkdown[name_String] :=
         (* Write the markdown file. *)
         ReturnIfFailure@
         Export[
-            FileNameJoin[{absoluteDirectory, "notes.md"}],
+            FileNameJoin[{$arcDirectory, ARCTaskNotesFile[name]}],
             markdown,
             "Text"
         ];
@@ -6382,6 +6388,124 @@ ARCPublicNotesSection[exampleName_String] :=
             }
         ]
     ]
+
+(*!
+    \function ARCImplementedTasksMarkdown
+    
+    \calltable
+        ARCImplementedTasksMarkdown[] '' Produces markdown to indicate which tasks have been implemented.
+    
+    \maintainer danielb
+*)
+Clear[ARCImplementedTasksMarkdown];
+ARCImplementedTasksMarkdown[] :=
+    Module[{},
+        StringRiffle[
+            Flatten@
+            {
+                "## Tasks Implemented",
+                "",
+                "### Core ARC Training Tasks",
+                "",
+                tasksToMarkdown[
+                    Select[
+                        ARCTaskLog[],
+                        Function[
+                            !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]]
+                        ]
+                    ][[All, "ExampleImplemented"]]
+                ],
+                "",
+                "### Personally Created Training Tasks",
+                "",
+                tasksToMarkdown[
+                    Select[
+                        ARCTaskLog[],
+                        Function[
+                            TrueQ[#["PersonalExample"]]
+                        ]
+                    ][[All, "ExampleImplemented"]]
+                ],
+                "",
+                "## Tasks Passing via Generalization",
+                "",
+                "### Training Tasks",
+                "",
+                "The following ARC training tasks started passing after some different task was implemented.",
+                "",
+                tasksToMarkdown[
+                    Select[
+                        ARCTaskLog[],
+                        Function[
+                            !TrueQ[#["PersonalExample"]] && TrueQ[#["GeneralizedSuccess"]]
+                        ]
+                    ][[All, "ExampleImplemented"]]
+                ],
+                "",
+                "### Evaluation Tasks",
+                "",
+                "The following ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or implemented specifically.",
+                "",
+                tasksToMarkdown[
+                    Flatten@
+                    Cases[ARCTaskLog[][[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]]
+                ]
+            },
+            "\n"
+        ]
+    ]
+
+tasksToMarkdown[tasks_List] :=
+    Function[{task},
+        StringJoin[
+            "* ",
+            If [FileExistsQ[FileNameJoin[{$arcDirectory, ARCTaskNotesFile[task]}]],
+                "[" <> task <> "](" <> ARCTaskNotesFile[task] <> ")"
+                ,
+                task
+            ]
+        ]
+    ] /@ tasks
+
+(*!
+    \function ARCTaskNotesDirectory
+    
+    \calltable
+        ARCTaskNotesDirectory[name] '' Given an ARC task, what directory is used to store notes about it. (relative to the main ARC directory)
+    
+    Examples:
+    
+    ARCTaskNotesDirectory["my-task"] === "TaskNotes/my-task"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTaskNotesDirectory]
+    
+    \maintainer danielb
+*)
+Clear[ARCTaskNotesDirectory];
+ARCTaskNotesDirectory[name_] :=
+    "TaskNotes/" <> name
+
+(*!
+    \function ARCTaskNotesFile
+    
+    \calltable
+        ARCTaskNotesFile[name] '' The notes file for an ARC task. (relative to the main ARC directory)
+    
+    Examples:
+    
+    ARCTaskNotesFile["my-task"] === "TaskNotes/my-task/notes.md"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTaskNotesFile]
+    
+    \maintainer danielb
+*)
+Clear[ARCTaskNotesFile];
+ARCTaskNotesFile[name_String] :=
+    ARCTaskNotesDirectory[name] <> "/notes.md"
 
 End[]
 
