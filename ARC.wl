@@ -3808,10 +3808,27 @@ Clear[ToPosition];
 ToPosition[position: KeyValuePattern[{"Y" -> y_, "X" -> x_}]] :=
     {y, x}
 
+ToPosition[position: KeyValuePattern[{("Y" | "YInverse") -> y_, ("X" | "XInverse") -> x_}], parentObject_Association] :=
+    {
+        If [MissingQ[position["Y"]],
+            (* YInverse *)
+            parentObject["Height"] + position["YInverse"] - 1
+            ,
+            y
+        ]
+        ,
+        If [MissingQ[position["X"]],
+            (* XInverse *)
+            parentObject["Width"] + position["XInverse"] - 1
+            ,
+            x
+        ]
+    }
+
 (* Already a position. *)
 ToPosition[position:{_, _}] := position
 
-ToPosition[expr_] :=
+ToPosition[expr_, parentObject_ : Null] :=
     ReturnFailure[
         "ToPositionFailure",
         "Unable to convert the given expression to a position.",
@@ -5803,7 +5820,8 @@ ARCObjectImageFromComponents[object_Association] :=
                     {
                         KeyValuePattern["RelativePosition" -> _] :>
                             ToPosition[
-                                component["Position", "RelativePosition"]
+                                component["Position", "RelativePosition"],
+                                object
                             ],
                         {y_, x_} :> {y - object["Y"], x - object["X"]}
                     }

@@ -255,3 +255,50 @@ Test[
     ,
     TestID -> "ARCFindRules-20220804-KVISKF"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[
+                Daniel`ARC`ARCParseFile[file = "2wfys5w64-relative-right-side"]["Train"]
+            ]
+        ]
+    ]
+    ,
+    {
+        <|"Shapes" -> <|"Name" -> "Square"|>|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "XInverse" -> 0|>|>
+                    |>
+                }
+            |>,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d8",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742f4",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742f5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fu",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fw"
+            }
+        |>,
+        <|"Shapes" -> Except[<|"Name" -> "Square"|>]|> -> <|
+            "Same" -> True,
+            "InputObjects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d9",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fv",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fx",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fy",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742fz"
+            }
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220807-UIY7RU"
+]

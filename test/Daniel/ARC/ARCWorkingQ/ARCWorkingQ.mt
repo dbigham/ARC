@@ -161,3 +161,11 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220807-FWSGSE"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["2wfys5w64-relative-right-side"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220807-473QTZ"
+]
