@@ -378,11 +378,20 @@ ARCParseFile[data_List] :=
 (* Formatting *)
 ARCScene /:
 MakeBoxes[grid_ARCScene, StandardForm] :=
-    Module[{res},
+    Module[{res, scalingFactor = 1, size},
+        
+        size = Max[
+            ImageWidth[grid[[1]]],
+            ImageHeight[grid[[1]]]
+        ];
+        
+        If [size > 10,
+            scalingFactor = 1 / (1 + (size - 10) / 20);
+        ];
         
         res = Grid[
             Replace[grid[[1]], _Integer :> "", {2}],
-            ItemSize -> {1.3, 1.5},
+            ItemSize -> {1.3 * scalingFactor, 1.5 * scalingFactor},
             Frame -> True,
             FrameStyle -> {AbsoluteThickness[1], GrayLevel[0.5]},
             Dividers -> All,
