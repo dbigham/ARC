@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     14460,        330]
-NotebookOptionsPosition[      7765,        173]
-NotebookOutlinePosition[     13273,        309]
-CellTagsIndexPosition[     13230,        306]
+NotebookDataLength[     12195,        296]
+NotebookOptionsPosition[      5506,        139]
+NotebookOutlinePosition[     11008,        275]
+CellTagsIndexPosition[     10965,        272]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -85,8 +85,7 @@ Cell[BoxData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<2wfys5w64-relative-right-side\>\""}],
-   ";"}], "\n", 
+  RowBox[{"example", " ", "=", " ", "\"\<ifmyulnv8\>\""}], ";"}], "\n", 
  RowBox[{
   RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
@@ -96,9 +95,9 @@ Cell[BoxData[{
    3.868978943919848*^9}, 3.868979118437803*^9, 3.868979236910008*^9, 
    3.868979644227228*^9, 3.868980051438182*^9, 3.86898084626181*^9, 
    3.8689817710006275`*^9, 3.8689826203856926`*^9, 3.8689841961282263`*^9, {
-   3.868984620002985*^9, 3.8689846202679787`*^9}, 3.868985023017642*^9},
- CellLabel->
-  "In[320]:=",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
+   3.868984620002985*^9, 3.8689846202679787`*^9}, 3.868985023017642*^9, 
+   3.868986238763791*^9, 3.8689970129419875`*^9},
+ CellLabel->"In[37]:=",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
 
 Cell[CellGroupData[{
 
@@ -110,44 +109,11 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
    3.8689650111231766`*^9, 3.8689650115775943`*^9}},
- CellLabel->
-  "In[322]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellLabel->"In[39]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
-Cell[BoxData["\<\"# 2wfys5w64-relative-right-side\\n\\n## Examples\\n\\n![ARC \
-examples for 2wfys5w64-relative-right-side](examples.png?raw=true)\\n\\n## \
-Rules (DSL)\\n\\n![DSL rules for \
-2wfys5w64-relative-right-side](rules.png?raw=true)\\n\\n## Notes\\n\\n### \
-Finding Rules\\n\\n\\n#### Finding Rules from Object Mappings\\n\\n* As noted \
-elsewhere, we make use of metadata in $transformTypes to specify, for a given \
-transform type, what the minimum property sets are. i.e. What parameters of a \
-transform do we need to be able to dependably infer in order to be able to \
-apply a rule to all instances that match its pattern?\\n* The AddComponents \
-$transformType metadata looks like this:\\n![image 1](image1.png?raw=true)\\n\
-\\n* Things to notice:\\n   * We need both the Image and Position of a \
-component to know where to add it to the output scene.\\n   * If the position \
-is relative (\[CloseCurlyDoubleQuote]Position\[CloseCurlyDoubleQuote] -> <|\
-\[CloseCurlyDoubleQuote]RelativePosition\[CloseCurlyDoubleQuote] -> ...|>), \
-as would typically be the case with an AddComponents transform, then we need \
-to be able to specify the parameters of the RelativePosition.\\n   * When we \
-say \[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] | \
-\[OpenCurlyDoubleQuote]YInverse\[CloseCurlyDoubleQuote], we mean that we need \
-to specify either \[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] or \
-\[OpenCurlyDoubleQuote]YInverse\[CloseCurlyDoubleQuote]. (and likewise for \
-\[OpenCurlyDoubleQuote]X\[CloseCurlyDoubleQuote] and \
-\[OpenCurlyDoubleQuote]XInverse\[CloseCurlyDoubleQuote])\\n       * \
-\[OpenCurlyDoubleQuote]Y\[CloseCurlyDoubleQuote] is the Y component of the \
-top of the object, typically relative to the top of the scene (or in this \
-case, relative to the top of the image we\[CloseCurlyQuote]re adding \
-components to).\\n       * \[OpenCurlyDoubleQuote]YInverse\
-\[CloseCurlyDoubleQuote] is the Y component of the top of the object, \
-typically relative to the top of the scene (or in this case, relative to the \
-top of the image we\[CloseCurlyQuote]re adding components to).\\n   * Given a \
-set of output objects that we\[CloseCurlyQuote]d like to cover with a rule, \
-our implementation tries to find a minimum property set. It works its way \
-down through the nested sub-properties of the transform, trying to determine \
-how they can be inferred. Each time it gets to an Alternatives, it will \
-consider whether one of the alternatives can be inferred, and if so, it will \
-specify the inferrable sub-property.\"\>"], "Output",
+Cell[BoxData["\<\"# ifmyulnv8\\n\\n## Examples\\n\\n![ARC examples for \
+ifmyulnv8](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+ifmyulnv8](rules.png?raw=true)\\n\\n\"\>"], "Output",
  CellChangeTimes->{
   3.8689649449325647`*^9, 3.8689651032264614`*^9, 3.868965255880374*^9, {
    3.8689656346787014`*^9, 3.8689656388795834`*^9}, 3.8689659650549088`*^9, 
@@ -163,17 +129,17 @@ specify the inferrable sub-property.\"\>"], "Output",
    3.8689817425868883`*^9, 3.868982223234877*^9, 3.868982479082567*^9, 
    3.86898324877942*^9, 3.8689837610104523`*^9, 3.868984201215054*^9, 
    3.868984549238701*^9, 3.868984622898755*^9, 3.868984741770414*^9, {
-   3.8689859334555855`*^9, 3.868985958101139*^9}},
- CellLabel->
-  "Out[323]=",ExpressionUUID->"50c3b7c0-6fa0-4f51-b409-e4816b0e9e62"]
+   3.8689859334555855`*^9, 3.868985958101139*^9}, 3.8689861799429007`*^9, 
+   3.868986287106942*^9, 3.868986321369092*^9, 3.8689970220164247`*^9},
+ CellLabel->"Out[40]=",ExpressionUUID->"5fcae080-760d-407d-99d7-39d0f6e006ba"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 Evaluator->"Local",
-WindowSize->{718.5, 735.},
-WindowMargins->{{-5.25, Automatic}, {Automatic, 0}},
+WindowSize->{958, 980},
+WindowMargins->{{-7., Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
   Cell[
@@ -293,7 +259,7 @@ TaggingRules->{
     "GenerateNotebookArgs" -> {"Function" -> Daniel`ARC`ARCTaskMarkdown}, 
     "ReturnNotebook" -> True}},
 InputAutoReplacements->{},
-FrontEndVersion->"13.1 for Microsoft Windows (64-bit) (June 16, 2022)",
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"09946e10-fd80-464b-ae3e-deb44a6ed03e"
 ]
@@ -310,24 +276,24 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 87, 0, 98, "Title",ExpressionUUID->"97ccada2-3a43-4e8a-a228-426aa37480ee"],
-Cell[670, 24, 225, 5, 52, "Code",ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbdedf317b7",
+Cell[670, 24, 225, 5, 54, "Code",ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbdedf317b7",
  InitializationCell->False],
 Cell[CellGroupData[{
 Cell[920, 33, 152, 3, 67, "Section",ExpressionUUID->"2ca3cfd3-74c7-47aa-993a-09c545fdb199"],
-Cell[1075, 38, 222, 5, 28, "Input",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
+Cell[1075, 38, 222, 5, 29, "Input",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1334, 48, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
 Cell[CellGroupData[{
 Cell[1438, 52, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
-Cell[1707, 61, 209, 3, 28, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
-Cell[1919, 66, 391, 8, 48, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
-Cell[2313, 76, 363, 7, 48, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
-Cell[2679, 85, 850, 15, 48, "Input",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
+Cell[1707, 61, 209, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell[1919, 66, 391, 8, 50, "Input",ExpressionUUID->"5fbb334c-6648-447d-98b7-95603981f576"],
+Cell[2313, 76, 363, 7, 50, "Input",ExpressionUUID->"410bda6c-a947-4150-afeb-44e44ea8a62b"],
+Cell[2679, 85, 873, 14, 50, "Input",ExpressionUUID->"9b31e9ce-d018-4980-8db5-5d687f883b46"],
 Cell[CellGroupData[{
-Cell[3554, 104, 396, 9, 52, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[3577, 103, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[3953, 115, 3760, 52, 851, "Output",ExpressionUUID->"50c3b7c0-6fa0-4f51-b409-e4816b0e9e62"]
+Cell[3972, 113, 1482, 20, 234, "Output",ExpressionUUID->"5fcae080-760d-407d-99d7-39d0f6e006ba"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

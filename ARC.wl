@@ -6182,6 +6182,21 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 1,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 8}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            (* Note that this increase in code size wasn't for this example, but rather was due
+               to code for publishing task notes, etc. *)
+            "CodeLength" -> 6544,
+            "ExampleImplemented" -> "ifmyulnv8",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
         |>
     }
 
