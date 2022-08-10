@@ -39,7 +39,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -50,7 +59,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -61,7 +79,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -72,7 +99,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>
                 }
             |>
@@ -92,7 +128,17 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                ]
+                            |>
+                        },
+                        "Width" -> 3,
+                        "Height" -> 3,
+                        "Color" -> 7
                     |>
                 }
             |>
@@ -168,7 +214,16 @@ Test[
                             "YInverse" -> -1,
                             "XInverse" -> -1
                         |>
-                    |>
+                    |>,
+                    "Shapes" -> {
+                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square", "Filled" -> True|>,
+                        <|"Name" -> "Rectangle", "Filled" -> True|>
+                    },
+                    "Width" -> 1,
+                    "Height" -> 1,
+                    "Color" -> 4
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -179,7 +234,16 @@ Test[
                             "YInverse" -> -1,
                             "XInverse" -> 1
                         |>
-                    |>
+                    |>,
+                    "Shapes" -> {
+                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square", "Filled" -> True|>,
+                        <|"Name" -> "Rectangle", "Filled" -> True|>
+                    },
+                    "Width" -> 1,
+                    "Height" -> 1,
+                    "Color" -> 4
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -190,7 +254,16 @@ Test[
                             "YInverse" -> 1,
                             "XInverse" -> -1
                         |>
-                    |>
+                    |>,
+                    "Shapes" -> {
+                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square", "Filled" -> True|>,
+                        <|"Name" -> "Rectangle", "Filled" -> True|>
+                    },
+                    "Width" -> 1,
+                    "Height" -> 1,
+                    "Color" -> 4
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -201,7 +274,16 @@ Test[
                             "YInverse" -> 1,
                             "XInverse" -> 1
                         |>
-                    |>
+                    |>,
+                    "Shapes" -> {
+                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square", "Filled" -> True|>,
+                        <|"Name" -> "Rectangle", "Filled" -> True|>
+                    },
+                    "Width" -> 1,
+                    "Height" -> 1,
+                    "Color" -> 4
                 |>
             }
         |>
@@ -243,7 +325,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -254,7 +345,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -265,7 +365,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -276,7 +385,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>
                 }
             |>
@@ -296,7 +414,17 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                ]
+                            |>
+                        },
+                        "Width" -> 3,
+                        "Height" -> 3,
+                        "Color" -> 7
                     |>
                 }
             |>
@@ -316,7 +444,17 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                ]
+                            |>
+                        },
+                        "Width" -> 3,
+                        "Height" -> 3,
+                        "Color" -> 7
                     |>
                 }
             |>
@@ -336,7 +474,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -347,7 +494,16 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -358,7 +514,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -369,7 +534,16 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>
+                        |>,
+                        "Shapes" -> {
+                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 1,
+                        "Height" -> 1,
+                        "Color" -> 4
                     |>
                 }
             |>

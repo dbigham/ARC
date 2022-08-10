@@ -13,8 +13,12 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Utility`BlockUUID[
-                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train"]]
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train"]
+                    ]
+                ]
             ]
         ]
     ]
@@ -41,16 +45,7 @@ Test[
                         "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>
                     |>
                 }
-            |>,
-            "Examples" -> {1, 2, 3},
-            "ExampleCount" -> 3,
-            "UseCount" -> 4,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e5",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e6",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742gc"
-            }
+            |>
         |>,
         <|"Colors" -> {1}|> -> <|
             "Transform" -> <|
@@ -61,27 +56,9 @@ Test[
                         "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
                     |>
                 }
-            |>,
-            "Examples" -> {1, 2, 3},
-            "ExampleCount" -> 3,
-            "UseCount" -> 4,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e4",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742gb"
-            }
+            |>
         |>,
-        <|"Colors" -> Except[{2} | {1}]|> -> <|
-            "Same" -> True,
-            "Examples" -> {2, 3},
-            "ExampleCount" -> 2,
-            "UseCount" -> 2,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e7",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742gd"
-            }
-        |>
+        <|"Colors" -> Except[{2} | {1}]|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220719-XYQH41"
@@ -228,4 +205,50 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220807-UIY7RU"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "ifmyulnv8-shape"]["Train"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    {
+        <|"Colors" -> {5}|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Shapes" -> {
+                            <|"Name" -> "Rectangle", "Filled" -> True|>,
+                            <|"Name" -> "Square", "Filled" -> True|>
+                        },
+                        "Width" -> Inactive[Plus][
+                            Daniel`ARC`ObjectValue["InputObject", "Width"],
+                            -2
+                        ],
+                        "Height" -> Inactive[Plus][
+                            Daniel`ARC`ObjectValue["InputObject", "Height"],
+                            -2
+                        ],
+                        "Color" -> Daniel`ARC`ObjectValue[
+                            <|"Width" -> 1|>,
+                            Inactive[First]["Colors"]
+                        ],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>
+                    |>
+                }
+            |>
+        |>,
+        <|"Colors" -> Except[{5}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+    }
+    ,
+    TestID -> "ARCFindRules-20220809-GFDCR1"
 ]

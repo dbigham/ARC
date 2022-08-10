@@ -24,14 +24,20 @@ Test[
                         <|
                             "Image" -> Daniel`ARC`ARCScene[{{2}}],
                             "Position" -> {1, 2},
+                            "Shapes" -> "SHAPES",
+                            "Colors" -> {"COLOR"},
                             "Y2" -> 1,
-                            "X2" -> 2
+                            "X2" -> 2,
+                            "Width" -> 3,
+                            "Height" -> 3
                         |>,
                         <|
                             "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
                             "Position" -> {2, 2},
                             "Y2" -> 4,
-                            "X2" -> 4
+                            "X2" -> 4,
+                            "Width" -> 3,
+                            "Height" -> 3
                         |>
                     }
                 |>,
@@ -50,14 +56,20 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{2}}],
                 "Position" -> {1, 2},
+                "Shapes" -> "SHAPES",
+                "Colors" -> {"COLOR"},
                 "Y2" -> 1,
-                "X2" -> 2
+                "X2" -> 2,
+                "Width" -> 3,
+                "Height" -> 3
             |>,
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
                 "Position" -> {2, 2},
                 "Y2" -> 4,
-                "X2" -> 4
+                "X2" -> 4,
+                "Width" -> 3,
+                "Height" -> 3
             |>
         },
         "Transform" -> <|
@@ -72,7 +84,11 @@ Test[
                             "YInverse" -> -3,
                             "XInverse" -> -2
                         |>
-                    |>
+                    |>,
+                    "Shapes" -> "SHAPES",
+                    "Width" -> 3,
+                    "Height" -> 3,
+                    "Color" -> "COLOR"
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
@@ -83,7 +99,9 @@ Test[
                             "YInverse" -> -2,
                             "XInverse" -> -2
                         |>
-                    |>
+                    |>,
+                    "Width" -> 3,
+                    "Height" -> 3
                 |>
             }
         |>

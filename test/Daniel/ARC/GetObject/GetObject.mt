@@ -69,3 +69,15 @@ Test[
     ,
     TestID -> "GetObject-20220723-DH0I2F"
 ]
+
+Test[
+    Daniel`ARC`GetObject[
+        "InputObject",
+        <|"Objects" -> {<|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>}|>,
+        <|"InputObject" -> "HERE"|>
+    ]
+    ,
+    "HERE"
+    ,
+    TestID -> "GetObject-20220809-JZ27M2"
+]

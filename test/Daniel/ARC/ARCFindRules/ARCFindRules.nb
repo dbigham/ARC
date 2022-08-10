@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    285721,       5643]
-NotebookOptionsPosition[    272444,       5352]
-NotebookOutlinePosition[    277970,       5489]
-CellTagsIndexPosition[    277927,       5486]
+NotebookDataLength[    332062,       6505]
+NotebookOptionsPosition[    317562,       6191]
+NotebookOutlinePosition[    323088,       6328]
+CellTagsIndexPosition[    323045,       6325]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCFindRules", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[1990]:=",ExpressionUUID->"14014c4a-a80c-42d2-a66d-35f48d820fe1"],
+  "In[504]:=",ExpressionUUID->"14014c4a-a80c-42d2-a66d-35f48d820fe1"],
 
 Cell[CellGroupData[{
 
@@ -617,7 +617,7 @@ Cell[BoxData[{
    3.8672660337861757`*^9, {3.8672693454360647`*^9, 3.867269349514227*^9}, {
    3.867680044980069*^9, 3.8676800456384745`*^9}, {3.868814336470375*^9, 
    3.868814340990885*^9}, {3.868956827857588*^9, 3.868956830383911*^9}},
- CellLabel->"In[1988]:=",
+ CellLabel->"In[433]:=",
  CellID->14966033,
  "TestId" -> 
  "ARCFindRules-20220719-XYQH41",ExpressionUUID->"c48ebed0-b092-4fe1-8bcd-\
@@ -678,10 +678,11 @@ Cell[BoxData[
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
+    {"\<\"                <|\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                \"", 
-         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -694,15 +695,17 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-           "\"<|\\\"RelativePosition\\\" -> \"", 
-           "\"<|\\\"Y\\\" -> -1, \\\"X\\\" -> -1|>\"", "\"|>\"", "\"|>\""}, 
-          "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
       "RowDefault"]},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> -1, \\\"X\\\" -> -1|>|>\"\>"},
+    {"\<\"                |>,\"\>"},
+    {"\<\"                <|\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                \"", 
-         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -715,15 +718,17 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-           "\"<|\\\"RelativePosition\\\" -> \"", 
-           "\"<|\\\"Y\\\" -> -1, \\\"X\\\" -> 1|>\"", "\"|>\"", "\"|>\""}, 
-          "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
       "RowDefault"]},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> -1, \\\"X\\\" -> 1|>|>\"\>"},
+    {"\<\"                |>,\"\>"},
+    {"\<\"                <|\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                \"", 
-         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -736,30 +741,35 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-           "\"<|\\\"RelativePosition\\\" -> \"", 
-           "\"<|\\\"Y\\\" -> 1, \\\"X\\\" -> -1|>\"", "\"|>\"", "\"|>\""}, 
-          "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
       "RowDefault"]},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> 1, \\\"X\\\" -> -1|>|>\"\>"},
+    {"\<\"                |>,\"\>"},
+    {"\<\"                <|\"\>"},
     {
-     TemplateBox[{"\"                \"", 
-       TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
-         TagBox[
-          
-          GridBox[{{"\"\""}}, AutoDelete -> False, 
-           GridBoxBackground -> {
-            "Columns" -> {{None}}, "Rows" -> {{None}}, 
-             "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0]}}, 
-           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
-            GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-           FrameStyle -> {
-             AbsoluteThickness[1], 
-             GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-         "\"<|\\\"RelativePosition\\\" -> \"", 
-         "\"<|\\\"Y\\\" -> 1, \\\"X\\\" -> 1|>\"", "\"|>\"", "\"|>\""}, 
-        "RowDefault"]},
+     TemplateBox[{
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
       "RowDefault"]},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> 1, \\\"X\\\" -> 1|>|>\"\>"},
+    {"\<\"                |>\"\>"},
     {"\<\"            }\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
@@ -846,89 +856,93 @@ Cell[BoxData[
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
     {
-     TemplateBox[{"\"    \"", 
-       TemplateBox[{"\"<|\\\"Colors\\\" -> Except[{\"", 
-         InterpretationBox[
-          ButtonBox[
-           TooltipBox[
-            GraphicsBox[{{
-               GrayLevel[0], 
-               RectangleBox[{0, 0}]}, {
-               GrayLevel[0], 
-               RectangleBox[{1, -1}]}, {
-               RGBColor[1, 0, 0], 
-               RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
-             "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
-             FrameStyle -> RGBColor[0.6666666666666666, 0., 0.], FrameTicks -> 
-             None, PlotRangePadding -> None, ImageSize -> 
-             Dynamic[{
-               Automatic, 
-                1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
-                 Magnification])}]], 
-            StyleBox[
-             RowBox[{"RGBColor", "[", 
-               RowBox[{"1", ",", "0", ",", "0"}], "]"}], NumberMarks -> 
-             False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-           Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
-           With[{Typeset`box$ = EvaluationBox[]}, 
-             If[
-              Not[
-               AbsoluteCurrentValue["Deployed"]], 
-              SelectionMove[Typeset`box$, All, Expression]; 
-              FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-              FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[1, 0, 0]; 
-              FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
-              MathLink`CallFrontEnd[
-                FrontEnd`AttachCell[Typeset`box$, 
-                 FrontEndResource["RGBColorValueSelector"], {
-                 0, {Left, Bottom}}, {Left, Top}, 
-                 "ClosingActions" -> {
-                  "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]],
-            BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
-           "Preemptive"], 
-          RGBColor[1, 0, 0], Editable -> False, Selectable -> False], 
-         "\"} | {\"", 
-         InterpretationBox[
-          ButtonBox[
-           TooltipBox[
-            GraphicsBox[{{
-               GrayLevel[0], 
-               RectangleBox[{0, 0}]}, {
-               GrayLevel[0], 
-               RectangleBox[{1, -1}]}, {
-               RGBColor[0, 0, 1], 
-               RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
-             "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
-             FrameStyle -> RGBColor[0., 0., 0.6666666666666666], FrameTicks -> 
-             None, PlotRangePadding -> None, ImageSize -> 
-             Dynamic[{
-               Automatic, 
-                1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
-                 Magnification])}]], 
-            StyleBox[
-             RowBox[{"RGBColor", "[", 
-               RowBox[{"0", ",", "0", ",", "1"}], "]"}], NumberMarks -> 
-             False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-           Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
-           With[{Typeset`box$ = EvaluationBox[]}, 
-             If[
-              Not[
-               AbsoluteCurrentValue["Deployed"]], 
-              SelectionMove[Typeset`box$, All, Expression]; 
-              FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-              FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[0, 0, 1]; 
-              FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
-              MathLink`CallFrontEnd[
-                FrontEnd`AttachCell[Typeset`box$, 
-                 FrontEndResource["RGBColorValueSelector"], {
-                 0, {Left, Bottom}}, {Left, Top}, 
-                 "ClosingActions" -> {
-                  "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]],
-            BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
-           "Preemptive"], 
-          RGBColor[0, 0, 1], Editable -> False, Selectable -> False], 
-         "\"}]|>\"", "\" -> \"", "\"<|\\\"Same\\\" -> True|>\""}, 
-        "RowDefault"]},
+     TemplateBox[{
+       TemplateBox[{
+         TemplateBox[{"\"    \"", 
+           TemplateBox[{"\"<|\\\"Colors\\\" -> Except[{\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[1, 0, 0], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> RGBColor[0.6666666666666666, 0., 0.], 
+                 FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   RowBox[{"1", ",", "0", ",", "0"}], "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[1, 0, 0]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[1, 0, 0], Editable -> False, Selectable -> False], 
+             "\"} | {\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[0, 0, 1], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> RGBColor[0., 0., 0.6666666666666666], 
+                 FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   RowBox[{"0", ",", "0", ",", "1"}], "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[0, 0, 1]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[0, 0, 1], Editable -> False, Selectable -> False], 
+             "\"}]|>\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
+        "RowDefault"], "\" <|\\\"Same\\\" -> True|>\""},
       "RowDefault"]},
     {"\<\"}\"\>"}
    },
@@ -955,9 +969,13 @@ Cell[BoxData[
    3.8687185732215447`*^9}, 3.868719001518729*^9, 3.868814157964348*^9, {
    3.8688142407923036`*^9, 3.868814342111347*^9}, 3.8688914363384075`*^9, {
    3.868891495006157*^9, 3.8688916075058484`*^9}, 3.868906966125425*^9, 
-   3.8689566202914248`*^9, 3.86895683125554*^9, 3.8689569303097043`*^9},
+   3.8689566202914248`*^9, 3.86895683125554*^9, 3.8689569303097043`*^9, 
+   3.8690854644036913`*^9, {3.869085524600066*^9, 3.869085551746231*^9}, 
+   3.8690856060007725`*^9, {3.8690856872583694`*^9, 3.8690857155476627`*^9}, 
+   3.869085773457055*^9, 3.8690859108194094`*^9, 3.8690859454436893`*^9, 
+   3.869085989753414*^9, 3.8690860253199897`*^9, 3.8690860870236645`*^9},
  CellLabel->
-  "Out[1989]=",ExpressionUUID->"4be23c69-c4f8-4cea-bc19-0a95bf13546c"]
+  "Out[434]=",ExpressionUUID->"442ab223-24db-4710-a98d-30ddff1dd6cf"]
 }, Closed]]
 }, Open  ]],
 
@@ -4206,13 +4224,14 @@ Cell[BoxData[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{
-   RowBox[{"BlockUUID", "@", "\n", 
-    RowBox[{"ARCFindRules", "[", 
-     RowBox[{
-      RowBox[{"ARCParseFile", "[", 
-       RowBox[{
-       "file", " ", "=", " ", "\"\<2wfys5w64-relative-right-side\>\""}], 
-       "]"}], "[", "\"\<Train\>\"", "]"}], "]"}]}], " ", "//", " ", 
+   RowBox[{"EchoTiming2", "@", "\n", 
+    RowBox[{"BlockUUID", "@", "\n", 
+     RowBox[{"ARCFindRules", "[", 
+      RowBox[{
+       RowBox[{"ARCParseFile", "[", 
+        RowBox[{
+        "file", " ", "=", " ", "\"\<2wfys5w64-relative-right-side\>\""}], 
+        "]"}], "[", "\"\<Train\>\"", "]"}], "]"}]}]}], " ", "//", " ", 
    "ARCSimplifyRules"}], " ", "//", " ", "ARCIndent"}]}], "Code",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
@@ -4220,12 +4239,751 @@ Cell[BoxData[{
    3.8672660337861757`*^9, {3.8672693454360647`*^9, 3.867269349514227*^9}, 
    3.867499994229134*^9, 3.8677713016691394`*^9, 3.8686141163349037`*^9, {
    3.868624531103616*^9, 3.8686245437420635`*^9}, {3.8688144392453165`*^9, 
-   3.8688144434485865`*^9}, 3.868911093823979*^9},
- CellLabel->"In[1976]:=",
+   3.8688144434485865`*^9}, 3.868911093823979*^9, {3.869085448404524*^9, 
+   3.869085449197527*^9}, {3.8691525339318466`*^9, 3.8691525357656755`*^9}},
+ CellLabel->"In[424]:=",
  CellID->50667145,
  "TestId" -> 
  "ARCFindRules-20220807-UIY7RU",ExpressionUUID->"805e1eec-36c5-4781-a6dc-\
 e33adf2a4a40"]
+}, Open  ]],
+
+Cell[BoxData[
+ TemplateBox[{"19.42`", "\"s\"", "seconds", "\"Seconds\""},
+  "Quantity"]], "Echo",
+ CellChangeTimes->{
+  3.869152555560586*^9},ExpressionUUID->"3fcc99b2-01b9-4d22-bac1-\
+71e849c21bc4"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"{\"\>"},
+    {"\<\"    <|\\\"AspectRatio\\\" -> 1|> -> <|\"\>"},
+    {"\<\"        \\\"Transform\\\" -> <|\"\>"},
+    {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
+    {"\<\"            \\\"Components\\\" -> {\"\>"},
+    {"\<\"                <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 0, 0]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> -1, \\\"XInverse\\\" -> 0|>|>\"\>"},
+    {"\<\"                |>\"\>"},
+    {"\<\"            }\"\>"},
+    {"\<\"        |>\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\\\"AspectRatio\\\" -> Except[1]|> -> <|\\\"Same\\\" -> \
+True|>\"\>"},
+    {"\<\"}\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{
+  3.867509210099213*^9, {3.867509263959066*^9, 3.8675092800657363`*^9}, {
+   3.867509314913948*^9, 3.8675093812516756`*^9}, 3.8675098690118017`*^9, {
+   3.867517073134873*^9, 3.867517090591299*^9}, 3.8675171520623827`*^9, 
+   3.8675174436029544`*^9, {3.8675175239177637`*^9, 3.86751753215022*^9}, {
+   3.8675183638645067`*^9, 3.867518387285736*^9}, 3.867518447967415*^9, 
+   3.867518828007168*^9, 3.8677713024401274`*^9, 3.868614119025273*^9, 
+   3.868614253642953*^9, {3.8686245318772883`*^9, 3.8686245442691154`*^9}, {
+   3.8687191615700483`*^9, 3.8687191876414967`*^9}, {3.8687192180779357`*^9, 
+   3.8687192663535175`*^9}, {3.868719345495755*^9, 3.8687193988417892`*^9}, 
+   3.868719438660494*^9, {3.868814436764351*^9, 3.868814443978154*^9}, 
+   3.8688191767469597`*^9, {3.868888082824964*^9, 3.8688881214424486`*^9}, {
+   3.8689110950852327`*^9, 3.868911115054349*^9}, {3.868956683761629*^9, 
+   3.868956691477605*^9}, 3.8690830449436283`*^9, 3.869083120540353*^9, 
+   3.869083162604032*^9, 3.8690833528503227`*^9, {3.8690835431777577`*^9, 
+   3.869083578740102*^9}, 3.869084127664784*^9, {3.869084178512805*^9, 
+   3.86908421325342*^9}, {3.8690842522434397`*^9, 3.8690842552884965`*^9}, {
+   3.8690848051774616`*^9, 3.8690848347136145`*^9}, 3.8690848836883307`*^9, 
+   3.869084936690646*^9, 3.869085014985712*^9, 3.8690850639615836`*^9, {
+   3.869085297302147*^9, 3.86908532735562*^9}, 3.869088469473807*^9, 
+   3.869152497123656*^9, 3.8691525555859075`*^9},
+ CellLabel->
+  "Out[425]=",ExpressionUUID->"21372760-1e1f-46ce-b397-add4a801cfa5"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["ifmyulnv8-shape", "Subsection",
+ CellChangeTimes->{
+  3.869088476934479*^9},ExpressionUUID->"a8b53078-7b90-4693-aa01-\
+dcf38b5532e1"],
+
+Cell[CellGroupData[{
+
+Cell["Examples", "Subsubsection",
+ CellChangeTimes->{{3.8672694085054417`*^9, 
+  3.8672694117860365`*^9}},ExpressionUUID->"45595758-f28c-45fc-bc11-\
+e4da3506458d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ARCParseFile", "[", 
+   RowBox[{"file", " ", "=", " ", "\"\<ifmyulnv8-shape\>\""}], "]"}], "[", 
+  "\"\<Train\>\"", "]"}]], "Input",
+ CellChangeTimes->{
+  3.867265090574972*^9, 3.867499988140068*^9, 3.867771296827591*^9, 
+   3.868614108640909*^9, 3.868624526364869*^9, 3.8689110859953465`*^9, {
+   3.8690884895029483`*^9, 3.869088490437058*^9}},
+ CellLabel->
+  "In[501]:=",ExpressionUUID->"7f35aecf-877a-4337-96bf-2f77354c0486"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Id\"\>", "\[Rule]", "0"}], ",", 
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            GrayLevel[0.5], {2, 3} -> GrayLevel[0.5], {2, 4} -> 
+            GrayLevel[0.5], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0.5], {3, 3} -> GrayLevel[0], {3, 4} -> 
+            GrayLevel[0.5], {3, 5} -> GrayLevel[0], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> GrayLevel[0.5], {4, 4} -> 
+            GrayLevel[0.5], {4, 5} -> GrayLevel[0], {4, 6} -> 
+            GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+            GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+            GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+            GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+            GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+            GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+            GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+            GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+            GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+            GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> RGBColor[1, 0, 0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            GrayLevel[0.5], {2, 3} -> GrayLevel[0.5], {2, 4} -> 
+            GrayLevel[0.5], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0.5], {3, 3} -> RGBColor[1, 0, 0], {3, 4} -> 
+            GrayLevel[0.5], {3, 5} -> GrayLevel[0], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> GrayLevel[0.5], {4, 4} -> 
+            GrayLevel[0.5], {4, 5} -> GrayLevel[0], {4, 6} -> 
+            GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+            GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+            GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+            GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+            GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+            GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+            GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+            GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+            GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+            GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}], ",", 
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Id\"\>", "\[Rule]", "1"}], ",", 
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            GrayLevel[0.5], {2, 3} -> GrayLevel[0.5], {2, 4} -> 
+            GrayLevel[0.5], {2, 5} -> GrayLevel[0.5], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0.5], {3, 3} -> GrayLevel[0], {3, 4} -> 
+            GrayLevel[0], {3, 5} -> GrayLevel[0.5], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> GrayLevel[0], {4, 4} -> 
+            GrayLevel[0], {4, 5} -> GrayLevel[0.5], {4, 6} -> 
+            GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0.5], {5, 3} -> GrayLevel[0.5], {5, 4} -> 
+            GrayLevel[0.5], {5, 5} -> GrayLevel[0.5], {5, 6} -> 
+            GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+            GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+            GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+            GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+            GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+            GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            RGBColor[0, 0, 1], {9, 3} -> GrayLevel[0], {9, 4} -> 
+            GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+            GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            GrayLevel[0.5], {2, 3} -> GrayLevel[0.5], {2, 4} -> 
+            GrayLevel[0.5], {2, 5} -> GrayLevel[0.5], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0.5], {3, 3} -> RGBColor[0, 0, 1], {3, 4} -> 
+            RGBColor[0, 0, 1], {3, 5} -> GrayLevel[0.5], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> RGBColor[0, 0, 1], {4, 4} -> 
+            RGBColor[0, 0, 1], {4, 5} -> GrayLevel[0.5], {4, 6} -> 
+            GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0.5], {5, 3} -> GrayLevel[0.5], {5, 4} -> 
+            GrayLevel[0.5], {5, 5} -> GrayLevel[0.5], {5, 6} -> 
+            GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+            GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+            GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+            GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+            GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+            GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+            GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+            GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}], ",", 
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Id\"\>", "\[Rule]", "2"}], ",", 
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            RGBColor[0, 1, 0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+            GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+            GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> GrayLevel[0.5], {4, 4} -> 
+            GrayLevel[0.5], {4, 5} -> GrayLevel[0.5], {4, 6} -> 
+            GrayLevel[0.5], {4, 7} -> GrayLevel[0.5], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0.5], {5, 3} -> GrayLevel[0], {5, 4} -> 
+            GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+            GrayLevel[0], {5, 7} -> GrayLevel[0.5], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0.5], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+            GrayLevel[0], {6, 7} -> GrayLevel[0.5], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0.5], {7, 3} -> GrayLevel[0], {7, 4} -> 
+            GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+            GrayLevel[0], {7, 7} -> GrayLevel[0.5], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0.5], {8, 3} -> GrayLevel[0], {8, 4} -> 
+            GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+            GrayLevel[0], {8, 7} -> GrayLevel[0.5], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            GrayLevel[0.5], {9, 3} -> GrayLevel[0.5], {9, 4} -> 
+            GrayLevel[0.5], {9, 5} -> GrayLevel[0.5], {9, 6} -> 
+            GrayLevel[0.5], {9, 7} -> GrayLevel[0.5], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+            GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+            GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+            GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+            GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+            GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+            GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+            GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+            GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0.5], {4, 3} -> GrayLevel[0.5], {4, 4} -> 
+            GrayLevel[0.5], {4, 5} -> GrayLevel[0.5], {4, 6} -> 
+            GrayLevel[0.5], {4, 7} -> GrayLevel[0.5], {4, 8} -> 
+            GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0.5], {5, 3} -> RGBColor[0, 1, 0], {5, 4} -> 
+            RGBColor[0, 1, 0], {5, 5} -> RGBColor[0, 1, 0], {5, 6} -> 
+            RGBColor[0, 1, 0], {5, 7} -> GrayLevel[0.5], {5, 8} -> 
+            GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0.5], {6, 3} -> RGBColor[0, 1, 0], {6, 4} -> 
+            RGBColor[0, 1, 0], {6, 5} -> RGBColor[0, 1, 0], {6, 6} -> 
+            RGBColor[0, 1, 0], {6, 7} -> GrayLevel[0.5], {6, 8} -> 
+            GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+            GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+            GrayLevel[0.5], {7, 3} -> RGBColor[0, 1, 0], {7, 4} -> 
+            RGBColor[0, 1, 0], {7, 5} -> RGBColor[0, 1, 0], {7, 6} -> 
+            RGBColor[0, 1, 0], {7, 7} -> GrayLevel[0.5], {7, 8} -> 
+            GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+            GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+            GrayLevel[0.5], {8, 3} -> RGBColor[0, 1, 0], {8, 4} -> 
+            RGBColor[0, 1, 0], {8, 5} -> RGBColor[0, 1, 0], {8, 6} -> 
+            RGBColor[0, 1, 0], {8, 7} -> GrayLevel[0.5], {8, 8} -> 
+            GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+            GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+            GrayLevel[0.5], {9, 3} -> GrayLevel[0.5], {9, 4} -> 
+            GrayLevel[0.5], {9, 5} -> GrayLevel[0.5], {9, 6} -> 
+            GrayLevel[0.5], {9, 7} -> GrayLevel[0.5], {9, 8} -> 
+            GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+            GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+            GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+            GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+            GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+            GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.86726509078863*^9, 3.867499988699355*^9, 
+  3.867504795384542*^9, 3.867771297280966*^9, 3.8686141092915344`*^9, 
+  3.868624526785202*^9, 3.868911086438897*^9, 3.869088490830573*^9},
+ CellLabel->
+  "Out[501]=",ExpressionUUID->"1bd93dd8-9552-4fc4-8df5-dcb6942093d3"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Test", "Subsubsection",
+ CellChangeTimes->{{3.8672694150090246`*^9, 
+  3.8672694152333684`*^9}},ExpressionUUID->"d9ea2a0e-4473-4c5b-8942-\
+848686b7180f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCFindRules-20220809-GFDCR1", Daniel`ARC`ARCFindRules, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658], 44801443]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> "ARCFindRules-20220809-GFDCR1"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCFindRules-20220809-GFDCR1", Daniel`ARC`ARCFindRules, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658], "CellID" -> 44801443, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCFindRules-20220809-GFDCR1", Daniel`ARC`ARCFindRules, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658], None], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCFindRules-20220809-GFDCR1"}, ImageSize -> {Full, Automatic},
+           Alignment -> {Right, Center}]}}], ImageSize -> {Full, Automatic}, 
+      FrameStyle -> GrayLevel[0.8], FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{826., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable202289224934111658}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8690885744936485`*^9},ExpressionUUID->"c67c14c7-ff9f-42e0-9b3f-\
+58e78ae94032"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"BlockUUID", "@", "\n", 
+    RowBox[{"ARCFindRules", "[", 
+     RowBox[{
+      RowBox[{"ARCParseFile", "[", 
+       RowBox[{"file", " ", "=", " ", "\"\<ifmyulnv8-shape\>\""}], "]"}], 
+      "[", "\"\<Train\>\"", "]"}], "]"}]}], " ", "//", " ", 
+   "ARCSimplifyRules"}], " ", "//", " ", "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8672650969189262`*^9, 3.8672651018792725`*^9}, 
+   3.8672660337861757`*^9, {3.8672693454360647`*^9, 3.867269349514227*^9}, 
+   3.867499994229134*^9, 3.8677713016691394`*^9, 3.8686141163349037`*^9, {
+   3.868624531103616*^9, 3.8686245437420635`*^9}, {3.8688144392453165`*^9, 
+   3.8688144434485865`*^9}, 3.868911093823979*^9, {3.869085448404524*^9, 
+   3.869085449197527*^9}, 3.8690884990658164`*^9},
+ CellLabel->"In[502]:=",
+ CellID->44801443,
+ "TestId" -> 
+ "ARCFindRules-20220809-GFDCR1",ExpressionUUID->"98058e6b-5764-4e2a-bc58-\
+3405cb0c6d2c"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -4235,65 +4993,139 @@ Cell[BoxData[
      TemplateBox[{
        TemplateBox[{
          TemplateBox[{"\"    \"", 
-           TemplateBox[{"\"<|\\\"Shapes\\\" -> \"", 
-             TagBox[
-              TooltipBox[
-               FrameBox["\"Square\"", FrameStyle -> Directive[
-                  RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 
-                4, Background -> 
-                RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
-                BaseStyle -> {
-                  RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-                BaselinePosition -> Baseline, ContentPadding -> True, 
-                FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-               "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-               LabelStyle -> "TextStyling"], 
-              Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-             "\"|>\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
+           TemplateBox[{"\"<|\\\"Colors\\\" -> {\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   GrayLevel[0.5], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> GrayLevel[0.33333333333333337`], FrameTicks -> 
+                 None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"GrayLevel", "[", "0.5`", "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   GrayLevel[0.5]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["GrayLevelColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              GrayLevel[0.5], Editable -> False, Selectable -> False], 
+             "\"}|>\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
         "RowDefault"], "\" <|\""},
       "RowDefault"]},
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
+    {"\<\"                <|\"\>"},
     {
-     TemplateBox[{"\"                \"", 
-       TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
-         TagBox[
-          
-          GridBox[{{"\"\""}}, AutoDelete -> False, 
-           GridBoxBackground -> {
-            "Columns" -> {{None}}, "Rows" -> {{None}}, 
-             "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 0, 0]}}, 
-           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
-            GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-           FrameStyle -> {
-             AbsoluteThickness[1], 
-             GrayLevel[0.5]}], "Grid"], "\", \\\"Position\\\" -> \"", 
-         "\"<|\\\"RelativePosition\\\" -> \"", 
-         "\"<|\\\"Y\\\" -> -1, \\\"XInverse\\\" -> 0|>\"", "\"|>\"", 
-         "\"|>\""}, "RowDefault"]},
+     TemplateBox[{
+       TemplateBox[{"\"                    \"", 
+         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", 
+           TagBox[
+            TooltipBox[
+             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+              Background -> 
+              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+              BaselinePosition -> Baseline, ContentPadding -> True, 
+              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
+              LabelStyle -> "TextStyling"], 
+            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
+           "\", \"", 
+           TagBox[
+            TooltipBox[
+             FrameBox["\"Square\"", FrameStyle -> Directive[
+                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+              Background -> 
+              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+              BaselinePosition -> Baseline, ContentPadding -> True, 
+              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+             LabelStyle -> "TextStyling"], 
+            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
+           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
+    {"\<\"                    \\\"Width\\\" -> \
+Inactive[Plus][ObjectValue[\\\"InputObject\\\", \\\"Width\\\"], -2],\"\>"},
+    {"\<\"                    \\\"Height\\\" -> Inactive[Plus][ObjectValue[\\\
+\"InputObject\\\", \\\"Height\\\"], -2],\"\>"},
+    {"\<\"                    \\\"Color\\\" -> ObjectValue[<|\\\"Width\\\" -> \
+1|>, Inactive[First][\\\"Colors\\\"]],\"\>"},
+    {"\<\"                    \\\"Position\\\" -> <|\\\"RelativePosition\\\" \
+-> <|\\\"Y\\\" -> 1, \\\"X\\\" -> 1|>|>\"\>"},
+    {"\<\"                |>\"\>"},
     {"\<\"            }\"\>"},
     {"\<\"        |>\"\>"},
     {"\<\"    |>,\"\>"},
     {
      TemplateBox[{"\"    \"", 
-       TemplateBox[{"\"<|\\\"Shapes\\\" -> Except[\"", 
-         TagBox[
-          TooltipBox[
-           FrameBox["\"Square\"", FrameStyle -> Directive[
-              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-            Background -> 
-            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-            BaselinePosition -> Baseline, ContentPadding -> True, 
-            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-           LabelStyle -> "TextStyling"], 
-          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-         "\"]|>\"", "\" -> \"", "\"<|\\\"Same\\\" -> True|>\""}, 
-        "RowDefault"]},
+       TemplateBox[{"\"<|\\\"Colors\\\" -> Except[{\"", 
+         InterpretationBox[
+          ButtonBox[
+           TooltipBox[
+            GraphicsBox[{{
+               GrayLevel[0], 
+               RectangleBox[{0, 0}]}, {
+               GrayLevel[0], 
+               RectangleBox[{1, -1}]}, {
+               GrayLevel[0.5], 
+               RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+             "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+             FrameStyle -> GrayLevel[0.33333333333333337`], FrameTicks -> 
+             None, PlotRangePadding -> None, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            StyleBox[
+             RowBox[{"GrayLevel", "[", "0.5`", "]"}], NumberMarks -> False]], 
+           Appearance -> None, BaseStyle -> {}, BaselinePosition -> Baseline, 
+           DefaultBaseStyle -> {}, ButtonFunction :> 
+           With[{Typeset`box$ = EvaluationBox[]}, 
+             If[
+              Not[
+               AbsoluteCurrentValue["Deployed"]], 
+              SelectionMove[Typeset`box$, All, Expression]; 
+              FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+              FrontEnd`Private`$ColorSelectorInitialColor = GrayLevel[0.5]; 
+              FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+              MathLink`CallFrontEnd[
+                FrontEnd`AttachCell[Typeset`box$, 
+                 FrontEndResource["GrayLevelColorValueSelector"], {
+                 0, {Left, Bottom}}, {Left, Top}, 
+                 "ClosingActions" -> {
+                  "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]],
+            BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
+           "Preemptive"], 
+          GrayLevel[0.5], Editable -> False, Selectable -> False], "\"}]|>\"",
+          "\" -> \"", "\"<|\\\"Transform\\\" -> \"", 
+         "\"<|\\\"Type\\\" -> \\\"Delete\\\"|>\"", "\"|>\""}, "RowDefault"]},
       "RowDefault"]},
     {"\<\"}\"\>"}
    },
@@ -4314,9 +5146,16 @@ Cell[BoxData[
    3.868719438660494*^9, {3.868814436764351*^9, 3.868814443978154*^9}, 
    3.8688191767469597`*^9, {3.868888082824964*^9, 3.8688881214424486`*^9}, {
    3.8689110950852327`*^9, 3.868911115054349*^9}, {3.868956683761629*^9, 
-   3.868956691477605*^9}},
+   3.868956691477605*^9}, 3.8690830449436283`*^9, 3.869083120540353*^9, 
+   3.869083162604032*^9, 3.8690833528503227`*^9, {3.8690835431777577`*^9, 
+   3.869083578740102*^9}, 3.869084127664784*^9, {3.869084178512805*^9, 
+   3.86908421325342*^9}, {3.8690842522434397`*^9, 3.8690842552884965`*^9}, {
+   3.8690848051774616`*^9, 3.8690848347136145`*^9}, 3.8690848836883307`*^9, 
+   3.869084936690646*^9, 3.869085014985712*^9, 3.8690850639615836`*^9, {
+   3.869085297302147*^9, 3.86908532735562*^9}, 3.869088469473807*^9, 
+   3.869088501220518*^9},
  CellLabel->
-  "Out[1977]=",ExpressionUUID->"9486c0f0-a046-47db-b1da-db7f74bdf2d5"]
+  "Out[503]=",ExpressionUUID->"bb2c861c-9cf4-4809-a4b3-62111727ae81"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]],
@@ -5490,156 +6329,179 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 84, 0, 98, "Title",ExpressionUUID->"5efbc8fc-8f11-4cda-be06-02f6a6fab682"],
-Cell[667, 24, 248, 6, 54, "Code",ExpressionUUID->"14014c4a-a80c-42d2-a66d-35f48d820fe1",
+Cell[667, 24, 247, 6, 54, "Code",ExpressionUUID->"14014c4a-a80c-42d2-a66d-35f48d820fe1",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[940, 34, 79, 0, 67, "Section",ExpressionUUID->"84106308-7b74-4521-bc96-b205201be52e"],
+Cell[939, 34, 79, 0, 67, "Section",ExpressionUUID->"84106308-7b74-4521-bc96-b205201be52e"],
 Cell[CellGroupData[{
-Cell[1044, 38, 155, 3, 54, "Subsection",ExpressionUUID->"9e0c2225-6f42-46e2-a9bb-ad663fc2760a"],
+Cell[1043, 38, 155, 3, 54, "Subsection",ExpressionUUID->"9e0c2225-6f42-46e2-a9bb-ad663fc2760a"],
 Cell[CellGroupData[{
-Cell[1224, 45, 163, 3, 45, "Subsubsection",ExpressionUUID->"0d5dd4f2-64cb-4e37-9576-9de77df814b2"],
+Cell[1223, 45, 163, 3, 45, "Subsubsection",ExpressionUUID->"0d5dd4f2-64cb-4e37-9576-9de77df814b2"],
 Cell[CellGroupData[{
-Cell[1412, 52, 285, 7, 28, "Input",ExpressionUUID->"dcb539a0-41ab-4a2b-918d-f6ba7727b1ab"],
-Cell[1700, 61, 25318, 445, 736, "Output",ExpressionUUID->"91d4c295-d245-431e-9faf-2f61a5826cbb"]
+Cell[1411, 52, 285, 7, 28, "Input",ExpressionUUID->"dcb539a0-41ab-4a2b-918d-f6ba7727b1ab"],
+Cell[1699, 61, 25318, 445, 736, "Output",ExpressionUUID->"91d4c295-d245-431e-9faf-2f61a5826cbb"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[27067, 512, 159, 3, 37, "Subsubsection",ExpressionUUID->"c955cb49-a556-4b5c-8c61-c0e0d60d5b23"],
+Cell[27066, 512, 159, 3, 37, "Subsubsection",ExpressionUUID->"c955cb49-a556-4b5c-8c61-c0e0d60d5b23"],
 Cell[CellGroupData[{
-Cell[27251, 519, 3484, 80, 52, "TestUI",ExpressionUUID->"5ae1bdc1-a75a-4700-a00f-ca30ce0d4f9c",
+Cell[27250, 519, 3484, 80, 52, "TestUI",ExpressionUUID->"5ae1bdc1-a75a-4700-a00f-ca30ce0d4f9c",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[30738, 601, 934, 22, 72, "Code",ExpressionUUID->"c48ebed0-b092-4fe1-8bcd-01f0ae61fcd5",
+Cell[30737, 601, 933, 22, 72, "Code",ExpressionUUID->"c48ebed0-b092-4fe1-8bcd-01f0ae61fcd5",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->14966033]
 }, Open  ]],
-Cell[31687, 626, 16099, 333, 567, "Output",ExpressionUUID->"4be23c69-c4f8-4cea-bc19-0a95bf13546c"]
+Cell[31685, 626, 17104, 351, 771, "Output",ExpressionUUID->"442ab223-24db-4710-a98d-30ddff1dd6cf"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[47835, 965, 178, 3, 54, "Subsection",ExpressionUUID->"03621f3f-f7fd-4e95-81b3-d4adbe6f8dc8"],
+Cell[48838, 983, 178, 3, 54, "Subsection",ExpressionUUID->"03621f3f-f7fd-4e95-81b3-d4adbe6f8dc8"],
 Cell[CellGroupData[{
-Cell[48038, 972, 163, 3, 45, "Subsubsection",ExpressionUUID->"881eb234-2e5d-4c1b-906f-216e33b09727"],
+Cell[49041, 990, 163, 3, 45, "Subsubsection",ExpressionUUID->"881eb234-2e5d-4c1b-906f-216e33b09727"],
 Cell[CellGroupData[{
-Cell[48226, 979, 307, 7, 28, "Input",ExpressionUUID->"cf6dd16c-1155-45d0-a002-80299d600e03"],
-Cell[48536, 988, 9570, 208, 188, "Output",ExpressionUUID->"814da922-d4a6-43b4-be3c-f0e8f41485b4"]
+Cell[49229, 997, 307, 7, 28, "Input",ExpressionUUID->"cf6dd16c-1155-45d0-a002-80299d600e03"],
+Cell[49539, 1006, 9570, 208, 188, "Output",ExpressionUUID->"814da922-d4a6-43b4-be3c-f0e8f41485b4"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[58155, 1202, 159, 3, 37, "Subsubsection",ExpressionUUID->"38d6bba3-8b8a-4e2d-a897-3ed78bec1ec5"],
+Cell[59158, 1220, 159, 3, 37, "Subsubsection",ExpressionUUID->"38d6bba3-8b8a-4e2d-a897-3ed78bec1ec5"],
 Cell[CellGroupData[{
-Cell[58339, 1209, 3482, 80, 52, "TestUI",ExpressionUUID->"13ad9004-2ac4-455b-83f9-6155e755d03d",
+Cell[59342, 1227, 3482, 80, 52, "TestUI",ExpressionUUID->"13ad9004-2ac4-455b-83f9-6155e755d03d",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[61824, 1291, 711, 18, 54, "Code",ExpressionUUID->"4090641f-8556-4635-bf9c-07af88259a44",
+Cell[62827, 1309, 711, 18, 54, "Code",ExpressionUUID->"4090641f-8556-4635-bf9c-07af88259a44",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->88555936]
 }, Open  ]],
-Cell[62550, 1312, 824, 12, 33, "Output",ExpressionUUID->"d516218a-cf2c-4505-993e-505b0532d08c"]
+Cell[63553, 1330, 824, 12, 33, "Output",ExpressionUUID->"d516218a-cf2c-4505-993e-505b0532d08c"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[63423, 1330, 134, 3, 54, "Subsection",ExpressionUUID->"9a58ceb4-8b5f-4027-8053-6f0ea5ddac0e"],
+Cell[64426, 1348, 134, 3, 54, "Subsection",ExpressionUUID->"9a58ceb4-8b5f-4027-8053-6f0ea5ddac0e"],
 Cell[CellGroupData[{
-Cell[63582, 1337, 163, 3, 45, "Subsubsection",ExpressionUUID->"e3058ee8-30ef-4b94-b667-0fe3df70c7c9"],
+Cell[64585, 1355, 163, 3, 45, "Subsubsection",ExpressionUUID->"e3058ee8-30ef-4b94-b667-0fe3df70c7c9"],
 Cell[CellGroupData[{
-Cell[63770, 1344, 332, 8, 28, "Input",ExpressionUUID->"8e7f7cab-c6e1-4c67-8ff3-8672ae3c155f"],
-Cell[64105, 1354, 22112, 388, 535, "Output",ExpressionUUID->"a3e6303b-ccca-4eab-81eb-75804a8fe35e"]
+Cell[64773, 1362, 332, 8, 28, "Input",ExpressionUUID->"8e7f7cab-c6e1-4c67-8ff3-8672ae3c155f"],
+Cell[65108, 1372, 22112, 388, 535, "Output",ExpressionUUID->"a3e6303b-ccca-4eab-81eb-75804a8fe35e"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[86266, 1748, 159, 3, 37, "Subsubsection",ExpressionUUID->"9c539d67-e1a6-4452-ae3d-6d907ac83455"],
+Cell[87269, 1766, 159, 3, 37, "Subsubsection",ExpressionUUID->"9c539d67-e1a6-4452-ae3d-6d907ac83455"],
 Cell[CellGroupData[{
-Cell[86450, 1755, 3479, 79, 52, "TestUI",ExpressionUUID->"a5b7aeb3-9b5a-49fc-ba27-da3bd96ccdbb",
+Cell[87453, 1773, 3479, 79, 52, "TestUI",ExpressionUUID->"a5b7aeb3-9b5a-49fc-ba27-da3bd96ccdbb",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[89932, 1836, 828, 20, 72, "Code",ExpressionUUID->"db57ce56-03c0-4037-acf0-a51da9b74937",
+Cell[90935, 1854, 828, 20, 72, "Code",ExpressionUUID->"db57ce56-03c0-4037-acf0-a51da9b74937",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->61527401]
 }, Open  ]],
-Cell[90775, 1859, 4828, 100, 405, "Output",ExpressionUUID->"0653a134-9223-431b-aed0-f30c5454dd17"]
+Cell[91778, 1877, 4828, 100, 405, "Output",ExpressionUUID->"0653a134-9223-431b-aed0-f30c5454dd17"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[95652, 1965, 156, 3, 54, "Subsection",ExpressionUUID->"cc372807-1a6f-4702-9a7f-a6bb86f767f7"],
+Cell[96655, 1983, 156, 3, 54, "Subsection",ExpressionUUID->"cc372807-1a6f-4702-9a7f-a6bb86f767f7"],
 Cell[CellGroupData[{
-Cell[95833, 1972, 163, 3, 45, "Subsubsection",ExpressionUUID->"170fa733-2653-45dd-a448-571b5d695932"],
+Cell[96836, 1990, 163, 3, 45, "Subsubsection",ExpressionUUID->"170fa733-2653-45dd-a448-571b5d695932"],
 Cell[CellGroupData[{
-Cell[96021, 1979, 354, 8, 28, "Input",ExpressionUUID->"3c702656-50da-4f9e-8079-35e3e5aafc4b"],
-Cell[96378, 1989, 33917, 586, 904, "Output",ExpressionUUID->"f2496f94-6551-4ab7-944e-acb8ce3007cd"]
+Cell[97024, 1997, 354, 8, 28, "Input",ExpressionUUID->"3c702656-50da-4f9e-8079-35e3e5aafc4b"],
+Cell[97381, 2007, 33917, 586, 904, "Output",ExpressionUUID->"f2496f94-6551-4ab7-944e-acb8ce3007cd"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[130344, 2581, 159, 3, 37, "Subsubsection",ExpressionUUID->"381c9f9a-5394-4657-951b-1d675eba2444"],
+Cell[131347, 2599, 159, 3, 37, "Subsubsection",ExpressionUUID->"381c9f9a-5394-4657-951b-1d675eba2444"],
 Cell[CellGroupData[{
-Cell[130528, 2588, 3450, 79, 52, "TestUI",ExpressionUUID->"0b2a38d1-7490-4359-872d-f035c4892e9b",
+Cell[131531, 2606, 3450, 79, 52, "TestUI",ExpressionUUID->"0b2a38d1-7490-4359-872d-f035c4892e9b",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[133981, 2669, 853, 20, 72, "Code",ExpressionUUID->"552be973-1769-4448-99d0-f2b5992a96b4",
+Cell[134984, 2687, 853, 20, 72, "Code",ExpressionUUID->"552be973-1769-4448-99d0-f2b5992a96b4",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->47410760]
 }, Open  ]],
-Cell[134849, 2692, 9587, 205, 541, "Output",ExpressionUUID->"c6ff3ed1-c83e-4d52-8e08-ec06f1c4eae2"]
+Cell[135852, 2710, 9587, 205, 541, "Output",ExpressionUUID->"c6ff3ed1-c83e-4d52-8e08-ec06f1c4eae2"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[144485, 2903, 180, 3, 54, "Subsection",ExpressionUUID->"488c0c8e-1b6f-4a4a-af81-bc26118fa8cd"],
+Cell[145488, 2921, 180, 3, 54, "Subsection",ExpressionUUID->"488c0c8e-1b6f-4a4a-af81-bc26118fa8cd"],
 Cell[CellGroupData[{
-Cell[144690, 2910, 163, 3, 45, "Subsubsection",ExpressionUUID->"e5be6af6-fc69-4526-9600-3082151c40f6"],
+Cell[145693, 2928, 163, 3, 45, "Subsubsection",ExpressionUUID->"e5be6af6-fc69-4526-9600-3082151c40f6"],
 Cell[CellGroupData[{
-Cell[144878, 2917, 376, 8, 28, "Input",ExpressionUUID->"e122f92b-97bb-4db0-8e9f-970b204b855a"],
-Cell[145257, 2927, 17108, 299, 487, "Output",ExpressionUUID->"0a03964a-e079-4d50-b05f-e65776ee075d"]
+Cell[145881, 2935, 376, 8, 28, "Input",ExpressionUUID->"e122f92b-97bb-4db0-8e9f-970b204b855a"],
+Cell[146260, 2945, 17108, 299, 487, "Output",ExpressionUUID->"0a03964a-e079-4d50-b05f-e65776ee075d"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[162414, 3232, 159, 3, 37, "Subsubsection",ExpressionUUID->"2d896bde-6cef-4531-a7de-9b4aa4e0a3b9"],
+Cell[163417, 3250, 159, 3, 37, "Subsubsection",ExpressionUUID->"2d896bde-6cef-4531-a7de-9b4aa4e0a3b9"],
 Cell[CellGroupData[{
-Cell[162598, 3239, 3484, 80, 52, "TestUI",ExpressionUUID->"13bb6dff-ec0a-47ed-8d65-b46089a25ede",
+Cell[163601, 3257, 3484, 80, 52, "TestUI",ExpressionUUID->"13bb6dff-ec0a-47ed-8d65-b46089a25ede",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[166085, 3321, 966, 23, 72, "Code",ExpressionUUID->"fd47fb96-1b61-452e-b60c-b7bdbdd00003",
+Cell[167088, 3339, 966, 23, 72, "Code",ExpressionUUID->"fd47fb96-1b61-452e-b60c-b7bdbdd00003",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->51062914]
 }, Open  ]],
-Cell[167066, 3347, 10118, 214, 117, "Output",ExpressionUUID->"9eb048ae-827b-4bb8-ab66-6e1674ed5507"]
+Cell[168069, 3365, 10118, 214, 117, "Output",ExpressionUUID->"9eb048ae-827b-4bb8-ab66-6e1674ed5507"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[177233, 3567, 155, 3, 54, "Subsection",ExpressionUUID->"13041243-e8e2-4e33-9491-4e20878f04bc"],
+Cell[178236, 3585, 155, 3, 54, "Subsection",ExpressionUUID->"13041243-e8e2-4e33-9491-4e20878f04bc"],
 Cell[CellGroupData[{
-Cell[177413, 3574, 163, 3, 45, "Subsubsection",ExpressionUUID->"f569816e-2ace-458d-8a7d-42a30039aba7"],
+Cell[178416, 3592, 163, 3, 45, "Subsubsection",ExpressionUUID->"f569816e-2ace-458d-8a7d-42a30039aba7"],
 Cell[CellGroupData[{
-Cell[177601, 3581, 426, 9, 29, "Input",ExpressionUUID->"096d2013-f20a-4761-bccf-f6a9a5d57cf2"],
-Cell[178030, 3592, 30836, 516, 811, "Output",ExpressionUUID->"76b29bb8-d4a2-4e13-b797-f0628e5ad6bc"]
+Cell[178604, 3599, 426, 9, 29, "Input",ExpressionUUID->"096d2013-f20a-4761-bccf-f6a9a5d57cf2"],
+Cell[179033, 3610, 30836, 516, 811, "Output",ExpressionUUID->"76b29bb8-d4a2-4e13-b797-f0628e5ad6bc"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[208915, 4114, 159, 3, 37, "Subsubsection",ExpressionUUID->"d3741149-82b9-4d63-88f8-4db477d2f312"],
+Cell[209918, 4132, 159, 3, 37, "Subsubsection",ExpressionUUID->"d3741149-82b9-4d63-88f8-4db477d2f312"],
 Cell[CellGroupData[{
-Cell[209099, 4121, 3484, 80, 52, "TestUI",ExpressionUUID->"5389e188-01a7-4ca2-bc2a-6d3e40eac88c",
+Cell[210102, 4139, 3484, 80, 52, "TestUI",ExpressionUUID->"5389e188-01a7-4ca2-bc2a-6d3e40eac88c",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[212586, 4203, 1019, 24, 72, "Code",ExpressionUUID->"805e1eec-36c5-4781-a6dc-e33adf2a4a40",
+Cell[213589, 4221, 1165, 26, 90, "Code",ExpressionUUID->"805e1eec-36c5-4781-a6dc-e33adf2a4a40",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->50667145]
 }, Open  ]],
-Cell[213620, 4230, 4287, 88, 239, "Output",ExpressionUUID->"9486c0f0-a046-47db-b1da-db7f74bdf2d5"]
+Cell[214769, 4250, 199, 5, 32, "Echo",ExpressionUUID->"3fcc99b2-01b9-4d22-bac1-71e849c21bc4"],
+Cell[214971, 4257, 3224, 63, 269, "Output",ExpressionUUID->"21372760-1e1f-46ce-b397-add4a801cfa5"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[218244, 4326, 139, 3, 54, "Subsection",ExpressionUUID->"a8b53078-7b90-4693-aa01-dcf38b5532e1"],
+Cell[CellGroupData[{
+Cell[218408, 4333, 163, 3, 45, "Subsubsection",ExpressionUUID->"45595758-f28c-45fc-bc11-e4da3506458d"],
+Cell[CellGroupData[{
+Cell[218596, 4340, 463, 10, 29, "Input",ExpressionUUID->"7f35aecf-877a-4337-96bf-2f77354c0486"],
+Cell[219062, 4352, 30523, 514, 811, "Output",ExpressionUUID->"1bd93dd8-9552-4fc4-8df5-dcb6942093d3"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[249634, 4872, 159, 3, 37, "Subsubsection",ExpressionUUID->"d9ea2a0e-4473-4c5b-8942-848686b7180f"],
+Cell[CellGroupData[{
+Cell[249818, 4879, 3484, 80, 52, "TestUI",ExpressionUUID->"c67c14c7-ff9f-42e0-9b3f-58e78ae94032",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[253305, 4961, 1069, 24, 72, "Code",ExpressionUUID->"98058e6b-5764-4e2a-bc58-3405cb0c6d2c",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->44801443]
+}, Open  ]],
+Cell[254389, 4988, 8636, 169, 315, "Output",ExpressionUUID->"bb2c861c-9cf4-4809-a4b3-62111727ae81"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[217968, 4325, 153, 3, 67, "Section",ExpressionUUID->"a2ff4f2f-7a37-4025-9840-90e53d031879"],
+Cell[263086, 5164, 153, 3, 67, "Section",ExpressionUUID->"a2ff4f2f-7a37-4025-9840-90e53d031879"],
 Cell[CellGroupData[{
-Cell[218146, 4332, 132, 3, 54, "Subsection",ExpressionUUID->"308134cf-008c-4060-baa3-c87666a87902"],
+Cell[263264, 5171, 132, 3, 54, "Subsection",ExpressionUUID->"308134cf-008c-4060-baa3-c87666a87902"],
 Cell[CellGroupData[{
-Cell[218303, 4339, 146, 3, 32, "Item",ExpressionUUID->"891f05c3-8258-4a61-89e7-bc61bb4cd231"],
+Cell[263421, 5178, 146, 3, 32, "Item",ExpressionUUID->"891f05c3-8258-4a61-89e7-bc61bb4cd231"],
 Cell[CellGroupData[{
-Cell[218474, 4346, 161, 3, 26, "Subitem",ExpressionUUID->"42492b3b-dc67-4748-911f-a1ac9c5e78fd"],
-Cell[218638, 4351, 949, 22, 126, "Code",ExpressionUUID->"1537cd2b-f011-413f-8383-90d0ac80e962",
+Cell[263592, 5185, 161, 3, 26, "Subitem",ExpressionUUID->"42492b3b-dc67-4748-911f-a1ac9c5e78fd"],
+Cell[263756, 5190, 949, 22, 126, "Code",ExpressionUUID->"1537cd2b-f011-413f-8383-90d0ac80e962",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->152869929],
-Cell[219590, 4375, 52790, 970, 323, "Output",ExpressionUUID->"46ff7231-c1b4-44ac-8635-d409c337b0c6"]
+Cell[264708, 5214, 52790, 970, 323, "Output",ExpressionUUID->"46ff7231-c1b4-44ac-8635-d409c337b0c6"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

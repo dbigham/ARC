@@ -54,8 +54,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{2, 8, 8}, {2, 1, 8}, {2, 2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Square", "Filled" -> True|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {1, 2, 8},
                 "Position" -> {1, 1},
@@ -133,8 +133,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {1},
                         "Position" -> {2, 2},
@@ -269,8 +269,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {4},
                         "Position" -> {3, 2},
@@ -294,8 +294,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {4},
                         "Position" -> {3, 4},
@@ -319,8 +319,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {2},
                         "Position" -> {4, 3},
@@ -344,8 +344,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {4},
                         "Position" -> {5, 2},
@@ -369,8 +369,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {4},
                         "Position" -> {5, 4},
@@ -464,8 +464,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {1},
                         "Position" -> {7, 7},
@@ -648,8 +648,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{7}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {7},
                         "Position" -> {1, 1},
@@ -747,7 +747,9 @@ Test[
                                     }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-                            |>
+                            |>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>
                         },
                         "Colors" -> {5},
                         "Position" -> {2, 2},
@@ -799,7 +801,7 @@ Test[
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
                     <|"Name" -> "Line", "Angle" -> 0|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {7},
                 "Position" -> {1, 9},
@@ -849,7 +851,7 @@ Test[
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
                     <|"Name" -> "Line", "Angle" -> 0|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {6},
                 "Position" -> {3, 8},
@@ -891,8 +893,8 @@ Test[
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{7}}]|>,
                     <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Square", "Filled" -> True|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {7},
                 "Position" -> {6, 9},
@@ -1009,8 +1011,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{7}}]|>,
                             <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>
+                            <|"Name" -> "Square", "Filled" -> True|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
                         "Colors" -> {7},
                         "Position" -> {8, 5},
@@ -1082,7 +1084,8 @@ Test[
                                     }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-                            |>
+                            |>,
+                            <|"Name" -> "Rectangle"|>
                         },
                         "Colors" -> {5},
                         "Position" -> {8, 6},
@@ -1125,8 +1128,8 @@ Test[
                 "PixelPositions" -> {{9, 2}, {9, 3}, {10, 2}, {10, 3}},
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, 8}}]|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Square", "Filled" -> True|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {8},
                 "Position" -> {9, 2},
@@ -1205,8 +1208,8 @@ Test[
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
                     <|"Name" -> "Pixel"|>,
-                    <|"Name" -> "Square"|>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Square", "Filled" -> True|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {1},
                 "Position" -> {2, 2},

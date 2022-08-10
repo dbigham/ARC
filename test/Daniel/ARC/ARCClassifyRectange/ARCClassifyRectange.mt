@@ -11,9 +11,11 @@
 *)
 
 Test[
-    Daniel`ARC`ARCClassifyRectange[{{1, 1}, {1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyRectange[{{1, 1}, {1, 1}}]
+    ]
     ,
-    <|"Name" -> "Rectangle"|>
+    <|"Name" -> "Rectangle", "Filled" -> True|>
     ,
     TestID -> "ARCClassifyRectange-20220717-6DF3UG"
 ]
@@ -39,9 +41,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyRectange[{{2, 2}, {2, 2}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyRectange[{{2, 2}, {2, 2}}]
+    ]
     ,
-    <|"Name" -> "Rectangle"|>
+    <|"Name" -> "Rectangle", "Filled" -> True|>
     ,
     TestID -> "ARCClassifyRectange-20220718-WVXGAP"
 ]
@@ -57,19 +61,23 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyRectange[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyRectange[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}]
+    ]
     ,
-    <|"Name" -> "Rectangle"|>
+    <|"Name" -> "Rectangle", "Filled" -> False|>
     ,
     TestID -> "ARCClassifyRectange-20220806-IQKDN7"
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyRectange[
-        {{1, 1, 1, 1}, {1, -1, -1, 1}, {1, -1, -1, 1}, {1, 1, 1, 1}}
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyRectange[
+            {{1, 1, 1, 1}, {1, -1, -1, 1}, {1, -1, -1, 1}, {1, 1, 1, 1}}
+        ]
     ]
     ,
-    <|"Name" -> "Rectangle"|>
+    <|"Name" -> "Rectangle", "Filled" -> False|>
     ,
     TestID -> "ARCClassifyRectange-20220806-EE1ELV"
 ]
