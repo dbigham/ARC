@@ -18,12 +18,7 @@ Test[
         ]
     ]
     ,
-    {
-        {
-            <|"Name" -> "L"|>,
-            <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
-        }
-    }
+    {<|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>}
     ,
     TestID -> "ARCClassifyRotatedImage-20220717-6KO2ZP"
 ]
@@ -36,12 +31,7 @@ Test[
         ]
     ]
     ,
-    {
-        {
-            <|"Name" -> "L"|>,
-            <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
-        }
-    }
+    {<|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>}
     ,
     TestID -> "ARCClassifyRotatedImage-20220717-NG9CC2"
 ]
@@ -54,12 +44,7 @@ Test[
         ]
     ]
     ,
-    {
-        {
-            <|"Name" -> "L"|>,
-            <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>|>
-        }
-    }
+    {<|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>|>}
     ,
     TestID -> "ARCClassifyRotatedImage-20220717-NI7Q2Q"
 ]

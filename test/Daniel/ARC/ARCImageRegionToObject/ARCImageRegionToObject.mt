@@ -106,7 +106,9 @@ Test[
         "Shapes" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}, {2, 2, 2}}]|>,
             <|"Name" -> "Square"|>,
-            <|"Name" -> "Rectangle"|>
+            <|"Name" -> "Rectangle"|>,
+            <|"Name" -> "Square", "Filled" -> True|>,
+            <|"Name" -> "Rectangle", "Filled" -> True|>
         },
         "Colors" -> {2},
         "Position" -> {1, 1},

@@ -222,6 +222,16 @@ InferColor::usage = "InferColor  "
 
 ARCInferObjectImage::usage = "ARCInferObjectImage  "
 
+FindSubmatrix::usage = "FindSubmatrix  "
+
+ARCAddGeneralizeShapes::usage = "ARCAddGeneralizeShapes  "
+
+ARCPruneAlternatives::usage = "ARCPruneAlternatives  "
+
+ARCMoreGeneral::usage = "ARCMoreGeneral  "
+
+PropertyEntityType::usage = "PropertyEntityType  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1117,6 +1127,7 @@ Clear[ARCClassifyShape];
 ARCClassifyShape[image_List] :=
     Module[{},
         DeleteDuplicates@
+        ARCAddGeneralizeShapes@
         Flatten@
         {
             ARCClassifyPixel[image],
@@ -1328,15 +1339,12 @@ ARCClassifyRotatedImage[imageIn_List, classifyFunction_] :=
             (* Rotate by 90 degrees. *)
             image = RotateImage[image, 90];
             If [(classification = classifyFunction[image]) =!= Nothing,
-                {
+                Join[
                     classification,
-                    Join[
-                        classification,
-                        <|
-                            "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>
-                        |>
-                    ]
-                }
+                    <|
+                        "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>
+                    |>
+                ]
                 ,
                 Nothing
             ]
@@ -1370,13 +1378,10 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
             (* Rotate by 90 degrees. *)
             image = transform["Function"][imageIn];
             If [(classification = classifyFunction[image]) =!= Nothing,
-                {
+                Join[
                     classification,
-                    Join[
-                        classification,
-                        KeyDrop[transform, "Function"]
-                    ]
-                }
+                    KeyDrop[transform, "Function"]
+                ]
                 ,
                 Nothing
             ]
@@ -2099,8 +2104,8 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                             
                             Complement[
                                 (* Remove inferrable keys from the output. All we really need are the
-                                core properties that can be used to infer the final output
-                                object. *)
+                                   core properties that can be used to infer the final output
+                                   object. *)
                                 Normal[
                                     KeyTake[
                                         Replace[
@@ -2402,7 +2407,6 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
     Module[
         {
             unhandled,
-            theseUnhandled,
             groupedByPattern,
             conclusion,
             rules,
@@ -2454,16 +2458,16 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             unhandled = DeleteDuplicates[preRules[[All, 2]]];
         ];
         
+        (*ARCEcho[Keys[groupedByPattern]];*)
         (*ARCEcho[groupedByPattern];*)
         (*ARCEcho[SimplifyObjects[groupedByPattern]];*)
         
-        (* Merge all instances of the same rule, forming "Examples" and "UseCount" properties. *)
-        groupedByPattern = Function[{rhs},
+        groupedByPattern = Function[{conclusionGroup},
             
             {conclusion, unhandled} =
                 ReturnIfFailure@
                 ARCFindRules[
-                    rhs,
+                    conclusionGroup,
                     referenceableInputObjects,
                     examples,
                     unhandled,
@@ -2474,11 +2478,59 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             
         ] /@ groupedByPattern;
         
+        (*EchoIndented[Keys[DeleteMissing[groupedByPattern]]];*)
         (*ARCEcho[SimplifyObjects[unhandled]];*)
         
         rules = Normal[DeleteMissing[groupedByPattern]];
         
+        (*ARCEcho[ARCSimplifyRules[rules]];*)
+        (*Echo[Length[unhandled]];*)
+        
+        (* Rule pruning -- removing redundant rules. *)
+        If [!TrueQ[mutuallyExclusiveRules],
+            (* Delete rules if there are other rules that can handle as much and more than they
+               do. e.g. 0uduqqj6f *)
+            rules = Select[
+                rules,
+                Function[{rule},
+                    MissingQ[
+                        SelectFirst[
+                            DeleteCases[rules, rule],
+                            And[
+                                Length[#[[2, "InputObjects"]]] > Length[rule[[2, "InputObjects"]]],
+                                Complement[rule[[2, "InputObjects"]], #[[2, "InputObjects"]]] === {}
+                            ] &
+                        ]
+                    ]
+                ]
+            ];
+            
+            (* If there are multiple rules that can handle the same objects, then take the one
+               that is more general. e.g. 0uduqqj6f
+               We want to do this before considering the addition of an Except[...] rule, so that
+               the Except condition is as clean as possible. Otherwise it might be the Except
+               of things that later got removed, and be more complex than it needs to be. *)
+            rules = Select[
+                rules,
+                Function[{rule},
+                    With[{ruleGeneralityScore = ARCConditionsGeneralityScore[rule[[1]]]},
+                        MissingQ[
+                            SelectFirst[
+                                DeleteCases[rules, rule],
+                                And[
+                                    Sort[#[[2, "InputObjects"]]] === Sort[rule[[2, "InputObjects"]]],
+                                    (* Lower is better. *)
+                                    ruleGeneralityScore > ARCConditionsGeneralityScore[#[[1]]]
+                                ] &
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        ];
+        
         If [Length[unhandled] > 0 && property =!= None,
+            
             (* We have mappings/conclusions that we weren't able to create rules for using
                explicit property values, so now we can look into trying property patterns
                of the form Except[_]. *)
@@ -2496,7 +2548,15 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                         rules[[All, 1, property]],
                         {
                             {singleValue_} :> singleValue,
-                            {multipleValues:Repeated[_, {2, Infinity}]} :> Alternatives[multipleValues],
+                            multipleValues:{Repeated[_, {2, Infinity}]} :>
+                                Alternatives @@
+                                (* If there are items in the alternatives list that are
+                                   redudant due to another item in the list being more
+                                   general, then remove it. *)
+                                ARCPruneAlternatives[
+                                    multipleValues,
+                                    property
+                                ],
                             (* No values. *)
                             {} :> Return[{}, Module]
                         }
@@ -2524,44 +2584,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ]
         ];
         
-        If [!TrueQ[mutuallyExclusiveRules],
-            (* Delete rules if there are other rules that can handle as much and more than they
-               do. *)
-            rules = Select[
-                rules,
-                Function[{rule},
-                    MissingQ[
-                        SelectFirst[
-                            DeleteCases[rules, rule],
-                            And[
-                                Length[#[[2, "InputObjects"]]] > Length[rule[[2, "InputObjects"]]],
-                                Complement[rule[[2, "InputObjects"]], #[[2, "InputObjects"]]] === {}
-                            ] &
-                        ]
-                    ]
-                ]
-            ];
-            
-            (* If there are multiple rules that can handle the same objects, then take the one
-               that is more general. *)
-            rules = Select[
-                rules,
-                Function[{rule},
-                    With[{ruleGeneralityScore = ARCConditionsGeneralityScore[rule[[1]]]},
-                        MissingQ[
-                            SelectFirst[
-                                DeleteCases[rules, rule],
-                                And[
-                                    Length[#[[2, "InputObjects"]]] === Length[rule[[2, "InputObjects"]]],
-                                    (* Lower is better. *)
-                                    ruleGeneralityScore > ARCConditionsGeneralityScore[#[[1]]]
-                                ] &
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-        ];
+        (*ARCEcho[ARCSimplifyRules[rules]];*)
         
         (* Perhaps we should return not just the rules here, but also `unhandled` so that:
            1) Downstream code can more easily check whether there were any unhandled cases. 
@@ -4013,7 +4036,7 @@ ToPosition[expr_, parentObject_ : Null] :=
 *)
 Clear[ARCGeneralizeConclusionValue];
 ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableInputObjects_Association, examples_List] :=
-    (* EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@ *)
+    (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     Module[
         {
             uniqueValue,
@@ -4023,7 +4046,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             inputObjectValues
         },
         
-        XEcho["A" -> propertyPath];
+        XEcho["propertyPath" -> propertyPath];
         
         values = conclusions[[All, "Value"]];
         
@@ -4038,7 +4061,15 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             Replace[
                 Intersection @@ values,
                 intersection:{__} :> Return[
-                    Last[propertyPath] -> intersection,
+                    Last[propertyPath] ->
+                        (* Because our conclusion will be used to generate a scene,
+                           I think we can get away with just keeping the most specific
+                           classes. e.g. ifmyulnv8-shape *)
+                        ARCPruneAlternatives[
+                            intersection,
+                            Last[propertyPath],
+                            "Most" -> "Specific"
+                        ],
                     Module
                 ]
             ]
@@ -4651,7 +4682,8 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                 ],
                 subImagePositions =
                     ReturnIfFailure[
-                        ResourceFunction["FindSubmatrix"][
+                        (*ResourceFunction["FindSubmatrix"][*)
+                        FindSubmatrix[
                             leftoverImage,
                             subImage[[1]],
                             "Positions"
@@ -6441,6 +6473,19 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 1,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 10}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.1, "Minutes"],
+            "CodeLength" -> 7258,
+            "ExampleImplemented" -> "ifmyulnv8-shape",
+            "ImplementationTime" -> Quantity[7.75, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
         |>
     }
 
@@ -6937,6 +6982,272 @@ ARCInferObjectImage[shapes_, color_Integer, width_, height_] :=
             "Color" -> color,
             "Width" -> width,
             "Height" -> height
+        ]
+    ]
+
+(* Temporarily define these here since on Aug 8 2022 I'm seeing a strange issue whereby on
+   Mathematica 12.3.1, calls to repository functions are taking 500 ms, as if it's phoning
+   home with every call. *)
+
+(* https://resources.wolframcloud.com/FunctionRepository/resources/FindSubmatrix *)
+
+FindSubmatrix[sarray_SparseArray?SparseArrayQ,pattern_,type_:"Matrix"]/;(!(Length@Dimensions[sarray]>3&&Or@@(type==#&/@{"Raster","Image3D","Cuboids"}))\[Or]Length@Dimensions[sarray]==1&&(Head[pattern]===List\[Or]Head[pattern]===Condition)&&ArrayDepth[sarray]==ArrayDepth[If[Head[pattern]===Condition,First[pattern],pattern]]&&MemberQ[{"Matrix","Positions","Raster","Image3D","Cuboids"},type]):=
+    With[{d=Length@Dimensions[sarray],pat=If[Head[pattern]===Condition,Last[pattern],pattern],pattern2=If[Head[pattern]===Condition,First[pattern],pattern]},
+    With[{part1=Map[{#[[1]],Normal[sarray[[Sequence@@#]]&/@#]}&,
+    Cases[Cases[
+    Most@ArrayRules[sarray],{m_,n__},{2}],{m_Integer,n__}/;And@@GreaterEqual@@@Thread[{Dimensions[sarray]-(Dimensions[pattern2]-ConstantArray[1,d]),{m,n}}]:>(Flatten[Array[Evaluate[{m,n}+Array[Slot,d]]&,Dimensions[pattern2],ConstantArray[0,d]],d-1])]]},
+    With[{part2= 
+    ArrayReshape[#,Dimensions[pattern2]]&/@(If[MatchQ[#,Flatten@pattern2]&&MatchQ[#,pat],#,Nothing]&/@
+    part1[[All,2]])},
+    Which[
+    type==="Matrix",part2,
+    type==="Positions",part1[[All,1]],
+    type==="Raster",SparseArray[Position[part1[[All,1]],pattern,{2}]->1//Thread,Dimensions[sarray]]//If[ArrayDepth[sarray]==2,Raster,Raster3D[#,Automatic,{-.03,1},ColorFunction->"GrayLevelOpacity"]&],
+    type==="Image3D",SparseArray[Position[Partition[sarray,{2,2,2},{1,1,1}],pattern,{3}]->1//Thread,Dimensions[sarray]]//Image3D,
+    type==="Cuboids",Cuboid/@Position[Partition[sarray,{2,2,2},{1,1,1}],pattern,{3}]]]]]
+
+FindSubmatrix[array_?ArrayQ,pattern_,type_:"Matrix"]/;(!(Length@Dimensions[array]>3&&Or@@(type==#&/@{"Raster","Image3D","Cuboids"}))\[Or]Length@Dimensions[array]==1&&(Head[pattern]===List\[Or]Head[If[Head[pattern]===Condition,First[pattern],pattern]]===Condition))&&ArrayDepth[array]==ArrayDepth[pattern]&&MemberQ[{"Matrix","Positions","Raster","Image3D","Cuboids"},type]:=
+    With[{part=Partition[array,Dimensions[pattern],ConstantArray[1,Length[Dimensions[array]]]]},Which[type==="Matrix",Cases[part,pattern,{ArrayDepth[array]}],
+    type==="Positions",Position[part,pattern,{ArrayDepth[array]}],
+    type==="Raster",SparseArray[Position[part,pattern,{ArrayDepth[array]}]->1//Thread,Dimensions[array]]//If[ArrayDepth[array]==2,Raster,Raster3D[#,Automatic,{-.03,1},ColorFunction->"GrayLevelOpacity"]&],
+    type==="Image3D",SparseArray[Position[part,pattern,{3}]->1//Thread,Dimensions[array]]//Image3D,
+    type==="Cuboids",Cuboid/@Position[part,pattern,{3}]]]
+
+(*!
+    \function ARCAddGeneralizeShapes
+    
+    \calltable
+        ARCAddGeneralizeShapes[shapes] '' Given a list of shapes, if there are shapes that have been additionally qualified, but there aren't any un-qualified instances of that shape, then we add unqualified instances so that code that looks for common shapes won't be thrown off by the additional qualifications.
+    
+    NOTE: This doesn't seem like a proper long-term solution, because if you have shapes with
+          multiple qualifications, then downstream code should also be able to find commonalities
+          where some but not all qualifications are paid attention to. And it doesn't seem scalable
+          here to introduce all permutations of whether a particular qualification is included.
+    
+    Examples:
+    
+    ARCAddGeneralizeShapes[
+        {
+            <|"Name" -> "Pixel"|>,
+            <|"Name" -> "Square", "Filled" -> True|>,
+            <|"Name" -> "Rectangle", "Filled" -> True|>
+        }
+    ]
+    
+    ===
+    
+    {
+        <|"Name" -> "Pixel"|>,
+        <|"Name" -> "Square", "Filled" -> True|>,
+        <|"Name" -> "Rectangle", "Filled" -> True|>,
+        <|"Name" -> "Square"|>,
+        <|"Name" -> "Rectangle"|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCAddGeneralizeShapes]
+    
+    \maintainer danielb
+*)
+Clear[ARCAddGeneralizeShapes];
+ARCAddGeneralizeShapes[shapes_List] :=
+    Module[{},
+        DeleteDuplicates@
+        Join[
+            KeyTake[shapes, "Name"],
+            shapes
+        ]
+    ]
+
+(*!
+    \function ARCPruneAlternatives
+    
+    \calltable
+        ARCPruneAlternatives[alternatives, property] '' Given a list of alternatives, tries to removes redundant alternatives which would already be implied by a more general item in the alternatives list.
+    
+    Examples:
+    
+    ARCPruneAlternatives[
+        {
+            <|"Name" -> "Square"|>,
+            <|"Name" -> "Square", "Filled" -> False|>,
+            <|"Name" -> "Rectangle"|>
+        },
+        "Shape"
+    ]
+    
+    ===
+    
+    {<|"Name" -> "Square"|>, <|"Name" -> "Rectangle"|>}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPruneAlternatives]
+    
+    \maintainer danielb
+*)
+Clear[ARCPruneAlternatives];
+Options[ARCPruneAlternatives] =
+{
+    "Most" -> "General"     (* Are we looking to keep the most general alternatives? Or the most specific alternatives? *)
+};
+ARCPruneAlternatives[alternatives: List[__Association], property_String, OptionsPattern[]] :=
+    (* Remove cases where the list of qualifiers is more specific than another
+       alternative's list of qualifiers. *)
+    Select[
+        (* Remove cases where the list of qualifiers are the same, but the one named
+           entity is more general than the other. *)
+        Select[
+            (* Remove duplicates. *)
+            DeleteDuplicates[
+                alternatives,
+                Function[{a, b},
+                    KeySort[a] === KeySort[b]
+                ]
+            ],
+            Function[{item},
+                And[
+                    AssociationQ[item],
+                    MissingQ[
+                        SelectFirst[
+                            DeleteCases[alternatives, item],
+                            With[{qualifiers2 = Normal[#]},
+                                And[
+                                    AssociationQ[#],
+                                    (* This named alternative is more general than ours. *)
+                                    If [OptionValue["Most"] === "General",
+                                        ARCMoreGeneral["Property" -> property, #["Name"], item["Name"]]
+                                        ,
+                                        ARCMoreGeneral["Property" -> property, item["Name"], #["Name"]]
+                                    ],
+                                    (* Other than the "Name", the qualifiers are the same. *)
+                                    KeySort[KeyDrop[item, "Name"]] === KeySort[KeyDrop[#, "Name"]]
+                                ]
+                            ] &
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        Function[{item},
+            With[{qualifiers = Normal[item]},
+                (* Is there no other alternative that is more general?
+                   If so, we should keep our alternative. *)
+                MissingQ[
+                    SelectFirst[
+                        DeleteCases[alternatives, item],
+                        With[{qualifiers2 = Normal[#]},
+                            (* Is this alternative more general? *)
+                            (* Is this alternative's list of qualifiers a subset
+                               of our alternative's list of qualifiers? If so, then
+                               it is at least as general as our alternative, but because
+                               we've already deleted duplicates, this should actually
+                               mean that it's more general. *)
+                            If [OptionValue["Most"] === "General",
+                                SubsetQ[qualifiers, qualifiers2]
+                                ,
+                                SubsetQ[qualifiers2, qualifiers]
+                            ]
+                        ] &
+                    ]
+                ]
+            ]
+        ]
+    ];
+
+ARCPruneAlternatives[alternatives_List, property_String] := DeleteDuplicates[alternatives]
+
+(*!
+    \function ARCMoreGeneral
+    
+    \calltable
+        ARCMoreGeneral[type, class1, class2] '' Given two classes, returns True if class1 is more general than class2. Returns Missing if unknown.
+    
+    NOTE: This currently only compares the class names, and doesn't consider other qualifiers
+          in the case that two associations are provided.
+    
+    Examples:
+    
+    ARCMoreGeneral["Shape", "Square", "Rectangle"] === True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCMoreGeneral]
+    
+    \maintainer danielb
+*)
+Clear[ARCMoreGeneral];
+$generality = <|
+    "Shape" -> {
+        "Rectangle" -> "Square"
+    }
+|>;
+$generalityGraph = Graph /@ $generality;
+
+ARCMoreGeneral[type_String, class1_Association, class2_Association] :=
+    ARCMoreGeneral[
+        type,
+        class1["Name"],
+        class2["Name"]
+    ]
+
+ARCMoreGeneral[type_String, class1: Except[_Association], class2: Except[_Association]] :=
+    Module[{},
+        If [class1 === class2,
+            False
+            ,
+            graph = Replace[
+                $generalityGraph[type],
+                _Missing :> Return[Missing["Unknown"], Module]
+            ];
+            !FreeQ[
+                Utility`QuietCheck[
+                    VertexOutComponent[graph, class1],
+                    {},
+                    (* If a class isn't in the graph, we get this message, and return
+                       {}. *)
+                    {VertexOutComponent::inv}
+                ],
+                class2
+            ]
+        ]
+    ]
+
+ARCMoreGeneral["Property" -> property_String, args___] :=
+    Module[{},
+        ARCMoreGeneral[
+            ReturnIfMissing[
+                PropertyEntityType[property]
+            ],
+            args
+        ]
+    ]
+
+(*!
+    \function PropertyEntityType
+    
+    \calltable
+        PropertyEntityType[property] '' Given a property name, returns the type of entity it has as values. For repeated/list properties, it doesn't return Repeated[type_] but rather returns the inner `type`.
+    
+    Examples:
+    
+    PropertyEntityType["Shapes"] === "Shape"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`PropertyEntityType]
+    
+    \maintainer danielb
+*)
+Clear[PropertyEntityType];
+PropertyEntityType[property_String] :=
+    Module[{},
+        Replace[
+            ReturnIfMissing[
+                $properties[property]
+            ]["Type"],
+            HoldPattern[Repeated][innerType_] :> innerType
         ]
     ]
 

@@ -44,7 +44,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{2, 2}, {2, 2}, {2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Rectangle"|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {2},
                 "Position" -> {6, 2},
@@ -93,7 +94,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}, {1, 1}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Rectangle"|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {1},
                 "Position" -> {6, 5},
@@ -142,7 +144,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{4, 4}, {4, 4}, {4, 4}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
-                    <|"Name" -> "Rectangle"|>
+                    <|"Name" -> "Rectangle"|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
                 "Colors" -> {4},
                 "Position" -> {6, 8},

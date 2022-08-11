@@ -43,6 +43,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -63,6 +65,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -83,6 +87,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -103,6 +109,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -218,6 +226,8 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square"|>,
+                        <|"Name" -> "Rectangle"|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -238,6 +248,8 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square"|>,
+                        <|"Name" -> "Rectangle"|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -258,6 +270,8 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square"|>,
+                        <|"Name" -> "Rectangle"|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -278,6 +292,8 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Square"|>,
+                        <|"Name" -> "Rectangle"|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -329,6 +345,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -349,6 +367,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -369,6 +389,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -389,6 +411,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -478,6 +502,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -498,6 +524,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -518,6 +546,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -538,6 +568,8 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Square"|>,
+                            <|"Name" -> "Rectangle"|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },

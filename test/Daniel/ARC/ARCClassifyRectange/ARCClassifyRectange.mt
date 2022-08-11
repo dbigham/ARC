@@ -95,3 +95,19 @@ Test[
     ,
     TestID -> "ARCClassifyRectange-20220806-FY5BH4"
 ]
+
+Test[
+    Daniel`ARC`ARCClassifyRectange[
+        {
+            {1, 1, 1, 1, 1},
+            {1, -1, -1, -1, 1},
+            {1, -1, 1, -1, 1},
+            {1, -1, -1, -1, 1},
+            {1, 1, 1, 1, 1}
+        }
+    ]
+    ,
+    <|"Name" -> "Rectangle"|>
+    ,
+    TestID -> "ARCClassifyRectange-20220810-8OCRG3"
+]

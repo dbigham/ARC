@@ -177,11 +177,13 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Daniel`ARC`ARCSimplifyRules[
-                Utility`BlockUUID[
-                    Daniel`ARC`ARCFindRules[
-                        Daniel`ARC`ARCParseFile[file = "2wfys5w64-relative-right-side"][
-                            "Train"
+            Daniel`ARC`ARCIndent[
+                Daniel`ARC`ARCSimplifyRules[
+                    Utility`BlockUUID[
+                        Daniel`ARC`ARCFindRules[
+                            Daniel`ARC`ARCParseFile[file = "2wfys5w64-relative-right-side"][
+                                "Train"
+                            ]
                         ]
                     ]
                 ]
@@ -189,20 +191,34 @@ Test[
         ]
     ]
     ,
-    {
-        <|"Shapes" -> <|"Name" -> "Square"|>|> -> <|
-            "Transform" -> <|
-                "Type" -> "AddComponents",
-                "Components" -> {
-                    <|
-                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "XInverse" -> 0|>|>
-                    |>
+    Column[
+        {
+            "{",
+            "    <|\"AspectRatio\" -> 1|> -> <|",
+            "        \"Transform\" -> <|",
+            "            \"Type\" -> \"AddComponents\",",
+            "            \"Components\" -> {",
+            "                <|",
+            Row[
+                {
+                    Row[
+                        {
+                            "                    ",
+                            Row[{"\"Image\" -> ", Daniel`ARC`ARCScene[{{2}}]}]
+                        }
+                    ],
+                    ","
                 }
-            |>
-        |>,
-        <|"Shapes" -> Except[<|"Name" -> "Square"|>]|> -> <|"Same" -> True|>
-    }
+            ],
+            "                    \"Position\" -> <|\"RelativePosition\" -> <|\"Y\" -> -1, \"XInverse\" -> 0|>|>",
+            "                |>",
+            "            }",
+            "        |>",
+            "    |>,",
+            "    <|\"AspectRatio\" -> Except[1]|> -> <|\"Same\" -> True|>",
+            "}"
+        }
+    ]
     ,
     TestID -> "ARCFindRules-20220807-UIY7RU"
 ]
@@ -226,10 +242,7 @@ Test[
                 "Type" -> "AddComponents",
                 "Components" -> {
                     <|
-                        "Shapes" -> {
-                            <|"Name" -> "Rectangle", "Filled" -> True|>,
-                            <|"Name" -> "Square", "Filled" -> True|>
-                        },
+                        "Shapes" -> {<|"Name" -> "Square", "Filled" -> True|>},
                         "Width" -> Inactive[Plus][
                             Daniel`ARC`ObjectValue["InputObject", "Width"],
                             -2

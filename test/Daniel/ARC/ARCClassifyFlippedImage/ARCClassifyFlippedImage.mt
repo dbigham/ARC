@@ -18,12 +18,7 @@ Test[
         ]
     ]
     ,
-    {
-        {
-            <|"Name" -> "L"|>,
-            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
-        }
-    }
+    {<|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>}
     ,
     TestID -> "ARCClassifyFlippedImage-20220717-CUJQHA"
 ]
@@ -36,12 +31,7 @@ Test[
         ]
     ]
     ,
-    {
-        {
-            <|"Name" -> "L"|>,
-            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Horizontal"|>
-        }
-    }
+    {<|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Horizontal"|>}
     ,
     TestID -> "ARCClassifyFlippedImage-20220717-MUUUAF"
 ]

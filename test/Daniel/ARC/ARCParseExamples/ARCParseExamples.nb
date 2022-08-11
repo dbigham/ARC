@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    104123,       2109]
-NotebookOptionsPosition[     97849,       1957]
-NotebookOutlinePosition[    103419,       2095]
-CellTagsIndexPosition[    103376,       2092]
+NotebookDataLength[    120288,       2490]
+NotebookOptionsPosition[    114013,       2338]
+NotebookOutlinePosition[    119583,       2476]
+CellTagsIndexPosition[    119540,       2473]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -135,7 +135,7 @@ Cell[BoxData[{
  CellChangeTimes->{{3.867604368294448*^9, 3.867604369326171*^9}, {
   3.8676044012061524`*^9, 3.867604402589242*^9}, {3.8676044624221635`*^9, 
   3.8676045358463364`*^9}, {3.8676046341367626`*^9, 3.86760463664619*^9}},
- CellLabel->"In[475]:=",
+ CellLabel->"In[613]:=",
  CellID->39693542,
  "TestId" -> 
  "ARCParseExamples-20220723-UDW1J2",ExpressionUUID->"81321a10-2636-4e29-99e5-\
@@ -173,10 +173,11 @@ Cell[BoxData[
        "\",\""},
       "RowDefault"]},
     {"\<\"                    \\\"PixelPositions\\\" -> {{4, 3}},\"\>"},
+    {"\<\"                    \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                    \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                        \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -189,47 +190,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                        \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                    },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                    \"", 
@@ -332,10 +380,11 @@ Cell[BoxData[
        "\",\""},
       "RowDefault"]},
     {"\<\"                    \\\"PixelPositions\\\" -> {{7, 7}},\"\>"},
+    {"\<\"                    \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                    \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                        \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -348,47 +397,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                        \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                        \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                    },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                    \"", 
@@ -576,30 +672,29 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                    \\\"PixelPositions\\\" -> {{3, 2}, {3, 4}, {4, \
 3}, {5, 2}, {5, 4}},\"\>"},
+    {"\<\"                    \\\"Shapes\\\" -> {\"\>"},
     {
-     TemplateBox[{
-       TemplateBox[{"\"                    \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
-           TagBox[
-            
-            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
-              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
-             GridBoxBackground -> {
-              "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
-                 GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
-                 GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
-                 GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
-                 GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
-             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-             GridBoxFrame -> {
-              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
-             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-             FrameStyle -> {
-               AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\"}\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
+     TemplateBox[{"\"                        \"", 
+       TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
+               GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
+               GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
+               GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
+               GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+           FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]},
       "RowDefault"]},
+    {"\<\"                    },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                    \"", 
@@ -727,10 +822,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{3, \
 2}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -743,47 +839,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -869,10 +1012,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{3, \
 4}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -885,47 +1029,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1011,10 +1202,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{4, \
 3}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -1027,47 +1219,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1152,10 +1391,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{5, \
 2}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -1168,47 +1408,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1294,10 +1581,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{5, \
 4}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -1310,47 +1598,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1441,7 +1776,6 @@ Cell[BoxData[
        TemplateBox[{"\"                    \"", 
          TemplateBox[{"\"\\\"Image\\\" -> \"", 
            TagBox[
-            
             GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
               "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
@@ -1462,30 +1796,29 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                    \\\"PixelPositions\\\" -> {{6, 7}, {7, 6}, {7, \
 7}, {7, 8}, {8, 7}},\"\>"},
+    {"\<\"                    \\\"Shapes\\\" -> {\"\>"},
     {
-     TemplateBox[{
-       TemplateBox[{"\"                    \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
-           TagBox[
-            
-            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
-              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
-             GridBoxBackground -> {
-              "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
-                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
-                 RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
-                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
-                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
-             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-             GridBoxFrame -> {
-              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
-             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-             FrameStyle -> {
-               AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\"}\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
+     TemplateBox[{"\"                        \"", 
+       TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+               RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
+               RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
+               RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
+               RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+           FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]},
       "RowDefault"]},
+    {"\<\"                    },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                    \"", 
@@ -1618,30 +1951,29 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{6, 7}, {7, \
 6}, {7, 8}, {8, 7}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
+    {"\<\"                                <|\"\>"},
     {
-     TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
-           TagBox[
-            
-            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
-              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
-             GridBoxBackground -> {
-              "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
-                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
-                 RGBColor[1, 0.5, 0], {2, 2} -> GrayLevel[0.2], {2, 3} -> 
-                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
-                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
-             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-             GridBoxFrame -> {
-              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
-             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-             FrameStyle -> {
-               AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\"}\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
+     TemplateBox[{"\"                                    \\\"Image\\\" -> \"", 
+       TagBox[
+        GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+          "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+         GridBoxBackground -> {
+          "Columns" -> {{None}}, "Rows" -> {{None}}, 
+           "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+             RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
+             RGBColor[1, 0.5, 0], {2, 2} -> GrayLevel[0.2], {2, 3} -> 
+             RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
+             RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
+         GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+         GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+         GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+         FrameStyle -> {
+           AbsoluteThickness[1], 
+           GrayLevel[0.5]}], "Grid"]},
       "RowDefault"]},
+    {"\<\"                                |>\"\>"},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1728,10 +2060,11 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                            \\\"PixelPositions\\\" -> {{7, \
 7}},\"\>"},
+    {"\<\"                            \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"                            \"", 
-         TemplateBox[{"\"\\\"Shapes\\\" -> {\"", "\"<|\\\"Image\\\" -> \"", 
+       TemplateBox[{"\"                                \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
            TagBox[
             
             GridBox[{{"\"\""}}, AutoDelete -> False, 
@@ -1744,47 +2077,94 @@ Cell[BoxData[
              GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
              FrameStyle -> {
                AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\"", "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Pixel\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Square\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
-             LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Pixel\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Pixel\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Pixel\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"                                \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Square\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Square\\\", \\\"Filled\\\" -> True|>\"", 
+           TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Square\", \"Filled\" -> True|>", 
+           "Tooltip"]& ]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"                                \"", 
+       TagBox[
+        TooltipBox[
+         FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+            RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+          Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
+          BaseStyle -> {
+            RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+         "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
+         TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+        Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+         "Tooltip"]& ]},
+      "RowDefault"]},
+    {"\<\"                            },\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"                            \"", 
@@ -1949,9 +2329,10 @@ Cell[BoxData[
    GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
   "Column"]], "Output",
  CellChangeTimes->{{3.8676044707413073`*^9, 3.8676044901071606`*^9}, 
-   3.8676045369410057`*^9, 3.867604641432571*^9, 3.868819125752658*^9},
+   3.8676045369410057`*^9, 3.867604641432571*^9, 3.868819125752658*^9, 
+   3.8691735556786184`*^9},
  CellLabel->
-  "Out[476]=",ExpressionUUID->"d1d5b40b-e80e-4285-bff5-3e139acef923"]
+  "Out[614]=",ExpressionUUID->"32b062d2-5a22-4ed7-b1ad-ffc54bd0d631"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -2108,7 +2489,7 @@ Cell[4577, 121, 816, 20, 72, "Code",ExpressionUUID->"81321a10-2636-4e29-99e5-7c2
  InitializationCell->False,
  CellID->39693542]
 }, Open  ]],
-Cell[5408, 144, 92413, 1809, 6443, "Output",ExpressionUUID->"d1d5b40b-e80e-4285-bff5-3e139acef923"]
+Cell[5408, 144, 108577, 2190, 7971, "Output",ExpressionUUID->"32b062d2-5a22-4ed7-b1ad-ffc54bd0d631"]
 }, Open  ]]
 }, Open  ]]
 }

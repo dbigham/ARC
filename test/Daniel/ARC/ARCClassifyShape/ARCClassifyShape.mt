@@ -11,9 +11,16 @@
 *)
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{1, 1}, {1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[{{1, 1}, {1, 1}}]
+    ]
     ,
-    {<|"Name" -> "Square"|>, <|"Name" -> "Rectangle"|>}
+    {
+        <|"Name" -> "Square"|>,
+        <|"Name" -> "Rectangle"|>,
+        <|"Name" -> "Square", "Filled" -> True|>,
+        <|"Name" -> "Rectangle", "Filled" -> True|>
+    }
     ,
     TestID -> "ARCClassifyShape-20220717-FUY20Y"
 ]
@@ -29,9 +36,17 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[{{1}}]
+    ]
     ,
-    {<|"Name" -> "Pixel"|>, <|"Name" -> "Square"|>, <|"Name" -> "Rectangle"|>}
+    {
+        <|"Name" -> "Pixel"|>,
+        <|"Name" -> "Square"|>,
+        <|"Name" -> "Rectangle"|>,
+        <|"Name" -> "Square", "Filled" -> True|>,
+        <|"Name" -> "Rectangle", "Filled" -> True|>
+    }
     ,
     TestID -> "ARCClassifyShape-20220717-RFJHHZ"
 ]
@@ -61,9 +76,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[{{1, 1, 1}}]
+    ]
     ,
-    {<|"Name" -> "Line", "Angle" -> 0|>, <|"Name" -> "Rectangle"|>}
+    {
+        <|"Name" -> "Line"|>,
+        <|"Name" -> "Rectangle"|>,
+        <|"Name" -> "Line", "Angle" -> 0|>,
+        <|"Name" -> "Rectangle", "Filled" -> True|>
+    }
     ,
     TestID -> "ARCClassifyShape-20220717-2BXB00"
 ]
