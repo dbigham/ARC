@@ -87,3 +87,27 @@ Test[
     ,
     TestID -> "ARCMoreGeneral-20220810-JK08TR"
 ]
+
+Test[
+    Daniel`ARC`ARCMoreGeneral["Shape", <|"Name" -> "Rectangle"|>, <|"Name" -> "Pixel"|>]
+    ,
+    True
+    ,
+    TestID -> "ARCMoreGeneral-20220811-VFC61Q"
+]
+
+Test[
+    Daniel`ARC`ARCMoreGeneral["Shape", <|"Name" -> "Pixel"|>, <|"Name" -> "Rectangle"|>]
+    ,
+    False
+    ,
+    TestID -> "ARCMoreGeneral-20220811-G927FK"
+]
+
+Test[
+    Daniel`ARC`ARCMoreGeneral["Shape", <|"Name" -> "Square"|>, <|"Name" -> "Pixel"|>]
+    ,
+    True
+    ,
+    TestID -> "ARCMoreGeneral-20220811-AM6OCO"
+]

@@ -177,13 +177,11 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Daniel`ARC`ARCIndent[
-                Daniel`ARC`ARCSimplifyRules[
-                    Utility`BlockUUID[
-                        Daniel`ARC`ARCFindRules[
-                            Daniel`ARC`ARCParseFile[file = "2wfys5w64-relative-right-side"][
-                                "Train"
-                            ]
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "2wfys5w64-relative-right-side"][
+                            "Train"
                         ]
                     ]
                 ]
@@ -191,34 +189,23 @@ Test[
         ]
     ]
     ,
-    Column[
-        {
-            "{",
-            "    <|\"AspectRatio\" -> 1|> -> <|",
-            "        \"Transform\" -> <|",
-            "            \"Type\" -> \"AddComponents\",",
-            "            \"Components\" -> {",
-            "                <|",
-            Row[
-                {
-                    Row[
-                        {
-                            "                    ",
-                            Row[{"\"Image\" -> ", Daniel`ARC`ARCScene[{{2}}]}]
-                        }
-                    ],
-                    ","
+    {
+        <|"Shapes" -> <|"Name" -> "Square"|>|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "XInverse" -> 0|>|>
+                    |>
                 }
-            ],
-            "                    \"Position\" -> <|\"RelativePosition\" -> <|\"Y\" -> -1, \"XInverse\" -> 0|>|>",
-            "                |>",
-            "            }",
-            "        |>",
-            "    |>,",
-            "    <|\"AspectRatio\" -> Except[1]|> -> <|\"Same\" -> True|>",
-            "}"
-        }
-    ]
+            |>
+        |>,
+        <|"Shapes" -> <|"Name" -> "Line"|>|> -> <|"Same" -> True|>,
+        <|"Shapes" -> Except[<|"Name" -> "Square"|> | <|"Name" -> "Line"|>]|> -> <|
+            "Same" -> True
+        |>
+    }
     ,
     TestID -> "ARCFindRules-20220807-UIY7RU"
 ]
@@ -252,7 +239,7 @@ Test[
                             -2
                         ],
                         "Color" -> Daniel`ARC`ObjectValue[
-                            <|"Width" -> 1|>,
+                            <|"Colors" -> Except[{5}]|>,
                             Inactive[First]["Colors"]
                         ],
                         "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>

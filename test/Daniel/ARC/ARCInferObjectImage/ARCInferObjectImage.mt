@@ -59,3 +59,45 @@ Test[
     ,
     TestID -> "ARCInferObjectImage-20220810-JRVKGT"
 ]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>},
+            "Color" -> 2,
+            "Width" -> 5,
+            "Height" -> 3
+        |>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2, 2, 2, 2}, {2, -1, -1, -1, 2}, {2, 2, 2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220811-URGH02"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 3|>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220811-GLZ3XL"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {
+                <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
+            },
+            "Color" -> 2,
+            "Width" -> 3,
+            "Height" -> 3
+        |>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220811-45W1N3"
+]

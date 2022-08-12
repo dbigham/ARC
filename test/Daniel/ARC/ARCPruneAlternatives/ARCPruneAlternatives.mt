@@ -91,3 +91,22 @@ Test[
     ,
     TestID -> "ARCPruneAlternatives-20220810-CQD3GU"
 ]
+
+Test[
+    Daniel`ARC`ARCPruneAlternatives[
+        {
+            <|"Name" -> "Square"|>,
+            <|"Name" -> "Square"|>,
+            <|"Name" -> "Square", "Filled" -> False|>,
+            <|"Name" -> "Rectangle"|>,
+            <|"Name" -> "Rectangle"|>,
+            <|"Name" -> "Pixel"|>
+        },
+        "Shapes",
+        "Most" -> "Specific"
+    ]
+    ,
+    {<|"Name" -> "Pixel"|>}
+    ,
+    TestID -> "ARCPruneAlternatives-20220811-6PKT59"
+]

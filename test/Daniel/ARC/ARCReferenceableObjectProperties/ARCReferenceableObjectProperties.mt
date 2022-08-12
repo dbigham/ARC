@@ -224,14 +224,14 @@ Test[
         Daniel`ARC`Object[<|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>] -> <|
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -255,14 +255,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -285,14 +285,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -451,14 +451,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -481,14 +481,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -511,14 +511,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -588,14 +588,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -665,14 +665,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -742,14 +742,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -819,14 +819,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -896,14 +896,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -973,14 +973,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -1258,14 +1258,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -1335,14 +1335,14 @@ Test[
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
                 <|
-                    "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}],
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
-                <|"Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}]|>,
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,

@@ -232,6 +232,12 @@ ARCMoreGeneral::usage = "ARCMoreGeneral  "
 
 PropertyEntityType::usage = "PropertyEntityType  "
 
+ARCGeneralizeConclusionValueNonRecursive::usage = "ARCGeneralizeConclusionValueNonRecursive  "
+
+ARCApplyImageTransforms::usage = "ARCApplyImageTransforms  "
+
+ApplyToImage::usage = "ApplyToImage  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -255,6 +261,7 @@ ProcessOneByOne = DevTools`NotebookTools`ProcessOneByOne;
 CreateNamedNotebook2 = DevTools`NotebookTools`CreateNamedNotebook2;
 CreateDirectoryIfDoesntExist = Utility`CreateDirectoryIfDoesntExist;
 SpecifiedQ = Utility`SpecifiedQ;
+FailureDetails = Utility`FailureDetails;
 
 $UnitTestDir = FileNameJoin[{FileNameDrop[FindFile["Daniel`ARC`"], -1], "test", "Daniel", "ARC"}];
 
@@ -1001,7 +1008,7 @@ ARCColorIntegers[] :=
 *)
 Clear[ARCImageRegionToObject];
 ARCImageRegionToObject[region_Association] :=
-    Module[{},
+    Module[{shapes = ARCClassifyShape[region["Image"]]},
         ARCInferObjectProperties[
             <|
                 "UUID" -> CreateUUID[],
@@ -1013,9 +1020,16 @@ ARCImageRegionToObject[region_Association] :=
                     ]
                 ],
                 "PixelPositions" -> region["PixelPositions"],
+                "Shape" -> Replace[
+                    shapes,
+                    {
+                        {} :> ARCScene[ARCToMonochrome[region["Image"], $nonImageColor]],
+                        list_List :> First[ARCPruneAlternatives[list, "Shapes", "Most" -> "Specific"]]
+                    }
+                ],
                 "Shapes" -> Join[
-                    ARCImageRotations[region["Image"]],
-                    ARCClassifyShape[region["Image"]]
+                    ARCImageRotations[ARCToMonochrome[region["Image"], $nonImageColor]],
+                    shapes
                 ],
                 "Colors" -> {region["Color"]},
                 "Position" -> region["Position"]
@@ -1043,6 +1057,10 @@ $properties = <|
     |>,
     (* Will exclude for now. *)
     (*"PixelPositions"*)
+    "Shape" -> <|
+        "Type" -> "Shape",
+        "Type2" -> "Shape"
+    |>,
     "Shapes" -> <|
         "Type" -> Repeated["Shape"],
         "Type2" -> "Shape"
@@ -2355,7 +2373,7 @@ ARCFindRules[examplesIn_List] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Shapes"}
+                        {"Colors"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2411,7 +2429,8 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             conclusion,
             rules,
             pattern,
-            mutuallyExclusiveRules = True
+            mutuallyExclusiveRules = True,
+            conclusionTransformTypes
         },
         
         (*Echo[property];*)
@@ -2464,17 +2483,33 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         
         groupedByPattern = Function[{conclusionGroup},
             
-            {conclusion, unhandled} =
-                ReturnIfFailure@
-                ARCFindRules[
-                    conclusionGroup,
-                    referenceableInputObjects,
-                    examples,
-                    unhandled,
-                    mutuallyExclusiveRules
-                ];
-            
-            conclusion
+            (* Have all of the mappings have been transformed by the same
+               type of operation? *)
+            If [Length[
+                    conclusionTransformTypes =
+                        DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
+                ] === 1,
+                
+                {conclusion, unhandled} =
+                    ReturnIfFailure@
+                    ARCFindRules[
+                        conclusionGroup,
+                        referenceableInputObjects,
+                        examples,
+                        unhandled,
+                        mutuallyExclusiveRules
+                    ];
+                
+                (* If [conclusionTransformTypes === {"AddComponents"},
+                    ARCEcho[conclusionGroup[[All, "Transform", "Components"]]];
+                    ARCEcho[conclusion]
+                ]; *)
+                
+                conclusion
+                ,
+                unhandled = conclusionGroup;
+                Missing["InconsistentTransform"]
+            ]
             
         ] /@ groupedByPattern;
         
@@ -2529,7 +2564,13 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ];
         ];
         
-        If [Length[unhandled] > 0 && property =!= None,
+        If [And[
+                Length[unhandled] > 0 &&
+                property =!= None &&
+                (* All of the leftover mappings have been transformed by the same
+                   type of operation. *)
+                Length[DeleteDuplicates[unhandled[[All, "Transform", "Type"]]]] === 1
+            ],
             
             (* We have mappings/conclusions that we weren't able to create rules for using
                explicit property values, so now we can look into trying property patterns
@@ -2565,7 +2606,6 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             |>;
             
             (*ARCEcho[SimplifyObjects[groupedByConclusion]];*)
-            
             {conclusion, unhandled} =
                 ReturnIfFailure@
                 ARCFindRules[
@@ -2615,6 +2655,7 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
         
         Which[
             Length[groupedByConclusion] > 1,
+                
                 (* This pattern has multiple possible conclusions, but before we discard it,
                    we should see whether it's possible to generalize those conclusions. *)
                 conclusion =
@@ -2861,7 +2902,7 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
 Clear[ARCApplyConclusion];
 ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Association] :=
     Module[{objectOut = <||>},
-        
+        XARCEcho[objectIn -> conclusion];
         KeyValueMap[
             Function[{key, value},
                 objectOut =
@@ -3374,7 +3415,16 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
         
         usablePropertiesAndValues = Association[
             Function[{property},
-                property -> Flatten[
+                property ->
+                (* Sort the referenceable objects that use this property so that ones that
+                   don't use Except are above ones that do use except so that rules are
+                   more likely to refer to things without the use of Except where possible.
+                   e.g. 05f2a901 (ARCFindRules-20220804-KVNY6K) *)
+                (* Function[{list}, SortBy[list, Function[{item}, !FreeQ[item, _Except]]]]@ *)
+                Flatten[
+                    
+                    (* For each scene, take its group of objects and determine the value counts
+                       for the current property being considered. *)
                     valueCounts = Function[{objects},
                         Counts[
                             Replace[
@@ -3384,6 +3434,7 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
                         ]
                     ] /@ objectsForAllExamples;
                     
+                    (* For this property, what are the values that show up in at least one scene? *)
                     uniqueValues = DeleteDuplicates[Flatten[Keys /@ valueCounts, 1]];
                     
                     Function[{value},
@@ -3395,11 +3446,24 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
                                 value
                                 ,
                                 Nothing
-                            ],
-                            countsForNotValue = (Total[#] - Replace[#[value], _Missing -> 0]) & /@ valueCounts;
+                            ]
+                            ,
+                            countsForNotValue =
+                                Function[{valueCountsForScene},
+                                    Plus[
+                                        Total[valueCountsForScene],
+                                        -Replace[valueCountsForScene[value], _Missing -> 0]
+                                    ]
+                                ] /@ valueCounts;
                             If [And[
+                                    (* In every scene, this is always at least one object with
+                                       this color. Note: I'm a bit unsure whether we want this
+                                       condition, since in theory you could still use an Except
+                                       pattern even if there isn't always an object(s) _with_
+                                       that value. *)
                                     FreeQ[countsForValue, _Missing],
-                                    TrueQ[AllTrue[countsForValue, GreaterThan[1]]],
+                                    (* In every scene, there is only one object that doesn't have
+                                       this property value. *)
                                     MatchQ[countsForNotValue, {Repeated[1]}]
                                 ],
                                 (* There is always 1 object _not_ with this value and the rest of
@@ -3432,7 +3496,7 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
                             |>
                         ]
                     ] /@ values
-            	],
+                ],
                 usablePropertiesAndValues
             ];
         
@@ -3739,6 +3803,9 @@ $transformTypes = <|
                                 |>
                             }
                         |>,
+                        "Shape" -> <|
+                            "ObjectGet" -> Function[#["Shape"]]
+                        |>,
                         "Shapes" -> <|
                             "ClassList" -> True
                         |>,
@@ -3754,7 +3821,8 @@ $transformTypes = <|
                     },
                     "MinimalPropertySets" -> {
                         {"Image", "Position"},
-                        {"Shapes", "Width", "Height", "Color", "Position"}
+                        {"Shapes", "Width", "Height", "Color", "Position"},
+                        {"Shape", "Width", "Height", "Color", "Position"}
                     }
                 |>
             }
@@ -3785,7 +3853,8 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             transformDetails = ReturnFailureIfMissing[
                 $transformTypes[transformType],
                 "MissingTransformationDetails",
-                "$transformTypes doesn't specify details for the transform type " <> transformType <> "."
+                "$transformTypes doesn't specify details for the transform type " <> transformType <> ".",
+                "Conclusions" -> conclusions
             ];
             workableTransforms = Function[{propertySet},
                 rule =
@@ -4039,16 +4108,20 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     Module[
         {
+            property = Last[propertyPath],
             uniqueValue,
             subProperties,
             subPropertySets,
-            getFunction,
-            inputObjectValues
+            getFunction
         },
         
         XEcho["propertyPath" -> propertyPath];
         
         values = conclusions[[All, "Value"]];
+        
+        (* If [property === "Shape",
+            EchoTag["values"][values]
+        ]; *)
         
         If [!FreeQ[values, _Missing],
             Return[Missing["NotInferrable", "RequiredValuesMissing"], Module]
@@ -4061,13 +4134,13 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             Replace[
                 Intersection @@ values,
                 intersection:{__} :> Return[
-                    Last[propertyPath] ->
+                    property ->
                         (* Because our conclusion will be used to generate a scene,
                            I think we can get away with just keeping the most specific
                            classes. e.g. ifmyulnv8-shape *)
                         ARCPruneAlternatives[
                             intersection,
-                            Last[propertyPath],
+                            property,
                             "Most" -> "Specific"
                         ],
                     Module
@@ -4076,7 +4149,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             ,
             If [Length[uniqueValue = DeleteDuplicates[values]] === 1,
                 (* This property has a predictable value. *)
-                Return[Last[propertyPath] -> uniqueValue[[1]], Module]
+                Return[property -> uniqueValue[[1]], Module]
             ]
         ];
         
@@ -4120,9 +4193,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                     ]
                 ];
             
-            Last[propertyPath] ->
+            Replace[
                 ReturnIfFailure@
-                ReturnIfMissing@
                 Module[{},
                     Function[{theseSubProperties},
                         ReturnIfNotMissing@
@@ -4144,74 +4216,110 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                         ]
                     ] /@ subPropertySets;
                     Missing["NotInferrable", propertyPath]
+                ],
+                res:Except[_Missing] :> Return[
+                    property -> res,
+                    Module
                 ]
-            ,
-            (* The values are not associations -- they are just normal values that we will now
-               try to infer from inputs. *)
-            
-            getFunction =
-                If [propertyAttributes === Automatic,
-                    Function[#[Last[propertyPath]]]
-                    ,
-                    propertyAttributes["ObjectGet"]
-                ];
-            Which[
-                !MatchQ[getFunction, _Function | _Missing],
-                    ReturnFailure[
-                        "MissingObjectGetFunction",
-                        "The transformation property (or sub-property) doesn't specify its ObjectGet function.",
-                        "PropertyPath" -> propertyPath,
-                        "PropertyAttributes" -> propertyAttributes
-                    ],
-                MatchQ[getFunction, _Function],
-
-                    inputObjectValues = getFunction /@ conclusions[[All, "Input"]];
-                    
-                    Which[
-                        values === inputObjectValues,
-                            (* The first thing we should check is to ensure that these
-                               sub-properties actually change from the values they have
-                               in the inputs. If not, we can actually just drop this key
-                               from our rule conclusion. (Actually, for nested transform
-                               properties, like a component in an AddComponents, I don't
-                               think we'd actually want to _drop_ these keys. Wouldn't
-                               it be better to replace them with something like:
-                               ObjectValue["InputObject"],
-                               or ObjectValue["InputObject", "MyProperty"]? *)
-                            Return[Nothing, Module],
-                        Length[differences = DeleteDuplicates[values - inputObjectValues]] === 1,
-                            (* The transform values appear to be a predictable
-                               arithmetic difference away from the object's values. *)
-                            Return[
-                                (* TODO: We are using ObjectGet functions to abstract away how we
-                                         lookup values from the object for a transform's property,
-                                         but here we want a particular key name. For now we'll
-                                         just assume the property names match, but we should
-                                         perhaps move away from using ObjectGet _functions_
-                                         and instead specify them as the corresponding property
-                                         name. *)
-                                Last[propertyPath] -> Inactive[Plus][
-                                    ObjectValue[
-                                        "InputObject",
-                                        Last[propertyPath]
-                                    ],
-                                    First[differences]
-                                ],
-                                Module
-                            ]
-                    ]
-            ];
-            
-            (* Check whether any of the referenceable objects can be used to infer the values. *)
-            Last[propertyPath] ->
-                ReturnIfMissing@
-                ReturnIfFailure@
-                ARCGeneralizeConclusionValueUsingReferenceableObjects[
-                    KeyTake[conclusions, {"Value", "Example"}],
-                    referenceableInputObjects,
-                    examples
-                ]
+            ]
+        ];
+        
+        (* Try to infer the values as whole values, as opposed to trying to infer their
+           sub-properties one at a time. *)
+        ARCGeneralizeConclusionValueNonRecursive[
+            propertyPath,
+            propertyAttributes,
+            conclusions,
+            referenceableInputObjects,
+            examples
         ]
+    ]
+
+(*!
+    \function ARCGeneralizeConclusionValueNonRecursive
+    
+    \calltable
+        ARCGeneralizeConclusionValueNonRecursive[propertyPath, propertyAttributes, conclusions, referenceableInputObjects, examples] '' Helper for ARCGeneralizeConclusionValue that handles the non-recursive case where we aren't trying to infer deeper sub-properties but rather simply trying to infer these as whole values.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGeneralizeConclusionValueNonRecursive]
+    
+    \maintainer danielb
+*)
+Clear[ARCGeneralizeConclusionValueNonRecursive];
+ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableInputObjects_Association, examples_List] :=
+    Module[{property = Last[propertyPath], values, getFunction, inputObjectValues},
+        
+        values = conclusions[[All, "Value"]];
+        
+        getFunction =
+            If [propertyAttributes === Automatic,
+                Function[#[property]]
+                ,
+                propertyAttributes["ObjectGet"]
+            ];
+        
+        Which[
+            !MatchQ[getFunction, _Function | _Missing],
+                ReturnFailure[
+                    "MissingObjectGetFunction",
+                    "The transformation property (or sub-property) doesn't specify its ObjectGet function.",
+                    "PropertyPath" -> propertyPath,
+                    "PropertyAttributes" -> propertyAttributes
+                ],
+            MatchQ[getFunction, _Function],
+
+                inputObjectValues = getFunction /@ conclusions[[All, "Input"]];
+                
+                Which[
+                    values === inputObjectValues,
+                        (* The first thing we should check is to ensure that these
+                            sub-properties actually change from the values they have
+                            in the inputs. If not, we can actually just drop this key
+                            from our rule conclusion. (Actually, for nested transform
+                            properties, like a component in an AddComponents, I don't
+                            think we'd actually want to _drop_ these keys. Wouldn't
+                            it be better to replace them with something like:
+                            ObjectValue["InputObject"],
+                            or ObjectValue["InputObject", "MyProperty"]? *)
+                        Return[Nothing, Module],
+                    And[
+                        AllTrue[inputObjectValues, NumberQ],
+                        Length[differences = DeleteDuplicates[values - inputObjectValues]] === 1
+                    ],
+                        (* The transform values appear to be a predictable
+                            arithmetic difference away from the object's values. *)
+                        Return[
+                            (* TODO: We are using ObjectGet functions to abstract away how we
+                                     lookup values from the object for a transform's property,
+                                     but here we want a particular key name. For now we'll
+                                     just assume the property names match, but we should
+                                     perhaps move away from using ObjectGet _functions_
+                                     and instead specify them as the corresponding property
+                                     name. *)
+                            property -> Inactive[Plus][
+                                ObjectValue["InputObject", property],
+                                First[differences]
+                            ],
+                            Module
+                        ]
+                ]
+        ];
+        
+        (* Check whether any of the referenceable objects can be used to infer the values. *)
+        property ->
+            ReturnIfMissing@
+            ReturnIfFailure@
+            ARCGeneralizeConclusionValueUsingReferenceableObjects[
+                KeyTake[conclusions, {"Value", "Example"}],
+                referenceableInputObjects,
+                examples
+            ]
     ]
 
 (*!
@@ -5027,11 +5135,12 @@ ObjectWithinQ[object1_Association, object2_Association] :=
     \maintainer danielb
 *)
 Clear[ARCToMonochrome];
-ARCToMonochrome[image_, backgroundColor_Integer] :=
-    Replace[image, Except[backgroundColor, _Integer] :> 10, {3}]
 
-ARCToMonochrome[ARCScene[image_], backgroundColor_Integer]
-    ARCScene[ARCToMonochrome[image], backgroundColor]
+ARCToMonochrome[image_List, backgroundColor_Integer] :=
+    Replace[image, Except[backgroundColor, _Integer] :> 10, {2}]
+
+ARCToMonochrome[ARCScene[image_], backgroundColor_Integer] :=
+    ARCScene[ARCToMonochrome[image, backgroundColor]]
 
 (*!
     \function ARCColorize
@@ -6128,7 +6237,7 @@ ARCAddComponentsTransform[inputObject_Association, outputObject_Association, out
                             InferColor["Color" -> component]
                         }
                     ]
-                ] /@ KeyTake[newComponents, {"Image", "Position", "Shapes", "Colors", "Width", "Height"}]
+                ] /@ KeyTake[newComponents, {"Image", "Position", "Shape", "Shapes", "Colors", "Width", "Height"}]
             |>
         ]
     ]
@@ -6897,7 +7006,10 @@ InferColor["Color" -> color_] :=
 *)
 Clear[ARCInferObjectImage];
 ARCInferObjectImage[object_Association] :=
-    FailureDetails["ARCInferObjectImageFailure"]@
+    FailureDetails[
+        "ARCInferObjectImageFailure",
+        "A failure occurred infering an object's image."
+    ]@
     Module[{},
         
         ReturnIfNotMissing[object["Image"]];
@@ -6905,9 +7017,18 @@ ARCInferObjectImage[object_Association] :=
         ReturnFailureIfMissing[object["Width"]];
         ReturnFailureIfMissing[object["Height"]];
         ReturnFailureIfMissing[object["Color"]];
-        ReturnFailureIfMissing[object["Shapes"]];
         
-        If [!MatchQ[object["Shapes"], {_, ___}],
+        If [MissingQ[object["Shapes"]] && MissingQ[object["Shape"]],
+            ReturnFailure[
+                "ARCInferObjectImageFailure",
+                "Either the Shapes or Shape properties must be specified.",
+                "Shape" -> object["Shape"],
+                "Shapes" -> object["Shapes"],
+                "Object" -> object
+            ]
+        ];
+        
+        If [!MissingQ[object["Shapes"]] && !MatchQ[object["Shapes"], {_, ___}],
             ReturnFailure[
                 "ARCInferObjectImageFailure",
                 "The Shapes must be specified as a list of one or more shapes.",
@@ -6916,8 +7037,21 @@ ARCInferObjectImage[object_Association] :=
             ]
         ];
         
+        If [!MissingQ[object["Shape"]] && !MatchQ[object["Shape"], _Association],
+            ReturnFailure[
+                "ARCInferObjectImageFailure",
+                "The Shape must be specified as an association.",
+                "Shape" -> object["Shape"],
+                "Object" -> object
+            ]
+        ];
+        
         ARCInferObjectImage[
-            object["Shapes"],
+            If [!MissingQ[object["Shape"]],
+                object["Shape"]
+                ,
+                First[ARCPruneAlternatives[object["Shapes"], "Shapes", "Most" -> "Specific"]]
+            ],
             object["Color"],
             object["Width"],
             object["Height"]
@@ -6925,12 +7059,15 @@ ARCInferObjectImage[object_Association] :=
     ]
 
 ARCInferObjectImage[
-        {___, shape:KeyValuePattern["Name" -> "Square" | "Rectangle"], ___},
+        shape: KeyValuePattern["Name" -> "Square" | "Rectangle"],
         color_Integer,
         width_,
         height_
     ] :=
     ARCScene@
+    (* I don't think this is required, at least not at this time, but will add it here
+       incase it's ever needed in the future. *)
+    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
     {
         (* Horizontal line. *)
         Table[color, {width}],
@@ -6964,7 +7101,7 @@ ARCInferObjectImage[
     }
 
 ARCInferObjectImage[
-        {___, shape:KeyValuePattern["Name" -> "Pixel"], ___},
+        shape: KeyValuePattern["Name" -> "Pixel"],
         color_Integer,
         width_,
         height_
@@ -6972,6 +7109,35 @@ ARCInferObjectImage[
     ARCScene[
         {{color}}
     ]
+
+ARCInferObjectImage[
+        shape: KeyValuePattern["Name" -> "L"],
+        color_Integer,
+        width_,
+        height_
+    ] :=
+    ARCScene@
+    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+    {
+        Sequence @@
+        Table[
+            {
+                color,
+                Sequence @@
+                Table[
+                    If [TrueQ[shape["Filled"]],
+                        color
+                        ,
+                        $nonImageColor
+                    ],
+                    {width - 1}
+                ]
+            },
+            {height - 1}
+        ],
+        (* Horizontal line. *)
+        Table[color, {width}]
+    }
 
 ARCInferObjectImage[shapes_, color_Integer, width_, height_] :=
     Module[{},
@@ -7092,6 +7258,11 @@ Options[ARCPruneAlternatives] =
 {
     "Most" -> "General"     (* Are we looking to keep the most general alternatives? Or the most specific alternatives? *)
 };
+
+(* Single item. *)
+ARCPruneAlternatives[alternatives: List[_assoc], property_String, OptionsPattern[]] :=
+    {assoc}
+
 ARCPruneAlternatives[alternatives: List[__Association], property_String, OptionsPattern[]] :=
     (* Remove cases where the list of qualifiers is more specific than another
        alternative's list of qualifiers. *)
@@ -7120,9 +7291,13 @@ ARCPruneAlternatives[alternatives: List[__Association], property_String, Options
                                         ARCMoreGeneral["Property" -> property, #["Name"], item["Name"]]
                                         ,
                                         ARCMoreGeneral["Property" -> property, item["Name"], #["Name"]]
-                                    ],
+                                    ]
+                                    (* I don't think we want this condition, because we for example
+                                       want the shape "Pixel" to win out over "Square", even if the
+                                       square has "Filled" -> True.
+                                       ARCPruneAlternatives-20220811-6PKT59 *)
                                     (* Other than the "Name", the qualifiers are the same. *)
-                                    KeySort[KeyDrop[item, "Name"]] === KeySort[KeyDrop[#, "Name"]]
+                                    (*KeySort[KeyDrop[item, "Name"]] === KeySort[KeyDrop[#, "Name"]]*)
                                 ]
                             ] &
                         ]
@@ -7180,7 +7355,8 @@ ARCPruneAlternatives[alternatives_List, property_String] := DeleteDuplicates[alt
 Clear[ARCMoreGeneral];
 $generality = <|
     "Shape" -> {
-        "Rectangle" -> "Square"
+        "Rectangle" -> "Square",
+        "Square" -> "Pixel"
     }
 |>;
 $generalityGraph = Graph /@ $generality;
@@ -7250,6 +7426,75 @@ PropertyEntityType[property_String] :=
             HoldPattern[Repeated][innerType_] :> innerType
         ]
     ]
+
+(*!
+    \function ARCApplyImageTransforms
+    
+    \calltable
+        ARCApplyImageTransforms[image, transform] '' Given an image, applies the given transfer, which can be Missing.
+    
+    Examples:
+    
+    ARCApplyImageTransforms[
+        ARCScene[{{1, -1, -1}, {1, -1, -1}, {1, 1, 1}}],
+        <|"Type" -> "Rotation", "Angle" -> 90|>
+    ]
+    
+    ===
+    
+    ARCScene[{{1, 1, 1}, {1, -1, -1}, {1, -1, -1}}]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCApplyImageTransforms]
+    
+    \maintainer danielb
+*)
+Clear[ARCApplyImageTransforms];
+ARCApplyImageTransforms[image_, KeyValuePattern[{"Type" -> "Rotation", "Angle" -> angle_}]] :=
+    RotateImage[image, angle]
+
+ARCApplyImageTransforms[image_, KeyValuePattern[{"Type" -> "Flip", "Direction" -> "Vertical"}]] :=
+    ApplyToImage[image, Reverse]
+
+ARCApplyImageTransforms[image_, KeyValuePattern[{"Type" -> "Flip", "Direction" -> "Horizontal"}]] :=
+    ApplyToImage[image, Function[Map[Reverse, #]]]
+
+ARCApplyImageTransforms[image_, transform_] :=
+    Module[{},
+        ReturnFailure[
+            "ImageTransformNotImplemented",
+            "The given image transformation isn't currently supported.",
+            "Image" -> image,
+            "Transform" -> transform
+        ]
+    ]
+
+ARCApplyImageTransforms[image_, _Missing] :=
+    image
+
+(*!
+    \function ApplyToImage
+    
+    \calltable
+        ApplyToImage[image, function] '' Applies the given function to an image, dealing properly with the ARCScene head if present.
+    
+    Examples:
+    
+    ApplyToImage[ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}], Reverse] === ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ApplyToImage]
+    
+    \maintainer danielb
+*)
+Clear[ApplyToImage];
+ApplyToImage[ARCScene[image_], function_] :=
+    ARCScene[function[image]]
+
+ApplyToImage[image_List, function_] :=
+    function[image]
 
 End[]
 

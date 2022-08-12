@@ -19,3 +19,11 @@ Test[
     ,
     TestID -> "ARCToMonochrome-20220725-K4RMMA"
 ]
+
+Test[
+    Daniel`ARC`ARCToMonochrome[{{2, 0}, {0, 2}}, 0]
+    ,
+    {{10, 0}, {0, 10}}
+    ,
+    TestID -> "ARCToMonochrome-20220811-JBK20L"
+]
