@@ -34,14 +34,15 @@ Test[
                 "UUID" -> 0,
                 "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}}],
                 "PixelPositions" -> {{6, 2}, {6, 3}, {6, 4}, {7, 2}, {7, 3}, {7, 4}},
+                "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}}]|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}}]|>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{2, 2}, {2, 2}, {2, 2}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{2, 2}, {2, 2}, {2, 2}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
                     <|"Name" -> "Rectangle"|>,
@@ -84,14 +85,15 @@ Test[
                 "UUID" -> 0,
                 "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}}],
                 "PixelPositions" -> {{6, 5}, {6, 6}, {6, 7}, {7, 5}, {7, 6}, {7, 7}},
+                "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}}]|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}}]|>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}, {1, 1}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}, {1, 1}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
                     <|"Name" -> "Rectangle"|>,
@@ -134,14 +136,15 @@ Test[
                 "UUID" -> 0,
                 "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, 4, 4}}],
                 "PixelPositions" -> {{6, 8}, {6, 9}, {6, 10}, {7, 8}, {7, 9}, {7, 10}},
+                "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
                 "Shapes" -> {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, 4, 4}}]|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}}]|>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{4, 4}, {4, 4}, {4, 4}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{4, 4}, {4, 4}, {4, 4}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}, {10, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
                     <|"Name" -> "Rectangle"|>,

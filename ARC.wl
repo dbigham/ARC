@@ -2373,7 +2373,7 @@ ARCFindRules[examplesIn_List] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Colors"}
+                        {"Shapes"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2429,8 +2429,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             conclusion,
             rules,
             pattern,
-            mutuallyExclusiveRules = True,
-            conclusionTransformTypes
+            mutuallyExclusiveRules = True
         },
         
         (*Echo[property];*)
@@ -2481,38 +2480,35 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         (*ARCEcho[groupedByPattern];*)
         (*ARCEcho[SimplifyObjects[groupedByPattern]];*)
         
-        groupedByPattern = Function[{conclusionGroup},
-            
-            (* Have all of the mappings have been transformed by the same
-               type of operation? *)
-            If [Length[
-                    conclusionTransformTypes =
-                        DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
-                ] === 1,
-                
-                {conclusion, unhandled} =
-                    ReturnIfFailure@
-                    ARCFindRules[
-                        conclusionGroup,
-                        referenceableInputObjects,
-                        examples,
-                        unhandled,
-                        mutuallyExclusiveRules
-                    ];
-                
-                (* If [conclusionTransformTypes === {"AddComponents"},
-                    ARCEcho[conclusionGroup[[All, "Transform", "Components"]]];
-                    ARCEcho[conclusion]
-                ]; *)
-                
-                conclusion
-                ,
-                unhandled = conclusionGroup;
-                Missing["InconsistentTransform"]
-            ]
-            
-        ] /@ groupedByPattern;
-        
+        groupedByPattern =
+            Association@
+            KeyValueMap[
+                Function[{pattern, conclusionGroup},
+                    
+                    XEcho[pattern];
+                    
+                    (* Have all of the mappings have been transformed by the same
+                       type of operation? *)
+                    pattern -> (
+                        {conclusion, unhandled} =
+                            ReturnIfFailure@
+                            ARCFindRules[
+                                conclusionGroup,
+                                referenceableInputObjects,
+                                examples,
+                                unhandled,
+                                mutuallyExclusiveRules
+                            ];
+                        
+                        (*ARCEcho[conclusionGroup[[All, "Transform", "Components"]]];*)
+                        (*ARCEcho[conclusion];*)
+                        
+                        conclusion
+                    )
+                ],
+                groupedByPattern
+            ];
+
         (*EchoIndented[Keys[DeleteMissing[groupedByPattern]]];*)
         (*ARCEcho[SimplifyObjects[unhandled]];*)
         
@@ -2645,16 +2641,23 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
         },
         
         conclusion = Missing[];
-        groupedByConclusion = GroupBy[
-            conclusionGroup,
-            Function[KeyDrop[#, {"Example", "Input"}]]
-        ];
         
         (*ARCEcho[SimplifyObjects[groupedByConclusion]];*)
         (*ARCEcho[groupedByConclusion];*)
         
         Which[
-            Length[groupedByConclusion] > 1,
+            Length[
+                conclusionTransformTypes =
+                    DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
+            ] =!= 1,
+                Missing["InconsistentTransform"],
+            
+            Length[
+                groupedByConclusion = GroupBy[
+                    conclusionGroup,
+                    Function[KeyDrop[#, {"Example", "Input"}]]
+                ]
+            ] > 1,
                 
                 (* This pattern has multiple possible conclusions, but before we discard it,
                    we should see whether it's possible to generalize those conclusions. *)
@@ -3420,7 +3423,7 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
                    don't use Except are above ones that do use except so that rules are
                    more likely to refer to things without the use of Except where possible.
                    e.g. 05f2a901 (ARCFindRules-20220804-KVNY6K) *)
-                (* Function[{list}, SortBy[list, Function[{item}, !FreeQ[item, _Except]]]]@ *)
+                Function[{list}, SortBy[list, Function[{item}, !FreeQ[item, _Except]]]]@
                 Flatten[
                     
                     (* For each scene, take its group of objects and determine the value counts
@@ -4132,7 +4135,20 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                of, so what we need to do is check if all of the objects share a common
                intersection of those classes. *)
             Replace[
-                Intersection @@ values,
+                Intersection[
+                    Sequence @@ values,
+                    (* I'm not sure why this is necessary, but if we don't specify it, then:
+                       Intersection[
+                           {
+                               <|"a" -> 1, "b" -> 2|>
+                           },
+                           {
+                               <|"a" -> 1|>
+                           }
+                       ]
+                      ... doesn't work correctly. *)
+                    SameTest -> SameQ
+                ],
                 intersection:{__} :> Return[
                     property ->
                         (* Because our conclusion will be used to generate a scene,
@@ -6595,6 +6611,19 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 1,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 12}],
+            "SucessCount" -> 13,
+            "Runtime" -> Quantity[3.8, "Minutes"],
+            "CodeLength" -> 7541,
+            "ExampleImplemented" -> "ifmyulnv8-dynamic-shape",
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
         |>
     }
 
@@ -7138,6 +7167,15 @@ ARCInferObjectImage[
         (* Horizontal line. *)
         Table[color, {width}]
     }
+
+ARCInferObjectImage[
+        shape: KeyValuePattern["Image" -> image_],
+        color_Integer,
+        width_,
+        height_
+    ] :=
+    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+    ARCColorize[image, color]
 
 ARCInferObjectImage[shapes_, color_Integer, width_, height_] :=
     Module[{},

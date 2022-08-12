@@ -30,8 +30,9 @@ Test[
                         "UUID" -> 0,
                         "Image" -> Daniel`ARC`ARCScene[{{2}}],
                         "PixelPositions" -> {{4, 3}},
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -75,8 +76,9 @@ Test[
                         "UUID" -> 0,
                         "Image" -> Daniel`ARC`ARCScene[{{1}}],
                         "PixelPositions" -> {{7, 7}},
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -140,6 +142,9 @@ Test[
                         "UUID" -> 0,
                         "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
                         "PixelPositions" -> {{3, 2}, {3, 4}, {4, 3}, {5, 2}, {5, 4}},
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {{10, -1, 10}, {-1, 10, -1}, {10, -1, 10}}
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -166,8 +171,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{4}}],
                                 "PixelPositions" -> {{3, 2}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,
@@ -193,8 +199,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{4}}],
                                 "PixelPositions" -> {{3, 4}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,
@@ -220,8 +227,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{2}}],
                                 "PixelPositions" -> {{4, 3}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,
@@ -247,8 +255,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{4}}],
                                 "PixelPositions" -> {{5, 2}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,
@@ -274,8 +283,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{4}}],
                                 "PixelPositions" -> {{5, 4}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,
@@ -321,6 +331,9 @@ Test[
                         "UUID" -> 0,
                         "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
                         "PixelPositions" -> {{6, 7}, {7, 6}, {7, 7}, {7, 8}, {8, 7}},
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {{-1, 10, -1}, {10, 10, 10}, {-1, 10, -1}}
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -349,10 +362,13 @@ Test[
                                     {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
                                 ],
                                 "PixelPositions" -> {{6, 7}, {7, 6}, {7, 8}, {8, 7}},
+                                "Shape" -> Daniel`ARC`ARCScene[
+                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
+                                ],
                                 "Shapes" -> {
                                     <|
                                         "Image" -> Daniel`ARC`ARCScene[
-                                            {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                         ]
                                     |>
                                 },
@@ -375,8 +391,9 @@ Test[
                                 "UUID" -> 0,
                                 "Image" -> Daniel`ARC`ARCScene[{{1}}],
                                 "PixelPositions" -> {{7, 7}},
+                                "Shape" -> <|"Name" -> "Pixel"|>,
                                 "Shapes" -> {
-                                    <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>,
+                                    <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                                     <|"Name" -> "Pixel"|>,
                                     <|"Name" -> "Square"|>,
                                     <|"Name" -> "Rectangle"|>,

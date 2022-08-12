@@ -27,10 +27,10 @@ Test[
     ]
     ,
     <|
-        Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|
+        Daniel`ARC`Object[<|"Colors" -> {1}|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>}
         |>,
-        Daniel`ARC`Object[<|"Colors" -> {1}|>] -> <|
+        Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>}
         |>,
         Daniel`ARC`Object[<|"Colors" -> {4}|>] -> <|
@@ -51,11 +51,11 @@ Test[
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Y" -> 3
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+        Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YInverseRank" -> 1,
-            "Y2Rank" -> 3,
-            "Y2InverseRank" -> 1
+            "YInverseRank" -> 3,
+            "Y2Rank" -> 1,
+            "Y2InverseRank" -> 3
         |>,
         Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
@@ -63,11 +63,11 @@ Test[
             "Y2Rank" -> 2,
             "Y2InverseRank" -> 2
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YInverseRank" -> 3,
-            "Y2Rank" -> 1,
-            "Y2InverseRank" -> 3
+            "YInverseRank" -> 1,
+            "Y2Rank" -> 3,
+            "Y2InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"YInverseRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
@@ -87,13 +87,6 @@ Test[
             "Y2Rank" -> 1,
             "Y2InverseRank" -> 3
         |>,
-        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "X" -> 2,
-            "XInverseRank" -> 1,
-            "X2Rank" -> 3,
-            "X2InverseRank" -> 1
-        |>,
         Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "XInverseRank" -> 3,
@@ -106,6 +99,13 @@ Test[
             "X2Rank" -> 2,
             "X2InverseRank" -> 2
         |>,
+        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "X" -> 2,
+            "XInverseRank" -> 1,
+            "X2Rank" -> 3,
+            "X2InverseRank" -> 1
+        |>,
         Daniel`ARC`Object[<|"XInverseRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "X" -> 2,
@@ -113,23 +113,23 @@ Test[
             "X2Rank" -> 3,
             "X2InverseRank" -> 1
         |>,
-        Daniel`ARC`Object[<|"XInverseRank" -> 3|>] -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "XRank" -> 1,
-            "X2Rank" -> 1,
-            "X2InverseRank" -> 3
-        |>,
         Daniel`ARC`Object[<|"XInverseRank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "XRank" -> 2,
             "X2Rank" -> 2,
             "X2InverseRank" -> 2
         |>,
-        Daniel`ARC`Object[<|"Y2Rank" -> 3|>] -> <|
+        Daniel`ARC`Object[<|"XInverseRank" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YRank" -> 3,
-            "YInverseRank" -> 1,
-            "Y2InverseRank" -> 1
+            "XRank" -> 1,
+            "X2Rank" -> 1,
+            "X2InverseRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"Y2Rank" -> 1|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "YRank" -> 1,
+            "YInverseRank" -> 3,
+            "Y2InverseRank" -> 3
         |>,
         Daniel`ARC`Object[<|"Y2Rank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
@@ -137,11 +137,11 @@ Test[
             "YInverseRank" -> 2,
             "Y2InverseRank" -> 2
         |>,
-        Daniel`ARC`Object[<|"Y2Rank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"Y2Rank" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YRank" -> 1,
-            "YInverseRank" -> 3,
-            "Y2InverseRank" -> 3
+            "YRank" -> 3,
+            "YInverseRank" -> 1,
+            "Y2InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"Y2InverseRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
@@ -161,13 +161,6 @@ Test[
             "YInverseRank" -> 3,
             "Y2Rank" -> 1
         |>,
-        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "X" -> 2,
-            "XRank" -> 3,
-            "XInverseRank" -> 1,
-            "X2InverseRank" -> 1
-        |>,
         Daniel`ARC`Object[<|"X2Rank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "XRank" -> 1,
@@ -180,6 +173,13 @@ Test[
             "XInverseRank" -> 2,
             "X2InverseRank" -> 2
         |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "X" -> 2,
+            "XRank" -> 3,
+            "XInverseRank" -> 1,
+            "X2InverseRank" -> 1
+        |>,
         Daniel`ARC`Object[<|"X2InverseRank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "X" -> 2,
@@ -187,17 +187,17 @@ Test[
             "XInverseRank" -> 1,
             "X2Rank" -> 3
         |>,
-        Daniel`ARC`Object[<|"X2InverseRank" -> 3|>] -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "XRank" -> 1,
-            "XInverseRank" -> 3,
-            "X2Rank" -> 1
-        |>,
         Daniel`ARC`Object[<|"X2InverseRank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "XRank" -> 2,
             "XInverseRank" -> 2,
             "X2Rank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"X2InverseRank" -> 3|>] -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "XRank" -> 1,
+            "XInverseRank" -> 3,
+            "X2Rank" -> 1
         |>
     |>
     ,
@@ -614,53 +614,6 @@ Test[
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
         |>,
-        Daniel`ARC`Object[<|"HeightInverseRank" -> 4|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 2,
-            "HeightRank" -> 1,
-            "LengthRank" -> 1,
-            "LengthInverseRank" -> 4,
-            "YRank" -> 4,
-            "YInverseRank" -> 1,
-            "AspectRatioRank" -> 4,
-            "AspectRatioInverseRank" -> 1
-        |>,
-        Daniel`ARC`Object[<|"HeightInverseRank" -> 3|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 3,
-            "HeightRank" -> 2,
-            "LengthRank" -> 2,
-            "LengthInverseRank" -> 3,
-            "YRank" -> 3,
-            "YInverseRank" -> 2,
-            "AspectRatioRank" -> 3,
-            "AspectRatioInverseRank" -> 2
-        |>,
-        Daniel`ARC`Object[<|"HeightInverseRank" -> 2|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "HeightRank" -> 3,
-            "LengthRank" -> 3,
-            "LengthInverseRank" -> 2,
-            "YRank" -> 2,
-            "YInverseRank" -> 3,
-            "AspectRatioRank" -> 2,
-            "AspectRatioInverseRank" -> 3
-        |>,
         Daniel`ARC`Object[<|"HeightInverseRank" -> 1|>] -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
@@ -690,6 +643,53 @@ Test[
             "YInverseRank" -> 4,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"HeightInverseRank" -> 2|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HeightRank" -> 3,
+            "LengthRank" -> 3,
+            "LengthInverseRank" -> 2,
+            "YRank" -> 2,
+            "YInverseRank" -> 3,
+            "AspectRatioRank" -> 2,
+            "AspectRatioInverseRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"HeightInverseRank" -> 3|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 3,
+            "HeightRank" -> 2,
+            "LengthRank" -> 2,
+            "LengthInverseRank" -> 3,
+            "YRank" -> 3,
+            "YInverseRank" -> 2,
+            "AspectRatioRank" -> 3,
+            "AspectRatioInverseRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"HeightInverseRank" -> 4|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 2,
+            "HeightRank" -> 1,
+            "LengthRank" -> 1,
+            "LengthInverseRank" -> 4,
+            "YRank" -> 4,
+            "YInverseRank" -> 1,
+            "AspectRatioRank" -> 4,
+            "AspectRatioInverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"LengthRank" -> 1|>] -> <|
             "Shapes" -> {
@@ -768,53 +768,6 @@ Test[
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
         |>,
-        Daniel`ARC`Object[<|"LengthInverseRank" -> 4|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 2,
-            "HeightRank" -> 1,
-            "HeightInverseRank" -> 4,
-            "LengthRank" -> 1,
-            "YRank" -> 4,
-            "YInverseRank" -> 1,
-            "AspectRatioRank" -> 4,
-            "AspectRatioInverseRank" -> 1
-        |>,
-        Daniel`ARC`Object[<|"LengthInverseRank" -> 3|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 3,
-            "HeightRank" -> 2,
-            "HeightInverseRank" -> 3,
-            "LengthRank" -> 2,
-            "YRank" -> 3,
-            "YInverseRank" -> 2,
-            "AspectRatioRank" -> 3,
-            "AspectRatioInverseRank" -> 2
-        |>,
-        Daniel`ARC`Object[<|"LengthInverseRank" -> 2|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "HeightRank" -> 3,
-            "HeightInverseRank" -> 2,
-            "LengthRank" -> 3,
-            "YRank" -> 2,
-            "YInverseRank" -> 3,
-            "AspectRatioRank" -> 2,
-            "AspectRatioInverseRank" -> 3
-        |>,
         Daniel`ARC`Object[<|"LengthInverseRank" -> 1|>] -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
@@ -845,23 +798,22 @@ Test[
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 4|>] -> <|
+        Daniel`ARC`Object[<|"LengthInverseRank" -> 2|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "Y" -> 2,
-            "HeightRank" -> 1,
-            "HeightInverseRank" -> 4,
-            "LengthRank" -> 1,
-            "LengthInverseRank" -> 4,
-            "YInverseRank" -> 1,
-            "AspectRatioRank" -> 4,
-            "AspectRatioInverseRank" -> 1
+            "HeightRank" -> 3,
+            "HeightInverseRank" -> 2,
+            "LengthRank" -> 3,
+            "YRank" -> 2,
+            "YInverseRank" -> 3,
+            "AspectRatioRank" -> 2,
+            "AspectRatioInverseRank" -> 3
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+        Daniel`ARC`Object[<|"LengthInverseRank" -> 3|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
@@ -872,25 +824,26 @@ Test[
             "HeightRank" -> 2,
             "HeightInverseRank" -> 3,
             "LengthRank" -> 2,
-            "LengthInverseRank" -> 3,
+            "YRank" -> 3,
             "YInverseRank" -> 2,
             "AspectRatioRank" -> 3,
             "AspectRatioInverseRank" -> 2
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
+        Daniel`ARC`Object[<|"LengthInverseRank" -> 4|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "HeightRank" -> 3,
-            "HeightInverseRank" -> 2,
-            "LengthRank" -> 3,
-            "LengthInverseRank" -> 2,
-            "YInverseRank" -> 3,
-            "AspectRatioRank" -> 2,
-            "AspectRatioInverseRank" -> 3
+            "Y" -> 2,
+            "HeightRank" -> 1,
+            "HeightInverseRank" -> 4,
+            "LengthRank" -> 1,
+            "YRank" -> 4,
+            "YInverseRank" -> 1,
+            "AspectRatioRank" -> 4,
+            "AspectRatioInverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
@@ -921,6 +874,53 @@ Test[
             "YInverseRank" -> 4,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HeightRank" -> 3,
+            "HeightInverseRank" -> 2,
+            "LengthRank" -> 3,
+            "LengthInverseRank" -> 2,
+            "YInverseRank" -> 3,
+            "AspectRatioRank" -> 2,
+            "AspectRatioInverseRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 3,
+            "HeightRank" -> 2,
+            "HeightInverseRank" -> 3,
+            "LengthRank" -> 2,
+            "LengthInverseRank" -> 3,
+            "YInverseRank" -> 2,
+            "AspectRatioRank" -> 3,
+            "AspectRatioInverseRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"YRank" -> 4|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 2,
+            "HeightRank" -> 1,
+            "HeightInverseRank" -> 4,
+            "LengthRank" -> 1,
+            "LengthInverseRank" -> 4,
+            "YInverseRank" -> 1,
+            "AspectRatioRank" -> 4,
+            "AspectRatioInverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"YInverseRank" -> 1|>] -> <|
             "Shapes" -> {
@@ -999,31 +999,18 @@ Test[
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 4
         |>,
-        Daniel`ARC`Object[<|"XRank" -> 4|>] -> <|
+        Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "X" -> 2,
-            "X2" -> 2,
-            "XInverseRank" -> 1,
-            "X2Rank" -> 4,
-            "X2InverseRank" -> 1
-        |>,
-        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "X" -> 4,
-            "X2" -> 4,
-            "XInverseRank" -> 2,
-            "X2Rank" -> 3,
-            "X2InverseRank" -> 2
+            "X" -> 8,
+            "X2" -> 8,
+            "XInverseRank" -> 4,
+            "X2Rank" -> 1,
+            "X2InverseRank" -> 4
         |>,
         Daniel`ARC`Object[<|"XRank" -> 2|>] -> <|
             "Shapes" -> {
@@ -1038,18 +1025,31 @@ Test[
             "X2Rank" -> 2,
             "X2InverseRank" -> 3
         |>,
-        Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"XRank" -> 3|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "X" -> 8,
-            "X2" -> 8,
-            "XInverseRank" -> 4,
-            "X2Rank" -> 1,
-            "X2InverseRank" -> 4
+            "X" -> 4,
+            "X2" -> 4,
+            "XInverseRank" -> 2,
+            "X2Rank" -> 3,
+            "X2InverseRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"XRank" -> 4|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "X" -> 2,
+            "X2" -> 2,
+            "XInverseRank" -> 1,
+            "X2Rank" -> 4,
+            "X2InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"XInverseRank" -> 1|>] -> <|
             "Shapes" -> {
@@ -1103,31 +1103,18 @@ Test[
             "X2Rank" -> 1,
             "X2InverseRank" -> 4
         |>,
-        Daniel`ARC`Object[<|"X2Rank" -> 4|>] -> <|
+        Daniel`ARC`Object[<|"X2Rank" -> 1|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "X" -> 2,
-            "X2" -> 2,
-            "XRank" -> 4,
-            "XInverseRank" -> 1,
-            "X2InverseRank" -> 1
-        |>,
-        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "X" -> 4,
-            "X2" -> 4,
-            "XRank" -> 3,
-            "XInverseRank" -> 2,
-            "X2InverseRank" -> 2
+            "X" -> 8,
+            "X2" -> 8,
+            "XRank" -> 1,
+            "XInverseRank" -> 4,
+            "X2InverseRank" -> 4
         |>,
         Daniel`ARC`Object[<|"X2Rank" -> 2|>] -> <|
             "Shapes" -> {
@@ -1142,18 +1129,31 @@ Test[
             "XInverseRank" -> 3,
             "X2InverseRank" -> 3
         |>,
-        Daniel`ARC`Object[<|"X2Rank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"X2Rank" -> 3|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "X" -> 8,
-            "X2" -> 8,
-            "XRank" -> 1,
-            "XInverseRank" -> 4,
-            "X2InverseRank" -> 4
+            "X" -> 4,
+            "X2" -> 4,
+            "XRank" -> 3,
+            "XInverseRank" -> 2,
+            "X2InverseRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"X2Rank" -> 4|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "X" -> 2,
+            "X2" -> 2,
+            "XRank" -> 4,
+            "XInverseRank" -> 1,
+            "X2InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"X2InverseRank" -> 1|>] -> <|
             "Shapes" -> {
@@ -1207,53 +1207,6 @@ Test[
             "XInverseRank" -> 4,
             "X2Rank" -> 1
         |>,
-        Daniel`ARC`Object[<|"AspectRatioRank" -> 4|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 2,
-            "HeightRank" -> 1,
-            "HeightInverseRank" -> 4,
-            "LengthRank" -> 1,
-            "LengthInverseRank" -> 4,
-            "YRank" -> 4,
-            "YInverseRank" -> 1,
-            "AspectRatioInverseRank" -> 1
-        |>,
-        Daniel`ARC`Object[<|"AspectRatioRank" -> 3|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "Y" -> 3,
-            "HeightRank" -> 2,
-            "HeightInverseRank" -> 3,
-            "LengthRank" -> 2,
-            "LengthInverseRank" -> 3,
-            "YRank" -> 3,
-            "YInverseRank" -> 2,
-            "AspectRatioInverseRank" -> 2
-        |>,
-        Daniel`ARC`Object[<|"AspectRatioRank" -> 2|>] -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line"|>,
-                <|"Name" -> "Line", "Angle" -> 90|>,
-                <|"Name" -> "Rectangle"|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "HeightRank" -> 3,
-            "HeightInverseRank" -> 2,
-            "LengthRank" -> 3,
-            "LengthInverseRank" -> 2,
-            "YRank" -> 2,
-            "YInverseRank" -> 3,
-            "AspectRatioInverseRank" -> 3
-        |>,
         Daniel`ARC`Object[<|"AspectRatioRank" -> 1|>] -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}}],
             "Shapes" -> {
@@ -1283,6 +1236,53 @@ Test[
             "YRank" -> 1,
             "YInverseRank" -> 4,
             "AspectRatioInverseRank" -> 4
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 2|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HeightRank" -> 3,
+            "HeightInverseRank" -> 2,
+            "LengthRank" -> 3,
+            "LengthInverseRank" -> 2,
+            "YRank" -> 2,
+            "YInverseRank" -> 3,
+            "AspectRatioInverseRank" -> 3
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 3|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 3,
+            "HeightRank" -> 2,
+            "HeightInverseRank" -> 3,
+            "LengthRank" -> 2,
+            "LengthInverseRank" -> 3,
+            "YRank" -> 3,
+            "YInverseRank" -> 2,
+            "AspectRatioInverseRank" -> 2
+        |>,
+        Daniel`ARC`Object[<|"AspectRatioRank" -> 4|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Y" -> 2,
+            "HeightRank" -> 1,
+            "HeightInverseRank" -> 4,
+            "LengthRank" -> 1,
+            "LengthInverseRank" -> 4,
+            "YRank" -> 4,
+            "YInverseRank" -> 1,
+            "AspectRatioInverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"AspectRatioInverseRank" -> 1|>] -> <|
             "Shapes" -> {

@@ -190,7 +190,7 @@ Test[
     ]
     ,
     {
-        <|"Shapes" -> <|"Name" -> "Square"|>|> -> <|
+        <|"AspectRatio" -> 1|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -201,10 +201,7 @@ Test[
                 }
             |>
         |>,
-        <|"Shapes" -> <|"Name" -> "Line"|>|> -> <|"Same" -> True|>,
-        <|"Shapes" -> Except[<|"Name" -> "Square"|> | <|"Name" -> "Line"|>]|> -> <|
-            "Same" -> True
-        |>
+        <|"AspectRatio" -> Except[1]|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220807-UIY7RU"

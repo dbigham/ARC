@@ -22,7 +22,7 @@ https://github.com/fchollet/ARC
 * [08ed6ac7](TaskNotes/08ed6ac7/notes.md)
 * [a61f2674](TaskNotes/a61f2674/notes.md)
 
-### Personally Created Training Tasks (9)
+### Personally Created Training Tasks (10)
 
 * [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)
 * [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)
@@ -33,6 +33,7 @@ https://github.com/fchollet/ARC
 * [n1hczotml](TaskNotes/n1hczotml/notes.md)
 * [ifmyulnv8](TaskNotes/ifmyulnv8/notes.md)
 * [ifmyulnv8-shape](TaskNotes/ifmyulnv8-shape/notes.md)
+* [ifmyulnv8-dynamic-shape](TaskNotes/ifmyulnv8-dynamic-shape/notes.md)
 
 ## Tasks Passing via Generalization
 

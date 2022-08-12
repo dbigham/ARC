@@ -40,8 +40,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -62,8 +63,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -84,8 +86,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -106,8 +109,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -137,10 +141,13 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                 ]
                             |>
                         },
@@ -223,8 +230,9 @@ Test[
                             "XInverse" -> -1
                         |>
                     |>,
+                    "Shape" -> <|"Name" -> "Pixel"|>,
                     "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
@@ -245,8 +253,9 @@ Test[
                             "XInverse" -> 1
                         |>
                     |>,
+                    "Shape" -> <|"Name" -> "Pixel"|>,
                     "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
@@ -267,8 +276,9 @@ Test[
                             "XInverse" -> -1
                         |>
                     |>,
+                    "Shape" -> <|"Name" -> "Pixel"|>,
                     "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
@@ -289,8 +299,9 @@ Test[
                             "XInverse" -> 1
                         |>
                     |>,
+                    "Shape" -> <|"Name" -> "Pixel"|>,
                     "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
@@ -342,8 +353,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -364,8 +376,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -386,8 +399,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -408,8 +422,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -439,10 +454,13 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                 ]
                             |>
                         },
@@ -469,10 +487,13 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                 ]
                             |>
                         },
@@ -499,8 +520,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -521,8 +543,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -543,8 +566,9 @@ Test[
                                 "XInverse" -> -1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
@@ -565,8 +589,9 @@ Test[
                                 "XInverse" -> 1
                             |>
                         |>,
+                        "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>,
+                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
