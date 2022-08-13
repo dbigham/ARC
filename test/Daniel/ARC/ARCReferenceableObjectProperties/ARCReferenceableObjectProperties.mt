@@ -20,7 +20,7 @@ Test[
                 ];
                 Daniel`ARC`ARCReferenceableObjectProperties[
                     Keys[Daniel`ARC`ARCMakeObjectsReferenceable[parsedScenes]],
-                    parsedScenes
+                    parsedScenes[[All, "Objects"]]
                 ]
             ]
         ]
@@ -214,7 +214,7 @@ Test[
                 ];
                 Daniel`ARC`ARCReferenceableObjectProperties[
                     Keys[Daniel`ARC`ARCMakeObjectsReferenceable[parsedScenes]],
-                    parsedScenes
+                    parsedScenes[[All, "Objects"]]
                 ]
             ]
         ]

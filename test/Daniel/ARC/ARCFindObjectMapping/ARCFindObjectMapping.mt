@@ -178,7 +178,8 @@ Test[
                             "Objects",
                             1 ;; 1
                         ]],
-                        {}
+                        {},
+                        <||>
                     ]
                 ]
             ]
@@ -207,7 +208,8 @@ Test[
                         Utility`ReturnIfFailure[Daniel`ARC`ARCParseScene[example["Output"]]][
                             "Objects"
                         ],
-                        {}
+                        {},
+                        <||>
                     ]
                 ]
             ]
@@ -739,7 +741,8 @@ Test[
                             "Objects",
                             1 ;; 1
                         ]],
-                        {inputObject}
+                        {inputObject},
+                        <||>
                     ]
                 ]
             ]
@@ -829,4 +832,85 @@ Test[
     |>
     ,
     TestID -> "ARCFindObjectMapping-20220812-6R5M8F"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCFindObjectMapping[
+                        Daniel`ARC`ARCParseFile[file = "25d487eb"]["Train", 1]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    <|
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{2, -1, -1}, {2, 2, -1}, {1, 2, 2}, {2, 2, -1}, {2, -1, -1}}
+            ],
+            "Position" -> {3, 4}
+        |> -> <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+                }
+            ],
+            "Position" -> {3, 4},
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1, 1, 1, 1, 1, 1, 1}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> 2,
+                                "X" -> 3,
+                                "YInverse" -> -2,
+                                "XInverse" -> 1
+                            |>
+                        |>,
+                        "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                        "Shapes" -> {
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10, 10, 10, 10, 10, 10, 10}}
+                                ]
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}}
+                                ],
+                                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}}
+                                ],
+                                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                            |>,
+                            <|"Name" -> "Line"|>,
+                            <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Rectangle", "Filled" -> True|>
+                        },
+                        "Width" -> 9,
+                        "Height" -> 1,
+                        "Color" -> 1,
+                        "Outward" -> True,
+                        "Direction" -> {0, 1}
+                    |>
+                }
+            |>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220813-3ISFU6"
 ]

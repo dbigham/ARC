@@ -121,7 +121,9 @@ Test[
             "FilledProportion" -> 0.25
         |> -> <|
             "UUID" -> 0,
-            "MyKey" -> 1
+            "MyKey" -> 1,
+            "Components" -> {<|"UUID" -> 0, "MyKey" -> 1|>},
+            "Transform" -> <|"Type" -> "AddComponents", "Components" -> {}|>
         |>,
         <|
             "UUID" -> 0,

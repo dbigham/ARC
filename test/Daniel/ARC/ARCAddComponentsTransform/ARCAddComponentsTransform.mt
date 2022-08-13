@@ -47,7 +47,8 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
                         "Position" -> {2, 2}
                     |>
-                }
+                },
+                <||>
             ]
         ]
     ]

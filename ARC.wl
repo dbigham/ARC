@@ -246,6 +246,12 @@ ARCObjectCommonalities::usage = "ARCObjectCommonalities  "
 
 ARCFormGroupsWhenApplyingRules::usage = "ARCFormGroupsWhenApplyingRules  "
 
+ARCObjectWithComponent::usage = "ARCObjectWithComponent  "
+
+ARCGetMatchingComponent::usage = "ARCGetMatchingComponent  "
+
+ARCOutwardComponentPropertiesIfAppropriate::usage = "ARCOutwardComponentPropertiesIfAppropriate  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1673,7 +1679,11 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                             ARCFindObjectMapping[
                                 object,
                                 OptionValue["OtherScene"]["WithMultiColorCompositeObjects"],
-                                singleOrMultiColorObjects
+                                singleOrMultiColorObjects,
+                                <|
+                                    "Width" -> ImageWidth[scene],
+                                    "Height" -> ImageHeight[scene]
+                                |>
                             ][[2]]
                         ],
                         (* There _are_ matching non-composite objects in the other scene
@@ -1685,7 +1695,11 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                                     ARCFindObjectMapping[
                                         component,
                                         OptionValue["OtherScene"]["WithoutMultiColorCompositeObjects"],
-                                        singleOrMultiColorObjects
+                                        singleOrMultiColorObjects,
+                                        <|
+                                            "Width" -> ImageWidth[scene],
+                                            "Height" -> ImageHeight[scene]
+                                        |>
                                     ][[2]]
                                 ]
                             ]
@@ -1801,7 +1815,7 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                     Replace[
                         res =
                             ReturnIfFailure@
-                            ARCFindObjectMapping[object, outputObjects, inputObjects],
+                            ARCFindObjectMapping[object, outputObjects, inputObjects, output],
                         {
                             HoldPattern[Rule][inputObject_, _] :> (
                                 (* This call returned a single mapping from our input object. *)
@@ -1832,13 +1846,14 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                  but don't exist in the input. *)
     ]
 
-ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List] :=
+ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List, outputScene_Association] :=
     Module[
         {
             matchingComponent,
             mappedToObject,
             possibleMatches,
-            inputsObjectsOfType
+            inputsObjectsOfType,
+            matchingComponents
         },
         
         (* Look for an exact match. *)
@@ -1853,27 +1868,42 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
             ]
         ];
         
-        (* Look for component of larger object. *)
-        mappedToObject = SelectFirst[
-            objectsToMapTo,
-            And[
-                ListQ[#["Components"]],
-                !MissingQ[
-                    matchingComponent = SelectFirst[
-                        #["Components"],
-                        ARCSameQ[#, object] &
+        (* Matching an object in the input to a composite object in the output. *)
+        matchingComponents = {};
+        If [!ListQ[object["Components"]],
+            (* Our object isn't composite, so we check if our object is a component of an output
+               object.*)
+            {mappedToObject, matchingComponent} =
+                ARCObjectWithComponent[objectsToMapTo, object];
+            matchingComponents = {matchingComponent};
+            ,
+            (* Our object is composite, so we check if one or more of our objects are part of a
+               composite object. *)
+            matchingComponents = Block[{},
+                Function[{component},
+                    {mappedToObject, matchingComponent} =
+                        ARCObjectWithComponent[objectsToMapTo, component];
+                    If [!MissingQ[mappedToObject],
+                        Return[
+                            DeleteMissing[
+                                Function[{component2},
+                                    ARCGetMatchingComponent[mappedToObject, component2]
+                                ] /@ object["Components"]
+                            ],
+                            Block
+                        ]
                     ]
-                ]
-            ] &
+                ] /@ object["Components"]
+            ]
         ];
         
-        If [!MissingQ[mappedToObject],
+        If [SpecifiedQ[mappedToObject],
             (* We've found a composite object with a component that matches the object.
                We add an AddComponents transform key. *)
             Return[
                 Rule[
                     Append[object, "OutputComponentUUID" -> matchingComponent["UUID"]],
-                    ARCAddComponentsTransform[object, mappedToObject, {matchingComponent}]
+                    ARCAddComponentsTransform[object, mappedToObject, matchingComponents, outputScene]
                 ],
                 Module
             ]
@@ -2395,7 +2425,7 @@ ARCFindRules[examplesIn_List] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Shapes"}
+                        {"PrimarySizeDimension"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2507,7 +2537,9 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             KeyValueMap[
                 Function[{pattern, conclusionGroup},
                     
-                    XEcho[pattern];
+                    (*Echo[pattern];*)
+                    
+                    (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
                     
                     (* Have all of the mappings have been transformed by the same
                        type of operation? *)
@@ -2726,8 +2758,8 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
             ];
             
             (* If a rule is only supported by one example input/output pair, then we won't
-                keep it, since that is very strong evidence that we haven't found a workable
-                generalization. *)
+               keep it, since that is very strong evidence that we haven't found a workable
+               generalization. *)
             (* Question: We do the work of ARCGeneralizeConclusions above, and then we might end
                             up discarding its hard work here if it isn't supported by enough
                             examples. Should we instead _first_ check the number of examples,
@@ -3434,9 +3466,12 @@ ARCParseExamples[file_String] :=
 *)
 Clear[ARCMakeObjectsReferenceable];
 ARCMakeObjectsReferenceable[parsedScenes_List] :=
-    Module[{objectsForAllExamples, usablePropertiesAndValues, valueCounts, uniqueValues, countsForValue, countsForNotValue, usablePropertyAndValues},
-        
-        objectsForAllExamples = parsedScenes[[All, "Objects"]];
+    ARCMakeObjectsReferenceable[
+        "ObjectLists" -> parsedScenes[[All, "Objects"]]
+    ]
+
+ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List] :=
+    Module[{usablePropertiesAndValues, valueCounts, uniqueValues, countsForValue, countsForNotValue, usablePropertyAndValues},
         
         usablePropertiesAndValues = Association[
             Function[{property},
@@ -3525,7 +3560,10 @@ ARCMakeObjectsReferenceable[parsedScenes_List] :=
                 usablePropertiesAndValues
             ];
         
-        ARCReferenceableObjectProperties[objectReferences, parsedScenes]
+        ARCReferenceableObjectProperties[
+            objectReferences,
+            objectsForAllExamples
+        ]
     ]
 
 (*!
@@ -3611,7 +3649,7 @@ GetObject[objectName_String, objects_List, namedObjects_Association : <||>] :=
         ];
         ARCReferenceableObjectProperties[
             ARCMakeObjectsReferenceable[parsedScenes],
-            parsedScenes
+            parsedScenes[[All, "Objects"]]
         ]
     ]
     
@@ -3630,24 +3668,24 @@ GetObject[objectName_String, objects_List, namedObjects_Association : <||>] :=
     \maintainer danielb
 *)
 Clear[ARCReferenceableObjectProperties];
-ARCReferenceableObjectProperties[objects_List, parsedScenes_List] :=
+ARCReferenceableObjectProperties[objects_List, objectLists_List] :=
     Module[{res, objectsOfType, propertyValues, constantProperties},
         
         (* What property values are consistent for all objects and thus not worth including
            on RHSs? *)
         constantProperties = Select[
             Keys[$properties],
-            Length[DeleteDuplicates[Flatten[parsedScenes[[All, "Objects"]]][[All, #]]]] === 1 &
+            Length[DeleteDuplicates[Flatten[objectLists][[All, #]]]] === 1 &
         ];
         
         res = Function[{objectReference},
             
             (* Find the objects of this type from the given scene. *)
-            objectsOfType = Function[{scene},
+            objectsOfType = Function[{objectList},
                 object =
                     ReturnIfFailure@
-                    GetObject[objectReference, scene]
-            ] /@ parsedScenes;
+                    GetObject[objectReference, objectList]
+            ] /@ objectLists;
             
             (* Find the commonalities between these objects. *)
             objectReference -> Association[
@@ -6164,7 +6202,9 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
                                 ]
                                 ,
                                 {outputObject}
-                            ]
+                            ],
+                            (* TODO: We're supposed to pass in "Width" and "Height" here. *)
+                            <||>
                         ]
                     ]
             },
@@ -6276,7 +6316,12 @@ ARCConditionsGeneralityScore[Rule[property_, value_]] :=
     \function ARCAddComponentsTransform
     
     \calltable
-        ARCAddComponentsTransform[inputObject, outputObject, outputComponentsFromInput] '' Given an input object and the output object it maps to, as well as the output components that correspond with input components, produces an output object with an AddComponents transform.
+        ARCAddComponentsTransform[inputObject, outputObject, outputComponentsFromInput, outputScene] '' Given an input object and the output object it maps to, as well as the output components that correspond with input components, produces an output object with an AddComponents transform.
+    
+    Scene properties made use of:
+    
+    - Width
+    - Height
     
     Examples:
     
@@ -6289,7 +6334,7 @@ ARCConditionsGeneralityScore[Rule[property_, value_]] :=
     \maintainer danielb
 *)
 Clear[ARCAddComponentsTransform];
-ARCAddComponentsTransform[inputObject_Association, outputObject_Association, outputComponentsFromInput_List] :=
+ARCAddComponentsTransform[inputObject_Association, outputObject_Association, outputComponentsFromInput_List, outputScene_Association] :=
     Module[{newComponents},
         
         newComponents = DeleteCases[
@@ -6304,23 +6349,40 @@ ARCAddComponentsTransform[inputObject_Association, outputObject_Association, out
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> Function[{component},
-                    Sett[
-                        KeyDrop[component, "Colors"],
+                    Join[
+                        Sett[
+                            KeyDrop[component, "Colors"],
+                            {
+                                "Position" -> <|
+                                    "RelativePosition" ->
+                                        Join[
+                                            ToXY[component["Position"] - inputObject["Position"]],
+                                            <|
+                                                "YInverse" -> component[["Position", 1]] - inputObject["Y2"],
+                                                "XInverse" -> component[["Position", 2]] - inputObject["X2"]
+                                            |>
+                                        ]
+                                |>,
+                                InferColor["Color" -> component]
+                            }
+                        ],
+                        ARCOutwardComponentPropertiesIfAppropriate[inputObject, component, outputScene]
+                    ]
+                ] /@
+                    (* Only keep the properties that might be useful as part of a minimal property
+                       set for specifying the transform to the point of being able to render it. *)
+                    KeyTake[
+                        newComponents,
                         {
-                            "Position" -> <|
-                                "RelativePosition" ->
-                                    Join[
-                                        ToXY[component["Position"] - inputObject["Position"]],
-                                        <|
-                                            "YInverse" -> component[["Position", 1]] - inputObject["Y2"],
-                                            "XInverse" -> component[["Position", 2]] - inputObject["X2"]
-                                        |>
-                                    ]
-                            |>,
-                            InferColor["Color" -> component]
+                            "Image",
+                            "Position",
+                            "Shape",
+                            "Shapes",
+                            "Colors",
+                            "Width",
+                            "Height"
                         }
                     ]
-                ] /@ KeyTake[newComponents, {"Image", "Position", "Shape", "Shapes", "Colors", "Width", "Height"}]
             |>
         ]
     ]
@@ -7829,6 +7891,138 @@ ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List] :=
             (* No rules involve groups. *)
             objects
         ]
+    ]
+
+(*!
+    \function ARCObjectWithComponent
+    
+    \calltable
+        ARCObjectWithComponent[objects, component] '' Returns {matchingObject, matchingComponent}, where matchingObject is the object that contains a matching component, and matchingComponent was that matched component. {_Missing, _Missing} is returned if not found.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectWithComponent]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectWithComponent];
+ARCObjectWithComponent[objects_List, component_Association] :=
+    Module[{object, matchingComponent},
+        {
+            object = SelectFirst[
+                objects,
+                And[
+                    ListQ[#["Components"]],
+                    !MissingQ[
+                        matchingComponent = ARCGetMatchingComponent[#, component]
+                    ]
+                ] &
+            ],
+            If [!MissingQ[object],
+                matchingComponent
+                ,
+                Missing["NotFound"]
+            ]
+        }
+    ]
+
+(*!
+    \function ARCGetMatchingComponent
+    
+    \calltable
+        ARCGetMatchingComponent[object, component] '' Returns the component from the given object that matches the given component, or Missing if not found.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGetMatchingComponent]
+    
+    \maintainer danielb
+*)
+Clear[ARCGetMatchingComponent];
+ARCGetMatchingComponent[object_Association, component_Association] :=
+    SelectFirst[
+        object["Components"],
+        ARCSameQ[#, component] &
+    ]
+
+(*!
+    \function ARCOutwardComponentPropertiesIfAppropriate
+    
+    \calltable
+        ARCOutwardComponentPropertiesIfAppropriate[inputObject, newComponent, scene] '' Given a new component, checks whether it is for example a line that is extending outward from the input object, and if so, returns appropriate properties to the component to help with rule formation.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCOutwardComponentPropertiesIfAppropriate]
+    
+    \maintainer danielb
+*)
+Clear[ARCOutwardComponentPropertiesIfAppropriate];
+ARCOutwardComponentPropertiesIfAppropriate[inputObject_Association, newComponent_Association, scene_Association] :=
+    Module[{newComponentX2, newComponentY2, res},
+        newComponentX2 = newComponent[["Position", 2]] + newComponent["Width"] - 1;
+        newComponentY2 = newComponent[["Position", 1]] + newComponent["Height"] - 1;
+        If [newComponent["Shape"]["Name"] === "Line",
+            res = Which[
+                And[
+                    newComponentX2 === inputObject["X"] - 1,
+                    newComponent[["Position", 2]] === 1
+                ],
+                    (* Left *)
+                    <|
+                        "Outward" -> True,
+                        "Direction" -> {0, -1}
+                    |>,
+                And[
+                    newComponent[["Position", 2]] === inputObject["X2"] + 1,
+                    newComponentX2 === scene["Width"]
+                ],
+                    (* Right
+                       25d487eb
+                       ARCOutwardComponentPropertiesIfAppropriate-20220813-OQLTI2
+                       ARCFindObjectMapping-20220813-3ISFU6 *)
+                    <|
+                        "Outward" -> True,
+                        "Direction" -> {0, 1}
+                    |>,
+                And[
+                    newComponentY2 === inputObject["Y"] - 1,
+                    newComponent[["Position", 1]] === 1
+                ],
+                    (* Up *)
+                    <|
+                        "Outward" -> True,
+                        "Direction" -> {-1, 0}
+                    |>,
+                And[
+                    newComponent["Y"] === inputObject["Y2"] + 1,
+                    newComponentY2 === scene["Height"]
+                ],
+                    (* Down *)
+                    <|
+                        "Outward" -> True,
+                        "Direction" -> {1, 0}
+                    |>,
+                True,
+                    Missing[]
+            ];
+            ReturnIfNotMissing[res]
+        ];
+        
+        (* Not an outward object. *)
+        <||>
     ]
 
 End[]
