@@ -193,3 +193,19 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220810-EFKZRF"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["253bf280"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220812-QWWAII"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["ifmyulnv8-dynamic-shape"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220812-TWXYQN"
+]

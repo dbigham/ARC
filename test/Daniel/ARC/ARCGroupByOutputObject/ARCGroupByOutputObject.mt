@@ -77,7 +77,7 @@ Test[
         <|
             "Type" -> "Group",
             "UUID" -> 0,
-            "Image" -> Daniel`ARC`ARCScene[{{8, 0, 0, 0, 0, 0, 0, 8}}],
+            "Image" -> Daniel`ARC`ARCScene[{{8, -1, -1, -1, -1, -1, -1, 8}}],
             "PixelPositions" -> {{4, 3}, {4, 10}},
             "Colors" -> {8},
             "Position" -> {4, 3},

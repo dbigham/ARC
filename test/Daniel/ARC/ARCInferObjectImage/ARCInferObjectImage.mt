@@ -101,3 +101,23 @@ Test[
     ,
     TestID -> "ARCInferObjectImage-20220811-45W1N3"
 ]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2}, {2}, {2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220812-RO2AJV"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 1|>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220812-EY6ET2"
+]

@@ -788,3 +788,45 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220805-VBJ4EU"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCFindObjectMapping[
+                Daniel`ARC`ARCParseFile[file = "jnohuorzh"]["Train", 1]
+            ]
+        ]
+    ]
+    ,
+    <|
+        <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {3, 3}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "Position" -> {4, 3},
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Position" -> <|"Y" -> 4, "X" -> 3|>,
+                "Offset" -> <|"Y" -> 1, "X" -> 0|>
+            |>
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {4, 5}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "Position" -> {5, 5},
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Position" -> <|"Y" -> 5, "X" -> 5|>,
+                "Offset" -> <|"Y" -> 1, "X" -> 0|>
+            |>
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {7, 9}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}}],
+            "Position" -> {6, 9},
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Position" -> <|"Y" -> 6, "X" -> 9|>,
+                "Offset" -> <|"Y" -> -1, "X" -> 0|>
+            |>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220812-6R5M8F"
+]

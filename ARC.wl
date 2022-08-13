@@ -238,6 +238,14 @@ ARCApplyImageTransforms::usage = "ARCApplyImageTransforms  "
 
 ApplyToImage::usage = "ApplyToImage  "
 
+ARCReplaceRulePatternsWithGroupPatternsIfAppropriate::usage = "ARCReplaceRulePatternsWithGroupPatternsIfAppropriate  "
+
+ARCRuleToPattern::usage = "ARCRuleToPattern  "
+
+ARCObjectCommonalities::usage = "ARCObjectCommonalities  "
+
+ARCFormGroupsWhenApplyingRules::usage = "ARCFormGroupsWhenApplyingRules  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1641,10 +1649,18 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                                 Sort@
                                 DeleteDuplicates@
                                 Flatten[object["Components"][[All, "Colors"]]],
-                            "Shapes" -> Join[
-                                ARCImageRotations[image],
-                                DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
-                            ]
+                            "Shapes" ->
+                                Function[{shape},
+                                    (* I was going to make these monochrome to match what we did
+                                       with non-composite objects, but that breaks 3c9b0459, so
+                                       that will require more thought. *)
+                                    (*ARCToMonochrome[shape, $nonImageColor]*)
+                                    shape
+                                ] /@
+                                    Join[
+                                        ARCImageRotations[image],
+                                        DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
+                                    ]
                         }
                     ]
                 ];
@@ -1806,10 +1822,9 @@ ARCFindObjectMapping[input_Association, output_Association] :=
             ] /@ inputObjects
         |>;
         
-        (* UNDOME: Was issuing messages when running over all training examples. *)
-        (* mapping =
+        mapping =
             ReturnIfFailure@
-            ARCGroupByOutputObject[mapping, outputObjects, input["Background"]]; *)
+            ARCGroupByOutputObject[mapping, outputObjects, input["Background"]];
         
         mapping
         
@@ -1858,7 +1873,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
             Return[
                 Rule[
                     Append[object, "OutputComponentUUID" -> matchingComponent["UUID"]],
-                    ARCAddComponentsTransform[object, mappedToObject, matchingComponent]
+                    ARCAddComponentsTransform[object, mappedToObject, {matchingComponent}]
                 ],
                 Module
             ]
@@ -1929,7 +1944,8 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
                 If [Length[possibleMatches] === Length[inputsObjectsOfType],
                     (* The number of objects in the output of this color + shape match the
                        number of objects of this color + shape in the input, so we should
-                       consider whether a transform has been applied to all of them. *)
+                       consider whether a transform has been applied to all of them.
+                       ARCFindObjectMapping-20220812-6R5M8F *)
                     topLeftOfOutputs = Sort[possibleMatches[[All, "Position"]]][[1]];
                     topLeftOfInputs = Sort[inputsObjectsOfType[[All, "Position"]]][[1]];
                     offset = topLeftOfOutputs - topLeftOfInputs;
@@ -1949,7 +1965,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List]
                                     "Position" -> ToXY @ mappedToObject["Position"],
                                     "Offset" -> ToXY[offset]
                                 |>;
-                                object -> mappedToObject
+                                inputObject -> mappedToObject
                             ] /@ inputsObjectsOfType,
                             Module
                         ]
@@ -2345,6 +2361,12 @@ ARCFindRules[examplesIn_List] :=
                         ],
                         (* The rules formed using this property handle the mapping of every input
                            object in every training example. *)
+                        rules =
+                            ReturnIfFailure@
+                            ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[
+                                rules,
+                                Flatten[Keys[objectMappings]]
+                            ];
                         Return[rules, Module]
                         ,
                         (* The rules formed using this property do not handle the mapping of every
@@ -2646,10 +2668,12 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
         (*ARCEcho[groupedByConclusion];*)
         
         Which[
-            Length[
-                conclusionTransformTypes =
-                    DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
-            ] =!= 1,
+            Quiet[
+                Length[
+                    conclusionTransformTypes =
+                        DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
+                ]
+             ] =!= 1,
                 Missing["InconsistentTransform"],
             
             Length[
@@ -2818,10 +2842,16 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
 *)
 Clear[ARCApplyRules];
 ARCApplyRules[scene_ARCScene, rules_List] :=
-    Module[{parsedScene},
+    Module[{parsedScene, objects},
         
         parsedScene =
             ReturnIfFailure[ARCParseScene[scene]];
+        
+        objects = parsedScene["Objects"];
+        
+        objects =
+            ReturnIfFailure@
+            ARCFormGroupsWhenApplyingRules[objects, rules];
         
         ARCRenderScene@
         Sett[
@@ -2830,7 +2860,7 @@ ARCApplyRules[scene_ARCScene, rules_List] :=
                 Function[{object},
                     ReturnIfFailure@
                     ARCApplyRules[object, rules, parsedScene]
-                ] /@ parsedScene["Objects"]
+                ] /@ objects
         ]
     ]
 
@@ -2857,15 +2887,7 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
                     (* Does this pattern match our object? *)
                     MatchQ[
                         objectIn,
-                        KeyValuePattern @@
-                        Replace[
-                            Normal[pattern],
-                            HoldPattern[Rule]["Shapes", shape_] :> (
-                                (* We want the object to have this shape as one of its shapes. *)
-                                "Shapes" -> {___, shape, ___}
-                            ),
-                            {1}
-                        ]
+                        ARCRuleToPattern[pattern]
                     ]
                 ],
                 !MatchQ[conclusion, KeyValuePattern["Same" -> True]]
@@ -5158,6 +5180,11 @@ ARCToMonochrome[image_List, backgroundColor_Integer] :=
 ARCToMonochrome[ARCScene[image_], backgroundColor_Integer] :=
     ARCScene[ARCToMonochrome[image, backgroundColor]]
 
+ARCToMonochrome[object:KeyValuePattern["Image" -> image_], backgroundColor_Integer] :=
+    Sett[object, "Image" -> ARCToMonochrome[image, backgroundColor]]
+
+ARCToMonochrome[object_Association] := object
+
 (*!
     \function ARCColorize
     
@@ -6088,7 +6115,7 @@ ARCNotebook[file_String] :=
 *)
 Clear[ARCGroupByOutputObject];
 ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_Integer] :=
-    Module[{outputObjectsByUUID, outputObjectsByUUID2},
+    Module[{outputObjectsByUUID, outputObjectsByUUID2, mapping2, outputObject},
         
         outputObjectsByUUID = ObjectsByAttribute[Values[mapping], "UUID"];
         
@@ -6097,22 +6124,57 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
            so we need to map back to the original output object in that case. *)
         outputObjectsByUUID2 = ObjectsByAttribute[outputObjects, "UUID"];
         
-        Association@
-        Replace[
+        XARCEcho[mapping];
+        
+        mapping2 = Replace[
+            (* Create a mapping from a list of input objects to the output object UUID they
+               correspond to. Normally the "list" of input objects would be of size one,
+               but if there are multiple of them, then we have identified a group. *)
             Reverse /@
             Normal@
             GroupBy[
-                Normal[mapping],
+                Normal[
+                    (* Get rid of mappings for things that have been removed. *)
+                    DeleteMissing[mapping]
+                ],
                 Function[{item}, Last[item]["UUID"]] -> First
             ],
             {
+                (* Normal 1-to-1 mapping. *)
                 HoldPattern[Rule][{singleItem_}, outputObjectUUID_] :> (singleItem -> outputObjectsByUUID[outputObjectUUID]),
-                HoldPattern[Rule][lhsGroup:{_, __}, outputObjectUUID_] :> Rule[
-                    ARCSetGroupProperties[lhsGroup, backgroundColor],
-                    outputObjectsByUUID2[outputObjectUUID]
-                ]
+                (* A group of multiple input objects that map to a single output object.
+                   For these we'll replace the input objects with a "group" object. *)
+                HoldPattern[Rule][lhsGroup:{_, __}, outputObjectUUID_] :>
+                    Rule[
+                        group = ARCSetGroupProperties[lhsGroup],
+                        ARCAddComponentsTransform[
+                            group,
+                            outputObject = outputObjectsByUUID2[outputObjectUUID];
+                            If [!MissingQ[outputObject["Components"]],
+                                outputObject
+                                ,
+                                Sett[outputObject, "Components" -> {outputObject}]
+                            ],
+                            (* The output objects that correspond with input objects. *)
+                            If [!MissingQ[outputObject["Components"]],
+                                Values@
+                                KeyTake[
+                                    ObjectsByAttribute[outputObject["Components"], "UUID"],
+                                    lhsGroup[[All, "OutputComponentUUID"]]
+                                ]
+                                ,
+                                {outputObject}
+                            ]
+                        ]
+                    ]
             },
             {1}
+        ];
+        
+        Join[
+            Association[mapping2],
+            (* Restore the mappings for items that have been removed. *)
+            Select[mapping, MissingQ]
         ]
     ]
 
@@ -6133,15 +6195,15 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
     \maintainer danielb
 *)
 Clear[ARCSetGroupProperties];
-ARCSetGroupProperties[components_List, backgroundColor_Integer] :=
+ARCSetGroupProperties[components_List] :=
     Module[{position, y1, x1, y2, x2},
         
         position = {
             y1 = Min[components[[All, "Y"]]],
             x1 = Min[components[[All, "X"]]]
         };
-        y2 = Max[components[[All, "Y"]]];
-        x2 = Max[components[[All, "X"]]];
+        y2 = Max[(#["Y"] + #["Height"] - 1) & /@ components];
+        x2 = Max[(#["X"] + #["Width"] - 1) & /@ components];
         
         ARCInferObjectProperties@
         <|
@@ -6150,7 +6212,7 @@ ARCSetGroupProperties[components_List, backgroundColor_Integer] :=
             "Image" -> ARCScene[
                 ARCRenderScene[
                     <|
-                        "Background" -> backgroundColor,
+                        "Background" -> $nonImageColor,
                         "Height" -> y2,
                         "Width" -> x2,
                         "Objects" -> components
@@ -6214,7 +6276,7 @@ ARCConditionsGeneralityScore[Rule[property_, value_]] :=
     \function ARCAddComponentsTransform
     
     \calltable
-        ARCAddComponentsTransform[inputObject, outputObject, outputComponent] '' Given an input object and the output object it maps to, as well as the output component it corresponds with, produces an output object with an AddComponents transform.
+        ARCAddComponentsTransform[inputObject, outputObject, outputComponentsFromInput] '' Given an input object and the output object it maps to, as well as the output components that correspond with input components, produces an output object with an AddComponents transform.
     
     Examples:
     
@@ -6227,10 +6289,15 @@ ARCConditionsGeneralityScore[Rule[property_, value_]] :=
     \maintainer danielb
 *)
 Clear[ARCAddComponentsTransform];
-ARCAddComponentsTransform[inputObject_Association, outputObject_Association, outputComponent_Association] :=
+ARCAddComponentsTransform[inputObject_Association, outputObject_Association, outputComponentsFromInput_List] :=
     Module[{newComponents},
         
-        newComponents = DeleteCases[outputObject["Components"], outputComponent];
+        newComponents = DeleteCases[
+            outputObject["Components"],
+            (* Should we use a Complement here or DeleteCases? Unsure. Using DeleteCases
+               at the moment to preserve order. *)
+            Alternatives @@ outputComponentsFromInput
+        ];
         
         Append[
             outputObject,
@@ -6620,6 +6687,18 @@ ARCTaskLog[] :=
             "CodeLength" -> 7541,
             "ExampleImplemented" -> "ifmyulnv8-dynamic-shape",
             "ImplementationTime" -> Quantity[5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 12}],
+            "SucessCount" -> 14,
+            "Runtime" -> Quantity[3.7, "Minutes"],
+            "CodeLength" -> 7838,
+            "ExampleImplemented" -> "253bf280",
+            "ImplementationTime" -> Quantity[7.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 1,
             "NewEvaluationSuccesses" -> 0,
@@ -7130,6 +7209,36 @@ ARCInferObjectImage[
     }
 
 ARCInferObjectImage[
+        shape: KeyValuePattern["Name" -> "Line"],
+        color_Integer,
+        width_,
+        height_
+    ] :=
+    ARCScene@
+    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+    Which[
+        width == 1,
+            Table[
+                {color},
+                {height}
+            ],
+        height == 1,
+            {
+                Table[
+                    color,
+                    {width}
+                ]
+            },
+        True,
+            ReturnFailure[
+                "UnsupportedLine",
+                "Only vertical and horizontal lines are currently supported.",
+                "Width" -> width,
+                "Height" -> height
+            ]
+    ]
+
+ARCInferObjectImage[
         shape: KeyValuePattern["Name" -> "Pixel"],
         color_Integer,
         width_,
@@ -7533,6 +7642,194 @@ ApplyToImage[ARCScene[image_], function_] :=
 
 ApplyToImage[image_List, function_] :=
     function[image]
+
+(*!
+    \function ARCReplaceRulePatternsWithGroupPatternsIfAppropriate
+    
+    \calltable
+        ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules, inputObjects] '' Given a list of rules, checks whether any of the rule LHS correspond with object groups, and if so, makes those patterns 'group patterns' which can be used for forming groups when applying the rule.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCReplaceRulePatternsWithGroupPatternsIfAppropriate]
+    
+    \maintainer danielb
+*)
+Clear[ARCReplaceRulePatternsWithGroupPatternsIfAppropriate];
+ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_List] :=
+    Module[{matchingObjects},
+        
+        (* Check if any of the input objects are groups. *)
+        If [!FreeQ[inputObjects, KeyValuePattern["Type" -> "Group"]],
+            (* There are groups. *)
+            Function[{rule},
+                
+                matchingObjects = Select[
+                    inputObjects,
+                    MatchQ[#, ARCRuleToPattern[rule]] &
+                ];
+                
+                If [AllTrue[matchingObjects, #["Type"] === "Group" &],
+                    (* All of these objects are groups, so we want to replace this rule pattern
+                       with a group specification. *)
+                    ReplacePart[
+                        rule,
+                        1 -> ARCObjectCommonalities[matchingObjects]
+                    ]
+                    ,
+                    rule
+                ]
+            ] /@ rules
+            ,
+            (* There aren't any groups. *)
+            rules
+        ]
+    ]
+
+(*!
+    \function ARCRuleToPattern
+    
+    \calltable
+        ARCRuleToPattern[rule] '' Given an ARC rule, returns a WL pattern we can use to check if objects match the rule's pattern.
+    
+    Examples:
+    
+    ARCRuleToPattern[<|"Width" -> 1|>] === KeyValuePattern["Width" -> 1]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRuleToPattern]
+    
+    \maintainer danielb
+*)
+Clear[ARCRuleToPattern];
+ARCRuleToPattern[pattern_ -> _] :=
+    ARCRuleToPattern[pattern]
+
+ARCRuleToPattern[pattern_] :=
+    KeyValuePattern@
+    Replace[
+        Normal[pattern],
+        HoldPattern[Rule]["Shapes", shape_] :> (
+            (* We want the object to have this shape as one of its shapes. *)
+            "Shapes" -> {___, KeyValuePattern[Normal[shape]], ___}
+        ),
+        {1}
+    ]
+
+(*!
+    \function ARCObjectCommonalities
+    
+    \calltable
+        ARCObjectCommonalities[objects] '' Given a list of objects, returns the property values they share in common.
+    
+    Examples:
+    
+    ARCObjectCommonalities[
+        {<|"a" -> 1, "b" -> 2, "c" -> 3|>, <|"a" -> 1, "b" -> 2|>, <|"a" -> 1, "b" -> 3|>}
+    ]
+    
+    ===
+    
+    <|"a" -> 1|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectCommonalities]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectCommonalities];
+ARCObjectCommonalities[objects_List] :=
+    Module[{propertyValues, commonShapes},
+        Association[
+            Function[{property},
+                propertyValues = DeleteDuplicates[objects[[All, property]]];
+                If [property === "Shapes",
+                    commonShapes = Intersection @@ propertyValues;
+                    If [MatchQ[commonShapes, {__}],
+                        propertyValues = {commonShapes}
+                    ]
+                ];
+                If [Length[propertyValues] === 1,
+                    (* All objects of this type have the same value for this property. *)
+                    property -> First[propertyValues]
+                    ,
+                    (* Not all objects of this type have the same value for this property. *)
+                    Nothing
+                ]
+            ] /@ DeleteDuplicates[Flatten[Keys /@ objects]]
+        ]
+    ]
+
+(*!
+    \function ARCFormGroupsWhenApplyingRules
+    
+    \calltable
+        ARCFormGroupsWhenApplyingRules[objects, rules] '' Given the objects in a scene, and the rules we are going to apply, if any of the rule patterns specify groups, tries to form matching groups.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFormGroupsWhenApplyingRules]
+    
+    \maintainer danielb
+*)
+Clear[ARCFormGroupsWhenApplyingRules];
+ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List] :=
+    Module[
+        {
+            objects = objectsIn,
+            possibleGroups,
+            groups,
+            inputObjectUUIDsThatFormedGroups
+        },
+        
+        (* Do any rules involve groups? *)
+        If [!FreeQ[rules, KeyValuePattern["Type" -> "Group"]],
+            
+            (* Some rules involve groups, so we'll try forming groups. *)
+            
+            possibleGroups =
+                Function[{groupOfInputs},
+                    ARCSetGroupProperties[groupOfInputs]
+                ] /@ Subsets[objects, {2}];
+            
+            (* For now, we'll just try forming groups of two. *)
+            groups = Flatten[
+                Function[{rule},
+                    With[{pattern = ARCRuleToPattern[rule]},
+                        Select[
+                            possibleGroups,
+                            MatchQ[#, pattern] &
+                        ]
+                    ]
+                ] /@ rules
+            ];
+            
+            inputObjectUUIDsThatFormedGroups =
+                Flatten[groups[[All, "Components", All, "UUID"]]];
+            
+            Join[
+                groups,
+                (* Remove the objects that are now parts of groups. *)
+                DeleteCases[
+                    objects,
+                    KeyValuePattern["UUID" -> Alternatives @@ inputObjectUUIDsThatFormedGroups]
+                ]
+            ]
+            ,
+            (* No rules involve groups. *)
+            objects
+        ]
+    ]
 
 End[]
 
