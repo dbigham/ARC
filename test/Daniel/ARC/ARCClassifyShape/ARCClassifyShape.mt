@@ -69,7 +69,7 @@ Test[
     {
         <|"Name" -> "L"|>,
         <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
-        <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
+        <|"Name" -> "L", "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>|>
     }
     ,
     TestID -> "ARCClassifyShape-20220717-R15V60"
@@ -88,4 +88,51 @@ Test[
     }
     ,
     TestID -> "ARCClassifyShape-20220717-2BXB00"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyShape[{{-1, 1, -1}, {1, 1, 1}}]
+    ,
+    {<|"Name" -> "Triangle"|>}
+    ,
+    TestID -> "ARCClassifyShape-20220813-8IPO5B"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyShape[Daniel`ARC`RotateImage[{{-1, 1, -1}, {1, 1, 1}}, 90]]
+    ,
+    {
+        <|"Name" -> "Triangle"|>,
+        <|"Name" -> "Triangle", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
+    }
+    ,
+    TestID -> "ARCClassifyShape-20220813-CT1QS3"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyShape[
+        {{1, -1, -1}, {1, -1, -1}, {1, 1, 1}},
+        "IncludeImageShapes" -> True
+    ]
+    ,
+    {
+        {
+            <|"Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}]|>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}],
+                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}],
+                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>
+        },
+        <|"Name" -> "L"|>
+    }
+    ,
+    TestID -> "ARCClassifyShape-20220816-BZP8Q9"
 ]

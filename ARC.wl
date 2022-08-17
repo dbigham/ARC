@@ -252,6 +252,20 @@ ARCGetMatchingComponent::usage = "ARCGetMatchingComponent  "
 
 ARCOutwardComponentPropertiesIfAppropriate::usage = "ARCOutwardComponentPropertiesIfAppropriate  "
 
+ARCClassifyTriangle::usage = "ARCClassifyTriangle  "
+
+ARCRotateObjectFrame::usage = "ARCRotateObjectFrame  "
+
+ARCNormalizeObjectRotation::usage = "ARCNormalizeObjectRotation  "
+
+ARCRotateShapeAssociation::usage = "ARCRotateShapeAssociation  "
+
+ARCRotateShapeAssociations::usage = "ARCRotateShapeAssociations  "
+
+ARCInferShapeAndShapes::usage = "ARCInferShapeAndShapes  "
+
+ARCToNegativeAngle::usage = "ARCToNegativeAngle  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -276,6 +290,7 @@ CreateNamedNotebook2 = DevTools`NotebookTools`CreateNamedNotebook2;
 CreateDirectoryIfDoesntExist = Utility`CreateDirectoryIfDoesntExist;
 SpecifiedQ = Utility`SpecifiedQ;
 FailureDetails = Utility`FailureDetails;
+EntityName = EntityLink`EntityName;
 
 $UnitTestDir = FileNameJoin[{FileNameDrop[FindFile["Daniel`ARC`"], -1], "test", "Daniel", "ARC"}];
 
@@ -1022,7 +1037,7 @@ ARCColorIntegers[] :=
 *)
 Clear[ARCImageRegionToObject];
 ARCImageRegionToObject[region_Association] :=
-    Module[{shapes = ARCClassifyShape[region["Image"]]},
+    Module[{},
         ARCInferObjectProperties[
             <|
                 "UUID" -> CreateUUID[],
@@ -1034,17 +1049,7 @@ ARCImageRegionToObject[region_Association] :=
                     ]
                 ],
                 "PixelPositions" -> region["PixelPositions"],
-                "Shape" -> Replace[
-                    shapes,
-                    {
-                        {} :> ARCScene[ARCToMonochrome[region["Image"], $nonImageColor]],
-                        list_List :> First[ARCPruneAlternatives[list, "Shapes", "Most" -> "Specific"]]
-                    }
-                ],
-                "Shapes" -> Join[
-                    ARCImageRotations[ARCToMonochrome[region["Image"], $nonImageColor]],
-                    shapes
-                ],
+                ARCInferShapeAndShapes[region["Image"]],
                 "Colors" -> {region["Color"]},
                 "Position" -> region["Position"]
             |>
@@ -1155,23 +1160,104 @@ $properties = ARCAddRankProperties[$properties];
     
     \maintainer danielb
 *)
+(* Shapes that might no longer be that type of shape if rotated by an angle that is a
+   multiple of 90 degrees. *)
+$rotationSensitiveShapes = <|
+    "L" -> True,
+    "Triangle" -> True,
+    (* For testing purposes. *)
+    "MyShape" -> True,
+    (* For testing purposes. *)
+    "MyShape2" -> True
+|>;
+(* Shapes that might no longer be that type of shape if rotated by an angle that is a
+   multiple of 90 degrees. *)
+$flipSensitiveShapes = <|
+    "L" -> True
+|>;
 Clear[ARCClassifyShape];
-ARCClassifyShape[image_List] :=
+Options[ARCClassifyShape] =
+{
+    "IncludeImageShapes" -> False   (*< Whether to include shapes of type <|"Type" -> "Image", ...|>. *)
+};
+ARCClassifyShape[image_List, OptionsPattern[]] :=
     Module[{},
-        DeleteDuplicates@
-        ARCAddGeneralizeShapes@
-        Flatten@
         {
-            ARCClassifyPixel[image],
-            ARCClassifyLine[image],
-            ARCClassifySquare[image],
-            ARCClassifyRectange[image],
-            ARCClassifyL[image],
+            If [TrueQ[OptionValue["IncludeImageShapes"]],
+                ARCImageRotations[ARCToMonochrome[image, $nonImageColor]]
+                ,
+                Nothing
+            ],
             Sequence @@
-            ARCClassifyRotatedImage[image, ARCClassifyL],
-            Sequence @@
-            ARCClassifyFlippedImage[image, ARCClassifyL]
+            DeleteDuplicates@
+            ARCAddGeneralizeShapes@
+            Flatten@
+            {
+                ARCClassifyPixel[image],
+                ARCClassifyLine[image],
+                ARCClassifySquare[image],
+                ARCClassifyRectange[image],
+                ARCClassifyL[image],
+                ARCClassifyTriangle[image],
+                Sequence @@
+                ARCClassifyRotatedImage[image, ARCClassifyTriangle],
+                Sequence @@
+                ARCClassifyRotatedImage[image, ARCClassifyL],
+                Sequence @@
+                ARCClassifyFlippedImage[image, ARCClassifyL]
+            }
         }
+    ]
+
+(*!
+    \function ARCClassifyTriangle
+    
+    \calltable
+        ARCClassifyTriangle[image] '' Checks whether the given image can be classified as a triangle.
+    
+    Examples:
+    
+    ARCClassifyTriangle[{{-1, 1, -1}, {1, 1, 1}}] === <|"Name" -> "Triangle"|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCClassifyTriangle]
+    
+    \maintainer danielb
+*)
+Clear[ARCClassifyTriangle];
+ARCClassifyTriangle[image_] :=
+    Module[{width = ImageWidth[image], height = ImageHeight[image]},
+        If [And[
+                height >= 2,
+                width === 3 + (height - 2) * 2,
+                MatchQ[
+                    image,
+                    Function[{y},
+                        With[{transparentWidth = (width - 1) / 2 - y + 1},
+                            {
+                                If [transparentWidth > 0,
+                                    Repeated[$nonImageColor, {transparentWidth}]
+                                    ,
+                                    Nothing
+                                ],
+                                Repeated[Except[$nonImageColor], {width - 2 * transparentWidth}],
+                                If [transparentWidth > 0,
+                                    Repeated[$nonImageColor, {transparentWidth}]
+                                    ,
+                                    Nothing
+                                ]
+                            }
+                        ]
+                    ] /@ Range[height]
+                ]
+            ],
+            <|
+                "Name" -> "Triangle"
+            |>
+            ,
+            Nothing
+        ]
     ]
 
 (*!
@@ -1412,7 +1498,12 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
             If [(classification = classifyFunction[image]) =!= Nothing,
                 Join[
                     classification,
-                    KeyDrop[transform, "Function"]
+                    <|
+                        "Transform" -> <|
+                            "Type" -> transform["Transform"],
+                            "Direction" -> transform["Direction"]
+                        |>
+                    |>
                 ]
                 ,
                 Nothing
@@ -2155,65 +2246,79 @@ ARCSameQ[object1_Association, object2_Association] :=
 *)
 Clear[ARCPruneOutputsForRuleFinding];
 ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] :=
-    Module[{conclusion},
+    Module[{conclusion, conclusionKeysFromInput},
         KeyValueMap[
-            Function[{key, value},
-                KeyDrop[key, {"UUID"}] -> (
+            Function[{inputObject, rhs},
+                KeyDrop[inputObject, {"UUID"}] -> (
                     
-                    conclusion = Replace[
-                        Append[
-                            Association@
-                            (* Remove output keys that are the same in the input, since they aren't
-                               being modified, and so our rules don't need to specify their values. *)
-                            
-                            Complement[
-                                (* Remove inferrable keys from the output. All we really need are the
-                                   core properties that can be used to infer the final output
-                                   object. *)
-                                Normal[
-                                    KeyTake[
-                                        Replace[
-                                            value,
-                                            (* If there is a single color, then we want to keep
-                                               the Colors property, since knowing the color
-                                               (and how it changes) could be used as a core
-                                               property to construct the output object. But if
-                                               there are multiple colors, then this isn't
-                                               straightforward. *)
-                                            assoc: KeyValuePattern["Colors" -> {_, __}] :>
-                                                KeyDrop[assoc, "Colors"]
-                                        ],
-                                        {"Image", "Position", "Colors", "Transform"}
-                                    ]
+                    conclusion =
+                        Join[
+                            (* Remove inferrable keys from the output. All we really need are the
+                               core properties that can be used to infer the final output
+                               object. We keep Colors since in the case that there's a single
+                               color, being able to infer the color might allow us to infer the
+                               final output object. We also include Width and Height so that if
+                               we need to normalize a rotated object we have those handy within
+                               ARCRotateObjectFrame. *)
+                            conclusionKeysFromInput = KeyTake[
+                                Replace[
+                                    rhs,
+                                    (* If there is a single color, then we want to keep
+                                       the Colors property, since knowing the color
+                                       (and how it changes) could be used as a core
+                                       property to construct the output object. But if
+                                       there are multiple colors, then this isn't
+                                       straightforward, so we drop the property.
+                                       321b1fc6 currently relies on this. *)
+                                    assoc: KeyValuePattern["Colors" -> {_, __}] :>
+                                        KeyDrop[assoc, "Colors"]
                                 ],
-                                Normal[key]
+                                {
+                                    "Image",
+                                    "Position",
+                                    "Colors",
+                                    "Width",
+                                    "Height",
+                                    "Transform"
+                                }
                             ],
                             <|
                                 "Example" -> exampleIndex,
-                                "Input" -> key
+                                "Input" -> inputObject
                             |>
-                        ],
-                        rule:<|"Example" -> _, "Input" -> _|> :> Prepend[rule, "Same" -> True]
-                    ];
+                        ];
                     
-                    Which[
-                        And[
-                            !MissingQ[conclusion["Image"]],
-                            MatchQ[conclusion["Input", "Colors"], {_}],
-                            MatchQ[value["Colors"], {_}],
-                            conclusion["Input", "Colors"] === value["Colors"]
-                        ],
-                            conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], $nonImageColor]];
-                            conclusion = KeyDrop[conclusion, "Image"],
-                        And[
-                            MatchQ[conclusion["Input", "Colors"], {_}],
-                            MatchQ[value["Colors"], {_}],
-                            conclusion["Input", "Colors"] =!= value["Colors"],
-                            ARCToMonochrome[conclusion["Image"], $nonImageColor] === ARCToMonochrome[value["Image"], $nonImageColor]
-                        ],
-                            (* The shape is staying the same and the color is changing, so drop
-                               the "Image" key. *)
-                            conclusion = KeyDrop[conclusion, "Image"]
+                    If [Complement[Normal[conclusionKeysFromInput], Normal[inputObject]] === {},
+                        conclusion = <|
+                            "Same" -> True,
+                            KeyTake[conclusion, {"Example", "Input"}]
+                        |>
+                        ,
+                        Which[
+                            And[
+                                !MissingQ[conclusion["Image"]],
+                                conclusion["Input", "Image"] =!= rhs["Image"],
+                                MatchQ[conclusion["Input", "Colors"], {_}],
+                                MatchQ[rhs["Colors"], {_}],
+                                conclusion["Input", "Colors"] === rhs["Colors"]
+                            ],
+                                (* The image is changing, but there's a single color and it isn't
+                                   changing, implying that it's the shape that's changing, so we'll
+                                   populate a "Shape" property which is the colorless form of the
+                                   image. *)
+                                (* e.g. 3ac3eb23 *)
+                                conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], $nonImageColor]];
+                                conclusion = KeyDrop[conclusion, {"Image", "Width", "Height"}],
+                            And[
+                                MatchQ[conclusion["Input", "Colors"], {_}],
+                                MatchQ[rhs["Colors"], {_}],
+                                conclusion["Input", "Colors"] =!= rhs["Colors"],
+                                ARCToMonochrome[conclusion["Image"], $nonImageColor] === ARCToMonochrome[inputObject["Image"], $nonImageColor]
+                            ],
+                                (* The shape is staying the same and the color is changing, so drop
+                                   the "Image" key. *)
+                                conclusion = KeyDrop[conclusion, "Image"]
+                        ]
                     ];
                     
                     conclusion
@@ -2425,7 +2530,7 @@ ARCFindRules[examplesIn_List] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"PrimarySizeDimension"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2538,7 +2643,6 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                 Function[{pattern, conclusionGroup},
                     
                     (*Echo[pattern];*)
-                    
                     (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
                     
                     (* Have all of the mappings have been transformed by the same
@@ -2761,9 +2865,12 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
                keep it, since that is very strong evidence that we haven't found a workable
                generalization. *)
             (* Question: We do the work of ARCGeneralizeConclusions above, and then we might end
-                            up discarding its hard work here if it isn't supported by enough
-                            examples. Should we instead _first_ check the number of examples,
-                            and only if it's sufficient call ARCGeneralizeConclusions? *)
+                         up discarding its hard work here if it isn't supported by enough
+                         examples. Should we instead _first_ check the number of examples,
+                         and only if it's sufficient call ARCGeneralizeConclusions? *)
+            (* Question: Should we instead check that UseCount is < 2? I experimented with that
+                         quickly Aug 13 2022 and found that it didn't break any ARCWorkingQ
+                         tests but did make one ARCFindRules test output hairier. *)
             If [conclusion["ExampleCount"] < 2,
                 conclusion = Missing["NotFound", "InsufficientRuleSupport"]
             ]
@@ -3395,7 +3502,7 @@ RotateImage[imageIn_List, angle_] :=
     Module[{image = imageIn},
         Function[{i},
             image = Transpose[Reverse[image]];
-        ] /@ Range[Abs[angle / 90]];
+        ] /@ Range[Mod[angle + 360, 360] / 90];
         image
     ]
 
@@ -3904,7 +4011,9 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             pruned,
             uniqueValue,
             propertiesNeeded,
-            workableTransforms
+            workableTransforms,
+            propertiesWithSameValueForAllConclusions,
+            propertiesWithChangingValue
         },
         
         (* Always a transform of the same type? *)
@@ -4055,7 +4164,26 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
         ];
         
         (* What properties do we need to infer? *)
-        propertiesNeeded = Keys /@ KeyDrop[conclusions, {"Example", "Input"}];
+        propertiesWithSameValueForAllConclusions = Keys[ARCObjectCommonalities[conclusions]];
+        propertiesWithChangingValue =
+            Function[{conclusion},
+                (* For each conclusion, ignore properties that aren't changing,
+                   from input-to-output. *)
+                Keys@
+                Complement[
+                    Normal[KeyDrop[conclusion, {"Example", "Input"}]],
+                    Normal[KeyTake[conclusion["Input"], Keys[conclusion]]]
+                ]
+            ] /@ conclusions;
+        propertiesNeeded =
+            Function[{propertiesWithChangingValueForThisConclusion},
+                (* For each conclusion, ignore properties that are the same for
+                   all conclusions. *)
+                Complement[
+                    propertiesWithChangingValueForThisConclusion,
+                    propertiesWithSameValueForAllConclusions
+                ]
+            ] /@ propertiesWithChangingValue;
         If [MatchQ[propertiesNeeded, {Repeated[{property_String}]}],
             (* There is always just one property that we need to infer. *)
             property = propertiesNeeded[[1, 1]];
@@ -4077,6 +4205,13 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                     rule_Rule :> Return[<|rule|>, Module],
                     Nothing :> Return[Missing["NotFound"], Module]
                 }
+            ]
+            ,
+            If [MatchQ[Flatten[propertiesNeeded], {}],
+                Return[
+                    KeyTake[conclusions[[1]], propertiesWithChangingValue[[1]]],
+                    Module
+                ]
             ]
         ];
         
@@ -6363,6 +6498,8 @@ ARCAddComponentsTransform[inputObject_Association, outputObject_Association, out
                                             |>
                                         ]
                                 |>,
+                                "Y" -> component["Position"][[1]],
+                                "X" -> component["Position"][[2]],
                                 InferColor["Color" -> component]
                             }
                         ],
@@ -8024,6 +8161,414 @@ ARCOutwardComponentPropertiesIfAppropriate[inputObject_Association, newComponent
         (* Not an outward object. *)
         <||>
     ]
+
+(*!
+    \function ARCRotateObjectFrame
+    
+    \calltable
+        ARCRotateObjectFrame[object, angle] '' Given an object, rotates its coordinate frame by the given angle, which must be a multiple of 90 degrees.
+    
+    TODO: We aren't yet re-inferring the following properties, which we might need to do: (not sure)
+    
+    - PrimarySizeDimension
+    - AspectRatio
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRotateObjectFrame]
+    
+    \maintainer danielb
+*)
+Clear[ARCRotateObjectFrame];
+ARCRotateObjectFrame[object_Association, angleIn_Integer, parentWidthIn_, parentHeightIn_, sceneWidthIn_, sceneHeightIn_] :=
+    Module[
+        {
+            angle = angleIn,
+            yIn,
+            xIn,
+            y,
+            x,
+            width,
+            height,
+            parentWidth = parentWidthIn,
+            parentHeight = parentHeightIn,
+            sceneWidth,
+            sceneHeight,
+            shapeInfo,
+            relativePosition,
+            res
+        },
+        
+        angle = ARCToNegativeAngle[angle];
+        
+        (* As of August 2022, in a pre-rule RHS, components define Y and X relative to the
+           scene, but their Position is <|"RelativePosition" -> ...|>, while top-level RHS objects
+           defined Position but not Y and X. *)
+        yIn = Replace[object["Y"], _Missing :> object[["Position", 1]]];
+        xIn = Replace[object["X"], _Missing :> object[["Position", 2]]];
+        
+        width = object["Width"];
+        height = object["Height"];
+        
+        Switch[
+            angle,
+            0,
+                Return[object, Module],
+            -90,
+                y = sceneWidthIn - xIn - width + 2;
+                x = yIn;
+                {width, height} = {height, width};
+                {sceneWidth, sceneHeight} = {sceneHeightIn, sceneWidthIn};
+                ,
+            -180,
+                y = sceneHeightIn - yIn - height + 2;
+                x = sceneWidthIn - xIn - width + 2;
+                {sceneWidth, sceneHeight} = {sceneWidthIn, sceneHeightIn};
+                ,
+            -270,
+                y = xIn;
+                x = sceneHeightIn - yIn - height + 2;
+                {width, height} = {height, width};
+                {sceneWidth, sceneHeight} = {sceneHeightIn, sceneWidthIn};
+                ,
+            _,
+                ReturnFailure[
+                    "UnsupportedRotationAngle",
+                    "The function ARCRotateObjectFrame doesn't support the angle " <> ToString[angleIn] <> "."
+                ]
+        ];
+        
+        If [!MissingQ[object["Shapes"]] && !MissingQ[object["Image"]],
+            shapeInfo = ARCRotateShapeAssociations[
+                object["Shapes"],
+                angle,
+                object["Image"]
+            ]
+            ,
+            shapeInfo = <||>
+        ];
+        
+        res =
+            DeleteMissing@
+            AssociationApply[
+                object,
+                <|
+                    "Image" -> Function[RotateImage[object["Image"], angle]],
+                    "Shape" -> Function[shapeInfo["Shape"]],
+                    "Shapes" -> Function[shapeInfo["Shapes"]],
+                    "Position" ->
+                        Function[
+                            Which[
+                                ListQ[#],
+                                    {y, x},
+                                MatchQ[#, KeyValuePattern["RelativePosition" -> _Association]],
+                                    Sett[
+                                        #,
+                                        "RelativePosition" -> (
+                                            relativePosition = #["RelativePosition"];
+                                            Switch[
+                                                angle,
+                                                0,
+                                                    Return[object, Module],
+                                                -90,
+                                                    yRelative = parentWidth - relativePosition["X"] - object["Width"] + 2;
+                                                    xRelative = relativePosition["Y"];
+                                                    {parentWidth, parentHeight} = {parentHeight, parentWidth};
+                                                    ,
+                                                -180,
+                                                    yRelative = parentHeight - relativePosition["Y"] - object["Height"] + 2;
+                                                    xRelative = parentWidth - relativePosition["X"] - object["Width"] + 2;
+                                                    ,
+                                                -270,
+                                                    yRelative = relativePosition["X"];
+                                                    xRelative = parentHeight - relativePosition["Y"] - object["Height"] + 2;
+                                                    {parentWidth, parentHeight} = {parentHeight, parentWidth};
+                                                    ,
+                                                _,
+                                                    ReturnFailure[
+                                                        "UnsupportedRotationAngle",
+                                                        "The function ARCRotateObjectFrame doesn't support the angle " <> ToString[angleIn] <> "."
+                                                    ]
+                                            ];
+                                            AssociationApply[
+                                                #["RelativePosition"],
+                                                <|
+                                                    "Y" -> Function[yRelative],
+                                                    "X" -> Function[xRelative],
+                                                    "YInverse" -> Function[parentHeight - yRelative - height + 2],
+                                                    "XInverse" -> Function[parentWidth - xRelative - width + 2]
+                                                |>
+                                            ]
+                                        )
+                                    ],
+                                True,
+                                    ReturnFailure[
+                                        "UnsupportedPosition",
+                                        "ARCRotateObjectFrame doesn't support the given Position value.",
+                                        "Position" -> #
+                                    ]
+                            ]
+                        ],
+                    "Y" -> Function[y],
+                    "X" -> Function[x],
+                    "Y2" -> Function[y + height - 1],
+                    "X2" -> Function[x + width - 1],
+                    "Width" -> Function[width],
+                    "Height" -> Function[height],
+                    "Direction" -> Function[
+                        Replace[
+                            ARCToNegativeAngle@
+                            Plus[
+                                Replace[
+                                    object["Direction"],
+                                    {{0, 1} -> 0, {-1, 0} -> -90, {0, -1} -> -180, {1, 0} -> -270}
+                                ],
+                                angleIn
+                            ],
+                            {0 -> {0, 1}, -90 -> {-1, 0}, -180 -> {0, -1}, -270 -> {1, 0}}
+                        ]
+                    ],
+                    "Transform" -> Function[
+                        If [!MissingQ[#["Components"]],
+                            Sett[
+                                #,
+                                "Components" -> (
+                                    Function[{component},
+                                        ReturnIfFailure@
+                                        ARCRotateObjectFrame[
+                                            component,
+                                            angleIn,
+                                            object["Width"],
+                                            object["Height"],
+                                            sceneWidthIn,
+                                            sceneHeightIn
+                                        ]
+                                    ] /@ #["Components"]
+                                )
+                            ]
+                        ]
+                    ],
+                    "Input" -> Function[
+                        ReturnIfFailure@
+                        ARCRotateObjectFrame[#, angleIn]
+                    ]
+                |>,
+                "AddKeys" -> False
+            ];
+        
+        res
+    ]
+
+(*!
+    \function ARCNormalizeObjectRotation
+    
+    \calltable
+        ARCNormalizeObjectRotation[object] '' Given an object, checks if its shape implies that it is rotated from its canonical orientation, and if so, rotates its frame into a canonical orientation.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCNormalizeObjectRotation]
+    
+    \maintainer danielb
+*)
+Clear[ARCNormalizeObjectRotation];
+ARCNormalizeObjectRotation[object_Association, parentWidth_, parentHeight_, sceneWidth_, sceneHeight_] :=
+    Module[{},
+        If [!FreeQ[
+                object["Shape"],
+                KeyValuePattern["Transform" -> KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}]]
+            ],
+            ARCRotateObjectFrame[
+                object,
+                -object["Shape", "Transform", "Angle"],
+                parentWidth,
+                parentHeight,
+                sceneWidth,
+                sceneHeight
+            ]
+            ,
+            object
+        ]
+    ]
+
+(*!
+    \function ARCRotateShapeAssociation
+    
+    \calltable
+        ARCRotateShapeAssociation[shape, angle] '' Given a shape association, applies a rotation to it. The angle must be a multiple of 90 degrees.
+    
+    Note that this function isn't compatible with $flipSensitiveShapes, so the function
+    ARCRotateShapeAssociations handles them differently. (in a more expensive way)
+    
+    Examples:
+    
+    ARCRotateShapeAssociation[
+        <|"Name" -> "MyShape", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
+        90
+    ]
+    
+    ===
+    
+    <|"Name" -> "MyShape", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRotateShapeAssociation]
+    
+    \maintainer danielb
+*)
+Clear[ARCRotateShapeAssociation];
+ARCRotateShapeAssociation[shapeIn_Association, angleIn_] :=
+    Module[{shape = shapeIn, angle = angleIn, currentAngle},
+        
+        If [!MissingQ[shape["Image"]],
+            shape["Image"] = RotateImage[shape["Image"], angle];
+        ];
+        
+        If [TrueQ[$rotationSensitiveShapes[EntityName[shapeIn]]],
+            If [shape["Transform", "Type"] === "Rotation",
+                currentAngle = shape["Transform", "Angle"];
+                angle = Mod[currentAngle + angle, 360];
+                If [angle == 0,
+                    KeyDrop[shape, "Transform"]
+                    ,
+                    Sett[shape, {"Transform", "Angle"} -> angle]
+                ]
+                ,
+                currentAngle = 0;
+                angle = Mod[currentAngle + angle, 360];
+                shape["Transform"] = <|"Type" -> "Rotation", "Angle" -> angle|>;
+                shape
+            ]
+            ,
+            shape
+        ]
+    ]
+
+(*!
+    \function ARCRotateShapeAssociations
+    
+    \calltable
+        ARCRotateShapeAssociations[shapes, angle, image] '' Given a list of shape association, applies a rotation to them, returning <|"Shape" -> ..., "Shapes" -> ...|>.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRotateShapeAssociations]
+    
+    \maintainer danielb
+*)
+Clear[ARCRotateShapeAssociations];
+
+ARCRotateShapeAssociations[{}, angle_, image_] := {}
+
+ARCRotateShapeAssociations[shapes_, angle_, image_] :=
+    Module[{},
+        If [Or[
+                (* See below comment about abandoned ELSE clause. *)
+                True,
+                !FreeQ[
+                    shapes,
+                    KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "Flip"]]
+                ]
+            ],
+            (* Because this shape is flip sensitive, we can't make use of
+               ARCRotateShapeAssociation and will instead do the more expensive thing of
+               taking the image, rotating it, and classifying it. *)
+            ARCInferShapeAndShapes[
+                RotateImage[image, angle][[1]]
+            ]
+            ,
+            (* Abandoned for now. I implemented ARCRotateShapeAssociation because I felt it would
+               be faster than calling ARCInferShapeAndShapes, which it very well may be, but
+               I got to this point and needed to infer "Shape" below, but that is within
+               ARCInferShapeAndShapes and it wasn't feeling very clean try to abstract that
+               out, and the realization is that for now I should just keep things simple
+               and always use the above. (Also, ARCRotateShapeAssociation might have bugs in
+               it etc. and it's just not worth fighting with those right now if so) *)
+            <|
+                "Shape" -> TODO,
+                "Shapes" -> Function[{shape},
+                    ARCRotateShapeAssociation[shape, angle]
+                ] /@ shapes
+            |>
+        ]
+    ]
+
+(*!
+    \function ARCInferShapeAndShapes
+    
+    \calltable
+        ARCInferShapeAndShapes[image] '' Given an object's image, infers its 'Shape' and 'Shapes' properties.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferShapeAndShapes]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferShapeAndShapes];
+ARCInferShapeAndShapes[image_List] :=
+    Module[
+        {
+            monochrome = ARCToMonochrome[image, $nonImageColor],
+            shapes = ARCClassifyShape[image]
+        },
+        <|
+            "Shape" -> Replace[
+                shapes,
+                {
+                    {} :> ARCScene[monochrome],
+                    list_List :> First[ARCPruneAlternatives[list, "Shapes", "Most" -> "Specific"]]
+                }
+            ],
+            "Shapes" -> Join[
+                ARCImageRotations[monochrome],
+                shapes
+            ]
+        |>
+    ]
+
+(*!
+    \function ARCToNegativeAngle
+    
+    \calltable
+        ARCToNegativeAngle[angle] '' Makes an angle negative and less than 360 degrees.
+    
+    Examples:
+    
+    ARCToNegativeAngle[90] === -270
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCToNegativeAngle]
+    
+    \maintainer danielb
+*)
+Clear[ARCToNegativeAngle];
+ARCToNegativeAngle[angle_] :=
+    If [angle < 0,
+        Mod[angle, -360]
+        ,
+        Mod[angle, 360] - 360
+    ]
+
+ARCToNegativeAngle[0] := 0
 
 End[]
 

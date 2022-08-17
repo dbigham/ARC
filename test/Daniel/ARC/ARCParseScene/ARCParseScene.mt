@@ -114,8 +114,7 @@ Test[
                             |>,
                             <|
                                 "Name" -> "L",
-                                "Transform" -> "Flip",
-                                "Direction" -> "Vertical"
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
                             |>
                         },
                         "Colors" -> {2},
@@ -190,8 +189,7 @@ Test[
                             |>,
                             <|
                                 "Name" -> "L",
-                                "Transform" -> "Flip",
-                                "Direction" -> "Horizontal"
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                             |>
                         },
                         "Colors" -> {8},
@@ -1366,7 +1364,10 @@ Test[
                         "Name" -> "L",
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
-                    <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
+                    <|
+                        "Name" -> "L",
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>
                 },
                 "Colors" -> {2},
                 "Position" -> {1, 1},
@@ -1428,7 +1429,10 @@ Test[
                         "Name" -> "L",
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                     |>,
-                    <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Horizontal"|>
+                    <|
+                        "Name" -> "L",
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                    |>
                 },
                 "Colors" -> {8},
                 "Position" -> {2, 2},

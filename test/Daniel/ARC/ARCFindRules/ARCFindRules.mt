@@ -75,37 +75,21 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Utility`BlockUUID[
-                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "321b1fc6"]["Train"]]
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "321b1fc6"]["Train"]
+                    ]
+                ]
             ]
         ]
     ]
     ,
     {
         <|"Colors" -> {8}|> -> <|
-            "Image" -> Daniel`ARC`ObjectValue[<|"Colors" -> Except[{8}]|>, "Image"],
-            "Examples" -> {1, 2},
-            "ExampleCount" -> 2,
-            "UseCount" -> 6,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d8",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d9",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742f5",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742f6",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742g7"
-            }
+            "Image" -> Daniel`ARC`ObjectValue[<|"Colors" -> Except[{8}]|>, "Image"]
         |>,
-        <|"Colors" -> Except[{8}]|> -> <|
-            "Transform" -> <|"Type" -> "Delete"|>,
-            "Examples" -> {1, 2},
-            "ExampleCount" -> 2,
-            "UseCount" -> 2,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742ek",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742ga"
-            }
-        |>
+        <|"Colors" -> Except[{8}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
     }
     ,
     TestID -> "ARCFindRules-20220725-AR54Q9"
@@ -314,4 +298,36 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220812-24SCQ1"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "3ac3eb23"]["Train"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Position" -> <|"RelativePosition" -> {0, -1}|>,
+            "Shape" -> Daniel`ARC`ARCScene[
+                {
+                    {-1, 10, -1},
+                    {10, -1, 10},
+                    {-1, 10, -1},
+                    {10, -1, 10},
+                    {-1, 10, -1},
+                    {10, -1, 10}
+                }
+            ]
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220817-R66XW8"
 ]

@@ -94,6 +94,8 @@ Test[
                     "Shapes" -> "SHAPES",
                     "Width" -> 3,
                     "Height" -> 3,
+                    "Y" -> 1,
+                    "X" -> 2,
                     "Color" -> "COLOR"
                 |>,
                 <|
@@ -107,7 +109,9 @@ Test[
                         |>
                     |>,
                     "Width" -> 3,
-                    "Height" -> 3
+                    "Height" -> 3,
+                    "Y" -> 2,
+                    "X" -> 2
                 |>
             }
         |>

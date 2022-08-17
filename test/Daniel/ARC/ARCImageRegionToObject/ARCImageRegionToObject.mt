@@ -45,7 +45,10 @@ Test[
             |>,
             <|"Name" -> "L"|>,
             <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
-            <|"Name" -> "L", "Transform" -> "Flip", "Direction" -> "Vertical"|>
+            <|
+                "Name" -> "L",
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>
         },
         "Colors" -> {2},
         "Position" -> {1, 1},

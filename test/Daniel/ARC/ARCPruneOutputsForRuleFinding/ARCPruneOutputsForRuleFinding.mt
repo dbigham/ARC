@@ -171,6 +171,8 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> {2, 6},
+            "Width" -> 3,
+            "Height" -> 3,
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -195,6 +197,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 2,
+                        "X" -> 6,
                         "Color" -> 4
                     |>,
                     <|
@@ -218,6 +222,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 2,
+                        "X" -> 8,
                         "Color" -> 4
                     |>,
                     <|
@@ -241,6 +247,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 4,
+                        "X" -> 6,
                         "Color" -> 4
                     |>,
                     <|
@@ -264,6 +272,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 4,
+                        "X" -> 8,
                         "Color" -> 4
                     |>
                 }
@@ -365,6 +375,8 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> {3, 2},
+            "Width" -> 3,
+            "Height" -> 3,
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -390,6 +402,8 @@ Test[
                         },
                         "Width" -> 3,
                         "Height" -> 3,
+                        "Y" -> 3,
+                        "X" -> 2,
                         "Color" -> 7
                     |>
                 }
@@ -491,6 +505,8 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Position" -> {6, 6},
+            "Width" -> 3,
+            "Height" -> 3,
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -516,6 +532,8 @@ Test[
                         },
                         "Width" -> 3,
                         "Height" -> 3,
+                        "Y" -> 6,
+                        "X" -> 6,
                         "Color" -> 7
                     |>
                 }
@@ -617,6 +635,8 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Position" -> {7, 1},
+            "Width" -> 3,
+            "Height" -> 3,
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -641,6 +661,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 7,
+                        "X" -> 1,
                         "Color" -> 4
                     |>,
                     <|
@@ -664,6 +686,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 7,
+                        "X" -> 3,
                         "Color" -> 4
                     |>,
                     <|
@@ -687,6 +711,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 9,
+                        "X" -> 1,
                         "Color" -> 4
                     |>,
                     <|
@@ -710,6 +736,8 @@ Test[
                         },
                         "Width" -> 1,
                         "Height" -> 1,
+                        "Y" -> 9,
+                        "X" -> 3,
                         "Color" -> 4
                     |>
                 }
