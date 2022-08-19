@@ -72,7 +72,9 @@ Test[
             "PrimarySizeDimensionRank" -> 1,
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
-            "AspectRatioInverseRank" -> 1
+            "AspectRatioInverseRank" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0
         |> -> <|
             "Same" -> True,
             "Example" -> 1,
@@ -120,7 +122,9 @@ Test[
                 "PrimarySizeDimensionRank" -> 1,
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
-                "AspectRatioInverseRank" -> 1
+                "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0
             |>
         |>,
         <|
@@ -167,6 +171,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
@@ -324,6 +330,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -371,6 +379,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
@@ -454,6 +464,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -501,6 +513,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
@@ -584,6 +598,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -631,6 +647,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
@@ -788,6 +806,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "OutputComponentUUID" -> _String
             |>
         |>

@@ -266,6 +266,12 @@ ARCInferShapeAndShapes::usage = "ARCInferShapeAndShapes  "
 
 ARCToNegativeAngle::usage = "ARCToNegativeAngle  "
 
+ARCSetRelativeXY::usage = "ARCSetRelativeXY  "
+
+ARCPruneMatchingPropertiesForRelativePositions::usage = "ARCPruneMatchingPropertiesForRelativePositions  "
+
+ARCStrongPropertyInferenceMath::usage = "ARCStrongPropertyInferenceMath  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1705,10 +1711,13 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
             object = Sett[
                 objectIn,
                 "Components" ->
-                    Lookup[
-                        singleColorObjectsByUUID,
-                        DeleteDuplicates@
-                        Lookup[singleColorObjectsByPixelPosition, objectIn["PixelPositions"]]
+                    ARCSetRelativeXY[
+                        Lookup[
+                            singleColorObjectsByUUID,
+                            DeleteDuplicates@
+                            Lookup[singleColorObjectsByPixelPosition, objectIn["PixelPositions"]]
+                        ],
+                        objectIn
                     ]
             ];
             
@@ -3572,13 +3581,19 @@ ARCParseExamples[file_String] :=
     \maintainer danielb
 *)
 Clear[ARCMakeObjectsReferenceable];
-ARCMakeObjectsReferenceable[parsedScenes_List] :=
+Options[ARCMakeObjectsReferenceable] =
+{
+    "AdditionalConditions" -> Nothing       (*< Additional conditions that should be added to any referenceable object patterns. e.g. <|"Context" -> "Components"|> *)
+};
+
+ARCMakeObjectsReferenceable[parsedScenes_List, opts:OptionsPattern[]] :=
     ARCMakeObjectsReferenceable[
-        "ObjectLists" -> parsedScenes[[All, "Objects"]]
+        "ObjectLists" -> parsedScenes[[All, "Objects"]],
+        opts
     ]
 
-ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List] :=
-    Module[{usablePropertiesAndValues, valueCounts, uniqueValues, countsForValue, countsForNotValue, usablePropertyAndValues},
+ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:OptionsPattern[]] :=
+    Module[{usablePropertiesAndValues, valueCounts, uniqueValues, countsForValue, countsForNotValue, res},
         
         usablePropertiesAndValues = Association[
             Function[{property},
@@ -3596,7 +3611,21 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List] :=
                         Counts[
                             Replace[
                                 objects[[All, property]],
-                                lists:{Repeated[_List]} :> (Sort /@ lists)
+                                lists:{Repeated[_List]} :> (
+                                    If [MatchQ[$properties[property, "Type"], _Repeated],
+                                        (* This property's values are lists of things, so we sort
+                                           them to try to normalize them so that if two objects
+                                           have the same items in a list, any ordering differences
+                                           don't prevent us finding commonalities / rules. *)
+                                        Sort /@ lists
+                                        ,
+                                        (* Some properties like Position have values that are
+                                           lists, but they aren't orderless lists -- the
+                                           position of a value relates to its semantics,
+                                           so we definitely can't sort those lists here. *)
+                                        lists
+                                    ]
+                                )
                             ]
                         ]
                     ] /@ objectsForAllExamples;
@@ -3667,10 +3696,26 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List] :=
                 usablePropertiesAndValues
             ];
         
-        ARCReferenceableObjectProperties[
-            objectReferences,
-            objectsForAllExamples
-        ]
+        res =
+            ReturnIfFailure@
+            ARCReferenceableObjectProperties[
+                objectReferences,
+                objectsForAllExamples
+            ];
+        
+        If [OptionValue["AdditionalConditions"] =!= Nothing,
+            res = KeyMap[
+                Function[{objectReference},
+                    ReplacePart[
+                        objectReference,
+                        1 -> Join[objectReference[[1]], OptionValue["AdditionalConditions"]]
+                    ]
+                ],
+                res
+            ]
+        ];
+        
+        res
     ]
 
 (*!
@@ -3701,14 +3746,38 @@ GetObject[object_Object, parsedSceneOrObjectsList_, namedObjects_Association : <
     GetObject[object[[1]], parsedSceneOrObjectsList, namedObjects]
 
 GetObject[object: _Association | _String, parsedScene_Association, namedObjects_Association : <||>] :=
-    GetObject[object, parsedScene["Objects"], namedObjects]
+    Which[
+        (* Note that `object` can be a string, so we explicitly check first that it's an
+           association prior to checking its Context value. *)
+        AssociationQ[object] && object["Context"] === "Component",
+            GetObject[
+                object,
+                Replace[
+                    namedObjects["InputObject", "Components"],
+                    Except[_List] :> {}
+                ],
+                namedObjects
+            ],
+        StringQ[object["Context"]],
+            ReturnFailure[
+                "UnsupportedContext",
+                "GetObject doesn't currently support the context '" <> ToString[object["Context"]] <> "'.",
+                "Object" -> object
+            ],
+        True,
+            GetObject[object, parsedScene["Objects"], namedObjects]
+    ]
 
 GetObject[object_Association, objects_List, namedObjects_Association : <||>] :=
     Module[{},
         Replace[
             Cases[
                 objects,
-                KeyValuePattern[Normal[object]]
+                KeyValuePattern@
+                Normal@
+                (* We drop the "Context" key since that should be handled by higher-level
+                   code to ensure that `objects` is for that context. *)
+                KeyDrop[object, "Context"]
             ],
             {
                 {matchingObject_} :> matchingObject,
@@ -4003,6 +4072,9 @@ Clear[ARCGeneralizeConclusions];
 ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association, examples_List] :=
     Module[
         {
+            inputObjectComponentSets,
+            referenceableComponents = <||>,
+            referenceableObjects = referenceableInputObjects,
             transformType,
             transformDetails,
             property,
@@ -4015,6 +4087,30 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             propertiesWithSameValueForAllConclusions,
             propertiesWithChangingValue
         },
+        
+        (* HERE *)
+        
+        inputObjectComponentSets = conclusions[[All, "Input", "Components"]];
+        If [MatchQ[inputObjectComponentSets, {Repeated[{__}]}],
+            (* All input objects have components. *)
+            referenceableComponents =
+                ReturnIfFailure@
+                ARCMakeObjectsReferenceable[
+                    "ObjectLists" -> inputObjectComponentSets,
+                    "AdditionalConditions" -> <|"Context" -> "Component"|>
+                ];
+            If [Length[referenceableComponents] > 0,
+                (* We have found some referenceable components. *)
+                referenceableObjects = Join[
+                    (* We'll put the referenceable _components_ first since it seems more likely
+                       that we'd be able to infer something using the more local context of the
+                       input object's components than using something from the global scene.
+                       That said, perhaps that's only true about position related properties? *)
+                    referenceableComponents,
+                    referenceableObjects
+                ]
+            ]
+        ];
         
         (* Always a transform of the same type? *)
         If [AllTrue[
@@ -4110,7 +4206,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                                                 "Value" -> conclusion[["Transform", property, listPosition]]
                                                             ]
                                                         ] /@ conclusions,
-                                                        referenceableInputObjects,
+                                                        referenceableObjects,
                                                         examples
                                                     ],
                                                     Nothing | _Missing :> Return[Missing["NotFound"], Module]
@@ -4132,7 +4228,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                                                     "Value" -> conclusion["Transform", property]
                                                 ]
                                             ] /@ conclusions,
-                                            referenceableInputObjects,
+                                            referenceableObjects,
                                             examples
                                         ],
                                         Nothing | _Missing :> Return[Missing["NotFound"], Module]
@@ -4198,7 +4294,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                             "Value" -> conclusion[property]
                         ]
                     ] /@ conclusions,
-                    referenceableInputObjects,
+                    referenceableObjects,
                     examples
                 ],
                 {
@@ -4289,7 +4385,7 @@ ToPosition[expr_, parentObject_ : Null] :=
     \function ARCGeneralizeConclusionValue
     
     \calltable
-        ARCGeneralizeConclusionValue[propertyPath, propertyAttributes, conclusions, referenceableInputObjects, examples] '' Given a list of conclusion values that we'd like to generalize for a given property (or sub-property), attempts to determine how to dynamically produce the given values from the input objects.
+        ARCGeneralizeConclusionValue[propertyPath, propertyAttributes, conclusions, referenceableObjects, examples] '' Given a list of conclusion values that we'd like to generalize for a given property (or sub-property), attempts to determine how to dynamically produce the given values from the input objects.
     
     Examples:
     
@@ -4302,7 +4398,7 @@ ToPosition[expr_, parentObject_ : Null] :=
     \maintainer danielb
 *)
 Clear[ARCGeneralizeConclusionValue];
-ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableInputObjects_Association, examples_List] :=
+ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     Module[
         {
@@ -4422,7 +4518,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                                 theseSubProperties
                             ],
                             conclusions,
-                            referenceableInputObjects,
+                            referenceableObjects,
                             examples
                         ]
                     ] /@ subPropertySets;
@@ -4441,7 +4537,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             propertyPath,
             propertyAttributes,
             conclusions,
-            referenceableInputObjects,
+            referenceableObjects,
             examples
         ]
     ]
@@ -4463,7 +4559,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
     \maintainer danielb
 *)
 Clear[ARCGeneralizeConclusionValueNonRecursive];
-ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableInputObjects_Association, examples_List] :=
+ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
     Module[{property = Last[propertyPath], values, getFunction, inputObjectValues},
         
         values = conclusions[[All, "Value"]];
@@ -4490,14 +4586,14 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                 Which[
                     values === inputObjectValues,
                         (* The first thing we should check is to ensure that these
-                            sub-properties actually change from the values they have
-                            in the inputs. If not, we can actually just drop this key
-                            from our rule conclusion. (Actually, for nested transform
-                            properties, like a component in an AddComponents, I don't
-                            think we'd actually want to _drop_ these keys. Wouldn't
-                            it be better to replace them with something like:
-                            ObjectValue["InputObject"],
-                            or ObjectValue["InputObject", "MyProperty"]? *)
+                           sub-properties actually change from the values they have
+                           in the inputs. If not, we can actually just drop this key
+                           from our rule conclusion. (Actually, for nested transform
+                           properties, like a component in an AddComponents, I don't
+                           think we'd actually want to _drop_ these keys. Wouldn't
+                           it be better to replace them with something like:
+                           ObjectValue["InputObject"],
+                           or ObjectValue["InputObject", "MyProperty"]? *)
                         Return[Nothing, Module],
                     And[
                         AllTrue[inputObjectValues, NumberQ],
@@ -4527,9 +4623,15 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
             ReturnIfMissing@
             ReturnIfFailure@
             ARCGeneralizeConclusionValueUsingReferenceableObjects[
-                KeyTake[conclusions, {"Value", "Example"}],
-                referenceableInputObjects,
-                examples
+                propertyPath,
+                KeyTake[conclusions, {"Value", "Example", "Input"}],
+                referenceableObjects,
+                examples,
+                (* e.g. referenceable-components *)
+                "RelativePosition" -> Or[
+                    MemberQ[propertyPath, "RelativePosition"],
+                    StringContainsQ[Last[propertyPath], "Relative"]
+                ]
             ]
     ]
 
@@ -4550,8 +4652,7 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
     Module[
         {
             subPropertyAlternatives,
-            subPropertyResult,
-            successForSubPropertyAlternatives
+            subPropertyResults
         },
         Association[
             Function[{subPropertySpec},
@@ -4572,42 +4673,36 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                         {1}
                     ];
                 
-                subPropertyResult = Block[{},
-                    successForSubPropertyAlternatives = False;
+                subPropertyResults =
                     KeyValueMap[
                         Function[{subPropertyName, subPropertyAttributes},
-                            Replace[
-                                ReturnIfFailure@
-                                ARCGeneralizeConclusionValue[
-                                    Append[propertyPath, subPropertyName],
-                                    (* Property attributes *)
-                                    subPropertyAttributes,
-                                    AssociationApply[
-                                        conclusions,
-                                        <|
-                                            "Value" -> Function[
-                                                #[subPropertyName]
-                                            ]
-                                        |>
-                                    ],
-                                    referenceableInputObjects,
-                                    examples
+                            ReturnIfFailure@
+                            ARCGeneralizeConclusionValue[
+                                Append[propertyPath, subPropertyName],
+                                (* Property attributes *)
+                                subPropertyAttributes,
+                                AssociationApply[
+                                    conclusions,
+                                    <|
+                                        "Value" -> Function[
+                                            #[subPropertyName]
+                                        ]
+                                    |>
                                 ],
-                                res:Except[_Missing] :> (
-                                    (* We found an alternative subproperty that we can infer.
-                                        For now we'll assume we want to use it rather than
-                                        considering other subproperties. *)
-                                    successForSubPropertyAlternatives = True;
-                                    Return[res, Block]
-                                )
+                                referenceableInputObjects,
+                                examples
                             ]
                         ],
                         subPropertyAlternatives
-                    ]
-                ];
+                    ];
                 
-                If [TrueQ[successForSubPropertyAlternatives],
-                    subPropertyResult
+                If [Or[
+                        DeleteMissing[subPropertyResults] =!= {},
+                        (* No sub-properties needed to be inferred because they
+                           don't change. *)
+                        subPropertyResults === {}
+                    ],
+                    ARCChooseBestTransform[DeleteMissing[subPropertyResults]]
                     ,
                     Return[
                         Missing[
@@ -4632,7 +4727,7 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
     \function ARCGeneralizeConclusionValueUsingReferenceableObjects
     
     \calltable
-        ARCGeneralizeConclusionValueUsingReferenceableObjects[values, referenceableObjects, examples] '' Checks whether any of the referenceable objects can be used to infer the given values.
+        ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath, values, referenceableObjects, examples] '' Checks whether any of the referenceable objects can be used to infer the given values.
     
     Examples:
     
@@ -4645,10 +4740,15 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
     \maintainer danielb
 *)
 Clear[ARCGeneralizeConclusionValueUsingReferenceableObjects];
-ARCGeneralizeConclusionValueUsingReferenceableObjects[values_List, referenceableObjects_Association, examples_List] :=
-    Module[{theseExamples, objects, valuesToInfer, property},
+Options[ARCGeneralizeConclusionValueUsingReferenceableObjects] =
+{
+    "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
+};
+ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjects_Association, examples_List, opts:OptionsPattern[]] :=
+    Module[{theseExamples, theseComponents, objects, valuesToInfer, property},
         
         theseExamples = examples[[values[[All, "Example"]]]];
+        theseComponents = values[[All, "Input", "Components"]];
         
         (* For now, because we're only considering values in referenceable objects on their
            own (not combined with values from any input objects), we can skip this function
@@ -4666,19 +4766,53 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[values_List, referenceable
         referenceableValues =
             Function[{reference},
                 
-                objects = Function[{example},
-                    ReturnIfFailure@
-                    GetObject[reference, example["Input"]]
-                ] /@ theseExamples;
+                Switch[
+                    reference[[1, "Context"]],
+                    "Component",
+                        objects = Function[{components},
+                            ReturnIfFailure@
+                            GetObject[reference, components]
+                        ] /@ theseComponents,
+                    _Missing,
+                        objects = Function[{example},
+                            ReturnIfFailure@
+                            GetObject[reference, example["Input"]]
+                        ] /@ theseExamples,
+                    _,
+                        ReturnFailure[
+                            "UnsupportedReferenceContext",
+                            "The reference context '" <> reference[[1, "Context"]] <> "' isn't supported by ARCGeneralizeConclusionValueUsingReferenceableObjects."
+                        ]
+                ];
+                
+                (*If [reference === Object[<|"Colors" -> {1}, "Context" -> "Component"|>],
+                    Echo["valuesToInfer" -> valuesToInfer];
+                    ARCEcho[
+                        KeyTake[objects, {"Colors", "YRelative"}]
+                    ]
+                ];*)
                 
                 property =
                     ARCFindPropertyToInferValues[
+                        propertyPath,
                         objects,
-                        valuesToInfer
+                        valuesToInfer,
+                        opts
                     ];
                 
                 If [!MissingQ[property],
-                    ObjectValue[reference[[1]], property]
+                    If [FreeQ[property, TODO],
+                        ObjectValue[reference[[1]], property]
+                        ,
+                        (* We didn't get back a property name but rather an expression
+                           involving the property, which needs the object reference pattern
+                           substituted into it. *)
+                        Replace[
+                            property,
+                            TODO -> reference[[1]],
+                            {1, Infinity}
+                        ]
+                    ]
                     ,
                     Nothing
                 ]
@@ -4699,7 +4833,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[values_List, referenceable
     \function ARCFindPropertyToInferValues
     
     \calltable
-        ARCFindPropertyToInferValues[objects, values] '' Given a list of objects and a corresponding list of values that need to be inferred, returns the property that can be used to perform the inference, or Missing if none found.
+        ARCFindPropertyToInferValues[propertyPath, objects, values] '' Given a list of objects and a corresponding list of values that need to be inferred, returns the property that can be used to perform the inference, or Missing if none found.
     
     Examples:
     
@@ -4712,7 +4846,11 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[values_List, referenceable
     \maintainer danielb
 *)
 Clear[ARCFindPropertyToInferValues];
-ARCFindPropertyToInferValues[objects_List, values_List] :=
+Options[ARCFindPropertyToInferValues] =
+{
+    "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
+};
+ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:OptionsPattern[]] :=
     Module[{transposedObjects, matchingProperties, values2},
         
         transposedObjects = AssociationTranspose[
@@ -4722,35 +4860,96 @@ ARCFindPropertyToInferValues[objects_List, values_List] :=
             ]
         ];
         
+        (* What properties of these objects appear to be usable to infer these values? *)
         matchingProperties = Select[
             transposedObjects,
             # === values &
         ];
         
-        If [Length[matchingProperties] > 0,
-            (* TODO: What to do if there are multiple properties that could
-                     be used? *)
-            First[Keys[matchingProperties]]
-            ,
-            (* Also check if there are any properties that have list values containing
-               a single item, where our value is the single value. For example, if we
-               are trying to infer a "Color" transform property, and the object has
-               "Colors" -> {<that-color>}. *)
-            values2 = {#} & /@ values;
-            matchingProperties = Select[
-                transposedObjects,
-                # === values2 &
+        (* What properties of these objects, if we use some math, appear to be usable
+           to infer these values? *)
+        matchingPropertiesUsingMath = Select[
+            transposedObjects,
+            And[
+                AllTrue[values, NumberQ],
+                AllTrue[#, NumberQ],
+                (* TODO: Why do we need this condition? Shouldn't the lengths of these things
+                         always be the same. e.g. relative-components *)
+                Length[values] === Length[#],
+                And[
+                    Length[differences = DeleteDuplicates[values - #]] === 1,
+                    differences =!= {0}
+                ]
+            ] &
+        ];
+        
+        (* HERE *)
+        
+        matchingProperties =
+            ARCPruneMatchingPropertiesForRelativePositions[
+                matchingProperties,
+                OptionValue["RelativePosition"]
             ];
-            
-            If [Length[matchingProperties] > 0,
+        
+        matchingPropertiesUsingMath =
+            ARCPruneMatchingPropertiesForRelativePositions[
+                matchingPropertiesUsingMath,
+                OptionValue["RelativePosition"]
+            ];
+        
+        Which[
+            Length[matchingProperties] > 0,
                 (* TODO: What to do if there are multiple properties that could
                          be used? *)
-                Inactive[First][
-                    First[Keys[matchingProperties]]
+                First[Keys[matchingProperties]],
+            Length[matchingPropertiesUsingMath] > 0,
+                (* NOTE: As of Aug 18 2022, this function is called with one referenceable object
+                         after another, and the first one that has a suitable property results in
+                         that property being used. Related to that is that when we form the list
+                         of referenceable objects, we put the "Context" -> "Component" ones first,
+                         since we feel it's more likely that a property of a component will yield
+                         the best property to use. (it feels "closer" to the thing we're trying
+                         to infer) This has interplay though with `matchingProperties` vs
+                         `matchingPropertiesUsingMath` in that even if there is a referenceable
+                         object with a property that doesn't need math, we might choose a
+                         property that _does_ need math given how to iterate over objects
+                         and choose the first usable property of the first visited object.
+                         It could easily be the case that that isn't desirable. *)
+                (* TODO: What to do if there are multiple properties that could
+                         be used? *)
+                With[{property = First[Keys[matchingPropertiesUsingMath]]},
+                    Inactive[Plus][
+                        ObjectValue[
+                            (* The caller is responsible for filling in the object reference
+                               pattern here. e.g. referenceable-components *)
+                            TODO,
+                            property
+                        ],
+                        With[{difference = values[[1]] - transposedObjects[[property, 1]]},
+                            difference
+                        ]
+                    ]
+                ],
+            True,
+                (* Also check if there are any properties that have list values containing
+                   a single item, where our value is the single value. For example, if we
+                   are trying to infer a "Color" transform property, and the object has
+                   "Colors" -> {<that-color>}. *)
+                values2 = {#} & /@ values;
+                matchingProperties = Select[
+                    transposedObjects,
+                    # === values2 &
+                ];
+                
+                If [Length[matchingProperties] > 0,
+                    (* TODO: What to do if there are multiple properties that could
+                             be used? *)
+                    Inactive[First][
+                        First[Keys[matchingProperties]]
+                    ]
+                    ,
+                    Missing["NotFound"]
                 ]
-                ,
-                Missing["NotFound"]
-            ]
         ]
     ]
 
@@ -6053,7 +6252,7 @@ ARCChooseBestTransform[{item_}] := item
     \function ARCTransformScore
     
     \calltable
-        ARCTransformScore[transform] '' Given a transform, returns a score to quantify how good it seems.
+        ARCTransformScore[transform] '' Given a transform, returns a score to quantify how good it seems. Higher scores are better.
     
     Examples:
     
@@ -6075,7 +6274,7 @@ ARCChooseBestTransform[{item_}] := item
     \maintainer danielb
 *)
 Clear[ARCTransformScore];
-ARCTransformScore[transform_Association] :=
+ARCTransformScore[transform_] :=
     Module[{score = 0},
         
         Cases[
@@ -6110,6 +6309,20 @@ ARCTransformScore[transform_Association] :=
                     score = 0.1
             ]
         ];
+        
+        (* Next, consider the complexity of the expressions. We want to be consistant
+           with Occam's Razor, whereby simpler explanations are preferred.
+           e.g. 05f2a901 (when implementing referenceable-components) *)
+        (* The variable `penaltyPointsPerExpressionCharacter` is a hyperparameter and
+           it's definitely not clear what its value should be relative to penalties
+           in above heuristics.
+           Log:
+           - Aug 18 2022: -0.5 / 50 (-0.5 penalty per 50 characters) *)
+        penaltyPointsPerExpressionCharacter = -0.5 / 50;
+        penaltyForExpressionLength =
+            StringLength[ToString[transform]] * penaltyPointsPerExpressionCharacter;
+        
+        score += penaltyForExpressionLength;
         
         XEcho[transform -> score];
         
@@ -6900,6 +7113,72 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[7.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 1,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 14,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 8874,
+            "CodeLengthComment" -> "Also includes in-progress work for 25d487eb.",
+            "ExampleImplemented" -> "referenceable-components",
+            "ImplementationTime" -> Quantity[6, "Hours"],
+            "NewGeneralizedSuccesses" -> {"5521c0d9", "6c434453", "6e82a1ae", "aabf363d"},
+            "TotalGeneralizedSuccesses" -> 5,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 15,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 8874,
+            "ExampleImplemented" -> "5521c0d9",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 5,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 16,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 8874,
+            "ExampleImplemented" -> "6c434453",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 5,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 17,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 8874,
+            "ExampleImplemented" -> "6e82a1ae",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 5,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 18,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 8874,
+            "ExampleImplemented" -> "aabf363d",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 5,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
         |>
@@ -8569,6 +8848,71 @@ ARCToNegativeAngle[angle_] :=
     ]
 
 ARCToNegativeAngle[0] := 0
+
+(*!
+    \function ARCSetRelativeXY
+    
+    \calltable
+        ARCSetRelativeXY[object, parent] '' Given an object and its parent, sets the YRelative and XRelative properties on the child object.
+    
+    Examples:
+    
+    ARCSetRelativeXY[<|"Y" -> 9, "X" -> 4|>, <|"Y" -> 2, "X" -> 3|>] === <|"Y" -> 9, "X" -> 4, "YRelative" -> 8, "XRelative" -> 2|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSetRelativeXY]
+    
+    \maintainer danielb
+*)
+Clear[ARCSetRelativeXY];
+ARCSetRelativeXY[object_Association, parent_Association] :=
+    Join[
+        object,
+        <|
+            "YRelative" -> object["Y"] - parent["Y"],
+            "XRelative" -> object["X"] - parent["X"]
+        |>
+    ]
+
+ARCSetRelativeXY[objects_List, parent_Association] :=
+    Function[{object},
+        ARCSetRelativeXY[object, parent]
+    ] /@ objects
+
+(*!
+    \function ARCPruneMatchingPropertiesForRelativePositions
+    
+    \calltable
+        ARCPruneMatchingPropertiesForRelativePositions[matchingProperties, relativePositionQ] '' If relativePositionQ is True, which implies that the property we're trying to infer pertains to a relative position, then prune away non-relative potentially matching properties that we could use to do that inference.
+    
+    Examples:
+    
+    ARCPruneMatchingPropertiesForRelativePositions[matchingProperties, relativePositionQ] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCPruneMatchingPropertiesForRelativePositions];
+ARCPruneMatchingPropertiesForRelativePositions[matchingProperties_Association, relativePositionQ_] :=
+    If [And[
+            Length[matchingProperties] > 0,
+            TrueQ[relativePositionQ]
+        ],
+        (* If the property we're trying to infer is part of a relative position, then
+           I think it only makes sense to consider "relative" properties. For example,
+           if we're trying to infer a component's relative X, we shouldn't consider
+           using another object's absolute/global X value, etc.
+           e.g. relative-position *)
+        KeySelect[
+            matchingProperties,
+            MatchQ[
+                #,
+                "YRelative" | "XRelative" | "Width" | "Height" | "Length"
+            ] &
+        ]
+        ,
+        matchingProperties
+    ]
 
 End[]
 

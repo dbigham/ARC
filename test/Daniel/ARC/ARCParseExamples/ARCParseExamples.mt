@@ -53,6 +53,8 @@ Test[
                         "Area" -> 1,
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0,
                         "WidthRank" -> 1,
                         "WidthInverseRank" -> 1,
                         "HeightRank" -> 1,
@@ -99,6 +101,8 @@ Test[
                         "Area" -> 1,
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0,
                         "WidthRank" -> 1,
                         "WidthInverseRank" -> 1,
                         "HeightRank" -> 1,
@@ -193,7 +197,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 0,
+                                "XRelative" -> 0
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -221,7 +227,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 0,
+                                "XRelative" -> 2
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -249,7 +257,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 1,
+                                "XRelative" -> 1
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -277,7 +287,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 2,
+                                "XRelative" -> 0
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -305,7 +317,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 2,
+                                "XRelative" -> 2
                             |>
                         },
                         "WidthRank" -> 1,
@@ -385,7 +399,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 9,
                                 "FilledArea" -> 4,
-                                "FilledProportion" -> 0.4444444444444444
+                                "FilledProportion" -> 0.4444444444444444,
+                                "YRelative" -> 0,
+                                "XRelative" -> 0
                             |>,
                             <|
                                 "UUID" -> 0,
@@ -413,7 +429,9 @@ Test[
                                 "AspectRatio" -> 1,
                                 "Area" -> 1,
                                 "FilledArea" -> 1,
-                                "FilledProportion" -> 1.
+                                "FilledProportion" -> 1.,
+                                "YRelative" -> 1,
+                                "XRelative" -> 1
                             |>
                         },
                         "WidthRank" -> 1,

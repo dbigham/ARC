@@ -130,7 +130,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 9,
                         "FilledArea" -> 5,
-                        "FilledProportion" -> 0.5555555555555556
+                        "FilledProportion" -> 0.5555555555555556,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -158,7 +160,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 1,
+                        "XRelative" -> 1
                     |>,
                     <|
                         "UUID" -> 0,
@@ -205,7 +209,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 4,
                         "FilledArea" -> 3,
-                        "FilledProportion" -> 0.75
+                        "FilledProportion" -> 0.75,
+                        "YRelative" -> 1,
+                        "XRelative" -> 1
                     |>
                 },
                 "WidthRank" -> 1,
@@ -301,7 +307,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -329,7 +337,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 2
                     |>,
                     <|
                         "UUID" -> 0,
@@ -357,7 +367,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 1,
+                        "XRelative" -> 1
                     |>,
                     <|
                         "UUID" -> 0,
@@ -385,7 +397,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 2,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -413,7 +427,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 2,
+                        "XRelative" -> 2
                     |>
                 },
                 "WidthRank" -> 1,
@@ -487,7 +503,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 9,
                         "FilledArea" -> 4,
-                        "FilledProportion" -> 0.4444444444444444
+                        "FilledProportion" -> 0.4444444444444444,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -515,7 +533,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 1,
+                        "XRelative" -> 1
                     |>
                 },
                 "WidthRank" -> 1,
@@ -712,7 +732,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -813,7 +835,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 25,
                         "FilledArea" -> 21,
-                        "FilledProportion" -> 0.84
+                        "FilledProportion" -> 0.84,
+                        "YRelative" -> 1,
+                        "XRelative" -> 1
                     |>
                 },
                 "WidthRank" -> 1,
@@ -869,6 +893,8 @@ Test[
                 "Area" -> 2,
                 "FilledArea" -> 2,
                 "FilledProportion" -> 1.,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 2,
                 "WidthInverseRank" -> 2,
                 "HeightRank" -> 4,
@@ -922,6 +948,8 @@ Test[
                 "Area" -> 2,
                 "FilledArea" -> 2,
                 "FilledProportion" -> 1.,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 2,
                 "WidthInverseRank" -> 2,
                 "HeightRank" -> 4,
@@ -968,6 +996,8 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 3,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 4,
@@ -1095,7 +1125,9 @@ Test[
                         "AspectRatio" -> 1,
                         "Area" -> 1,
                         "FilledArea" -> 1,
-                        "FilledProportion" -> 1.
+                        "FilledProportion" -> 1.,
+                        "YRelative" -> 0,
+                        "XRelative" -> 0
                     |>,
                     <|
                         "UUID" -> 0,
@@ -1177,7 +1209,9 @@ Test[
                         "AspectRatio" -> 5/3,
                         "Area" -> 15,
                         "FilledArea" -> 13,
-                        "FilledProportion" -> 0.8666666666666667
+                        "FilledProportion" -> 0.8666666666666667,
+                        "YRelative" -> 0,
+                        "XRelative" -> 1
                     |>
                 },
                 "WidthRank" -> 1,
@@ -1225,6 +1259,8 @@ Test[
                 "Area" -> 4,
                 "FilledArea" -> 4,
                 "FilledProportion" -> 1.,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 2,
                 "WidthInverseRank" -> 2,
                 "HeightRank" -> 3,

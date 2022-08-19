@@ -40,6 +40,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {7, 7},
+                    "Y" -> 7,
+                    "X" -> 7,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -52,6 +54,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {4, 3},
+                    "Y" -> 4,
+                    "X" -> 3,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -64,6 +68,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 2},
+                    "Y" -> 3,
+                    "X" -> 2,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -76,6 +82,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 4},
+                    "Y" -> 3,
+                    "X" -> 4,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -88,6 +96,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 2},
+                    "Y" -> 5,
+                    "X" -> 2,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -100,6 +110,8 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 4},
+                    "Y" -> 5,
+                    "X" -> 4,
                     "AspectRatio" -> 1,
                     "Area" -> 1
                 |>,
@@ -111,6 +123,8 @@ Test[
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
+                    "Y" -> 6,
+                    "X" -> 6,
                     "AspectRatio" -> 1,
                     "Area" -> 4
                 |>
@@ -124,6 +138,8 @@ Test[
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {3, 2},
+                    "Y" -> 3,
+                    "X" -> 2,
                     "AspectRatio" -> 1,
                     "Area" -> 5
                 |>,
@@ -135,6 +151,8 @@ Test[
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
+                    "Y" -> 6,
+                    "X" -> 6,
                     "AspectRatio" -> 1,
                     "Area" -> 5
                 |>
@@ -151,6 +169,8 @@ Test[
             "Width" -> 3,
             "Height" -> 3,
             "Position" -> {3, 2},
+            "Y" -> 3,
+            "X" -> 2,
             "AspectRatio" -> 1,
             "Area" -> 5,
             "Components" -> {
@@ -163,8 +183,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 2},
+                    "Y" -> 3,
+                    "X" -> 2,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 0,
+                    "XRelative" -> 0
                 |>,
                 <|
                     "UUID" -> "334e881a-c81d-4f55-b381-1ea1090a5ffc",
@@ -175,8 +199,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {3, 4},
+                    "Y" -> 3,
+                    "X" -> 4,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 0,
+                    "XRelative" -> 2
                 |>,
                 <|
                     "UUID" -> "6a8b514b-f10a-499b-8bca-fa4bd26d3093",
@@ -187,8 +215,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {4, 3},
+                    "Y" -> 4,
+                    "X" -> 3,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 1,
+                    "XRelative" -> 1
                 |>,
                 <|
                     "UUID" -> "b7049403-c19e-41e3-8edb-84ef0649a82b",
@@ -199,8 +231,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 2},
+                    "Y" -> 5,
+                    "X" -> 2,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 2,
+                    "XRelative" -> 0
                 |>,
                 <|
                     "UUID" -> "6f024852-92f6-44db-978a-0716313e5b74",
@@ -211,8 +247,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {5, 4},
+                    "Y" -> 5,
+                    "X" -> 4,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 2,
+                    "XRelative" -> 2
                 |>
             },
             "Shapes" -> {
@@ -228,6 +268,8 @@ Test[
             "Width" -> 3,
             "Height" -> 3,
             "Position" -> {6, 6},
+            "Y" -> 6,
+            "X" -> 6,
             "AspectRatio" -> 1,
             "Area" -> 5,
             "Components" -> {
@@ -239,8 +281,12 @@ Test[
                     "Width" -> 3,
                     "Height" -> 3,
                     "Position" -> {6, 6},
+                    "Y" -> 6,
+                    "X" -> 6,
                     "AspectRatio" -> 1,
-                    "Area" -> 4
+                    "Area" -> 4,
+                    "YRelative" -> 0,
+                    "XRelative" -> 0
                 |>,
                 <|
                     "UUID" -> "61038be5-ff0b-4127-ae12-53327fe3d08e",
@@ -255,8 +301,12 @@ Test[
                     "Width" -> 1,
                     "Height" -> 1,
                     "Position" -> {7, 7},
+                    "Y" -> 7,
+                    "X" -> 7,
                     "AspectRatio" -> 1,
-                    "Area" -> 1
+                    "Area" -> 1,
+                    "YRelative" -> 1,
+                    "XRelative" -> 1
                 |>
             },
             "Shapes" -> {

@@ -331,3 +331,151 @@ Test[
     ,
     TestID -> "ARCFindRules-20220817-R66XW8"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "referenceable-components"]["Train"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    {
+        <|"Colors" -> {1, 5}|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                        "Position" -> <|
+                            "RelativePosition" -> <|
+                                "Y" -> Daniel`ARC`ObjectValue[
+                                    <|"Colors" -> {1}, "Context" -> "Component"|>,
+                                    "YRelative"
+                                ],
+                                "X" -> Inactive[Plus][
+                                    Daniel`ARC`ObjectValue[
+                                        <|"Colors" -> {1}, "Context" -> "Component"|>,
+                                        "XRelative"
+                                    ],
+                                    1
+                                ]
+                            |>
+                        |>
+                    |>
+                }
+            |>
+        |>,
+        <|"Colors" -> {1}|> -> <|"Same" -> True|>
+    }
+    ,
+    TestID -> "ARCFindRules-20220817-V92ONB"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "5521c0d9"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"Colors" -> {1}|> -> <|
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Offset" -> <|
+                    "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Colors" -> {1}|>, "Y"], -16],
+                    "X" -> 0
+                |>
+            |>
+        |>,
+        <|"Colors" -> {4}|> -> <|
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Offset" -> <|
+                    "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Colors" -> {4}|>, "Y"], -16],
+                    "X" -> 0
+                |>
+            |>
+        |>,
+        <|"Colors" -> {2}|> -> <|
+            "Transform" -> <|
+                "Type" -> "Move",
+                "Offset" -> <|
+                    "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Colors" -> {2}|>, "Y"], -16],
+                    "X" -> 0
+                |>
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220819-2LNLJY"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6c434453"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}]|> -> <|
+            "Colors" -> {2},
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 2, -1}, {2, 2, 2}, {-1, 2, -1}}]
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{-1, 1, -1}, {1, 1, 1}, {-1, 1, -1}}]|> -> <|
+            "Same" -> True
+        |>,
+        <|
+            "Image" -> Except[
+                Alternatives[
+                    Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
+                    Daniel`ARC`ARCScene[{{-1, 1, -1}, {1, 1, 1}, {-1, 1, -1}}]
+                ]
+            ]
+        |> -> <|
+            "Same" -> True
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220819-F8C648"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6e82a1ae"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"FilledArea" -> 4|> -> <|"Colors" -> {1}|>,
+        <|"FilledArea" -> 3|> -> <|"Colors" -> {2}|>,
+        <|"FilledArea" -> 2|> -> <|"Colors" -> {3}|>
+    }
+    ,
+    TestID -> "ARCFindRules-20220819-N9WT39"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "aabf363d"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+        <|"Shape" -> Except[<|"Name" -> "Pixel"|>]|> -> <|
+            "Colors" -> Daniel`ARC`ObjectValue[<|"Shape" -> <|"Name" -> "Pixel"|>|>, "Colors"]
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220819-W87PMH"
+]

@@ -209,3 +209,43 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220812-TWXYQN"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["referenceable-components"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220818-X4JU1P"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["5521c0d9"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220819-OWTTDH"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["6c434453"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220819-6VKDFT"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["6e82a1ae"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220819-9U2FH8"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["aabf363d"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220819-WF5XD6"
+]

@@ -79,7 +79,9 @@ Test[
                 "PrimarySizeDimensionRank" -> 1,
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
-                "AspectRatioInverseRank" -> 1
+                "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0
             |>,
             <|
                 "UUID" -> 0,
@@ -130,7 +132,9 @@ Test[
                 "PrimarySizeDimensionRank" -> 1,
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
-                "AspectRatioInverseRank" -> 1
+                "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 3
             |>,
             <|
                 "UUID" -> 0,
@@ -181,7 +185,9 @@ Test[
                 "PrimarySizeDimensionRank" -> 1,
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
-                "AspectRatioInverseRank" -> 1
+                "AspectRatioInverseRank" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 6
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[

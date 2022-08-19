@@ -75,3 +75,24 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220805-WL0Y67"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            "X" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Y2InverseRank" -> 2|>, "Width"], -1],
+            "XInverse" -> 0
+        }
+    ]
+    ,
+    "XInverse" -> 0
+    ,
+    TestID -> "ARCChooseBestTransform-20220818-K8OYIN"
+]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[{"X" -> 0, "XInverse" -> 0}]
+    ,
+    "X" -> 0
+    ,
+    TestID -> "ARCChooseBestTransform-20220818-247NKD"
+]
