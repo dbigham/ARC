@@ -58,14 +58,20 @@ Test[
                 }
             |>
         |>,
-        <|"Colors" -> Except[{2} | {1}]|> -> <|"Same" -> True|>
+        <|"Colors" -> Except[{1} | {2}]|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220719-XYQH41"
 ]
 
 Test[
-    Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "3c9b0459"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "3c9b0459"]["Train"]]
+            ]
+        ]
+    ]
     ,
     {<||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>}
     ,
@@ -98,8 +104,12 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Utility`BlockUUID[
-                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train"]]
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train"]
+                    ]
+                ]
             ]
         ]
     ]
@@ -109,27 +119,9 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {8}|>]
-            |>,
-            "Examples" -> {1, 2, 3},
-            "ExampleCount" -> 3,
-            "UseCount" -> 3,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742dm",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e4"
-            }
+            |>
         |>,
-        <|"Colors" -> {8}|> -> <|
-            "Same" -> True,
-            "Examples" -> {1, 2, 3},
-            "ExampleCount" -> 3,
-            "UseCount" -> 3,
-            "InputObjects" -> {
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742dn",
-                "e7a71aa3-1a87-4e68-a1ce-009fa20742e5"
-            }
-        |>
+        <|"Colors" -> {8}|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220804-KVNY6K"
@@ -418,9 +410,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6c434453"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "6c434453"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -429,17 +427,7 @@ Test[
             "Colors" -> {2},
             "Image" -> Daniel`ARC`ARCScene[{{-1, 2, -1}, {2, 2, 2}, {-1, 2, -1}}]
         |>,
-        <|"Image" -> Daniel`ARC`ARCScene[{{-1, 1, -1}, {1, 1, 1}, {-1, 1, -1}}]|> -> <|
-            "Same" -> True
-        |>,
-        <|
-            "Image" -> Except[
-                Alternatives[
-                    Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
-                    Daniel`ARC`ARCScene[{{-1, 1, -1}, {1, 1, 1}, {-1, 1, -1}}]
-                ]
-            ]
-        |> -> <|
+        <|"Image" -> Except[Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}]]|> -> <|
             "Same" -> True
         |>
     }
@@ -464,9 +452,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "aabf363d"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "aabf363d"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -478,4 +472,32 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220819-W87PMH"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "25d8a9c8"]["Train"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Shapes" -> <|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}]|>|> -> <|
+                "Colors" -> {5}
+            |>,
+            <|"Shapes" -> Except[<|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}]|>]|> -> <|
+                "Transform" -> <|"Type" -> "Delete"|>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220819-P3KT28"
 ]

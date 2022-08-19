@@ -272,6 +272,18 @@ ARCPruneMatchingPropertiesForRelativePositions::usage = "ARCPruneMatchingPropert
 
 ARCStrongPropertyInferenceMath::usage = "ARCStrongPropertyInferenceMath  "
 
+ARCSummarizeTestResultObjects::usage = "ARCSummarizeTestResultObjects  "
+
+ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene::usage = "ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene  "
+
+ARCGroupRulesByConclusion::usage = "ARCGroupRulesByConclusion  "
+
+ARCPruneAlternativesWrtExcept::usage = "ARCPruneAlternativesWrtExcept  "
+
+ARCCombineAlternatives::usage = "ARCCombineAlternatives  "
+
+ARCCombineConclusions::usage = "ARCCombineConclusions  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -688,7 +700,13 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ]
 
 ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
-    Module[{objects, singleColorObjects, singleOrMultiColorObjects},
+    Module[
+        {
+            objects,
+            singleColorObjects,
+            nonCompositeObjectsFromOtherScene,
+            singleOrMultiColorObjects
+        },
         
         (* Contiguous objects of a single color. *)
         objects = singleColorObjects = Replace[
@@ -702,6 +720,29 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
                         "Background" -> backgroundColor
                     ]
                 ]
+        ];
+        
+        If [And[
+                ListQ[
+                    nonCompositeObjectsFromOtherScene =
+                        OptionValue["OtherScene"]["WithoutMultiColorCompositeObjects"]
+                ],
+                (* For now, only do this when we're in the mode that is trying to parse
+                   the scene without forming composite objects, since this otherwise
+                   breaks 3c9b0459. That said, this condition feels pretty
+                   artificial so we may need to revisit this later. *)
+                OptionValue["FormMultiColorCompositeObjects"] === False
+            ],
+            (* See whether we should break up any single-color objects due to them
+               being fully overlapped by multiple objects from the other scene. *)
+            objects = singleColorObjects =
+                Function[{object},
+                    Sequence @@
+                    ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
+                        object,
+                        nonCompositeObjectsFromOtherScene
+                    ]
+                ] /@ objects;
         ];
         
         If [MatchQ[OptionValue["FormMultiColorCompositeObjects"], True | Automatic],
@@ -768,7 +809,11 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCParseInputAndOutputScenes];
-ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene] :=
+Options[ARCParseInputAndOutputScenes] =
+{
+    "FormMultiColorCompositeObjects" -> True        (*< Whether connected single-color objects should be combined to form multi-color composite objects. *)
+};
+ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsPattern[]] :=
     Module[
         {
             inputSceneParseWithoutMultiColorCompositeObjects,
@@ -779,66 +824,96 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene] :=
             outputSceneParsed
         },
         
-        (* Parse the input scene both with and without forming multi-color composite objects. *)
-        
         inputSceneParseWithoutMultiColorCompositeObjects =
             ReturnIfFailure@
             ARCParseScene[inputScene, "FormMultiColorCompositeObjects" -> False];
-        
-        inputSceneParseWithMultiColorCompositeObjects =
-            ReturnIfFailure@
-            ARCParseScene[
-                inputScene,
-                "FormMultiColorCompositeObjects" -> True,
-                "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
-            ];
-        
-        (* Parse the output scene both with and without forming multi-color composite objects. *)
         
         outputSceneParseWithoutMultiColorCompositeObjects =
             ReturnIfFailure@
             ARCParseScene[outputScene, "FormMultiColorCompositeObjects" -> False];
         
-        outputSceneParseWithMultiColorCompositeObjects =
-            ReturnIfFailure@
-            ARCParseScene[
-                outputScene,
-                "FormMultiColorCompositeObjects" -> True,
-                "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
-            ];
-        
-        (* Parse the input scene again, this time passing along information about the objects
-           in the output scene to be used to disambiguate multi-color composite objects. *)
-        inputSceneParsed =
-            ReturnIfFailure@
-            ARCParseScene[
-                inputScene,
-                "FormMultiColorCompositeObjects" -> Automatic,
-                "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                "OtherScene" -> <|
-                    "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                    "WithMultiColorCompositeObjects" -> outputSceneParseWithMultiColorCompositeObjects["Objects"]
-                |>
-            ];
-        
-        (* Parse the output scene again, this time passing along information about the objects
-           in the input scene to be used to disambiguate multi-color composite objects. *)
-        outputSceneParsed =
-            ReturnIfFailure@
-            ARCParseScene[
-                outputScene,
-                "FormMultiColorCompositeObjects" -> Automatic,
-                "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                "OtherScene" -> <|
-                    "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                    "WithMultiColorCompositeObjects" -> inputSceneParseWithMultiColorCompositeObjects["Objects"]
-                |>
-            ];
-        
-        <|
-            "Input" -> inputSceneParsed,
-            "Output" -> outputSceneParsed
-        |>
+        If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]],
+            
+            inputSceneParseWithMultiColorCompositeObjects =
+                ReturnIfFailure@
+                ARCParseScene[
+                    inputScene,
+                    "FormMultiColorCompositeObjects" -> True,
+                    "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                ];
+            
+            outputSceneParseWithMultiColorCompositeObjects =
+                ReturnIfFailure@
+                ARCParseScene[
+                    outputScene,
+                    "FormMultiColorCompositeObjects" -> True,
+                    "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                ];
+            
+            (* Parse the input scene again, this time passing along information about the objects
+               in the output scene to be used to disambiguate multi-color composite objects. *)
+            inputSceneParsed =
+                ReturnIfFailure@
+                ARCParseScene[
+                    inputScene,
+                    "FormMultiColorCompositeObjects" -> Automatic,
+                    "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                    "OtherScene" -> <|
+                        "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                        "WithMultiColorCompositeObjects" -> outputSceneParseWithMultiColorCompositeObjects["Objects"]
+                    |>
+                ];
+            
+            (* Parse the output scene again, this time passing along information about the objects
+               in the input scene to be used to disambiguate multi-color composite objects. *)
+            outputSceneParsed =
+                ReturnIfFailure@
+                ARCParseScene[
+                    outputScene,
+                    "FormMultiColorCompositeObjects" -> Automatic,
+                    "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                    "OtherScene" -> <|
+                        "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                        "WithMultiColorCompositeObjects" -> inputSceneParseWithMultiColorCompositeObjects["Objects"]
+                    |>
+                ];
+            
+            <|
+                "Input" -> inputSceneParsed,
+                "Output" -> outputSceneParsed
+            |>
+            ,
+            (* We have been asked to not form composite objects. *)
+            
+            (* Parse the input scene again, this time passing along information about the objects
+               in the output scene to be used to disambiguate things. *)
+            inputSceneParsed =
+                ReturnIfFailure@
+                ARCParseScene[
+                    inputScene,
+                    "FormMultiColorCompositeObjects" -> False,
+                    "OtherScene" -> <|
+                        "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                    |>
+                ];
+            
+            (* Parse the output scene again, this time passing along information about the objects
+               in the input scene to be used to disambiguate things. *)
+            outputSceneParsed =
+                ReturnIfFailure@
+                ARCParseScene[
+                    outputScene,
+                    "FormMultiColorCompositeObjects" -> False,
+                    "OtherScene" -> <|
+                        "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                    |>
+                ];
+            
+            <|
+                "Input" -> inputSceneParsed,
+                "Output" -> outputSceneParsed
+            |>
+        ]
     ]
 
 (*!
@@ -1889,7 +1964,8 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene] :=
         parsedScenes =
             ReturnIfFailure@
             ARCParseInputAndOutputScenes[
-                scene1, scene2
+                scene1,
+                scene2
             ];
         
         ARCFindObjectMapping[
@@ -2369,11 +2445,77 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
     \maintainer danielb
 *)
 Clear[ARCFindRules];
-ARCFindRules[examplesIn_List] :=
-    ARCCleanRules@
+Options[ARCFindRules] =
+{
+    "FormMultiColorCompositeObjects" -> Automatic       (*< Whether connected single-color objects should be combined to form multi-color composite objects. If Automatic, we will try forming them, but if that isn't looking to work, we may also try not forming them. *)
+};
+ARCFindRules[examples_List, opts:OptionsPattern[]] :=
+    Module[{res, foundRulesQ, workingRulesQ},
+        
+        res = ReturnIfFailure[arcFindRulesHelper[examples, opts]];
+        foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
+        
+        If [And[
+                OptionValue["FormMultiColorCompositeObjects"] === Automatic,
+                MatchQ[
+                    res[["Examples", All, "Input", "Objects"]],
+                    {Repeated[{KeyValuePattern["Components" -> {__}]}]}
+                ]
+            ],
+            (* Each input scene consists of a single composite object. We want to be careful
+               in cases like this (e.g. 25d8a9c8) because there are cases where we don't want
+               to parse the scene as a single composite object but rather as independent
+               top-level objects. So, even if we've found a list of potential rules,
+               we check whether those rules appear to actually work on the training examples,
+               and if not, we try finding rules again where we don't form top-level
+               composite objects. *)
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+            
+            If [!TrueQ[workingRulesQ],
+                (* Try finding rules without forming composite objects. *)
+                res2 = ReturnIfFailure[
+                    arcFindRulesHelper[
+                        examples,
+                        "FormMultiColorCompositeObjects" -> False,
+                        opts
+                    ]
+                ];
+                foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                If [foundRulesQ,
+                    res = <|
+                        "FormMultiColorCompositeObjects" -> False,
+                        res2
+                    |>
+                ]
+            ]
+        ];
+        
+        KeyTake[
+            res,
+            {"FormMultiColorCompositeObjects", "Rules", "PartialRules"}
+        ]
+    ]
+
+(*!
+    \function arcFindRulesHelper
+    
+    \calltable
+        arcFindRulesHelper[examples] '' Helper for ARCFindRules.
+    
+    \maintainer danielb
+*)
+Clear[arcFindRulesHelper];
+Options[arcFindRulesHelper] = Options[ARCFindRules];
+arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
     Module[
         {
             examples = examplesIn,
+            returnRules,
             referenceableInputObjects,
             referenceableOutputObjects,
             objectMappings,
@@ -2383,12 +2525,25 @@ ARCFindRules[examplesIn_List] :=
             mappedInputObjects
         },
         
+        (* Helper function for producing the final return value. *)
+        returnRules[rules_List] :=
+            Return[
+                <|
+                    "Examples" -> examples,
+                    "ObjectMappings" -> objectMappings,
+                    "Rules" -> ARCCleanRules[rules]
+                |>,
+                Module
+            ];
+        
         examples =
             Function[{example},
                 ReturnIfFailure@
                 ARCParseInputAndOutputScenes[
                     example["Input"],
-                    example["Output"]
+                    example["Output"],
+                    "FormMultiColorCompositeObjects" ->
+                        OptionValue["FormMultiColorCompositeObjects"] =!= False
                 ]
             ] /@ examplesIn;
         
@@ -2465,11 +2620,10 @@ ARCFindRules[examplesIn_List] :=
                     {_}
                 ]
         ]   ,
-            Return[
+            returnRules[
                 {
                     <||> -> <|"Transform" -> transform[[1]]|>
-                },
-                Module
+                }
             ]
         ];
         
@@ -2511,7 +2665,7 @@ ARCFindRules[examplesIn_List] :=
                                 rules,
                                 Flatten[Keys[objectMappings]]
                             ];
-                        Return[rules, Module]
+                        returnRules[rules]
                         ,
                         (* The rules formed using this property do not handle the mapping of every
                            input object across all training example. *)
@@ -2533,13 +2687,10 @@ ARCFindRules[examplesIn_List] :=
                             Nothing
                         ]
                     ]
-                    (*If [TrueQ[ARCGoodRulesQ[rules, examples]],
-                        Return[rules, Module]
-                    ];*)
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"Width"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2568,23 +2719,28 @@ ARCFindRules[examplesIn_List] :=
                         Length[mappedInputObjects],
                         Length[inputObjectsNeedingMapping]
                     ],
-                    Return[
+                    returnRules[
                         Join[
                             ruleFindings[rankPropertyName, "Rules"],
                             ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
-                        ],
-                        Module
+                        ]
                     ]
                 ];
             ],
             Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
         ];
         
-        Reverse@
-        SortBy[
-            ruleFindings,
-            Length[#["MappedInputObjects"]] &
-        ]
+        <|
+            "Examples" -> examples,
+            "ObjectMappings" -> objectMappings,
+            "PartialRules" ->
+                ARCCleanRules@
+                Reverse@
+                SortBy[
+                    ruleFindings,
+                    Length[#["MappedInputObjects"]] &
+                ]
+        |>
     ]
 
 ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_Association, examples_List] :=
@@ -2786,6 +2942,11 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                 ]
             ]
         ];
+        
+        (* Try to simplify rules if possible. *)
+        rules =
+            ReturnIfFailure@
+            ARCGroupRulesByConclusion[rules];
         
         (*ARCEcho[ARCSimplifyRules[rules]];*)
         
@@ -2989,17 +3150,26 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
     \maintainer danielb
 *)
 Clear[ARCApplyRules];
-ARCApplyRules[scene_ARCScene, rules_List] :=
+
+ARCApplyRules[scene_ARCScene, rules_Association] :=
     Module[{parsedScene, objects},
         
         parsedScene =
-            ReturnIfFailure[ARCParseScene[scene]];
+            ReturnIfFailure@
+            ARCParseScene[
+                scene,
+                If [rules["FormMultiColorCompositeObjects"] === False,
+                    "FormMultiColorCompositeObjects" -> False
+                    ,
+                    Sequence @@ {}
+                ]
+            ];
         
         objects = parsedScene["Objects"];
         
         objects =
             ReturnIfFailure@
-            ARCFormGroupsWhenApplyingRules[objects, rules];
+            ARCFormGroupsWhenApplyingRules[objects, rules["Rules"]];
         
         ARCRenderScene@
         Sett[
@@ -3007,7 +3177,7 @@ ARCApplyRules[scene_ARCScene, rules_List] :=
             "Objects" ->
                 Function[{object},
                     ReturnIfFailure@
-                    ARCApplyRules[object, rules, parsedScene]
+                    ARCApplyRules[object, rules["Rules"], parsedScene]
                 ] /@ objects
         ]
     ]
@@ -3305,33 +3475,35 @@ ARCRenderScene[scene_Association] :=
     \maintainer danielb
 *)
 Clear[ARCTestRules];
+Options[ARCTestRules] =
+{
+    "TrainingExamplesOnly" -> False     (*< Only check training examples? *)
+};
 
-ARCTestRules[ARCExample[example: KeyValuePattern[{"Train" -> _, "Test" -> _}]], rules_List] :=
+ARCTestRules[ARCExample[example: KeyValuePattern[{"Train" -> _, "Test" -> _}]], rules_Association, opts:OptionsPattern[]] :=
     Module[{test, train, allResults, failures, successes},
         
         train = ReturnIfFailure[ARCTestRules[example["Train"], rules]];
-        test = ReturnIfFailure[ARCTestRules[example["Test"], rules]];
         
-        allResults = Join[test, train];
+        test =
+            If [!TrueQ[OptionValue["TrainingExamplesOnly"]],
+                ReturnIfFailure[ARCTestRules[example["Test"], rules]]
+                ,
+                <|"Failures" -> {}, "Successes" -> {}|>
+            ];
         
-        failures = Select[allResults, #["Outcome"] =!= "Success" &];
-        successes = Select[allResults, #["Outcome"] === "Success" &];
+        failures = Join[train["Failures"], train["Failures"]];
+        successes = Join[test["Successes"], test["Successes"]];
         
         <|
             "File" -> example["File"],
-            "PassPercentage" ->
-                Round[
-                    Length[successes] / Length[allResults],
-                    0.1
-                ],
-            "Failures" -> failures,
-            "Successes" -> successes,
+            ARCSummarizeTestResultObjects[Join[failures, successes]],
             "Train" -> train,
             "Test" -> test
         |>
     ]
 
-ARCTestRules[example_Association, rules_List] :=
+ARCTestRules[example_Association, rules_Association] :=
     Module[{},
         VerificationTest[
             ARCApplyRules[example["Input"], rules],
@@ -3339,10 +3511,42 @@ ARCTestRules[example_Association, rules_List] :=
         ]
     ]
 
-ARCTestRules[examples_List, rules_List] :=
-    Function[{example},
-        ARCTestRules[example, rules]
-    ] /@ examples
+ARCTestRules[examples_List, rules_Association] :=
+    ARCSummarizeTestResultObjects[
+        Function[{example},
+            ARCTestRules[example, rules]
+        ] /@ examples
+    ]
+
+(*!
+    \function ARCSummarizeTestResultObjects
+    
+    \calltable
+        ARCSummarizeTestResultObjects[testResultObjects] '' Given a list of test result objects, returns an association of success/failure metrics.
+    
+    Examples:
+    
+    ARCSummarizeTestResultObjects[testResultObjects] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCSummarizeTestResultObjects];
+ARCSummarizeTestResultObjects[testResultObjects_List] :=
+    Module[{failures, successes},
+        
+        failures = Select[testResultObjects, #["Outcome"] =!= "Success" &];
+        successes = Select[testResultObjects, #["Outcome"] === "Success" &];
+        
+        <|
+            "PassPercentage" ->
+                Round[
+                    Length[successes] / (Length[successes] + Length[failures]),
+                    0.1
+                ],
+            "Failures" -> failures,
+            "Successes" -> successes
+        |>
+    ]
 
 (*!
     \function ARCTest
@@ -3353,7 +3557,12 @@ ARCTestRules[examples_List, rules_List] :=
     \maintainer danielb
 *)
 Clear[ARCTest];
-ARCTest[example_ARCExample] :=
+Options[ARCTest] =
+{
+    "TrainingExamplesOnly" -> False     (*< Only check training examples? *)
+};
+
+ARCTest[example_ARCExample, opts:OptionsPattern[]] :=
     Module[{rules},
         
         rules =
@@ -3362,15 +3571,17 @@ ARCTest[example_ARCExample] :=
         
         ARCTestRules[
             example,
-            rules
+            rules,
+            opts
         ]
     ]
 
-ARCTest[file_String] :=
+ARCTest[file_String, opts:OptionsPattern[]] :=
     Module[{},
         ARCTest[
             ReturnIfFailure@
-            ARCParseFile[file]
+            ARCParseFile[file],
+            opts
         ]
     ]
 
@@ -3482,10 +3693,22 @@ ARCGoodRulesQ[rules_List, examples_List] :=
     \maintainer danielb
 *)
 Clear[ARCWorkingQ];
-ARCWorkingQ[file_String] :=
+Options[ARCWorkingQ] =
+{
+    "TrainingExamplesOnly" -> False     (*< Only check training examples? *)
+};
+ARCWorkingQ[file_String, opts:OptionsPattern[]] :=
     Module[{},
         MatchQ[
-            ARCTest[file],
+            ARCTest[file, opts],
+            KeyValuePattern["PassPercentage" -> 1. | 1]
+        ]
+    ]
+
+ARCWorkingQ[examples_List, rules_Association] :=
+    Module[{},
+        MatchQ[
+            ARCTestRules[examples, rules],
             KeyValuePattern["PassPercentage" -> 1. | 1]
         ]
     ]
@@ -5070,7 +5293,7 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer] :=
             ReturnIfFailure@
             ARCFindRules[parsedFile["Train"]];
         
-        If [ListQ[rules],
+        If [MatchQ[rules, KeyValuePattern["Rules" -> _]],
             output = ARCApplyRules[
                 parsedFile[trainOrTest, exampleIndex, "Input"],
                 rules
@@ -5890,6 +6113,26 @@ ARCSimplifyRules[rules_List] :=
             KeyDrop[assoc, {"Examples", "ExampleCount", "UseCount", "InputObjects"}],
         {0, Infinity}
     ]
+
+ARCSimplifyRules[rules_Association] :=
+    Module[{},
+        If [Keys[rules] === {"Rules"},
+            (* If it's only the "Rules" key that is specified, then we'll only return the
+               list of rules for ease of reading. *)
+            ARCSimplifyRules[rules["Rules"]]
+            ,
+            AssociationApply[
+                rules,
+                <|
+                    "PartialRules" -> Function[ARCSimplifyRules[#]],
+                    "Rules" -> Function[ARCSimplifyRules[#]]
+                |>,
+                "AddKeys" -> False
+            ]
+        ]
+    ]
+
+ARCSimplifyRules[expr_] := expr
 
 (*!
     \function ARCVerticalOverlapQ
@@ -8912,6 +9155,309 @@ ARCPruneMatchingPropertiesForRelativePositions[matchingProperties_Association, r
         ]
         ,
         matchingProperties
+    ]
+
+(*!
+    \function ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene
+    
+    \calltable
+        ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[object, objectsFromOtherScene] '' Checks if a single-color object corresponds exactly with multiple objects from the other scene. If so, the single-color object is split up to match the objects from the other scene.
+    
+    e.g. 25d8a9c8
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene]
+    
+    \maintainer danielb
+*)
+Clear[ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene];
+ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[object_Association, objectsFromOtherScene_List] :=
+    Module[{objectsWithin},
+        If [And[
+                MatchQ[object["Colors"], {_}],
+                (* We need at least two objects from the other scene fully within our object
+                   to be able to split our object. *)
+                Length[
+                    (* Objects from the other scene that are within our object. *)
+                    objectsWithin = Select[
+                        objectsFromOtherScene,
+                        ObjectWithinQ[#, object] &
+                    ]
+                ] >= 2,
+                (* The pixels covered by the objects from the other scene need to fully
+                   cover the pixels from our object. *)
+                SameQ[
+                    Sort[object["PixelPositions"]],
+                    Sort[Flatten[objectsWithin[[All, "PixelPositions"]], 1]]
+                ]
+            ],
+            Function[{objectFromOtherScene},
+                ARCImageRegionToObject@
+                <|
+                    "Color" -> First[object["Colors"]],
+                    "Position" -> objectFromOtherScene["Position"],
+                    "Image" ->
+                        object["Image"][[1]][[
+                            Span[
+                                objectFromOtherScene["Y"] - object["Y"] + 1,
+                                objectFromOtherScene["Y2"] - object["Y"] + 1
+                            ],
+                            Span[
+                                objectFromOtherScene["X"] - object["X"] + 1,
+                                objectFromOtherScene["X2"] - object["X"] + 1
+                            ]
+                        ]],
+                    "PixelPositions" -> objectFromOtherScene["PixelPositions"]
+                |>
+            ] /@ objectsWithin
+            ,
+            (* We can't split up our object, so just return it. *)
+            {object}
+        ]
+    ]
+
+(*!
+    \function ARCGroupRulesByConclusion
+    
+    \calltable
+        ARCGroupRulesByConclusion[rules] '' Given some rules, if there are multiple rules with the same conclusion which also share the same condition property, we group them into a single rule.
+    
+    Examples:
+    
+    ARCGroupRulesByConclusion[{<|"a" -> 1|> -> "Conclusion", <|"a" -> 2|> -> "Conclusion"}]
+    
+    ===
+    
+    {"Conclusion" -> 1 | 2}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGroupRulesByConclusion]
+    
+    \maintainer danielb
+*)
+Clear[ARCGroupRulesByConclusion];
+ARCGroupRulesByConclusion[rules_List] :=
+    Module[{property},
+        Flatten@
+        KeyValueMap[
+            Function[{grouping, groupOfRules},
+                If [MatchQ[grouping["PatternProperties"], {_}],
+                    property = grouping[["PatternProperties", 1]];
+                    Rule[
+                        <|
+                            property ->
+                                ARCPruneAlternativesWrtExcept[
+                                    Alternatives @@ groupOfRules[[All, 1, 1]]
+                                ]
+                        |>,
+                        ARCCombineConclusions[
+                            groupOfRules[[All, 2]]
+                        ]
+                    ]
+                    ,
+                    (* Multiple properties are involved, so for now we won't try to group these
+                       rules. *)
+                    groupOfRules
+                ]
+            ],
+            GroupBy[
+                rules,
+                Rule[
+                    Function[
+                        <|
+                            "Conclusion" -> KeyDrop[
+                                Last[#],
+                                {
+                                    "Examples",
+                                    "ExampleCount",
+                                    "UseCount",
+                                    "InputObjects"
+                                }
+                            ],
+                            "PatternProperties" -> Keys[First[#]]
+                        |>
+                    ],
+                    Identity
+                ]
+            ]
+        ]
+    ]
+
+(*!
+    \function ARCPruneAlternativesWrtExcept
+    
+    \calltable
+        ARCPruneAlternativesWrtExcept[alternatives] '' Given an Alternatives, checks whether any Except sub-items can be simplified.
+    
+    Examples:
+    
+    ARCPruneAlternativesWrtExcept[1 | Except[1 | 2] | Except[3 | 4]] === Except[2 | 3 | 4]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPruneAlternativesWrtExcept]
+    
+    \maintainer danielb
+*)
+Clear[ARCPruneAlternativesWrtExcept];
+ARCPruneAlternativesWrtExcept[alternativesIn_Alternatives] :=
+    Module[{alternatives = DeleteDuplicates[alternativesIn], exceptItems},
+        
+        exceptItems = Cases[alternatives, HoldPattern[Except][_]];
+        If [MatchQ[exceptItems, {_, ___}],
+            (* The non-Except items in the Alternatives list. *)
+            alternatives = Complement[
+                List @@ alternatives,
+                exceptItems
+            ];
+            (* Take all of the Except items in the Alternatives list and combine them.
+               When we combine them, remove any duplicate items, any multiply-nested
+               Alternatives, etc. *)
+            exceptItems = ARCCombineAlternatives[
+                Alternatives @@ exceptItems[[All, 1]]
+            ];
+            (* Add the list back if it got removed on us. *)
+            If [Head[exceptItems] =!= Alternatives, exceptItems = Alternatives[exceptItems]];
+            (* If there are any non-Except items that are also within an Except, then
+               we can remove those items both from the non-Except list and from the
+               Except list. *)
+            alternatives2 = Alternatives @@ (
+                Complement[alternatives, List @@ exceptItems]
+            );
+            exceptItems = Alternatives @@ (
+                Complement[List @@ exceptItems, alternatives]
+            );
+            ARCCombineAlternatives@
+            Alternatives[
+                alternatives2,
+                Except[
+                    Replace[
+                        exceptItems,
+                        HoldPattern[Alternatives][singleItem_] :> singleItem
+                    ]
+                ]
+            ]
+            ,
+            Replace[
+                alternatives,
+                HoldPattern[Alternatives][singleItem_] :> singleItem
+            ]
+        ]
+    ]
+
+(*!
+    \function ARCCombineAlternatives
+    
+    \calltable
+        ARCCombineAlternatives[alternatives] '' Given a list of alternatives, which may themselves be alternatives, combines them and flattens then.
+    
+    Examples:
+    
+    ARCCombineAlternatives[1 | (1 | 2) | 2 | 3 | {9, 9}] === 1 | 2 | 3 | {9, 9}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCombineAlternatives]
+    
+    \maintainer danielb
+*)
+Clear[ARCCombineAlternatives];
+ARCCombineAlternatives[alternatives_Alternatives] :=
+    Module[{},
+        Replace[
+            DeleteDuplicates@
+            Flatten[
+                alternatives,
+                Infinity,
+                Alternatives
+            ],
+            (* If we end up with an Alternatives with a single item, we can remove
+               the Alternatives wrapper. *)
+            HoldPattern[Alternatives][singleItem_] :> singleItem
+        ]
+    ]
+
+ARCCombineAlternatives[other_] := other
+
+(*!
+    \function ARCCombineConclusions
+    
+    \calltable
+        ARCCombineConclusions[conclusions] '' Given a list of conclusions, combines them, taking care of keys like Examples, ExampleCount, etc.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCombineConclusions]
+    
+    \maintainer danielb
+*)
+Clear[ARCCombineConclusions];
+ARCCombineConclusions[conclusions_List] :=
+    Module[{commonConditions},
+        
+        commonConditions =
+            DeleteDuplicates@
+            KeyDrop[
+                conclusions,
+                {
+                    "Examples",
+                    "ExampleCount",
+                    "UseCount",
+                    "InputObjects"
+                }
+            ];
+        
+        If [Length[commonConditions] =!= 1,
+            ReturnFailure[
+                "ARCCombineConclusionsFailure",
+                "The conditions cannot be combined because they don't share the same conclusions.",
+                "UniqueConclusionSets" -> commonConditions,
+                "Conclusions" -> conclusions
+            ]
+            ,
+            commonConditions = First[commonConditions]
+        ];
+        
+        DeleteMissing@
+        <|
+            commonConditions,
+            "Examples" ->
+                Replace[
+                    DeleteDuplicates@
+                    Flatten@
+                    DeleteMissing[conclusions[[All, "Examples"]]],
+                    {} -> Missing[]
+                ],
+            "ExampleCount" ->
+                Replace[
+                    Total@
+                    DeleteMissing[conclusions[[All, "ExampleCount"]]],
+                    0 -> Missing[]
+                ],
+            "UseCount" ->
+                Replace[
+                    Total@
+                    DeleteMissing[conclusions[[All, "UseCount"]]],
+                    0 -> Missing[]
+                ],
+            "InputObjects" ->
+                Replace[
+                    DeleteDuplicates@
+                    Flatten@
+                    DeleteMissing[conclusions[[All, "InputObjects"]]],
+                    {} -> Missing[]
+                ]
+        |>
     ]
 
 End[]

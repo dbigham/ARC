@@ -145,3 +145,21 @@ Test[
     ,
     TestID -> "ARCApplyRules-20220806-7U6ZB4"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            With[
+                {parsedFile = Daniel`ARC`ARCParseFile[file = "25d8a9c8"]},
+                Daniel`ARC`ARCApplyRules[
+                    parsedFile["Train", 1, "Input"],
+                    Utility`ReturnIfFailure[Daniel`ARC`ARCFindRules[parsedFile["Train"]]]
+                ]
+            ]
+        ]
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{5, 5, 5}, {0, 0, 0}, {0, 0, 0}}]
+    ,
+    TestID -> "ARCApplyRules-20220819-AU0PQC"
+]
