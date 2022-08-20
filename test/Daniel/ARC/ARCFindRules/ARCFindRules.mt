@@ -501,3 +501,40 @@ Test[
     ,
     TestID -> "ARCFindRules-20220819-P3KT28"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b1948b0a"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Colors" -> {6}|> -> <|"Colors" -> {2}|>,
+            <|"Colors" -> {7}|> -> <|"Same" -> True|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220819-LOF0LU"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d511f180"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Colors" -> {1} | {2} | {3} | {4} | {6} | {7} | {9}|> -> <|"Same" -> True|>,
+            <|"Colors" -> {5}|> -> <|"Colors" -> {8}|>,
+            <|"Colors" -> {8}|> -> <|"Colors" -> {5}|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220819-M8D92N"
+]

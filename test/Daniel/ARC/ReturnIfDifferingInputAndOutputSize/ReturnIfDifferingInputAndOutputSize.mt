@@ -12,12 +12,14 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Module[
-            {},
-            Daniel`ARC`ReturnIfDifferingInputAndOutputSize[
-                Utility`ReturnIfFailure[Daniel`ARC`ARCParseFile["007bbfb7"]]
-            ];
-            "HERE"
+        DevTools`TestingTools`SlowTest[
+            Module[
+                {},
+                Daniel`ARC`ReturnIfDifferingInputAndOutputSize[
+                    Utility`ReturnIfFailure[Daniel`ARC`ARCParseFile["007bbfb7"]]["Train"]
+                ];
+                "HERE"
+            ]
         ]
     ]
     ,

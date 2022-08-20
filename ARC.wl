@@ -668,7 +668,10 @@ Options[ARCParseScene] =
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     Module[{background, objects},
         
-        background = ARCInferBackgroundColor[scene];
+        background = ARCInferBackgroundColor[
+            scene,
+            "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
+        ];
         
         objects =
             ReturnIfFailure@
@@ -1694,7 +1697,11 @@ ARCClassifyLine[image_List] :=
     \maintainer danielb
 *)
 Clear[ARCInferBackgroundColor];
-ARCInferBackgroundColor[example_] :=
+Options[ARCInferBackgroundColor] =
+{
+    "FormMultiColorCompositeObjects" -> True
+};
+ARCInferBackgroundColor[example_, OptionsPattern[]] :=
     Module[{scenes, colorCounts, stats},
         
         scenes = Cases[example, _ARCScene, {0, Infinity}][[All, 1]];
@@ -1726,7 +1733,19 @@ ARCInferBackgroundColor[example_] :=
             And[
                 stats["Ratio"] >= 2,
                 (* The second most common color isn't black. *)
-                colorCounts[[2, 1]] =!= 0
+                colorCounts[[2, 1]] =!= 0,
+                (* For now we're going to disable this case when we're in the mode where
+                   we're not forming composite objects, because these inputs are generally
+                   quite small with relatively little background color showing, so the
+                   chance for false positives is higher, such as c8f0f002's test case.
+                   (FYI, its ratio was exactly 2) We may need to revisit this if we find
+                   cases where we _do_ need a non-black background color for a
+                   "FormMultiColorCompositeObjects" -> False input. If so, perhaps we
+                   could allow this, but require a ratio above 2, or perhaps we could
+                   be more lenient for the output scene, since I feel like it has been
+                   more common that the output scene is sparse.
+                   ARCInferBackgroundColor-20220819-226TGE *)
+                OptionValue["FormMultiColorCompositeObjects"] =!= False
             ],
                 colorCounts[[1, 1]],
             True,
@@ -1790,7 +1809,20 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                         Lookup[
                             singleColorObjectsByUUID,
                             DeleteDuplicates@
-                            Lookup[singleColorObjectsByPixelPosition, objectIn["PixelPositions"]]
+                            Lookup[
+                                singleColorObjectsByPixelPosition,
+                                objectIn["PixelPositions"],
+                                ReturnFailure[
+                                    "ObjectNotFound",
+                                    "An object couldn't be found by its pixel positions while forming composite objects.",
+                                    "PixelPositions" -> objectIn["PixelPositions"],
+                                    "Lookup" -> singleColorObjectsByPixelPosition
+                                ]
+                            ],
+                            ReturnFailure[
+                                "ObjectNotFound",
+                                "An object couldn't be found by its UUID while forming composite objects."
+                            ]
                         ],
                         objectIn
                     ]
@@ -2451,6 +2483,8 @@ Options[ARCFindRules] =
 };
 ARCFindRules[examples_List, opts:OptionsPattern[]] :=
     Module[{res, foundRulesQ, workingRulesQ},
+        
+        ReturnIfDifferingInputAndOutputSize[examples];
         
         res = ReturnIfFailure[arcFindRulesHelper[examples, opts]];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
@@ -3154,6 +3188,15 @@ Clear[ARCApplyRules];
 ARCApplyRules[scene_ARCScene, rules_Association] :=
     Module[{parsedScene, objects},
         
+        If [!ListQ[rules["Rules"]],
+            ReturnFailure[
+                "ARCApplyRuleFailure",
+                "No rules were found.",
+                "Scene" -> scene,
+                "ARCFindRulesResult" -> rules
+            ]
+        ];
+        
         parsedScene =
             ReturnIfFailure@
             ARCParseScene[
@@ -3444,6 +3487,41 @@ ARCRenderScene[scene_Association] :=
             
             image = object["Image"][[1]];
             
+            Which[
+                posY + ImageHeight[image] - 1 > scene["Height"],
+                    ReturnFailure[
+                        "ObjectOutsideOfSceneBoundary",
+                        "The image extends beyond the bottom of the scene.",
+                        "Object" -> object,
+                        "ObjectY" -> posY,
+                        "ObjectHeight" -> ImageHeight[image],
+                        "SceneHeight" -> scene["Height"]
+                    ],
+                posX + ImageWidth[image] - 1 > scene["Width"],
+                    ReturnFailure[
+                        "ObjectOutsideOfSceneBoundary",
+                        "The image extends beyond the right side of the scene.",
+                        "Object" -> object,
+                        "ObjectX" -> posX,
+                        "ObjectHeight" -> ImageWidth[image],
+                        "SceneHeight" -> scene["Width"]
+                    ],
+                posY < 1,
+                    ReturnFailure[
+                        "ObjectOutsideOfSceneBoundary",
+                        "The image extends beyond the above the top of the scene.",
+                        "Object" -> object,
+                        "ObjectY" -> posY
+                    ],
+                posX < 1,
+                    ReturnFailure[
+                        "ObjectOutsideOfSceneBoundary",
+                        "The image extends beyond the left side of the scene.",
+                        "Object" -> object,
+                        "ObjectX" -> posX
+                    ]
+            ];
+            
             Function[{y},
                 Function[{x},
                     If [image[[y, x]] =!= $nonImageColor,
@@ -3481,7 +3559,7 @@ Options[ARCTestRules] =
 };
 
 ARCTestRules[ARCExample[example: KeyValuePattern[{"Train" -> _, "Test" -> _}]], rules_Association, opts:OptionsPattern[]] :=
-    Module[{test, train, allResults, failures, successes},
+    Module[{test, train, failures, successes},
         
         train = ReturnIfFailure[ARCTestRules[example["Train"], rules]];
         
@@ -3492,8 +3570,8 @@ ARCTestRules[ARCExample[example: KeyValuePattern[{"Train" -> _, "Test" -> _}]], 
                 <|"Failures" -> {}, "Successes" -> {}|>
             ];
         
-        failures = Join[train["Failures"], train["Failures"]];
-        successes = Join[test["Successes"], test["Successes"]];
+        failures = Join[train["Failures"], test["Failures"]];
+        successes = Join[train["Successes"], test["Successes"]];
         
         <|
             "File" -> example["File"],
@@ -5287,8 +5365,6 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer] :=
         
         parsedFile = ReturnIfFailure[ARCParseFile[file]];
         
-        ReturnIfDifferingInputAndOutputSize[parsedFile];
-        
         rules =
             ReturnIfFailure@
             ARCFindRules[parsedFile["Train"]];
@@ -5825,7 +5901,7 @@ SetTrainingDataKeyValue[file_String, key_ -> value_] :=
     \function ReturnIfDifferingInputAndOutputSize
     
     \calltable
-        ReturnIfDifferingInputAndOutputSize[parsedFile] '' Given a parsed file, returns Missing if the input and output grid sizes don't match.
+        ReturnIfDifferingInputAndOutputSize[examples] '' Given examples from a parsed file, returns Missing if the input and output grid sizes don't match.
     
     Examples:
     
@@ -5842,7 +5918,7 @@ SetTrainingDataKeyValue[file_String, key_ -> value_] :=
     \maintainer danielb
 *)
 Clear[ReturnIfDifferingInputAndOutputSize];
-ReturnIfDifferingInputAndOutputSize[parsedFile_ARCExample] :=
+ReturnIfDifferingInputAndOutputSize[examples_List] :=
     Function[{example},
         If [!SameQ[
                 {ImageHeight[example["Input"]], ImageWidth[example["Input"]]},
@@ -5853,7 +5929,7 @@ ReturnIfDifferingInputAndOutputSize[parsedFile_ARCExample] :=
                 Module
             ]
         ]
-    ] /@ parsedFile["Train"];
+    ] /@ examples;
 
 (*!
     \function ARCAddMoveAttributes
@@ -7077,7 +7153,10 @@ ARCTaskLog[] :=
             (* Whether ExampleImplemented wasn't actually implemented specifically by me but rather
                started working 'for free' after implementing a different task. *)
             "GeneralizedSuccess" -> False,
-            (* How many training tasks are currently passing. *)
+            (* How many _training_ tasks are currently passing. Note that we do add entries to this
+               list of an evaluation task starts passing, but we don't increase SuccessCount since
+               that is currently specific to training tasks. (we also don't increase it if adding
+               a personal example that we've implemented) *)
             "SucessCount" -> 1,
             (* How long it is currently taking to run all of the training tasks. *)
             "Runtime" -> Quantity[1.5, "Minutes"],
@@ -7422,6 +7501,56 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 5,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 19,
+            "Runtime" -> Quantity[6.1, "Minutes"],
+            "CodeLength" -> 9489,
+            "ExampleImplemented" -> "25d8a9c8",
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"b1948b0a"},
+            "TotalGeneralizedSuccesses" -> 6,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 20,
+            "Runtime" -> Quantity[6.1, "Minutes"],
+            "CodeLength" -> 9489,
+            "ExampleImplemented" -> "b1948b0a",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 6,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 21,
+            "Runtime" -> Quantity[6.4, "Minutes"],
+            "CodeLength" -> 9598,
+            "ExampleImplemented" -> "c8f0f002",
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "NewGeneralizedSuccesses" -> {"d511f180"},
+            "TotalGeneralizedSuccesses" -> 7,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 19}],
+            "SucessCount" -> 22,
+            "Runtime" -> Quantity[6.4, "Minutes"],
+            "CodeLength" -> 9598,
+            "ExampleImplemented" -> "d511f180",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 7,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
         |>

@@ -35,3 +35,14 @@ Test[
     ,
     TestID -> "ARCInferBackgroundColor-20220806-28PU9I"
 ]
+
+Test[
+    Daniel`ARC`ARCInferBackgroundColor[
+        Daniel`ARC`ARCScene[{{1, 5, 5, 1, 5}, {8, 1, 5, 5, 5}, {8, 5, 1, 5, 8}}],
+        "FormMultiColorCompositeObjects" -> False
+    ]
+    ,
+    0
+    ,
+    TestID -> "ARCInferBackgroundColor-20220819-226TGE"
+]
