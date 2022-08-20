@@ -34,7 +34,8 @@ Test[
         <|
             "MessageTemplate" -> "The object wasn't found in the scene.",
             "MessageParameters" -> <||>,
-            "Object" -> <|"Colors" -> {"Blue"}|>
+            "Object" -> <|"Colors" -> {"Blue"}|>,
+            "Objects" -> {<|"Colors" -> {"Red"}, "Position" -> {1, 1}|>}
         |>
     ]
     ,

@@ -55,6 +55,9 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "ColorUseCount" -> 1,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "WidthRank" -> 1,
             "WidthInverseRank" -> 1,
             "HeightRank" -> 1,
@@ -73,8 +76,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
-            "YRelative" -> 0,
-            "XRelative" -> 0
+            "ColorUseCountRank" -> 2,
+            "ColorUseCountInverseRank" -> 1
         |> -> <|
             "Same" -> True,
             "Example" -> 1,
@@ -105,6 +108,9 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 1,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -123,8 +129,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0
+                "ColorUseCountRank" -> 2,
+                "ColorUseCountInverseRank" -> 1
             |>
         |>,
         <|
@@ -153,6 +159,9 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "ColorUseCount" -> 2,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "WidthRank" -> 1,
             "WidthInverseRank" -> 1,
             "HeightRank" -> 1,
@@ -171,8 +180,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
-            "YRelative" -> 0,
-            "XRelative" -> 0,
+            "ColorUseCountRank" -> 1,
+            "ColorUseCountInverseRank" -> 2,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
@@ -312,6 +321,9 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 2,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -330,8 +342,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0,
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 2,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -361,6 +373,9 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "ColorUseCount" -> 2,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "WidthRank" -> 1,
             "WidthInverseRank" -> 1,
             "HeightRank" -> 1,
@@ -379,8 +394,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
-            "YRelative" -> 0,
-            "XRelative" -> 0,
+            "ColorUseCountRank" -> 1,
+            "ColorUseCountInverseRank" -> 2,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
@@ -446,6 +461,9 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 2,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -464,8 +482,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0,
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 2,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -495,6 +513,9 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "ColorUseCount" -> 2,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "WidthRank" -> 1,
             "WidthInverseRank" -> 1,
             "HeightRank" -> 1,
@@ -513,8 +534,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
-            "YRelative" -> 0,
-            "XRelative" -> 0,
+            "ColorUseCountRank" -> 1,
+            "ColorUseCountInverseRank" -> 2,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
@@ -580,6 +601,9 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 2,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -598,8 +622,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0,
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 2,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -629,6 +653,9 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "ColorUseCount" -> 2,
+            "YRelative" -> 0,
+            "XRelative" -> 0,
             "WidthRank" -> 1,
             "WidthInverseRank" -> 1,
             "HeightRank" -> 1,
@@ -647,8 +674,8 @@ Test[
             "PrimarySizeDimensionInverseRank" -> 1,
             "AspectRatioRank" -> 1,
             "AspectRatioInverseRank" -> 1,
-            "YRelative" -> 0,
-            "XRelative" -> 0,
+            "ColorUseCountRank" -> 1,
+            "ColorUseCountInverseRank" -> 2,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
@@ -788,6 +815,9 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 2,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -806,8 +836,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0,
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 2,
                 "OutputComponentUUID" -> _String
             |>
         |>

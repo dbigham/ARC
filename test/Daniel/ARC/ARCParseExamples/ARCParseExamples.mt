@@ -55,6 +55,7 @@ Test[
                         "FilledProportion" -> 1.,
                         "YRelative" -> 0,
                         "XRelative" -> 0,
+                        "ColorUseCount" -> 1,
                         "WidthRank" -> 1,
                         "WidthInverseRank" -> 1,
                         "HeightRank" -> 1,
@@ -72,7 +73,9 @@ Test[
                         "PrimarySizeDimensionRank" -> 1,
                         "PrimarySizeDimensionInverseRank" -> 1,
                         "AspectRatioRank" -> 1,
-                        "AspectRatioInverseRank" -> 1
+                        "AspectRatioInverseRank" -> 1,
+                        "ColorUseCountRank" -> 1,
+                        "ColorUseCountInverseRank" -> 1
                     |>,
                     <|
                         "UUID" -> 0,
@@ -103,6 +106,7 @@ Test[
                         "FilledProportion" -> 1.,
                         "YRelative" -> 0,
                         "XRelative" -> 0,
+                        "ColorUseCount" -> 1,
                         "WidthRank" -> 1,
                         "WidthInverseRank" -> 1,
                         "HeightRank" -> 1,
@@ -120,7 +124,9 @@ Test[
                         "PrimarySizeDimensionRank" -> 1,
                         "PrimarySizeDimensionInverseRank" -> 1,
                         "AspectRatioRank" -> 1,
-                        "AspectRatioInverseRank" -> 1
+                        "AspectRatioInverseRank" -> 1,
+                        "ColorUseCountRank" -> 1,
+                        "ColorUseCountInverseRank" -> 1
                     |>
                 },
                 "Scene" -> Daniel`ARC`ARCScene[

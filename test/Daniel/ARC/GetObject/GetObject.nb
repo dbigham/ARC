@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     43467,       1021]
-NotebookOptionsPosition[     35450,        835]
-NotebookOutlinePosition[     40933,        971]
-CellTagsIndexPosition[     40890,        968]
+NotebookDataLength[     44721,       1051]
+NotebookOptionsPosition[     36704,        865]
+NotebookOutlinePosition[     42187,       1001]
+CellTagsIndexPosition[     42144,        998]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -106,7 +106,7 @@ DynamicOutputSectionVariable202272319171822834 = "",
              ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
          Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
+  ImageSizeCache->{840., {21.3544921875, 26.6455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`\
 DynamicOutputSectionVariable202272319171822834}]], "TestUI",
@@ -276,7 +276,7 @@ Cell[BoxData[{
  InitializationCell->False,
  CellChangeTimes->{{3.8676066435801973`*^9, 3.867606675328293*^9}, {
    3.8676068944258966`*^9, 3.8676068947457066`*^9}, 3.8676070380929184`*^9},
- CellLabel->"In[679]:=",
+ CellLabel->"In[819]:=",
  CellID->95246252,
  "TestId" -> 
  "GetObject-20220723-G1R39W",ExpressionUUID->"adebac04-decd-428b-b9b2-\
@@ -291,11 +291,23 @@ Cell[BoxData[
    DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
     TemplateBox[{
       PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"], 
+               ImageSizeCache -> {11., {0., 11.}}], Appearance -> None, 
+              BaseStyle -> {}, ButtonFunction :> (Typeset`open$$ = True), 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
             FrameBox[
-             StyleBox["\"\[WarningSign]\"", 
-              Directive["Message", 35], StripOnInput -> False], 
-             ContentPadding -> False, FrameStyle -> None, 
-             FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+             StyleBox[
+             "\"\[WarningSign]\"", "Message", StripOnInput -> False, FontSize -> 
+              35], ContentPadding -> False, FrameMargins -> {{0, 0}, {0, 0}}, 
+             FrameStyle -> None, StripOnInput -> False], 
             GridBox[{{
                TagBox[
                 GridBox[{{
@@ -304,47 +316,49 @@ Cell[BoxData[
                    TagBox[
                    "\"The object wasn't found in the scene.\"", 
                     "SummaryItem"]}}, 
-                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}, {
                TagBox[
                 GridBox[{{
                    TagBox["\"Tag: \"", "SummaryItemAnnotation"], 
                    "\[InvisibleSpace]", 
                    TagBox["\"ObjectNotFound\"", "SummaryItem"]}}, 
-                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxAlignment -> {"Columns" -> {{Left}}}, 
-                 GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}, {
-               TagBox[
-                GridBox[{{
-                   TagBox["\"Object: \"", "SummaryItemAnnotation"], 
-                   "\[InvisibleSpace]", 
-                   TagBox[
-                    RowBox[{"\[LeftAssociation]", 
-                    RowBox[{"\"Colors\"", "\[Rule]", 
-                    RowBox[{"{", "\"Blue\"", "}"}]}], "\[RightAssociation]"}],
-                     "SummaryItem"]}}, 
                  GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
-                 GridBoxAlignment -> {"Columns" -> {{Left}}}, 
                  GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}}, 
-             GridBoxAlignment -> {
-              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
-             False, GridBoxItemSize -> {
-              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
-             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
-              BaseStyle -> {
+             AutoDelete -> False, 
+             BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
-               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {
+              "Columns" -> {{2}}, "Rows" -> {{Automatic}}}]}}, AutoDelete -> 
+          False, BaselinePosition -> {1, 1}, 
           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
-          AutoDelete -> False, 
           GridBoxItemSize -> {
-           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
-          BaselinePosition -> {1, 1}], True -> GridBox[{{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], True -> 
+        GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"], 
+               ImageSizeCache -> {11., {0., 11.}}], Appearance -> None, 
+              BaseStyle -> {}, ButtonFunction :> (Typeset`open$$ = False), 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
             FrameBox[
-             StyleBox["\"\[WarningSign]\"", 
-              Directive["Message", 35], StripOnInput -> False], 
-             ContentPadding -> False, FrameStyle -> None, 
-             FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+             StyleBox[
+             "\"\[WarningSign]\"", "Message", StripOnInput -> False, FontSize -> 
+              35], ContentPadding -> False, FrameMargins -> {{0, 0}, {0, 0}}, 
+             FrameStyle -> None, StripOnInput -> False], 
             GridBox[{{
                TagBox[
                 GridBox[{{
@@ -353,42 +367,56 @@ Cell[BoxData[
                    TagBox[
                    "\"The object wasn't found in the scene.\"", 
                     "SummaryItem"]}}, 
-                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}, {
                TagBox[
                 GridBox[{{
                    TagBox["\"Tag: \"", "SummaryItemAnnotation"], 
                    "\[InvisibleSpace]", 
                    TagBox["\"ObjectNotFound\"", "SummaryItem"]}}, 
-                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
                  GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}, {
-               TagBox[
-                GridBox[{{
-                   TagBox["\"Object: \"", "SummaryItemAnnotation"], 
-                   "\[InvisibleSpace]", 
-                   TagBox[
-                    RowBox[{"\[LeftAssociation]", 
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"Object\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                  TagBox[
+                   RowBox[{"\[LeftAssociation]", 
                     RowBox[{"\"Colors\"", "\[Rule]", 
                     RowBox[{"{", "\"Blue\"", "}"}]}], "\[RightAssociation]"}],
-                     "SummaryItem"]}}, 
-                 GridBoxItemSize -> {"Columns" -> {6.5, All}}, 
-                 GridBoxAlignment -> {"Columns" -> {{Left}}}, 
-                 GridBoxSpacings -> {"Columns" -> {{0}}}], "SummaryItem"]}}, 
-             GridBoxAlignment -> {
-              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
-             False, GridBoxItemSize -> {
-              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
-             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
-              BaseStyle -> {
+                    HoldForm], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"Objects\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                  TagBox[
+                   RowBox[{"{", 
+                    RowBox[{"\[LeftAssociation]", 
+                    RowBox[{
+                    RowBox[{"\"Colors\"", "\[Rule]", 
+                    RowBox[{"{", "\"Red\"", "}"}]}], ",", 
+                    RowBox[{"\"Position\"", "\[Rule]", 
+                    RowBox[{"{", 
+                    RowBox[{"1", ",", "1"}], "}"}]}]}], 
+                    "\[RightAssociation]"}], "}"}], HoldForm], 
+                  "SummaryItem"]}]}}, AutoDelete -> False, 
+             BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
-               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {
+              "Columns" -> {{2}}, "Rows" -> {{Automatic}}}]}}, AutoDelete -> 
+          False, BaselinePosition -> {1, 1}, 
           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
-          AutoDelete -> False, 
           GridBoxItemSize -> {
-           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
-          BaselinePosition -> {1, 1}]}, 
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}]}, 
        Dynamic[Typeset`open$$], ImageSize -> Automatic]},
      "SummaryPanel"],
     DynamicModuleValues:>{}], "]"}],
@@ -396,14 +424,16 @@ Cell[BoxData[
    Association[
    "MessageTemplate" -> "The object wasn't found in the scene.", 
     "MessageParameters" -> Association[], "Object" -> 
-    Association["Colors" -> {"Blue"}]]],
+    Association["Colors" -> {"Blue"}], "Objects" -> {
+      Association["Colors" -> {"Red"}, "Position" -> {1, 1}]}]],
   Editable->False,
   SelectWithContents->True,
   Selectable->False]], "Output",
  CellChangeTimes->{{3.8676068950205956`*^9, 3.8676069091889153`*^9}, 
-   3.8676069615023623`*^9, 3.867607011227389*^9, 3.868732967613988*^9},
+   3.8676069615023623`*^9, 3.867607011227389*^9, 3.868732967613988*^9, 
+   3.8700263838815513`*^9},
  CellLabel->
-  "Out[680]=",ExpressionUUID->"5fe15a7b-9e8c-4d40-a924-00820b257e79"]
+  "Out[820]=",ExpressionUUID->"66e7e1aa-f325-4fa1-af1a-fcbb0df2d6ed"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -977,7 +1007,7 @@ Cell[664, 24, 244, 6, 54, "Code",ExpressionUUID->"ac9a0fed-1578-4072-a6c9-7708dc
 Cell[CellGroupData[{
 Cell[933, 34, 79, 0, 67, "Section",ExpressionUUID->"7f276db5-1fa3-49f6-b869-6c9eab212bb1"],
 Cell[CellGroupData[{
-Cell[1037, 38, 3446, 79, 52, "TestUI",ExpressionUUID->"bf799d79-866d-4614-9bfb-864b394ac987",
+Cell[1037, 38, 3446, 79, 50, "TestUI",ExpressionUUID->"bf799d79-866d-4614-9bfb-864b394ac987",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
 Cell[4486, 119, 1155, 28, 234, "Code",ExpressionUUID->"94b33d84-efa0-4ae1-a6be-b78657e45e4f",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
@@ -995,31 +1025,31 @@ Cell[9842, 254, 1206, 28, 234, "Code",ExpressionUUID->"adebac04-decd-428b-b9b2-4
  InitializationCell->False,
  CellID->95246252]
 }, Open  ]],
-Cell[11063, 285, 5957, 120, 84, "Output",ExpressionUUID->"5fe15a7b-9e8c-4d40-a924-00820b257e79"]
+Cell[11063, 285, 7211, 150, 66, "Output",ExpressionUUID->"66e7e1aa-f325-4fa1-af1a-fcbb0df2d6ed"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[17057, 410, 208, 4, 38, "Subsection",ExpressionUUID->"2a783074-3afd-4558-8a16-309be2be0dc8"],
+Cell[18311, 440, 208, 4, 38, "Subsection",ExpressionUUID->"2a783074-3afd-4558-8a16-309be2be0dc8"],
 Cell[CellGroupData[{
-Cell[17290, 418, 3448, 79, 52, "TestUI",ExpressionUUID->"b0ce412d-1d2e-4c7a-9033-77800d8bd29b",
+Cell[18544, 448, 3448, 79, 52, "TestUI",ExpressionUUID->"b0ce412d-1d2e-4c7a-9033-77800d8bd29b",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[20741, 499, 1632, 38, 306, "Code",ExpressionUUID->"a1b86036-0c6c-4370-a766-a2070e01ec1e",
+Cell[21995, 529, 1632, 38, 306, "Code",ExpressionUUID->"a1b86036-0c6c-4370-a766-a2070e01ec1e",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->59964683]
 }, Open  ]],
-Cell[22388, 540, 7880, 163, 100, "Output",ExpressionUUID->"13721d30-1c65-44be-84ed-07feeed112e2"]
+Cell[23642, 570, 7880, 163, 100, "Output",ExpressionUUID->"13721d30-1c65-44be-84ed-07feeed112e2"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[30305, 708, 164, 3, 38, "Subsection",ExpressionUUID->"3739ee63-5bf7-4af8-9112-95b04fdce6eb"],
+Cell[31559, 738, 164, 3, 38, "Subsection",ExpressionUUID->"3739ee63-5bf7-4af8-9112-95b04fdce6eb"],
 Cell[CellGroupData[{
-Cell[30494, 715, 3446, 79, 52, "TestUI",ExpressionUUID->"e8919b8a-93f6-4f81-83d9-16bad79f6be0",
+Cell[31748, 745, 3446, 79, 52, "TestUI",ExpressionUUID->"e8919b8a-93f6-4f81-83d9-16bad79f6be0",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[33943, 796, 1211, 27, 288, "Code",ExpressionUUID->"a5f0cf78-74e3-47ff-a16d-2e4b7c7e9e39",
+Cell[35197, 826, 1211, 27, 288, "Code",ExpressionUUID->"a5f0cf78-74e3-47ff-a16d-2e4b7c7e9e39",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->95334990]
 }, Open  ]],
-Cell[35169, 826, 241, 4, 33, "Output",ExpressionUUID->"7bcf5019-576f-4289-9c9e-df0e95f0dabb"]
+Cell[36423, 856, 241, 4, 33, "Output",ExpressionUUID->"7bcf5019-576f-4289-9c9e-df0e95f0dabb"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]

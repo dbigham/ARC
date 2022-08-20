@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     10573,        266]
-NotebookOptionsPosition[      4071,        111]
-NotebookOutlinePosition[      9573,        247]
-CellTagsIndexPosition[      9530,        244]
+NotebookDataLength[     13846,        311]
+NotebookOptionsPosition[      7342,        156]
+NotebookOutlinePosition[     12843,        292]
+CellTagsIndexPosition[     12800,        289]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -66,7 +66,7 @@ Cell[BoxData[
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<5521c0d9\>\""}], ";"}], "\n", 
+  RowBox[{"example", " ", "=", " ", "\"\<1caeab9d\>\""}], ";"}], "\n", 
  RowBox[{
   RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
@@ -81,8 +81,9 @@ Cell[BoxData[{
    3.8693294417475023`*^9, 3.869329442609144*^9}, {3.8693504312240543`*^9, 
    3.86935043160443*^9}, {3.8699081609328976`*^9, 3.8699082052522135`*^9}, {
    3.8699518964329214`*^9, 3.8699519558546934`*^9}, {3.869952011144831*^9, 
-   3.8699520395150833`*^9}},
- CellLabel->"In[38]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+   3.8699520395150833`*^9}, {3.870029133320919*^9, 3.8700291444480205`*^9}, 
+   3.8700300611192017`*^9},
+ CellLabel->"In[5]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
 
 Cell[CellGroupData[{
 
@@ -94,16 +95,60 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
    3.8689650111231766`*^9, 3.8689650115775943`*^9}},
- CellLabel->"In[40]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellLabel->"In[7]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
-Cell[BoxData["\<\"# 5521c0d9\\n\\n## Examples\\n\\n![ARC examples for \
-5521c0d9](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-5521c0d9](rules.png?raw=true)\\n\\n\"\>"], "Output",
+Cell[BoxData["\<\"# 1caeab9d\\n\\n## Examples\\n\\n![ARC examples for \
+1caeab9d](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+1caeab9d](rules.png?raw=true)\\n\\n## Notes\\n\\n### Finding \
+Rules\\n\\n\\n#### Scene Parsing\\n\\n* We parse the input and output scenes \
+into objects.\\n* When parsing the output scene of example 2, we only get 1 \
+contiguous object since the rectangles are touching.\\n   * However, this \
+object does have three (colored)  components. i.e. <|..., \
+\[OpenCurlyDoubleQuote]Components\[CloseCurlyDoubleQuote] -> {..., ..., ...}, \
+...|>\\n   * Strategy: If there are any composite objects, do further \
+analysis to decide whether they should be kept or any parts broken off.\\n    \
+   * For each composite object, if we can map it directly to an object in the \
+other scene, keep it.\\n       * Otherwise, for each part of the component, \
+check if it can uniquely map to a top-level object in the corresponding \
+input/output scene.\\n       * If we can, we will remove it from the \
+composite object and treat it as a top-level object.\\n\\n#### Mapping Input \
+Objects to Output Objects\\n\\nFor each input object, there is only one \
+object in the output scene with a matching color and shape, making it \
+straightforward to produce a mapping from input objects to output objects. \
+Each mapping involves a Move transform.\\n\\ne.g.\\n\\n\\n\\n![image \
+1](image1.png?raw=true)\\n\\n\\n#### Finding Rules from Object \
+Mappings\\n\\n* It is straightforward to notice that if an object is blue, it \
+stays constant, and that red and yellow objects always move.\\n* Before we \
+can specify the rules for red and yellow, objects, we first need to notice \
+that there are always the following objects:\\n   * A red object: Object[<|\
+\[CloseCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] -> {\
+\[OpenCurlyDoubleQuote]Red\[CloseCurlyDoubleQuote]}|>]\\n   * A yellow \
+object: Object[<|\[CloseCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] -> {\
+\[OpenCurlyDoubleQuote]Yellow\[CloseCurlyDoubleQuote]}|>]\\n   * A blue \
+object: Object[<|\[CloseCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] -> {\
+\[OpenCurlyDoubleQuote]Blue\[CloseCurlyDoubleQuote]}|>]\\n* Given the above \
+referenceable objects, upon considering the move transforms for one of the \
+remaining colors (yellow or red), we can check whether the parameters of \
+those move transforms can be reliably inferred using any of the properties of \
+any of the referenceable objects.\\n   * In our case, we notice that \
+ObjectValue[<|\\\"Colors\\\" -> {\\\"Blue\\\"}|>, \\\"Y\\\"] can be used to \
+infer the \\\"Y\\\" value of the move transforms. \\n   * We also notice that \
+the \[OpenCurlyDoubleQuote]X\[CloseCurlyDoubleQuote] coordinate doesn\
+\[CloseCurlyQuote]t change, so we can eliminate it from the move \
+transforms.\\n\\n\\n![image 2](image2.png?raw=true)\\n\\n* A further \
+improvement would be to notice that all of the color rules except for one \
+uses the same transform, and to merge them, generalizing the pattern to be: \
+<|\[CloseCurlyDoubleQuote]Colors\[CloseCurlyDoubleQuote] -> Except[{\
+\[OpenCurlyDoubleQuote]Blue\[CloseCurlyDoubleQuote]}]|>\\n* As of August 20 \
+2022, we now have rule simplification code that does this:\\n\\n\\n![image \
+3](image3.png?raw=true)\\n\"\>"], "Output",
  CellChangeTimes->{
   3.8693311490773544`*^9, {3.869350504203313*^9, 3.8693505198795414`*^9}, {
    3.8699081679899035`*^9, 3.869908207947418*^9}, {3.869951910253415*^9, 
-   3.8699519600340977`*^9}, {3.8699520151818852`*^9, 3.8699520431429677`*^9}},
- CellLabel->"Out[41]=",ExpressionUUID->"00bb4dcc-3749-4daa-85fd-6cd075c5284a"]
+   3.8699519600340977`*^9}, {3.8699520151818852`*^9, 
+   3.8699520431429677`*^9}, {3.870029138436694*^9, 3.870029147435807*^9}, 
+   3.870030069908633*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"2092e353-5040-4d00-b6f6-a69b5ea5568d"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -111,7 +156,7 @@ Cell[BoxData["\<\"# 5521c0d9\\n\\n## Examples\\n\\n![ARC examples for \
 },
 Evaluator->"Local",
 WindowSize->{958, 980},
-WindowMargins->{{-7., Automatic}, {Automatic, 0}},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
   Cell[
@@ -259,11 +304,11 @@ Cell[1334, 48, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485
 Cell[CellGroupData[{
 Cell[1438, 52, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
 Cell[1707, 61, 208, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
-Cell[1918, 66, 1153, 18, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+Cell[1918, 66, 1228, 19, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
 Cell[CellGroupData[{
-Cell[3096, 88, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[3171, 89, 391, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[3491, 98, 528, 7, 234, "Output",ExpressionUUID->"00bb4dcc-3749-4daa-85fd-6cd075c5284a"]
+Cell[3565, 99, 3725, 51, 1354, "Output",ExpressionUUID->"2092e353-5040-4d00-b6f6-a69b5ea5568d"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

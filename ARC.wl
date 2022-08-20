@@ -284,6 +284,16 @@ ARCCombineAlternatives::usage = "ARCCombineAlternatives  "
 
 ARCCombineConclusions::usage = "ARCCombineConclusions  "
 
+ARCInferColorCountPropertyValues::usage = "ARCInferColorCountPropertyValues  "
+
+ARCOutputObjectsNotMappedTo::usage = "ARCOutputObjectsNotMappedTo  "
+
+ARCAddedObjectsMapping::usage = "ARCAddedObjectsMapping  "
+
+ARCRuleForAddedObjects::usage = "ARCRuleForAddedObjects  "
+
+ARCInferPropertiesThatRequireFullObjectList::usage = "ARCInferPropertiesThatRequireFullObjectList  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -661,9 +671,10 @@ ARCRandomExample[] :=
 Clear[ARCParseScene];
 Options[ARCParseScene] =
 {
-    "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. If set to Automatic, the OtherScene option will be used to help make more informed decisions. *)
-    "OtherScene" -> Null,                           (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
-    "SingleColorObjects" -> Automatic               (*< If the single color objects have already been determined, they can be passed in to save time. *)
+    "FormMultiColorCompositeObjects" -> True,               (*< Whether connected single-color objects should be combined to form multi-color composite objects. If set to Automatic, the OtherScene option will be used to help make more informed decisions. *)
+    "OtherScene" -> Null,                                   (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
+    "SingleColorObjects" -> Automatic,                      (*< If the single color objects have already been determined, they can be passed in to save time. *)
+    "InferPropertiesThatRequireFullObjectList" -> True      (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     Module[{background, objects},
@@ -789,10 +800,39 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
                 ];
         ];
         
-        (* For now we'll only infer rank property values on top level objects. *)
-        objects = ARCInferRankProperties[objects];
+        objects = ARCInferColorCountPropertyValues[objects, scene];
+        
+        If [TrueQ[OptionValue["InferPropertiesThatRequireFullObjectList"]],
+            objects = ARCInferPropertiesThatRequireFullObjectList[objects]
+        ];
         
         objects
+    ]
+
+(*!
+    \function ARCInferColorCountPropertyValues
+    
+    \calltable
+        ARCInferColorCountPropertyValues[objects, scene] '' Given the objects from a scene, sets their ColorUseCount property values.
+    
+    \maintainer danielb
+*)
+Clear[ARCInferColorCountPropertyValues];
+ARCInferColorCountPropertyValues[objects_List, scene_ARCScene] :=
+    Module[{colorCounts},
+        
+        colorCounts = Counts[Flatten[scene[[1]]]];
+        
+        Function[{object},
+            If [MatchQ[object["Colors"], {_}],
+                Sett[
+                    object,
+                    "ColorUseCount" -> colorCounts[object[["Colors", 1]]]
+                ]
+                ,
+                object
+            ]
+        ] /@ objects
     ]
 
 (*!
@@ -829,11 +869,19 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
         
         inputSceneParseWithoutMultiColorCompositeObjects =
             ReturnIfFailure@
-            ARCParseScene[inputScene, "FormMultiColorCompositeObjects" -> False];
+            ARCParseScene[
+                inputScene,
+                "FormMultiColorCompositeObjects" -> False,
+                "InferPropertiesThatRequireFullObjectList" -> False
+            ];
         
         outputSceneParseWithoutMultiColorCompositeObjects =
             ReturnIfFailure@
-            ARCParseScene[outputScene, "FormMultiColorCompositeObjects" -> False];
+            ARCParseScene[
+                outputScene,
+                "FormMultiColorCompositeObjects" -> False,
+                "InferPropertiesThatRequireFullObjectList" -> False
+            ];
         
         If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]],
             
@@ -842,7 +890,8 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                 ARCParseScene[
                     inputScene,
                     "FormMultiColorCompositeObjects" -> True,
-                    "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                    "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                    "InferPropertiesThatRequireFullObjectList" -> False
                 ];
             
             outputSceneParseWithMultiColorCompositeObjects =
@@ -850,7 +899,8 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                 ARCParseScene[
                     outputScene,
                     "FormMultiColorCompositeObjects" -> True,
-                    "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
+                    "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
+                    "InferPropertiesThatRequireFullObjectList" -> False
                 ];
             
             (* Parse the input scene again, this time passing along information about the objects
@@ -1221,6 +1271,11 @@ $properties = <|
     "FilledProportion" -> <|
         "Type" -> "Integer",
         "Type2" - "AreaProportion"
+    |>,
+    (* The number of pixels in the scene with this color. *)
+    "ColorUseCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count"
     |>
 |>;
 
@@ -1686,6 +1741,10 @@ ARCClassifyLine[image_List] :=
     \calltable
         ARCInferBackgroundColor[example] '' Given an ARC example, tries to infer the background color.
     
+    TODO: If we are parsing a scene whereby we already have the rule set, we should probably
+          pass in the list of colors used by rules, and generally avoid choosing one of those
+          colors as the background color.
+    
     Example:
     
     (ARCInferBackgroundColor[ARCParseFile[#1]] & ) /@ $examples === $examples
@@ -1985,19 +2044,25 @@ ObjectsByAttribute[objects_List, attribute_String] :=
     \maintainer danielb
 *)
 Clear[ARCFindObjectMapping];
-ARCFindObjectMapping[example_Association] :=
+Options[ARCParseInputAndOutputScenes] =
+{
+    "FormMultiColorCompositeObjects" -> True        (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
+};
+
+ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
     Module[{},
-        ARCFindObjectMapping[example["Input"], example["Output"]]
+        ARCFindObjectMapping[example["Input"], example["Output"], opts]
     ]
 
-ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene] :=
+ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
     Module[{parsedScenes},
         
         parsedScenes =
             ReturnIfFailure@
             ARCParseInputAndOutputScenes[
                 scene1,
-                scene2
+                scene2,
+                opts
             ];
         
         ARCFindObjectMapping[
@@ -2042,6 +2107,13 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                     ]
                 ]
             ] /@ inputObjects
+        |>;
+        
+        (* Are there any objects in the output that don't have a corresponding input object? *)
+        mapping = <|
+            mapping,
+            ARCAddedObjectsMapping@
+            ARCOutputObjectsNotMappedTo[outputObjects, mapping]
         |>;
         
         mapping =
@@ -2263,6 +2335,41 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         ];
         
         object -> Missing["NotFound"]
+    ]
+
+(*!
+    \function ARCOutputObjectsNotMappedTo
+    
+    \calltable
+        ARCOutputObjectsNotMappedTo[outputObjects, mapping] '' Returns the output objects that haven't been mapped to by any input objects.
+    
+    Examples:
+    
+    ARCOutputObjectsNotMappedTo[
+        {<|"UUID" -> 1|>, <|"UUID" -> 2|>},
+        <|<|"UUID" -> 3|> -> <|"UUID" -> 1|>|>
+    ]
+    
+    ===
+    
+    {<|"UUID" -> 2|>}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCOutputObjectsNotMappedTo]
+    
+    \maintainer danielb
+*)
+Clear[ARCOutputObjectsNotMappedTo];
+ARCOutputObjectsNotMappedTo[outputObjects_List, mapping_Association] :=
+    Module[{uuidsOfMappedToOutputObjects},
+        
+        uuidsOfMappedToOutputObjects = DeleteMissing[Values[mapping]][[All, "UUID"]];
+        
+        DeleteCases[
+            outputObjects,
+            KeyValuePattern["UUID" -> Alternatives @@ uuidsOfMappedToOutputObjects]
+        ]
     ]
 
 (*!
@@ -2489,12 +2596,19 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         res = ReturnIfFailure[arcFindRulesHelper[examples, opts]];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
+        (*ARCEcho[ARCSimplifyRules[res["Rules"]]];*)
+        
         If [And[
-                OptionValue["FormMultiColorCompositeObjects"] === Automatic,
-                MatchQ[
+                OptionValue["FormMultiColorCompositeObjects"] === Automatic
+                (* At first we would only try parsing the scene without the formation
+                   of composite objects if the scene always consisted of a single
+                   composite object, but 31aa019c appears to be an example that
+                   would also benefit from this, and it's not a densely-packed
+                   scene with a single composite object. *)
+                (*MatchQ[
                     res[["Examples", All, "Input", "Objects"]],
                     {Repeated[{KeyValuePattern["Components" -> {__}]}]}
-                ]
+                ]*)
             ],
             (* Each input scene consists of a single composite object. We want to be careful
                in cases like this (e.g. 25d8a9c8) because there are cases where we don't want
@@ -2556,7 +2670,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             preRules,
             rules,
             transform,
-            mappedInputObjects
+            mappedInputObjects,
+            addedObjects,
+            additionalRules = {}
         },
         
         (* Helper function for producing the final return value. *)
@@ -2565,7 +2681,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 <|
                     "Examples" -> examples,
                     "ObjectMappings" -> objectMappings,
-                    "Rules" -> ARCCleanRules[rules]
+                    "Rules" -> Join[
+                        ARCCleanRules[rules],
+                        additionalRules
+                    ]
                 |>,
                 Module
             ];
@@ -2627,6 +2746,12 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho[SimplifyObjects[objectMappings]];*)
         (*ARCEcho[objectMappings];*)
         
+        (* Are there any objects that need to be added? If so, remove them from the
+           object mappings, since they aren't true mappings that downstream code will know
+           how to deal with. We'll deal with these on their own. *)
+        addedObjects = objectMappings[[All, "AddObjects"]];
+        objectMappings = KeyDrop[objectMappings, "AddObjects"];
+        
         (* Prepare mappings for rule finding. *)
         preRules =
             Flatten@
@@ -2668,6 +2793,25 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*Echo[Length[inputObjectsNeedingMapping]];*)
         
         (*EchoIndented[Counts[preRules[[All, 2, "Transform"]]]];*)
+        
+        (* If there are objects in the output that don't seem to correspond to objects in the
+           input, then we'll start by trying to model them. *)
+        addedObjectsRule =
+            ReturnIfFailure@
+            ReturnFailureIfMissing[
+                ARCRuleForAddedObjects[addedObjects, referenceableOutputObjects, examples],
+                "AddedObjectsFailure",
+                "Unable to produce a rule for adding objects.",
+                "AddedObjects" -> addedObjects
+            ];
+        
+        additionalRules = {
+            If [AssociationQ[addedObjectsRule],
+                addedObjectsRule
+                ,
+                Nothing
+            ]
+        };
         
         ruleFindings =
             Association@
@@ -2724,7 +2868,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Width"}
+                        {"ColorUseCount"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3186,9 +3330,9 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
 Clear[ARCApplyRules];
 
 ARCApplyRules[scene_ARCScene, rules_Association] :=
-    Module[{parsedScene, objects},
+    Module[{parsedScene, objects, ruleList = rules["Rules"], addObjects, outputScene},
         
-        If [!ListQ[rules["Rules"]],
+        If [!ListQ[ruleList],
             ReturnFailure[
                 "ARCApplyRuleFailure",
                 "No rules were found.",
@@ -3210,19 +3354,59 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
         
         objects = parsedScene["Objects"];
         
+        (* Is there a 'rule' for adding objects which don't occur in the input scene? *)
+        addObjects = FirstCase[
+            ruleList,
+            KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "AddObjects"]]
+        ];
+        If [!MissingQ[addObjects],
+            ruleList = DeleteCases[ruleList, addObjects]
+        ];
+        
         objects =
             ReturnIfFailure@
-            ARCFormGroupsWhenApplyingRules[objects, rules["Rules"]];
+            ARCFormGroupsWhenApplyingRules[objects, ruleList];
         
-        ARCRenderScene@
-        Sett[
+        outputScene = Sett[
             parsedScene,
             "Objects" ->
                 Function[{object},
                     ReturnIfFailure@
-                    ARCApplyRules[object, rules["Rules"], parsedScene]
+                    ARCApplyRules[object, ruleList, parsedScene]
                 ] /@ objects
-        ]
+        ];
+        
+        (* Convert our sparse output objects to fuller objects that have their various
+           properties set so that when applying "AddObjects" rules, if their object
+           reference patterns need to make use of those properties, they'll be set. *)
+        outputScene["Objects"] =
+            Function[{object},
+                ARCInferObjectProperties[
+                    <|
+                        "Image" -> object["Image"],
+                        (*"PixelPositions" -> TODO,*)
+                        ARCInferShapeAndShapes[object["Image"][[1]]],
+                        "Colors" -> Flatten[object["Image"][[1]]],
+                        "Position" -> object["Position"]
+                    |>
+                ]
+            ] /@ outputScene["Objects"];
+        
+        If [!MissingQ[addObjects],
+            (* Add objects which don't correspond with objects from the input. *)
+            outputScene["Objects"] = Join[
+                outputScene["Objects"],
+                ReturnIfFailure@
+                ResolveValues[
+                    addObjects["Transform", "Objects"],
+                    <||>,
+                    outputScene,
+                    "Activate" -> True
+                ]
+            ]
+        ];
+        
+        ARCRenderScene[outputScene]
     ]
 
 ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
@@ -3296,13 +3480,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                         ReturnIfFailure@
                         ARCApplyConclusion[
                             key,
-                            Replace[
-                                ReturnIfFailure@
-                                ResolveValues[value, objectIn, scene],
-                                (* Curiously Activate[...] doesn't seem to work. *)
-                                Inactive[h_] :> h, {0, Infinity},
-                                Heads -> True
-                            ],
+                            ResolveValues[value, objectIn, scene, "Activate" -> True],
                             objectIn,
                             objectOut,
                             scene
@@ -3482,8 +3660,13 @@ ARCRenderScene[scene_Association] :=
         
         Function[{object},
             
-            posY = object["Position"][[1]];
-            posX = object["Position"][[2]];
+            If [ListQ[object["Position"]],
+                posY = object["Position"][[1]];
+                posX = object["Position"][[2]];
+                ,
+                posY = object["Y"];
+                posX = object["X"];
+            ];
             
             image = object["Image"][[1]];
             
@@ -3601,10 +3784,6 @@ ARCTestRules[examples_List, rules_Association] :=
     
     \calltable
         ARCSummarizeTestResultObjects[testResultObjects] '' Given a list of test result objects, returns an association of success/failure metrics.
-    
-    Examples:
-    
-    ARCSummarizeTestResultObjects[testResultObjects] === TODO
     
     \maintainer danielb
 *)
@@ -3911,7 +4090,11 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                     valueCounts = Function[{objects},
                         Counts[
                             Replace[
-                                objects[[All, property]],
+                                (* For now we won't use Missing as a referenceable value. If we decide to
+                                   use it, we'll need to update GetObject to be compatible with it. *)
+                                DeleteMissing[
+                                    objects[[All, property]]
+                                ],
                                 lists:{Repeated[_List]} :> (
                                     If [MatchQ[$properties[property, "Type"], _Repeated],
                                         (* This property's values are lists of things, so we sort
@@ -4059,6 +4242,9 @@ GetObject[object: _Association | _String, parsedScene_Association, namedObjects_
                 ],
                 namedObjects
             ],
+        AssociationQ[object] && object["Context"] === "Output",
+            (* Requires that the caller correctly passes in the _output_ scene. *)
+            GetObject[object, parsedScene["Objects"], namedObjects],
         StringQ[object["Context"]],
             ReturnFailure[
                 "UnsupportedContext",
@@ -4085,13 +4271,14 @@ GetObject[object_Association, objects_List, namedObjects_Association : <||>] :=
                 {} :> ReturnFailure[
                     "ObjectNotFound",
                     "The object wasn't found in the scene.",
-                    "Object" -> object
+                    "Object" -> object,
+                    "Objects" -> objects
                 ],
                 multipleObjects:{_, __} :> ReturnFailure[
                     "AmbiguousObject",
                     "Multiple matching objects were found, but only 1 match was expected.",
                     "ObjectPattern" -> object,
-                    "MatchingObjects" -> objects
+                    "MatchingObjects" -> SimplifyObjects[objects]
                 ]
             }
         ]
@@ -4367,6 +4554,27 @@ $transformTypes = <|
                 |>
             }
         }
+    |>,
+    "AddObjects" -> <|
+        "MinimalPropertySets" -> {
+            {
+                "Objects" -> <|
+                    "SubProperties" -> {
+                        "Image" -> <||>,
+                        "Y" -> <||>,
+                        "X" -> <||>,
+                        "Shape" -> <||>,
+                        "Colors" -> <||>,
+                        "Width" -> <||>,
+                        "Height" -> <||>
+                    },
+                    "MinimalPropertySets" -> {
+                        {"Image", "Y", "X"},
+                        {"Shape", "Width", "Height", "Color", "Y", "X"}
+                    }
+                |>
+            }
+        }
     |>
 |>;
 Clear[ARCGeneralizeConclusions];
@@ -4569,7 +4777,11 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 Keys@
                 Complement[
                     Normal[KeyDrop[conclusion, {"Example", "Input"}]],
-                    Normal[KeyTake[conclusion["Input"], Keys[conclusion]]]
+                    If [!MissingQ[conclusion["Input"]],
+                        Normal[KeyTake[conclusion["Input"], Keys[conclusion]]]
+                        ,
+                        {}
+                    ]
                 ]
             ] /@ conclusions;
         propertiesNeeded =
@@ -4582,6 +4794,13 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 ]
             ] /@ propertiesWithChangingValue;
         If [MatchQ[propertiesNeeded, {Repeated[{property_String}]}],
+            
+            If [!FreeQ[propertiesNeeded, "Transform"],
+                (* Our handling for transforms is above, so if we get to this point we'll
+                   bail out. *)
+                Return[Missing["NotFound"], Module]
+            ];
+            
             (* There is always just one property that we need to infer. *)
             property = propertiesNeeded[[1, 1]];
             Replace[
@@ -4706,9 +4925,10 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             property = Last[propertyPath],
             uniqueValue,
             subProperties,
-            subPropertySets,
-            getFunction
+            subPropertySets
         },
+        
+        (* HERE2 *)
         
         XEcho["propertyPath" -> propertyPath];
         
@@ -4789,7 +5009,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                         ReturnFailure[
                             "InvalidSubProperties",
                             "The SubProperties specification is invalid. It should be a list.",
-                            "SubProperties" -> propertyAttributes["SubProperties"]
+                            "SubProperties" -> propertyAttributes["SubProperties"],
+                            "PropertyAttributes" -> propertyAttributes
                         ]
                         ,
                         (* $transformTypes doesn't specify which sub-properties we need to be able
@@ -4942,10 +5163,6 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
     \calltable
         arcGeneralizeConclusionValueHelper[propertyPath, subProperties, conclusions, referenceableInputObjects, examples] '' Helper for ARCGeneralizeConclusionValue that considers a specific set of sub properties.
     
-    Examples:
-    
-    arcGeneralizeConclusionValueHelper[propertyPath, subProperties, conclusions, referenceableInputObjects, examples] === TODO
-    
     \maintainer danielb
 *)
 Clear[arcGeneralizeConclusionValueHelper];
@@ -5074,6 +5291,11 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                             ReturnIfFailure@
                             GetObject[reference, components]
                         ] /@ theseComponents,
+                    "Output",
+                        objects = Function[{example},
+                            ReturnIfFailure@
+                            GetObject[reference, example["Output"]]
+                        ] /@ theseExamples,
                     _Missing,
                         objects = Function[{example},
                             ReturnIfFailure@
@@ -5300,9 +5522,13 @@ AssociationTranspose[assocs_] :=
     \maintainer danielb
 *)
 Clear[ResolveValues];
-ResolveValues[expr_, inputObject_Association, scene_Association] :=
+Options[ResolveValues] =
+{
+    "Activate" -> False     (*< If there are an Inactive parts of the resultant expression, should we activate them? *)
+};
+ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[]] :=
     Module[{resolvedObject, propertyValue, head = None},
-        Replace[
+        res = Replace[
             expr,
             {
                 (* Resolve an object's value. *)
@@ -5348,7 +5574,18 @@ ResolveValues[expr_, inputObject_Association, scene_Association] :=
                     ]
             },
             {0, Infinity}
-        ]
+        ];
+        
+        If [TrueQ[OptionValue["Activate"]],
+            res = Replace[
+                res,
+                (* Curiously Activate[...] doesn't seem to work. *)
+                Inactive[h_] :> h, {0, Infinity},
+                Heads -> True
+            ]
+        ];
+        
+        res
     ]
 
 (*!
@@ -7553,6 +7790,18 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 7,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 1
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 20}],
+            "SucessCount" -> 23,
+            "Runtime" -> Quantity[4.8, "Minutes"],
+            "CodeLength" -> 9972,
+            "ExampleImplemented" -> "31aa019c",
+            "ImplementationTime" -> Quantity[4, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 7,
+            "NewEvaluationSuccesses" -> {"66e6c45b"},
+            "TotalEvaluationSuccesses" -> 2
         |>
     }
 
@@ -9258,10 +9507,6 @@ ARCSetRelativeXY[objects_List, parent_Association] :=
     \calltable
         ARCPruneMatchingPropertiesForRelativePositions[matchingProperties, relativePositionQ] '' If relativePositionQ is True, which implies that the property we're trying to infer pertains to a relative position, then prune away non-relative potentially matching properties that we could use to do that inference.
     
-    Examples:
-    
-    ARCPruneMatchingPropertiesForRelativePositions[matchingProperties, relativePositionQ] === TODO
-    
     \maintainer danielb
 *)
 Clear[ARCPruneMatchingPropertiesForRelativePositions];
@@ -9587,6 +9832,137 @@ ARCCombineConclusions[conclusions_List] :=
                     {} -> Missing[]
                 ]
         |>
+    ]
+
+(*!
+    \function ARCAddedObjectsMapping
+    
+    \calltable
+        ARCAddedObjectsMapping[outputObjectsMappedTo] '' Given the list of output objects that weren't mapped to, produces an entry for the object 'mapping' to represent them as added objects, although the LHS is just the string "AddedObjects" since there are no corresponding objects in the input.
+    
+    Examples:
+    
+    ARCAddedObjectsMapping[{<|"UUID" -> 1|>, <|"UUID" -> 2|>, <|"UUID" -> 3|>}]
+    
+    ===
+    
+    "AddedObjects" -> <|
+        "Transform" -> <|
+            "Type" -> "AddedObjects",
+            "Objects" -> {<|"UUID" -> 1|>, <|"UUID" -> 2|>, <|"UUID" -> 3|>}
+        |>
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCAddedObjectsMapping]
+    
+    \maintainer danielb
+*)
+Clear[ARCAddedObjectsMapping];
+ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
+    If [outputObjectsMappedTo === {},
+        Nothing
+        ,
+        Rule[
+            "AddObjects",
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> outputObjectsMappedTo
+                |>
+            |>
+        ]
+    ]
+
+(*!
+    \function ARCRuleForAddedObjects
+    
+    \calltable
+        ARCRuleForAddedObjects[addedObjects, referenceableOutputObjects] '' Given the "AddedObjects" value for each example, determines whether we support modeling those added objects, and if so returns the rule for them.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRuleForAddedObjects]
+    
+    \maintainer danielb
+*)
+Clear[ARCRuleForAddedObjects];
+ARCRuleForAddedObjects[addedObjects_List, referenceableOutputObjects_Association, examplesIn_List] :=
+    Module[{examples = examplesIn, counter = 0, addedObjectUUIDs},
+        (* If there are objects in the output that don't seem to correspond to objects in the
+           input, then we'll start by trying to model them. *)
+        Which[
+            MatchQ[addedObjects, {Repeated[_Missing]}],
+                (* There are no objects added. Nothing to do. *)
+                Nothing,
+            MatchQ[addedObjects, {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {_}]]]}],
+                (* There is always exactly one object added, so we'll see if we can model that. *)
+                addedObjectUUIDs = Flatten[addedObjects[[All, "Transform", "Objects", All, "UUID"]]];
+                (* Remove these 'added objects' from the output scenes so that the referenceable objects
+                   we form below don't try to use the very objects we're trying to add. *)
+                examples[[All, "Output"]] = Replace[
+                    examples[[All, "Output"]],
+                    KeyValuePattern["UUID" -> Alternatives @@ addedObjectUUIDs] :> Nothing,
+                    {0, Infinity}
+                ];
+                ReturnIfFailure@
+                ARCGeneralizeConclusions[
+                    Function[{item},
+                        Append[item, "Example" -> ++counter]
+                    ] /@ addedObjects,
+                    ReturnIfFailure@
+                    ARCMakeObjectsReferenceable[
+                        examples[[All, "Output"]],
+                        "AdditionalConditions" -> <|"Context" -> "Output"|>
+                    ],
+                    examples
+                ],
+            True,
+                (* The number of objects is inconsistent. We don't yet have support for this. *)
+                ReturnFailure[
+                    "AddedObjectFailure",
+                    "ARCFindRules doesn't currently support AddedObjects where the count of added objects isn't always 1.",
+                    "AddedObjects" -> addedObjects
+                ]
+        ]
+    ]
+
+(*!
+    \function ARCInferPropertiesThatRequireFullObjectList
+    
+    \calltable
+        ARCInferPropertiesThatRequireFullObjectList[objects] '' Infers properties like the Rank and InverseRank properties that shouldn't be computed until we have the full object list.
+    
+    Examples:
+    
+    ARCInferPropertiesThatRequireFullObjectList[{<|"Height" -> 1|>, <|"Height" -> 2|>}]
+    
+    ===
+    
+    {
+        <|"Height" -> 1, "HeightRank" -> 2, "HeightInverseRank" -> 1|>,
+        <|"Height" -> 2, "HeightRank" -> 1, "HeightInverseRank" -> 2|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferPropertiesThatRequireFullObjectList]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferPropertiesThatRequireFullObjectList];
+ARCInferPropertiesThatRequireFullObjectList[objectsIn_List] :=
+    Module[{objects = objectsIn},
+        
+        (* For now we'll only infer rank property values on top level objects. *)
+        objects = ARCInferRankProperties[objects];
+        
+        objects
     ]
 
 End[]

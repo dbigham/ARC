@@ -538,3 +538,51 @@ Test[
     ,
     TestID -> "ARCFindRules-20220819-M8D92N"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "31aa019c"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"ColorUseCount" -> 1|> -> <|"Same" -> True|>,
+            <|"ColorUseCount" -> Except[1]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, 2}, {2, 2, 2}}],
+                            "Y" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Context" -> "Output"
+                                    |>,
+                                    "Y"
+                                ],
+                                -1
+                            ],
+                            "X" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Context" -> "Output"
+                                    |>,
+                                    "X"
+                                ],
+                                -1
+                            ]
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220820-5QD3K6"
+]

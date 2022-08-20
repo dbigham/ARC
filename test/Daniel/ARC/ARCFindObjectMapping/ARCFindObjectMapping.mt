@@ -954,3 +954,37 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220813-3ISFU6"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                KeyTake[
+                    Daniel`ARC`SimplifyObjects[
+                        Daniel`ARC`ARCFindObjectMapping[
+                            Daniel`ARC`ARCParseFile[file = "31aa019c"]["Train", 1],
+                            "FormMultiColorCompositeObjects" -> False
+                        ]
+                    ],
+                    "AddObjects"
+                ]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "AddObjects" -> <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, 2}, {2, 2, 2}}],
+                        "Position" -> {6, 1}
+                    |>
+                }
+            |>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220820-67AY0A"
+]

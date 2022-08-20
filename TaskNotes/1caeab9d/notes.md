@@ -20,7 +20,7 @@
    * However, this object does have three (colored)  components. i.e. <|..., “Components” -> {..., ..., ...}, ...|>
    * Strategy: If there are any composite objects, do further analysis to decide whether they should be kept or any parts broken off.
        * For each composite object, if we can map it directly to an object in the other scene, keep it.
-       * Otherwise, for each part of the composite object, check if it can uniquely map to a top-level object in the corresponding input/output scene.
+       * Otherwise, for each part of the component, check if it can uniquely map to a top-level object in the corresponding input/output scene.
        * If we can, we will remove it from the composite object and treat it as a top-level object.
 
 #### Mapping Input Objects to Output Objects
@@ -30,7 +30,9 @@ For each input object, there is only one object in the output scene with a match
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
+
 
 #### Finding Rules from Object Mappings
 
@@ -43,5 +45,11 @@ e.g.
    * In our case, we notice that ObjectValue[<|"Colors" -> {"Blue"}|>, "Y"] can be used to infer the "Y" value of the move transforms. 
    * We also notice that the “X” coordinate doesn’t change, so we can eliminate it from the move transforms.
 
+
 ![image 2](image2.png?raw=true)
+
 * A further improvement would be to notice that all of the color rules except for one uses the same transform, and to merge them, generalizing the pattern to be: <|”Colors” -> Except[{“Blue”}]|>
+* As of August 20 2022, we now have rule simplification code that does this:
+
+
+![image 3](image3.png?raw=true)

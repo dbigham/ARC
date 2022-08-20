@@ -62,6 +62,9 @@ Test[
                 "Area" -> 6,
                 "FilledArea" -> 6,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 6,
+                "YRelative" -> 0,
+                "XRelative" -> 0,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -80,8 +83,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 0
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -115,6 +118,9 @@ Test[
                 "Area" -> 6,
                 "FilledArea" -> 6,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 6,
+                "YRelative" -> 0,
+                "XRelative" -> 3,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -133,8 +139,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 3
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -168,6 +174,9 @@ Test[
                 "Area" -> 6,
                 "FilledArea" -> 6,
                 "FilledProportion" -> 1.,
+                "ColorUseCount" -> 6,
+                "YRelative" -> 0,
+                "XRelative" -> 6,
                 "WidthRank" -> 1,
                 "WidthInverseRank" -> 1,
                 "HeightRank" -> 1,
@@ -186,8 +195,8 @@ Test[
                 "PrimarySizeDimensionInverseRank" -> 1,
                 "AspectRatioRank" -> 1,
                 "AspectRatioInverseRank" -> 1,
-                "YRelative" -> 0,
-                "XRelative" -> 6
+                "ColorUseCountRank" -> 1,
+                "ColorUseCountInverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[
