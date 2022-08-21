@@ -294,6 +294,10 @@ ARCRuleForAddedObjects::usage = "ARCRuleForAddedObjects  "
 
 ARCInferPropertiesThatRequireFullObjectList::usage = "ARCInferPropertiesThatRequireFullObjectList  "
 
+ARCGridOrDividerQ::usage = "ARCGridOrDividerQ  "
+
+ARCEcho2::usage = "ARCEcho2  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -689,6 +693,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             ARCParseScene[scene, background, opts];
         
         notableSubImages = ARCNotableSubImages[objects, ImageWidth[scene], ImageHeight[scene]];
+        
         If [MatchQ[notableSubImages, {_, __}],
             objects = Flatten[
                 Function[{object},
@@ -704,6 +709,11 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]] =!= False,
+            ARCEcho["Scene" -> scene];
+            ARCEcho["Objects" -> SimplifyObjects[objects]];
+        ]; *)
+        
         <|
             "Background" -> background,
             "Width" -> ImageWidth[scene[[1]]],
@@ -716,14 +726,15 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
 ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
     Module[
         {
+            sceneImage = scene[[1]],
             objects,
-            singleColorObjects,
+            gridsAndDividers = {},
             nonCompositeObjectsFromOtherScene,
             singleOrMultiColorObjects
         },
         
         (* Contiguous objects of a single color. *)
-        objects = singleColorObjects = Replace[
+        objects = Replace[
             OptionValue["SingleColorObjects"],
             Automatic ->
                 ReturnIfFailure@
@@ -735,6 +746,26 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
                     ]
                 ]
         ];
+        
+        (* Determine if any of the objects are grids or dividers. *)
+        objects =
+            ARCGridOrDividerQ["Objects" -> objects, ImageWidth[scene], ImageHeight[scene]];
+        
+        (* Remove any grids/dividers from the main object list, since we don't want them
+           to get combined with other objects into composite objects. *)
+        gridsAndDividers = Select[objects, TrueQ[#["GridOrDivider"]] &];
+        objects = Select[objects, !TrueQ[#["GridOrDivider"]] &];
+        
+        (*ARCEcho[SimplifyObjects[gridsAndDividers]];*)
+        
+        (* Set the color of any grid/divider pixels in the image to the background color so that
+           when forming composite objects, we don't end up including grids/dividers in with larger
+           composite objects. *)
+        Function[{position},
+            sceneImage[[Sequence @@ position]] = backgroundColor
+        ] /@ Flatten[gridsAndDividers[[All, "PixelPositions"]], 1];
+        
+        (*ARCEcho[ARCScene[sceneImage]];*)
         
         If [And[
                 ListQ[
@@ -749,7 +780,7 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
             ],
             (* See whether we should break up any single-color objects due to them
                being fully overlapped by multiple objects from the other scene. *)
-            objects = singleColorObjects =
+            objects =
                 Function[{object},
                     Sequence @@
                     ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
@@ -783,7 +814,7 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
                         ReturnIfFailure@
                         ARCContiguousImageRegions[
                             (* Make all non-background pixels white. *)
-                            ARCToMonochrome[scene, backgroundColor],
+                            ARCToMonochrome[sceneImage, backgroundColor],
                             "Background" -> backgroundColor
                         ]
                     ];
@@ -793,18 +824,22 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
             objects =
                 ReturnIfFailure@
                 ARCFormCompositeObjects[
-                    scene,
-                    singleColorObjects,
+                    ARCScene[sceneImage],
+                    objects,
                     singleOrMultiColorObjects,
                     "OtherScene" -> OptionValue["OtherScene"]
                 ];
         ];
+        
+        objects = Join[gridsAndDividers, objects];
         
         objects = ARCInferColorCountPropertyValues[objects, scene];
         
         If [TrueQ[OptionValue["InferPropertiesThatRequireFullObjectList"]],
             objects = ARCInferPropertiesThatRequireFullObjectList[objects]
         ];
+        
+        (*ARCEcho[SimplifyObjects[objects]];*)
         
         objects
     ]
@@ -902,6 +937,8 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                     "InferPropertiesThatRequireFullObjectList" -> False
                 ];
+            
+            (*ARCEcho2[outputSceneParseWithMultiColorCompositeObjects];*)
             
             (* Parse the input scene again, this time passing along information about the objects
                in the output scene to be used to disambiguate multi-color composite objects. *)
@@ -1939,6 +1976,20 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
                 
                 (* Decide whether to keep this as a composite object or not. *)
                 If [And[
+                        (* This mechanism was preventing 363442ee from working, because it would
+                           break up the big composite object into tiny fragments before the
+                           notable sub-image code in ARCParseScene had a chance to split the
+                           large image up into notable sub-images. I went back into git history,
+                           and I might not have been reading it correctly, but it seemed to
+                           suggest that this code was here when I did my initial commit, thus
+                           unable to tell me what example this was implemented for.
+                           Confusingly, if I disable this, ARCWorkingQ doesn't seem to be
+                           showing me any failures. Perhaps what is preventing any failures is
+                           that upon being unable to find workable rules we now take another
+                           pass without forming composite objects? In any event, for now, I will
+                           keep this disabled. If we need to enable it again, then we'll need
+                           to figure out how to keep this from breaking 363442ee. *)
+                        False,
                         AssociationQ[OptionValue["OtherScene"]],
                         (* There isn't a composite object in the other scene that matches. *)
                         MissingQ[
@@ -2065,6 +2116,8 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
                 opts
             ];
         
+        (*ARCEcho2[parsedScenes["Output"]];*)
+        
         ARCFindObjectMapping[
             parsedScenes["Input"],
             parsedScenes["Output"]
@@ -2108,6 +2161,8 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                 ]
             ] /@ inputObjects
         |>;
+        
+        (*ARCEcho[SimplifyObjects[mapping]];*)
         
         (* Are there any objects in the output that don't have a corresponding input object? *)
         mapping = <|
@@ -2593,7 +2648,14 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         
         ReturnIfDifferingInputAndOutputSize[examples];
         
-        res = ReturnIfFailure[arcFindRulesHelper[examples, opts]];
+        (* NOTE: We don't want to ReturnIfFailure here, since there may be cases where we are
+                 unable to find rules when forming composite objects, but if we try again
+                 without forming composite objects below, it may work. This also brings to mind
+                 the question of whether arcFindRulesHelper should return a Failure in cases
+                 where there isn't really a code failure, but rather we simply couldn't find
+                 rules, such as in Aug 2022 how we don't yet have support for dealing with
+                 AddObjects where multiple objects need to be added, and a Failure is returned. *)
+        res = arcFindRulesHelper[examples, opts];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
         (*ARCEcho[ARCSimplifyRules[res["Rules"]]];*)
@@ -2642,6 +2704,8 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                 ]
             ]
         ];
+        
+        ReturnIfFailure[res];
         
         KeyTake[
             res,
@@ -2868,7 +2932,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"ColorUseCount"}
+                        {"Colors"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -2985,7 +3049,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             KeyValueMap[
                 Function[{pattern, conclusionGroup},
                     
-                    (*Echo[pattern];*)
+                    (*EchoTag["pattern"][pattern];*)
                     (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
                     
                     (* Have all of the mappings have been transformed by the same
@@ -4467,6 +4531,21 @@ ARCEcho[expr_] :=
     )
 
 (*!
+    \function ARCEcho2
+    
+    \calltable
+        ARCEcho2[expr] '' Like ARCEcho but also uses SimplifyObjects.
+    
+    \maintainer danielb
+*)
+Clear[ARCEcho2];
+ARCEcho2[expr_] :=
+    (
+        ARCEcho[SimplifyObjects[expr]];
+        expr
+    )
+
+(*!
     \function ARCGeneralizeConclusions
     
     \calltable
@@ -4594,7 +4673,8 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             propertiesNeeded,
             workableTransforms,
             propertiesWithSameValueForAllConclusions,
-            propertiesWithChangingValue
+            propertiesWithChangingValue,
+            relativePosition
         },
         
         (* HERE *)
@@ -4769,7 +4849,22 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
         ];
         
         (* What properties do we need to infer? *)
-        propertiesWithSameValueForAllConclusions = Keys[ARCObjectCommonalities[conclusions]];
+        propertiesWithSameValueForAllConclusions =
+            Keys[ARCObjectCommonalities[conclusions]];
+        
+        (* If a conclusions's Position is expression in terms of a RelativePosition, we need
+           to take care not to drop it from the list of keys to specify in a rule's conclusion.
+           e.g. 363442ee *)
+        If [And[
+                MemberQ[propertiesWithSameValueForAllConclusions, "Position"],
+                MatchQ[
+                    conclusions[[1, "Position"]],
+                    KeyValuePattern["RelativePosition" -> _]
+                ]
+            ],
+            relativePosition = conclusions[[1, "Position"]];
+        ];
+        
         propertiesWithChangingValue =
             Function[{conclusion},
                 (* For each conclusion, ignore properties that aren't changing,
@@ -4784,6 +4879,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                     ]
                 ]
             ] /@ conclusions;
+        
         propertiesNeeded =
             Function[{propertiesWithChangingValueForThisConclusion},
                 (* For each conclusion, ignore properties that are the same for
@@ -4793,6 +4889,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                     propertiesWithSameValueForAllConclusions
                 ]
             ] /@ propertiesWithChangingValue;
+        
         If [MatchQ[propertiesNeeded, {Repeated[{property_String}]}],
             
             If [!FreeQ[propertiesNeeded, "Transform"],
@@ -4818,14 +4915,31 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                     examples
                 ],
                 {
-                    rule_Rule :> Return[<|rule|>, Module],
+                    rule_Rule :> Return[
+                        <|
+                            rule,
+                            If [MatchQ[relativePosition, _Association],
+                                "Position" -> relativePosition
+                                ,
+                                Nothing
+                            ]
+                        |>,
+                        Module
+                    ],
                     Nothing :> Return[Missing["NotFound"], Module]
                 }
             ]
             ,
             If [MatchQ[Flatten[propertiesNeeded], {}],
                 Return[
-                    KeyTake[conclusions[[1]], propertiesWithChangingValue[[1]]],
+                    <|
+                        KeyTake[conclusions[[1]], propertiesWithChangingValue[[1]]],
+                        If [MatchQ[relativePosition, _Association],
+                            "Position" -> relativePosition
+                            ,
+                            Nothing
+                        ]
+                    |>,
                     Module
                 ]
             ]
@@ -5604,7 +5718,9 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer] :=
         
         rules =
             ReturnIfFailure@
-            ARCFindRules[parsedFile["Train"]];
+            ARCFindRules[
+                parsedFile["Train"]
+            ];
         
         If [MatchQ[rules, KeyValuePattern["Rules" -> _]],
             output = ARCApplyRules[
@@ -5710,12 +5826,14 @@ ImageHeight[ARCScene[image_]] := ImageHeight[image]
 Clear[ARCMakeObjectsForSubImages];
 Options[ARCMakeObjectsForSubImages] = Options[ARCParseScene];
 ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
-    Module[{objectWidth, objectHeight, leftoverImage, processedPartsOfImage, subImagesFound},
+    Module[{objectWidth, objectHeight, leftoverImage, processedPartsOfImage, subImagesFound, strongSubImageQ},
         
         objectWidth = ImageWidth[object["Image"][[1]]];
         objectHeight = ImageHeight[object["Image"][[1]]];
         
         leftoverImage = object["Image"][[1]];
+        
+        (*ARCEcho["ARCMakeObjectsForSubImages" -> object["Image"]];*)
         
         (* We use this to avoid processing overlapping sub-images.
            What to do with overlapping sub-images is tricky since it is a source of
@@ -5729,6 +5847,13 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
         ];
         
         subImagesFound = Function[{subImage},
+            
+            (* If [ImageWidth[subImage[[1]]] === 3 && ImageHeight[subImage[[1]]] === 3,
+                XEcho[SimplifyObjects[subImage]];
+                $debug = True
+                ,
+                $debug = False
+            ]; *)
             
             If [Or[
                     ImageWidth[subImage[[1]]] < objectWidth,
@@ -5744,6 +5869,30 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                         ]
                     ];
                 
+                (* If [$debug,
+                    EchoIndented[subImagePositions]
+                ]; *)
+                
+                strongSubImageQ =
+                    (* If the sub-image occurs at least 3 times, then we have quite
+                       strong evidence that it's a sub-image. e.g. 363442ee *)
+                    And[
+                        Length[subImagePositions] >= 3,
+                        (* To be a bit more conservative, we'll ensure at least one of
+                           the dimensions is 3, since we do allow notable sub-images
+                           that are 2x2, which could lead to false positives. *)
+                        Or[
+                            ImageWidth[subImage[[1]]] >= 3,
+                            ImageHeight[subImage[[1]]] >= 3
+                        ],
+                        (* There must be at least two colors. e.g. n1hczotml *)
+                        Length[DeleteDuplicates[Flatten[subImage[[1]]]]] >= 2
+                    ];
+                
+                (*If [TrueQ[strongSubImageQ],
+                    ARCEcho[ARCScene[subImage[[1]]]]
+                ];*)
+                
                 Function[{subImagePosition},
                     If [And[
                             (* Being careful to avoid processing overlapping sub-images. *)
@@ -5755,20 +5904,23 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                                     ]]
                                 ]
                             ] === {0},
-                            (* We ensure that each border of the sub-image contains at least one
-                               pixel of the background color to try to avoid situations where
-                               there really is a contiguous image that shouldn't be split up. *)
-                            AllTrue[
-                                ARCImageBorderingStrips[
-                                    object["Image"][[1]],
-                                    subImagePosition,
-                                    {
-                                        ImageHeight[subImage[[1]]],
-                                        ImageWidth[subImage[[1]]]
-                                    },
-                                    $nonImageColor
-                                ],
-                                MemberQ[#, $nonImageColor] &
+                            Or[
+                                TrueQ[strongSubImageQ],
+                                (* We ensure that each border of the sub-image contains at least one
+                                   pixel of the background color to try to avoid situations where
+                                   there really is a contiguous image that shouldn't be split up. *)
+                                AllTrue[
+                                    ARCImageBorderingStrips[
+                                        object["Image"][[1]],
+                                        subImagePosition,
+                                        {
+                                            ImageHeight[subImage[[1]]],
+                                            ImageWidth[subImage[[1]]]
+                                        },
+                                        $nonImageColor
+                                    ],
+                                    MemberQ[#, $nonImageColor] &
+                                ]
                             ]
                         ],
                         (* Paint this region of `leftoverImage` $nonImageColor so that at the end
@@ -5786,7 +5938,10 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                             subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage[[1]]] - 1
                         ]] = 1;
                         
-                        <|"Object" -> subImage[[2]], "Position" -> subImagePosition|>
+                        <|
+                            "Object" -> subImage[[2]],
+                            "Position" -> subImagePosition
+                        |>
                         ,
                         Nothing
                     ]
@@ -5798,6 +5953,8 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
         ] /@ subImages;
         
         subImagesFound = Flatten[subImagesFound];
+        
+        (*ARCEcho[SimplifyObjects[subImagesFound]];*)
         
         Which[
             Length[subImagesFound] > 0,
@@ -5817,7 +5974,6 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                     If [DeleteDuplicates[Flatten[leftoverImage]] =!= {0},
                         (* After removing the sub-images, there are still pixels left, so we will
                            generate object(s) for the leftover pixels. *)
-                        (*ARCEcho["leftoverImage" -> ARCScene[leftoverImage]];*)
                         ARCParseScene[
                             ARCRenderScene[
                                 <|
@@ -5833,6 +5989,9 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                                 |>
                             ],
                             backgroundColor,
+                            (* Since we're using `opts` below, if we don't do this, it will
+                               use the objects from the main image, not our `leftoverImage`. *)
+                            "SingleColorObjects" -> Automatic,
                             opts
                         ]
                         ,
@@ -7802,8 +7961,35 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 7,
             "NewEvaluationSuccesses" -> {"66e6c45b"},
             "TotalEvaluationSuccesses" -> 2
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 21}],
+            "SucessCount" -> 24,
+            "Runtime" -> Quantity[5.6, "Minutes"],
+            "CodeLength" -> 10281,
+            "ExampleImplemented" -> "363442ee",
+            "ImplementationTime" -> Quantity[4, "Hours"],
+            "NewGeneralizedSuccesses" -> {"88a10436"},
+            "TotalGeneralizedSuccesses" -> 8,
+            "NewEvaluationSuccesses" -> {"f45f5ca7"},
+            "TotalEvaluationSuccesses" -> 3
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 21}],
+            "SucessCount" -> 25,
+            "Runtime" -> Quantity[5.6, "Minutes"],
+            "CodeLength" -> 10281,
+            "ExampleImplemented" -> "88a10436",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 8,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 2
         |>
     }
+
+(* ADD NEW SUCCESSES HERE *)
 
 (*!
     \function ARCTaskMarkdown
@@ -9963,6 +10149,146 @@ ARCInferPropertiesThatRequireFullObjectList[objectsIn_List] :=
         objects = ARCInferRankProperties[objects];
         
         objects
+    ]
+
+(*!
+    \function ARCGridOrDividerQ
+    
+    \calltable
+        ARCGridOrDividerQ[image, y, x, sceneHeight, sceneHeight] '' Given an image, returns True if it looks like it could be either a grid or a divider.
+    
+    Examples:
+    
+    ARCGridOrDividerQ[
+        {
+            {-1, -1, 5, -1, -1, 5, -1, -1},
+            {-1, -1, 5, -1, -1, 5, -1, -1},
+            {5, 5, 5, 5, 5, 5, 5, 5},
+            {-1, -1, 5, -1, -1, 5, -1, -1},
+            {-1, -1, 5, -1, -1, 5, -1, -1},
+            {5, 5, 5, 5, 5, 5, 5, 5},
+            {-1, -1, 5, -1, -1, 5, -1, -1},
+            {-1, -1, 5, -1, -1, 5, -1, -1}
+        },
+        8,
+        8
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGridOrDividerQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCGridOrDividerQ];
+ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
+    Module[{spansWidth, spansHeight, firstRow},
+        
+        colors = Sort[DeleteDuplicates[Flatten[image]]];
+        
+        spansWidth = ImageWidth[image] === sceneWidth;
+        spansHeight = ImageHeight[image] === sceneHeight;
+        
+        Which[
+            !spansWidth && !spansHeight,
+                (* For now we'll only try detecting dividers/grids that span either the entire
+                   width or entire height, or both. *)
+                False,
+            spansWidth && spansHeight,
+                If [Length[colors] =!= 2 || colors[[1]] =!= -1,
+                    Return[False, Module]
+                ];
+                color = colors[[2]];
+                firstRow = image[[1]];
+                dividerRow = Table[color, {Length[firstRow]}];
+                And[
+                    ImageWidth[image] === sceneWidth,
+                    ImageHeight[image] === sceneHeight,
+                    MatchQ[
+                        firstRow,
+                        {
+                            Repeated@
+                            PatternSequence[
+                                Repeated[-1],
+                                (* For now only allow grids where the dividers have a width of 1. *)
+                                color
+                            ],
+                            Repeated[-1]
+                        }
+                    ]
+                    ,
+                    MatchQ[
+                        image,
+                        {
+                            Repeated[firstRow],
+                            Repeated@
+                            PatternSequence[
+                                Repeated[firstRow],
+                                dividerRow
+                            ],
+                            Repeated[firstRow]
+                        }
+                    ]
+                ],
+            spansWidth && !spansHeight,
+                (* Check for horizontal divider. *)
+                If [Length[colors] =!= 1,
+                    Return[False, Module]
+                ];
+                color = colors[[1]];
+                And[
+                    y =!= 1,
+                    y =!= sceneHeight,
+                    MatchQ[
+                        image,
+                        {
+                            {Repeated[color]}
+                        }
+                    ]
+                ],
+            spansHeight && !spansWidth,
+                (* Check for vertical divider. *)
+                If [Length[colors] =!= 1,
+                    Return[False, Module]
+                ];
+                color = colors[[1]];
+                And[
+                    x =!= 1,
+                    x =!= sceneWidth,
+                    MatchQ[
+                        image,
+                        {
+                            Repeated[{color}]
+                        }
+                    ]
+                ]
+        ]
+    ]
+
+ARCGridOrDividerQ["Objects" -> objects_List, sceneWidth_, sceneHeight_] :=
+    Module[{},
+        Function[{object},
+            If [TrueQ[
+                    ARCGridOrDividerQ[
+                        object["Image"][[1]],
+                        object["Y"],
+                        object["X"],
+                        sceneWidth,
+                        sceneHeight
+                    ]
+                ],
+                Append[
+                    object,
+                    "GridOrDivider" -> True
+                ]
+                ,
+                object
+            ]
+        ] /@ objects
     ]
 
 End[]
