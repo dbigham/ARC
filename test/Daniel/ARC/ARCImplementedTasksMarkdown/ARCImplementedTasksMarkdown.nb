@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     10797,        256]
-NotebookOptionsPosition[      4702,        107]
-NotebookOutlinePosition[     10322,        246]
-CellTagsIndexPosition[     10279,        243]
+NotebookDataLength[     11482,        272]
+NotebookOptionsPosition[      5386,        123]
+NotebookOutlinePosition[     11006,        262]
+CellTagsIndexPosition[     10963,        259]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -42,13 +42,24 @@ Cell[BoxData[{
   RowBox[{"res", " ", "=", " ", 
    RowBox[{"ARCImplementedTasksMarkdown", "[", "]"}]}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"CopyToClipboard", "[", "res", "]"}], ";"}], "\n", "res"}], "Code",
+  RowBox[{"CopyToClipboard", "[", "res", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"EditFile", "[", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"FileNameDrop", "[", 
+       RowBox[{
+        RowBox[{"FindFile", "[", "\"\<ARC`\>\"", "]"}], ",", " ", 
+        RowBox[{"-", "1"}]}], "]"}], ",", " ", "\"\<README.md\>\""}], "}"}], 
+    "]"}], "]"}], ";"}], "\n", "res"}], "Code",
  InitializationCell->False,
- CellChangeTimes->{{3.8689646210938005`*^9, 3.868964627988933*^9}},
- CellLabel->"In[27]:=",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa"],
+ CellChangeTimes->{{3.8689646210938005`*^9, 3.868964627988933*^9}, {
+   3.8700890850167384`*^9, 3.870089087227268*^9}, 3.870089122019865*^9},
+ CellLabel->"In[18]:=",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa"],
 
 Cell[BoxData["\<\"## Tasks Implemented\\n\\n### Core ARC Training Tasks \
-(16)\\n\\n* [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)\\n* \
+(18)\\n\\n* [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)\\n* \
 [3c9b0459](TaskNotes/3c9b0459/notes.md)\\n* \
 [1caeab9d](TaskNotes/1caeab9d/notes.md)\\n* \
 [b60334d2](TaskNotes/b60334d2/notes.md)\\n* \
@@ -63,7 +74,9 @@ Cell[BoxData["\<\"## Tasks Implemented\\n\\n### Core ARC Training Tasks \
 [253bf280](TaskNotes/253bf280/notes.md)\\n* \
 [25d8a9c8](TaskNotes/25d8a9c8/notes.md)\\n* \
 [c8f0f002](TaskNotes/c8f0f002/notes.md)\\n* \
-[31aa019c](TaskNotes/31aa019c/notes.md)\\n\\n### Personally Created Training \
+[31aa019c](TaskNotes/31aa019c/notes.md)\\n* \
+[363442ee](TaskNotes/363442ee/notes.md)\\n* \
+[25d487eb](TaskNotes/25d487eb/notes.md)\\n\\n### Personally Created Training \
 Tasks (11)\\n\\n* [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)\\n* \
 [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)\\n* \
 [jnohuorzh](TaskNotes/jnohuorzh/notes.md)\\n* \
@@ -75,7 +88,7 @@ md)\\n* [n1hczotml](TaskNotes/n1hczotml/notes.md)\\n* \
 [ifmyulnv8-shape](TaskNotes/ifmyulnv8-shape/notes.md)\\n* \
 [ifmyulnv8-dynamic-shape](TaskNotes/ifmyulnv8-dynamic-shape/notes.md)\\n* \
 [referenceable-components](TaskNotes/referenceable-components/notes.md)\\n\\n#\
-# Tasks Passing via Generalization\\n\\n### Training Tasks (7)\\n\\nThe \
+# Tasks Passing via Generalization\\n\\n### Training Tasks (8)\\n\\nThe \
 following ARC training tasks started passing after some different task was \
 implemented.\\n\\n* [ea32f347](TaskNotes/ea32f347/notes.md)\\n* \
 [5521c0d9](TaskNotes/5521c0d9/notes.md)\\n* \
@@ -83,11 +96,13 @@ implemented.\\n\\n* [ea32f347](TaskNotes/ea32f347/notes.md)\\n* \
 [6e82a1ae](TaskNotes/6e82a1ae/notes.md)\\n* \
 [aabf363d](TaskNotes/aabf363d/notes.md)\\n* \
 [b1948b0a](TaskNotes/b1948b0a/notes.md)\\n* \
-[d511f180](TaskNotes/d511f180/notes.md)\\n\\n### Evaluation Tasks \
-(2)\\n\\nThe following ARC evaluation tasks are passing. Evaluation tasks \
+[d511f180](TaskNotes/d511f180/notes.md)\\n* \
+[88a10436](TaskNotes/88a10436/notes.md)\\n\\n### Evaluation Tasks \
+(3)\\n\\nThe following ARC evaluation tasks are passing. Evaluation tasks \
 have not been analyzed or implemented specifically.\\n\\n* \
 [84f2aca1](TaskNotes/84f2aca1/notes.md)\\n* \
-[66e6c45b](TaskNotes/66e6c45b/notes.md)\"\>"], "Output",
+[66e6c45b](TaskNotes/66e6c45b/notes.md)\\n* \
+[f45f5ca7](TaskNotes/f45f5ca7/notes.md)\"\>"], "Output",
  CellChangeTimes->{
   3.868963274491413*^9, 3.868963354403633*^9, {3.8689637509692574`*^9, 
    3.8689637849733963`*^9}, 3.868963861963874*^9, {3.868963909338173*^9, 
@@ -99,8 +114,9 @@ have not been analyzed or implemented specifically.\\n\\n* \
    3.8689970682432985`*^9, 3.8693311680920095`*^9, 3.8693372952922773`*^9, 
    3.8693505301650205`*^9, 3.8699082589017353`*^9, 3.869908430023446*^9, 
    3.869908479645527*^9, 3.8699520571321244`*^9, 3.869952114939356*^9, 
-   3.870029198076447*^9, 3.870029277283149*^9},
- CellLabel->"Out[30]=",ExpressionUUID->"078687b7-b832-46d8-aa81-0ed7a84e13cc"]
+   3.870029198076447*^9, 3.870029277283149*^9, 3.870089079590074*^9, 
+   3.870089124418358*^9, 3.8701308829072857`*^9, 3.870130943638674*^9},
+ CellLabel->"Out[22]=",ExpressionUUID->"e84d5029-aa86-444c-bf2b-b7c346d97451"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -252,9 +268,9 @@ Cell[682, 24, 237, 5, 54, "Code",ExpressionUUID->"d77e5628-2add-4172-ba75-063b9d
 Cell[CellGroupData[{
 Cell[944, 33, 79, 0, 67, "Section",ExpressionUUID->"578486c2-b286-42c7-bbc9-f764a16a30ed"],
 Cell[CellGroupData[{
-Cell[1048, 37, 449, 10, 90, "Code",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa",
+Cell[1048, 37, 855, 21, 108, "Code",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa",
  InitializationCell->False],
-Cell[1500, 49, 3162, 53, 1134, "Output",ExpressionUUID->"078687b7-b832-46d8-aa81-0ed7a84e13cc"]
+Cell[1906, 60, 3440, 58, 1214, "Output",ExpressionUUID->"e84d5029-aa86-444c-bf2b-b7c346d97451"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

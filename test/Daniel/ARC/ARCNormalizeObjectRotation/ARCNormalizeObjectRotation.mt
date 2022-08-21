@@ -14,18 +14,17 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`ERP`NormalizeOutput[
             Daniel`ARC`ARCNormalizeObjectRotation[
-                Daniel`ARC`ARCImageRegionToObject[
-                    <|
-                        "Color" -> 2,
-                        "Position" -> {1, 1},
-                        "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
-                        "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                    |>
-                ],
-                10,
-                10,
-                10,
-                10
+                Utility`Sett[
+                    Daniel`ARC`ARCImageRegionToObject[
+                        <|
+                            "Color" -> 2,
+                            "Position" -> {1, 1},
+                            "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
+                            "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
+                        |>
+                    ],
+                    {"ParentWidth" -> 10, "ParentHeight" -> 10}
+                ]
             ]
         ]
     ]
@@ -64,7 +63,9 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 9,
         "FilledArea" -> 5,
-        "FilledProportion" -> 0.5555555555555556
+        "FilledProportion" -> 0.5555555555555556,
+        "ParentWidth" -> 10,
+        "ParentHeight" -> 10
     |>
     ,
     TestID -> "ARCNormalizeObjectRotation-20220816-BXQJCC"
@@ -81,10 +82,12 @@ Test[
                 "Position" -> {2, 3},
                 "Y" -> 2,
                 "X" -> 3,
-                "Y2" -> 9,
-                "X2" -> 6,
+                "Y2" -> 2,
+                "X2" -> 5,
                 "Width" -> 3,
                 "Height" -> 1,
+                "ParentWidth" -> 10,
+                "ParentHeight" -> 10,
                 "Transform" -> <|
                     "Type" -> "AddComponents",
                     "Components" -> {
@@ -94,18 +97,16 @@ Test[
                             "Position" -> {2, 3},
                             "Y" -> 2,
                             "X" -> 3,
-                            "Y2" -> 9,
-                            "X2" -> 6,
+                            "YRelative" -> 1,
+                            "XRelative" -> 1,
+                            "Y2" -> 2,
+                            "X2" -> 5,
                             "Width" -> 3,
                             "Height" -> 1
                         |>
                     }
                 |>
-            |>,
-            10,
-            10,
-            10,
-            10
+            |>
         ]
     ]
     ,
@@ -120,6 +121,8 @@ Test[
         "X2" -> 2,
         "Width" -> 1,
         "Height" -> 3,
+        "ParentWidth" -> 10,
+        "ParentHeight" -> 10,
         "Transform" -> <|
             "Type" -> "AddComponents",
             "Components" -> {
@@ -143,6 +146,8 @@ Test[
                     "Position" -> {6, 2},
                     "Y" -> 6,
                     "X" -> 2,
+                    "YRelative" -> 1,
+                    "XRelative" -> 1,
                     "Y2" -> 8,
                     "X2" -> 2,
                     "Width" -> 1,

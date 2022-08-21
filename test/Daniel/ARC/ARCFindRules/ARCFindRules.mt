@@ -114,15 +114,18 @@ Test[
         ]
     ]
     ,
-    {
-        <|"Colors" -> {2}|> -> <|
-            "Transform" -> <|
-                "Type" -> "Move",
-                "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {8}|>]
-            |>
-        |>,
-        <|"Colors" -> {8}|> -> <|"Same" -> True|>
-    }
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Colors" -> {2}|> -> <|
+                "Transform" -> <|
+                    "Type" -> "Move",
+                    "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {8}|>]
+                |>
+            |>,
+            <|"Colors" -> {8}|> -> <|"Same" -> True|>
+        }
+    |>
     ,
     TestID -> "ARCFindRules-20220804-KVNY6K"
 ]
@@ -585,4 +588,38 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220820-5QD3K6"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "25d487eb"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <||> -> <|
+            "RotationNormalization" -> True,
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Outward" -> True,
+                        "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                        "Direction" -> {-1, 0},
+                        "Color" -> Daniel`ARC`ObjectValue[
+                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Context" -> "Component"|>,
+                            Inactive[First]["Colors"]
+                        ],
+                        "X" -> Daniel`ARC`ObjectValue[
+                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Context" -> "Component"|>,
+                            "X"
+                        ]
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220821-YXTCPM"
 ]

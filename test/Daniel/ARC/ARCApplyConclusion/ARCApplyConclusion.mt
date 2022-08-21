@@ -184,10 +184,7 @@ Test[
         "Image" -> Daniel`ARC`ARCScene[
             {{-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}}
         ],
-        "Position" -> {1, 1},
-        "Examples" -> {1, 2},
-        "ExampleCount" -> 2,
-        "UseCount" -> 3
+        "Position" -> {1, 1}
     |>
     ,
     TestID -> "ARCApplyConclusion-20220725-7GPVUC"

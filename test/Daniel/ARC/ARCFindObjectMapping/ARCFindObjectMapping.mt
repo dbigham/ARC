@@ -722,47 +722,6 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
-                    Daniel`ARC`ARCFindObjectMapping[
-                        Daniel`ARC`ARCParseFile[file = "1caeab9d"]["Train", 2]
-                    ]
-                ]
-            ]
-        ]
-    ]
-    ,
-    <|
-        <|"Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, 4, 4}}], "Position" -> {1, 8}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, 4, 4}}],
-            "Position" -> {6, 8},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 6, "X" -> 8|>,
-                "Offset" -> <|"Y" -> 5, "X" -> 0|>
-            |>
-        |>,
-        <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}}], "Position" -> {3, 2}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}}],
-            "Position" -> {6, 2},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 6, "X" -> 2|>,
-                "Offset" -> <|"Y" -> 3, "X" -> 0|>
-            |>
-        |>,
-        <|"Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}}], "Position" -> {6, 5}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}}],
-            "Position" -> {6, 5}
-        |>
-    |>
-    ,
-    TestID -> "ARCFindObjectMapping-20220724-0WJ0TI"
-]
-
-Test[
-    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`TestingTools`SlowTest[
-            Daniel`ARC`SimplifyObjects[
                 Module[
                     {
                         example = Daniel`ARC`ARCParseFile[file = "b60334d2"]["Train", 1],
@@ -793,41 +752,6 @@ Test[
     |>
     ,
     TestID -> "ARCFindObjectMapping-20220725-HM9X07"
-]
-
-Test[
-    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`TestingTools`SlowTest[
-            Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
-                    Daniel`ARC`ARCFindObjectMapping[
-                        Daniel`ARC`ARCParseFile[file = "05f2a901"]["Train", 2]
-                    ]
-                ]
-            ]
-        ]
-    ]
-    ,
-    <|
-        <|
-            "Image" -> Daniel`ARC`ARCScene[{{-1, 2, 2}, {-1, 2, 2}, {2, 2, 2}, {-1, 2, 2}}],
-            "Position" -> {2, 1}
-        |> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{-1, 2, 2}, {-1, 2, 2}, {2, 2, 2}, {-1, 2, 2}}],
-            "Position" -> {2, 4},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 2, "X" -> 4|>,
-                "Offset" -> <|"Y" -> 0, "X" -> 3|>
-            |>
-        |>,
-        <|"Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, 8}}], "Position" -> {5, 7}|> -> <|
-            "Image" -> Daniel`ARC`ARCScene[{{8, 8}, {8, 8}}],
-            "Position" -> {5, 7}
-        |>
-    |>
-    ,
-    TestID -> "ARCFindObjectMapping-20220805-VBJ4EU"
 ]
 
 Test[
