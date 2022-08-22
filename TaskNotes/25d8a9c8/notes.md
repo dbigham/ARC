@@ -16,7 +16,7 @@
 #### Scene Parsing
 
 * We parse the input and output scenes into objects.
-* At first, the input objects are parsed an single, composite objects, since they are contiguous multi-color structures.
+* At first, the input objects are parsed as single, composite objects, since they are contiguous structures.
    * When we parse the scene this way, however, we don’t find a workable rule set.
    * We notice that all inputs are interpreted as a single composite object, so we take that as evidence that it would be worth re-interpreting the scene as individual objects to see if that yields a rule set. (which it does)
    * If we find that re-interpreting the scene leads to a good rule set, we add a key/value to the output to indicate that when applying the rules, composite objects shouldn’t be formed but rather left as individual objects:

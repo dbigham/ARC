@@ -310,6 +310,8 @@ ARCEchoTag::usage = "ARCEchoTag  "
 
 ARCConstructObject::usage = "ARCConstructObject  "
 
+ARCMappingToObjectWithOverlappingFilledInPixels::usage = "ARCMappingToObjectWithOverlappingFilledInPixels  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -2257,7 +2259,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             ]
         ];
         
-        (* Look for an image transformation. *)
+        (* Look for an image transformation. (e.g. rotation) *)
         imageShapes = Cases[
             object["Shapes"],
             KeyValuePattern[{"Image" -> _, "Transform" -> _}]][[All, "Image"]
@@ -2364,7 +2366,8 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             ]
         ];
         
-        (* Check if the object was replaced. *)
+        (* Check if the object was replaced by checking if there's a single output object that
+           our input object is fully contained within. *)
         Replace[
             Select[
                 objectsToMapTo,
@@ -2401,6 +2404,11 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 )
             }
         ];
+        
+        (* Check if the object was replaced by looking for overlapping filled-in pixels.
+           e.g. 0962bcdd *)
+        ReturnIfNotMissing@
+        ARCMappingToObjectWithOverlappingFilledInPixels[object, objectsToMapTo];
         
         object -> Missing["NotFound"]
     ]
@@ -8171,6 +8179,18 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 8,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 2
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 22}],
+            "SucessCount" -> 27,
+            "Runtime" -> Quantity[4.3, "Minutes"],
+            "CodeLength" -> 10929,
+            "ExampleImplemented" -> "0962bcdd",
+            "ImplementationTime" -> Quantity[20, "Minutes"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 8,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 2
         |>
     }
 
@@ -10840,6 +10860,66 @@ ARCConstructObject[object_, OptionsPattern[]] :=
             ,
             object
         ]
+    ]
+
+(*!
+    \function ARCMappingToObjectWithOverlappingFilledInPixels
+    
+    \calltable
+        ARCMappingToObjectWithOverlappingFilledInPixels[object, outputObjects] '' Tries to produce a mapping from the input object to one of the output objects by looking for an output object with overlapping filled-in pixels.
+    
+    e.g. 0962bcdd
+    
+    Examples:
+    
+    ARCMappingToObjectWithOverlappingFilledInPixels[object, outputObjects] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCMappingToObjectWithOverlappingFilledInPixels];
+ARCMappingToObjectWithOverlappingFilledInPixels[object_Association, outputObjects_List] :=
+    Module[{},
+        Replace[
+            Select[
+                outputObjects,
+                And[
+                    Or[
+                        (* The output object is a superset of the pixels of the input object. *)
+                        SubsetQ[#["PixelPositions"], object["PixelPositions"]],
+                        (* The output object is a subset of the pixels of the input object. *)
+                        SubsetQ[object["PixelPositions"], #["PixelPositions"]]
+                    ],
+                    (* We also currently require the colors to be the same, to avoid false
+                       positives, such as in 31aa019c, where we don't want random pixels
+                       in the output to get mapped to the boxes in the output. *)
+                    object["Colors"] === #["Colors"]
+                ] &
+            ],
+            {
+                {mappedToObject_} :> (
+                    (* Since there was only 1 corresponding output object, we'll create
+                        a mapping. *)
+                    Return[
+                        object -> Sett[
+                            mappedToObject,
+                            {
+                                "Image" -> mappedToObject["Image"],
+                                With[{relativePosition = mappedToObject["Position"] - object["Position"]},
+                                    If [relativePosition =!= {0, 0},
+                                        "Position" -> <|"RelativePosition" -> mappedToObject["Position"] - object["Position"]|>
+                                        ,
+                                        Nothing
+                                    ]
+                                ]
+                            }
+                        ],
+                        Module
+                    ]
+                )
+            }
+        ];
+        
+        Missing["NotFound"]
     ]
 
 End[]
