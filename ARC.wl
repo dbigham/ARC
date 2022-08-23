@@ -2396,7 +2396,11 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                                         "Image" -> mappedToObject["Image"],
                                         With[{relativePosition = mappedToObject["Position"] - object["Position"]},
                                             If [relativePosition =!= {0, 0},
-                                                "Position" -> <|"RelativePosition" -> mappedToObject["Position"] - object["Position"]|>
+                                                "Position" -> <|
+                                                    "RelativePosition" -> mappedToObject["Position"] - object["Position"],
+                                                    "Y" -> mappedToObject["Position"][[1]],
+                                                    "X" -> mappedToObject["Position"][[2]]
+                                                |>
                                                 ,
                                                 Nothing
                                             ]
@@ -4838,6 +4842,21 @@ $transformTypes = <|
                 |>
             }
         }
+    |>,
+    "Position" -> <|
+        "SubProperties" -> {
+            "RelativePosition" -> <||>,
+            "Y" -> <|
+                "ObjectGet" -> Function[#["Y"]]
+            |>,
+            "X" -> <|
+                "ObjectGet" -> Function[#["X"]]
+            |>
+        },
+        "MinimalPropertySets" -> {
+            {"RelativePosition"},
+            {"Y", "X"}
+        }
     |>
 |>;
 Clear[ARCGeneralizeConclusions];
@@ -5035,7 +5054,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             ReturnIfFailure@
             ARCPropertiesNeededForConclusions[conclusions];
         
-        If [MatchQ[propertiesToInferDynamicallyFromInputs, {Repeated[{property_String}]}],
+        If [MatchQ[propertiesToInferDynamicallyFromInputs, {Repeated[{properties__String}]}],
             
             If [!FreeQ[propertiesToInferDynamicallyFromInputs, "Transform"],
                 (* Our handling for transforms is above, so if we get to this point we'll
@@ -5043,36 +5062,55 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 Return[Missing["NotFound"], Module]
             ];
             
-            (* There is always just one property that we need to infer. *)
-            property = propertiesToInferDynamicallyFromInputs[[1, 1]];
-            Replace[
-                ReturnIfFailure@
-                ARCGeneralizeConclusionValue[
-                    {property},
-                    Automatic,
-                    Function[{conclusion},
-                        Prepend[
-                            KeyTake[conclusion, {"Example", "Input"}],
-                            "Value" -> conclusion[property]
-                        ]
-                    ] /@ conclusions,
-                    referenceableObjects,
-                    examples
-                ],
-                {
-                    rule_Rule :> Return[
-                        <|
-                            rule,
-                            If [MatchQ[relativePosition, _Association],
-                                "Position" -> relativePosition
-                                ,
-                                Nothing
+            rule = Function[{property},
+                Replace[
+                    ReturnIfFailure@
+                    ARCGeneralizeConclusionValue[
+                        {property},
+                        Lookup[
+                            $transformTypes,
+                            property,
+                            Automatic
+                        ],
+                        Function[{conclusion},
+                            Prepend[
+                                KeyTake[conclusion, {"Example", "Input"}],
+                                "Value" -> conclusion[property]
                             ]
-                        |>,
-                        Module
+                        ] /@ conclusions,
+                        referenceableObjects,
+                        examples
                     ],
-                    Nothing :> Return[Missing["NotFound"], Module]
-                }
+                    {
+                        Nothing :> Return[Missing["NotFound"], Module]
+                    }
+                ]
+            ] /@ propertiesToInferDynamicallyFromInputs[[1]];
+            
+            If [MatchQ[rule, {Repeated[_Rule]}],
+                Return[
+                    rule = <|
+                        (* Property values that are changing but don't need to be
+                           inferred dynamically. *)
+                        KeyTake[conclusions[[1]], DeleteCases[propertiesWithChangingValue[[1]], property]],
+                        (* The rule for inferring properties dynamically. *)
+                        rule,
+                        If [MatchQ[relativePosition, _Association],
+                            "Position" -> relativePosition
+                            ,
+                            Nothing
+                        ]
+                    |>;
+                    (* If we know Image, then we can prune certain other properties that may not
+                       be constant, but which are implied if we know image. e.g. 363442ee *)
+                    If [!MissingQ[rule["Image"]],
+                        (* We should think of a better way to generalize this, and this is probably
+                           useful to have other places as well. *)
+                        rule = KeyDrop[rule, {"Width", "Height", "Length", "Colors", "Color"}]
+                    ];
+                    rule,
+                    Module
+                ]
             ]
             ,
             If [MatchQ[Flatten[propertiesToInferDynamicallyFromInputs], {}],
@@ -5201,7 +5239,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             Return[Missing["NotInferrable", "RequiredValuesMissing"], Module]
         ];
         
-        If [TrueQ[propertyAttributes["ClassList"]],
+        If [AssociationQ[propertyAttributes] && TrueQ[propertyAttributes["ClassList"]],
             (* The values of this property are lists of classes that the object is a member
                of, so what we need to do is check if all of the objects share a common
                intersection of those classes. *)
@@ -5240,7 +5278,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             ]
         ];
         
-        If [AssociationQ[conclusions[[1, "Value"]]],
+        If [AssociationQ[conclusions[[1, "Value"]]] && AssociationQ[propertyAttributes],
             
             (* The values are actually associations, so we will iterate over each of their
                keys and try to infer them separately. *)
@@ -8207,6 +8245,18 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 9,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 3
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 23}],
+            "SucessCount" -> 30,
+            "Runtime" -> Quantity[5.4, "Minutes"],
+            "CodeLength" -> 11069,
+            "ExampleImplemented" -> "1bfc4729",
+            "ImplementationTime" -> Quantity[40, "Minutes"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 9,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 3
         |>
     }
 
@@ -10662,7 +10712,6 @@ ARCFindRulesUsingRotationalNormalization[currentConclusion_, currentUnhandled_, 
                 MissingQ[currentConclusion],
                 ARCConclusionsInvolveRotation[conclusionGroup]
             ],
-            (* HERE6 *)
             (* TODO: It would be ideal, before spending potentially a lot of
                       time normalizing all of these objects and trying again
                       to find rules, to check whether any of the conclusions
@@ -10922,7 +10971,11 @@ ARCMappingToObjectWithOverlappingFilledInPixels[object_Association, outputObject
                                 "Image" -> mappedToObject["Image"],
                                 With[{relativePosition = mappedToObject["Position"] - object["Position"]},
                                     If [relativePosition =!= {0, 0},
-                                        "Position" -> <|"RelativePosition" -> mappedToObject["Position"] - object["Position"]|>
+                                        "Position" -> <|
+                                            "RelativePosition" -> mappedToObject["Position"] - object["Position"],
+                                            "Y" -> mappedToObject["Position"][[1]],
+                                            "X" -> mappedToObject["Position"][[2]]
+                                        |>
                                         ,
                                         Nothing
                                     ]

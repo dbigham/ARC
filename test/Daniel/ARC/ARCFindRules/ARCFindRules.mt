@@ -625,9 +625,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0962bcdd"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "0962bcdd"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -683,4 +689,44 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220822-U3G40I"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1bfc4729"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Y" -> 3|> -> <|
+                "Position" -> <|"Y" -> 1, "X" -> 1|>,
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10},
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10}
+                    }
+                ]
+            |>,
+            <|"Y" -> 8|> -> <|
+                "Position" -> <|"Y" -> 6, "X" -> 1|>,
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10},
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, -1, -1, -1, -1, -1, -1, -1, -1, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
+                    }
+                ]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220822-45GA4N"
 ]

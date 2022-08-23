@@ -748,7 +748,7 @@ Test[
     ,
     <|"Image" -> Daniel`ARC`ARCScene[{{5}}], "Position" -> {3, 4}|> -> <|
         "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
-        "Position" -> <|"RelativePosition" -> {-1, -1}|>
+        "Position" -> <|"RelativePosition" -> {-1, -1}, "Y" -> 2, "X" -> 3|>
     |>
     ,
     TestID -> "ARCFindObjectMapping-20220725-HM9X07"
