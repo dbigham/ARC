@@ -663,3 +663,24 @@ Test[
     ,
     TestID -> "ARCFindRules-20220822-FVFZUH"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0d3d703e"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"Colors" -> {1}|> -> <|"Colors" -> {5}|>,
+        <|"Colors" -> {3}|> -> <|"Colors" -> {4}|>,
+        <|"Colors" -> {2}|> -> <|"Colors" -> {6}|>,
+        <|"Colors" -> {8}|> -> <|"Colors" -> {9}|>,
+        <|"Colors" -> {5}|> -> <|"Colors" -> {1}|>,
+        <|"Colors" -> {6}|> -> <|"Colors" -> {2}|>,
+        <|"Colors" -> {4}|> -> <|"Colors" -> {3}|>,
+        <|"Colors" -> {9}|> -> <|"Colors" -> {8}|>
+    }
+    ,
+    TestID -> "ARCFindRules-20220822-U3G40I"
+]

@@ -312,9 +312,15 @@ ARCConstructObject::usage = "ARCConstructObject  "
 
 ARCMappingToObjectWithOverlappingFilledInPixels::usage = "ARCMappingToObjectWithOverlappingFilledInPixels  "
 
+$MinimumExamplesPerRule::usage = "$MinimumExamplesPerRule  "
+
+ARCPropertiesNeededForConclusions::usage = "ARCPropertiesNeededForConclusions  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
+
+$MinimumExamplesPerRule = 2;
 
 (* These make use of utility code from an internal Wolfram git repository (wyatterp), so these
    functions would need to be provided if this code were used by people outside of Wolfram. *)
@@ -2733,6 +2739,23 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        workingRulesQ =
+            If [!foundRulesQ,
+                False
+                ,
+                TrueQ[ARCWorkingQ[examples, res]]
+            ];
+        
+        If [!TrueQ[workingRulesQ] && $MinimumExamplesPerRule > 1,
+            (* Try again, this time allowing rules to be formed with only 1 example.
+               e.g. 0d3d703e *)
+            Block[{$MinimumExamplesPerRule = 1},
+                res2 = ARCFindRules[examples, opts];
+                foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                If [foundRulesQ, res = res2];
+            ]
+        ];
+        
         ReturnIfFailure[res];
         
         KeyTake[
@@ -3077,7 +3100,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             KeyValueMap[
                 Function[{pattern, conclusionGroup},
                     
-                    XEchoTag["pattern"][pattern];
+                    (*EchoTag["pattern"][pattern];*)
                     (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
                     
                     (* Have all of the mappings have been transformed by the same
@@ -3253,7 +3276,8 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
             unhandled = unhandledIn,
             conclusion,
             theseExamples,
-            exampleInstances
+            exampleInstances,
+            propertiesWithChangingValue
         },
         
         conclusion = Missing[];
@@ -3289,7 +3313,13 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
                 ,
             Length[groupedByConclusion] === 1,
                 (* This pattern has only one RHS, so we can form a rule using it. *)
-                conclusion = KeyDrop[groupedByConclusion[[1, 1]], {"Example", "Input"}]
+                conclusion = groupedByConclusion[[1, 1]];
+                propertiesWithChangingValue =
+                    ReturnIfFailure[
+                        ARCPropertiesNeededForConclusions[{conclusion}]
+                    ][[2]];
+                (* Only keep the conclusion property values that differ from the input. *)
+                conclusion = KeyTake[conclusion, propertiesWithChangingValue[[1]]]
             (* We don't need to handle this case, since we did a GroupBy above which
                 guarentees that each group has items.
             Length[groupedByConclusion] === 0,
@@ -3329,7 +3359,7 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
             (* Question: Should we instead check that UseCount is < 2? I experimented with that
                          quickly Aug 13 2022 and found that it didn't break any ARCWorkingQ
                          tests but did make one ARCFindRules test output hairier. *)
-            If [conclusion["ExampleCount"] < 2,
+            If [conclusion["ExampleCount"] < $MinimumExamplesPerRule,
                 conclusion = Missing["NotFound", "InsufficientRuleSupport"]
             ]
             ,
@@ -4824,9 +4854,8 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             minimalPropertySets,
             pruned,
             uniqueValue,
-            propertiesNeeded,
+            propertiesToInferDynamicallyFromInputs,
             workableTransforms,
-            propertiesWithSameValueForAllConclusions,
             propertiesWithChangingValue,
             relativePosition
         },
@@ -5002,58 +5031,20 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
             ]
         ];
         
-        (* What properties do we need to infer? *)
-        propertiesWithSameValueForAllConclusions =
-            Keys[ARCObjectCommonalities[conclusions]];
+        {propertiesToInferDynamicallyFromInputs, propertiesWithChangingValue, relativePosition} =
+            ReturnIfFailure@
+            ARCPropertiesNeededForConclusions[conclusions];
         
-        (* If a conclusions's Position is expression in terms of a RelativePosition, we need
-           to take care not to drop it from the list of keys to specify in a rule's conclusion.
-           e.g. 363442ee *)
-        If [And[
-                MemberQ[propertiesWithSameValueForAllConclusions, "Position"],
-                MatchQ[
-                    conclusions[[1, "Position"]],
-                    KeyValuePattern["RelativePosition" -> _]
-                ]
-            ],
-            relativePosition = conclusions[[1, "Position"]];
-        ];
-        
-        propertiesWithChangingValue =
-            Function[{conclusion},
-                (* For each conclusion, ignore properties that aren't changing,
-                   from input-to-output. *)
-                Keys@
-                Complement[
-                    Normal[KeyDrop[conclusion, {"Example", "Input"}]],
-                    If [!MissingQ[conclusion["Input"]],
-                        Normal[KeyTake[conclusion["Input"], Keys[conclusion]]]
-                        ,
-                        {}
-                    ]
-                ]
-            ] /@ conclusions;
-        
-        propertiesNeeded =
-            Function[{propertiesWithChangingValueForThisConclusion},
-                (* For each conclusion, ignore properties that are the same for
-                   all conclusions. *)
-                Complement[
-                    propertiesWithChangingValueForThisConclusion,
-                    propertiesWithSameValueForAllConclusions
-                ]
-            ] /@ propertiesWithChangingValue;
-        
-        If [MatchQ[propertiesNeeded, {Repeated[{property_String}]}],
+        If [MatchQ[propertiesToInferDynamicallyFromInputs, {Repeated[{property_String}]}],
             
-            If [!FreeQ[propertiesNeeded, "Transform"],
+            If [!FreeQ[propertiesToInferDynamicallyFromInputs, "Transform"],
                 (* Our handling for transforms is above, so if we get to this point we'll
                    bail out. *)
                 Return[Missing["NotFound"], Module]
             ];
             
             (* There is always just one property that we need to infer. *)
-            property = propertiesNeeded[[1, 1]];
+            property = propertiesToInferDynamicallyFromInputs[[1, 1]];
             Replace[
                 ReturnIfFailure@
                 ARCGeneralizeConclusionValue[
@@ -5084,7 +5075,7 @@ ARCGeneralizeConclusions[conclusions_List, referenceableInputObjects_Association
                 }
             ]
             ,
-            If [MatchQ[Flatten[propertiesNeeded], {}],
+            If [MatchQ[Flatten[propertiesToInferDynamicallyFromInputs], {}],
                 Return[
                     <|
                         KeyTake[conclusions[[1]], propertiesWithChangingValue[[1]]],
@@ -8191,6 +8182,31 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 8,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 2
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 22}],
+            "SucessCount" -> 28,
+            "Runtime" -> Quantity[5.2, "Minutes"],
+            "CodeLength" -> 11003,
+            "ExampleImplemented" -> "0d3d703e",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> {"d037b0a7"},
+            "TotalGeneralizedSuccesses" -> 9,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 3
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 22}],
+            "SucessCount" -> 29,
+            "Runtime" -> Quantity[5.2, "Minutes"],
+            "CodeLength" -> 11003,
+            "ExampleImplemented" -> "d037b0a7",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 9,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 3
         |>
     }
 
@@ -10920,6 +10936,77 @@ ARCMappingToObjectWithOverlappingFilledInPixels[object_Association, outputObject
         ];
         
         Missing["NotFound"]
+    ]
+
+(*!
+    \function ARCPropertiesNeededForConclusions
+    
+    \calltable
+        ARCPropertiesNeededForConclusions[conclusions] '' Given a list of rule conclusions, which specify their corresponding input object via the Input key, which properties are needing to be inferred dynamically, and which have values different from their corresponding inputs.
+    
+    Examples:
+    
+    ARCPropertiesNeededForConclusions[conclusions] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCPropertiesNeededForConclusions];
+ARCPropertiesNeededForConclusions[conclusions_List] :=
+    Module[
+        {
+            propertiesWithSameValueForAllConclusions,
+            relativePosition,
+            propertiesWithChangingValue,
+            propertiesToInferDynamicallyFromInputs
+        },
+        
+        (* What properties do we need to infer? *)
+        propertiesWithSameValueForAllConclusions =
+            Keys[ARCObjectCommonalities[conclusions]];
+        
+        (* If a conclusions's Position is expression in terms of a RelativePosition, we need
+           to take care not to drop it from the list of keys to specify in a rule's conclusion.
+           e.g. 363442ee *)
+        If [And[
+                MemberQ[propertiesWithSameValueForAllConclusions, "Position"],
+                MatchQ[
+                    conclusions[[1, "Position"]],
+                    KeyValuePattern["RelativePosition" -> _]
+                ]
+            ],
+            relativePosition = conclusions[[1, "Position"]];
+        ];
+        
+        propertiesWithChangingValue =
+            Function[{conclusion},
+                (* For each conclusion, ignore properties that aren't changing,
+                   from input-to-output. *)
+                Keys@
+                Complement[
+                    Normal[KeyDrop[conclusion, {"Example", "Input"}]],
+                    If [!MissingQ[conclusion["Input"]],
+                        Normal[KeyTake[conclusion["Input"], Keys[conclusion]]]
+                        ,
+                        {}
+                    ]
+                ]
+            ] /@ conclusions;
+        
+        propertiesToInferDynamicallyFromInputs =
+            Function[{propertiesWithChangingValueForThisConclusion},
+                (* For each conclusion, ignore properties that are the same for
+                   all conclusions. *)
+                Complement[
+                    propertiesWithChangingValueForThisConclusion,
+                    propertiesWithSameValueForAllConclusions
+                ]
+            ] /@ propertiesWithChangingValue;
+        
+        {
+            propertiesToInferDynamicallyFromInputs,
+            propertiesWithChangingValue,
+            relativePosition
+        }
     ]
 
 End[]

@@ -7,7 +7,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (19)
+### Core ARC Training Tasks (20)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -28,6 +28,7 @@ https://github.com/fchollet/ARC
 * [363442ee](TaskNotes/363442ee/notes.md)
 * [25d487eb](TaskNotes/25d487eb/notes.md)
 * [0962bcdd](TaskNotes/0962bcdd/notes.md)
+* [0d3d703e](TaskNotes/0d3d703e/notes.md)
 
 ### Personally Created Training Tasks (11)
 
@@ -45,7 +46,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (8)
+### Training Tasks (9)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -57,6 +58,7 @@ The following ARC training tasks started passing after some different task was i
 * [b1948b0a](TaskNotes/b1948b0a/notes.md)
 * [d511f180](TaskNotes/d511f180/notes.md)
 * [88a10436](TaskNotes/88a10436/notes.md)
+* [d037b0a7](TaskNotes/d037b0a7/notes.md)
 
 ### Evaluation Tasks (3)
 
