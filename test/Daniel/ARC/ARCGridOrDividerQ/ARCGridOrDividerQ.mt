@@ -86,7 +86,9 @@ Test[
                                 Daniel`ARC`ARCParseFile["363442ee"][[1, "Train", 1, "Input"]],
                                 "Background" -> 0
                             ]
-                        ]
+                        ],
+                        13,
+                        9
                     ],
                     13,
                     9

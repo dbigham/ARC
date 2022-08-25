@@ -15,13 +15,10 @@ Test[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`ARCGeneralizeConclusionValue[
                 {"Position"},
-                FirstCase[
-                    Daniel`ARC`Private`$transformTypes["Move", "MinimalPropertySets"],
-                    {HoldPattern[Rule]["Position", _]}
-                ][[
-                    1,
-                    2
-                ]],
+                Utility`Gett[
+                    Daniel`ARC`Private`$transformTypes["Move", "SubProperties"],
+                    "Position"
+                ],
                 {
                     <|
                         "Value" -> <|"Y" -> 2, "X" -> 5|>,

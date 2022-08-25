@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     83306,       1821]
-NotebookOptionsPosition[     74010,       1611]
-NotebookOutlinePosition[     79720,       1752]
-CellTagsIndexPosition[     79677,       1749]
+NotebookDataLength[     91026,       1987]
+NotebookOptionsPosition[     81727,       1777]
+NotebookOutlinePosition[     87437,       1918]
+CellTagsIndexPosition[     87394,       1915]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -149,7 +149,7 @@ Cell[BoxData[{
   3.867605091710117*^9}, {3.867605891241435*^9, 3.867605918999492*^9}, {
   3.870128256817253*^9, 3.870128261521221*^9}, {3.870128546327835*^9, 
   3.8701285475709743`*^9}},
- CellLabel->"In[905]:=",
+ CellLabel->"In[2560]:=",
  CellID->58431851,
  "TestId" -> 
  "ARCMakeObjectsReferenceable-20220723-84LXFB",ExpressionUUID->"6c1bb74e-99c7-\
@@ -161,8 +161,56 @@ Cell[BoxData[
     {"\<\"<|\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"    \"", 
-         TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+       TemplateBox[{
+         TemplateBox[{"\"    \"", 
+           TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[0, 0, 1], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> RGBColor[0., 0., 0.6666666666666666], 
+                 FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   RowBox[{"0", ",", "0", ",", "1"}], "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[0, 0, 1]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[0, 0, 1], Editable -> False, Selectable -> False], 
+             "\"}|>\"", "\"]\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
+        "RowDefault"], "\" <|\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Color\\\" -> \"", 
            InterpretationBox[
             ButtonBox[
              TooltipBox[
@@ -202,40 +250,92 @@ Cell[BoxData[
                     "SelectionDeparture", "ParentChanged", 
                     "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
              Automatic, Method -> "Preemptive"], 
-            RGBColor[0, 0, 1], Editable -> False, Selectable -> False], 
-           "\"}|>\"", "\"] -> \"", "\"<|\\\"Shapes\\\" -> {\"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\
-\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
-              "Tooltip"]& ], "\"}|>\""}, "RowDefault"]}, "RowDefault"], 
-       "\",\""},
+            RGBColor[0, 0, 1], Editable -> False, Selectable -> False]}, 
+          "RowDefault"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"        \"", 
+       TemplateBox[{"\"\\\"Shapes\\\" -> {\"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
+         "\", \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> \
+True|>\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+           "Tooltip"]& ], "\"}\""}, "RowDefault"]},
+      "RowDefault"]},
+    {"\<\"    |>,\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{
+         TemplateBox[{"\"    \"", 
+           TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[1, 0, 0], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> RGBColor[0.6666666666666666, 0., 0.], 
+                 FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   RowBox[{"1", ",", "0", ",", "0"}], "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[1, 0, 0]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[1, 0, 0], Editable -> False, Selectable -> False], 
+             "\"}|>\"", "\"]\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
+        "RowDefault"], "\" <|\""},
       "RowDefault"]},
     {
      TemplateBox[{
-       TemplateBox[{"\"    \"", 
-         TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Color\\\" -> \"", 
            InterpretationBox[
             ButtonBox[
              TooltipBox[
@@ -275,40 +375,93 @@ Cell[BoxData[
                     "SelectionDeparture", "ParentChanged", 
                     "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
              Automatic, Method -> "Preemptive"], 
-            RGBColor[1, 0, 0], Editable -> False, Selectable -> False], 
-           "\"}|>\"", "\"] -> \"", "\"<|\\\"Shapes\\\" -> {\"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\
-\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
-              "Tooltip"]& ], "\"}|>\""}, "RowDefault"]}, "RowDefault"], 
-       "\",\""},
+            RGBColor[1, 0, 0], Editable -> False, Selectable -> False]}, 
+          "RowDefault"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{"\"        \"", 
+       TemplateBox[{"\"\\\"Shapes\\\" -> {\"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
+         "\", \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> \
+True|>\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+           "Tooltip"]& ], "\"}\""}, "RowDefault"]},
+      "RowDefault"]},
+    {"\<\"    |>,\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{
+         TemplateBox[{"\"    \"", 
+           TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[1, 1, 0], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> 
+                 RGBColor[0.6666666666666666, 0.6666666666666666, 0.], 
+                 FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   RowBox[{"1", ",", "1", ",", "0"}], "]"}], NumberMarks -> 
+                 False]], Appearance -> None, BaseStyle -> {}, 
+               BaselinePosition -> Baseline, DefaultBaseStyle -> {}, 
+               ButtonFunction :> With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[1, 1, 0]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[1, 1, 0], Editable -> False, Selectable -> False], 
+             "\"}|>\"", "\"]\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
+        "RowDefault"], "\" <|\""},
       "RowDefault"]},
     {
      TemplateBox[{
-       TemplateBox[{"\"    \"", 
-         TemplateBox[{"\"Object[\"", "\"<|\\\"Colors\\\" -> {\"", 
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Color\\\" -> \"", 
            InterpretationBox[
             ButtonBox[
              TooltipBox[
@@ -349,36 +502,40 @@ Cell[BoxData[
                     "SelectionDeparture", "ParentChanged", 
                     "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
              Automatic, Method -> "Preemptive"], 
-            RGBColor[1, 1, 0], Editable -> False, Selectable -> False], 
-           "\"}|>\"", "\"] -> \"", "\"<|\\\"Shapes\\\" -> {\"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4,
-              LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
-           "\", \"", 
-           TagBox[
-            TooltipBox[
-             FrameBox["\"Rectangle\"", FrameStyle -> Directive[
-                RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
-              Background -> 
-              RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
-                RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-              BaselinePosition -> Baseline, ContentPadding -> True, 
-              FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
-             "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\
-\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
-            Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
-              "Tooltip"]& ], "\"}|>\""}, "RowDefault"]}, "RowDefault"], 
-       "\",\""},
+            RGBColor[1, 1, 0], Editable -> False, Selectable -> False]}, 
+          "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
+    {
+     TemplateBox[{"\"        \"", 
+       TemplateBox[{"\"\\\"Shapes\\\" -> {\"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\"|>\"", TooltipDelay -> 0.4, 
+           LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\"|>", "Tooltip"]& ], 
+         "\", \"", 
+         TagBox[
+          TooltipBox[
+           FrameBox["\"Rectangle\"", FrameStyle -> Directive[
+              RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
+            Background -> 
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
+              RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
+            BaselinePosition -> Baseline, ContentPadding -> True, 
+            FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
+           "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> \
+True|>\"", TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
+          Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
+           "Tooltip"]& ], "\"}\""}, "RowDefault"]},
+      "RowDefault"]},
+    {"\<\"    |>,\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"    \"", 
@@ -445,12 +602,12 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"XRank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"XInverseRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"X2InverseRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"X.Rank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"X.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"X2.Rank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"X2.InverseRank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"YRank\\\" -> 1|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"Y.Rank\\\" -> 1|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -482,11 +639,11 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"YInverseRank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2InverseRank\\\" -> 3\"\>"},
+    {"\<\"        \\\"Y.InverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"Y2.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"Y2.InverseRank\\\" -> 3\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"YRank\\\" -> 2|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"Y.Rank\\\" -> 2|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -518,11 +675,11 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"YInverseRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"Y2InverseRank\\\" -> 2\"\>"},
+    {"\<\"        \\\"Y.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"Y2.Rank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"Y2.InverseRank\\\" -> 2\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"YRank\\\" -> 3|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"Y.Rank\\\" -> 3|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -554,11 +711,11 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"YInverseRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2Rank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"Y2InverseRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"Y.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"Y2.Rank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"Y2.InverseRank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"XRank\\\" -> 1|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"X.Rank\\\" -> 1|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -590,11 +747,11 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"XInverseRank\\\" -> 3,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"X2InverseRank\\\" -> 3\"\>"},
+    {"\<\"        \\\"X.InverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"X2.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"X2.InverseRank\\\" -> 3\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"XRank\\\" -> 2|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"X.Rank\\\" -> 2|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -626,9 +783,9 @@ Cell[BoxData[
             Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>",
               "Tooltip"]& ], "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"XInverseRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"X2InverseRank\\\" -> 2\"\>"},
+    {"\<\"        \\\"X.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2.Rank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2.InverseRank\\\" -> 2\"\>"},
     {"\<\"    |>\"\>"},
     {"\<\"|>\"\>"}
    },
@@ -645,9 +802,9 @@ Cell[BoxData[
    3.8701280694817343`*^9, 3.8701281369627285`*^9, {3.870128206532495*^9, 
    3.8701282621961946`*^9}, {3.8701283351529894`*^9, 3.87012833725744*^9}, {
    3.8701284840946865`*^9, 3.8701285031951056`*^9}, 3.8701285339785147`*^9, 
-   3.87012858180956*^9},
+   3.87012858180956*^9, 3.8705178661933804`*^9},
  CellLabel->
-  "Out[906]=",ExpressionUUID->"cc00b8a6-23a6-4f50-8b85-949f424404ed"],
+  "Out[2561]=",ExpressionUUID->"6c1a0035-ba0f-483b-85d1-8e57e23168b6"],
 
 Cell[CellGroupData[{
 
@@ -756,7 +913,7 @@ Cell[BoxData[{
    3.8676047073133345`*^9, 3.867604709766181*^9}, {3.867605088583954*^9, 
    3.867605091710117*^9}, 3.8676059192440205`*^9, {3.8701282718130665`*^9, 
    3.8701282719609833`*^9}},
- CellLabel->"In[907]:=",
+ CellLabel->"In[2554]:=",
  CellID->98508893,
  "TestId" -> 
  "ARCMakeObjectsReferenceable-20220723-V2H68K",ExpressionUUID->"ffce1b0a-4abd-\
@@ -767,30 +924,30 @@ Cell[BoxData[
  TagBox[GridBox[{
     {"\<\"<|\"\>"},
     {"\<\"    Object[<|\\\"X\\\" -> 3|>] -> <|\\\"X2\\\" -> 3, \
-\\\"ColorUseCountRank\\\" -> 1|>,\"\>"},
-    {"\<\"    Object[<|\\\"YRank\\\" -> 1|>] -> <|\\\"Y2Rank\\\" -> 1, \
-\\\"ColorUseCountRank\\\" -> 1|>,\"\>"},
-    {"\<\"    Object[<|\\\"YRank\\\" -> 2|>] -> <|\\\"Y2Rank\\\" -> 2, \
-\\\"ColorUseCountRank\\\" -> 1|>,\"\>"},
-    {"\<\"    Object[<|\\\"YInverseRank\\\" -> 1|>] -> <|\"\>"},
+\\\"ColorUseCount.Rank\\\" -> 1|>,\"\>"},
+    {"\<\"    Object[<|\\\"Y.Rank\\\" -> 1|>] -> <|\\\"Y2.Rank\\\" -> 1, \
+\\\"ColorUseCount.Rank\\\" -> 1|>,\"\>"},
+    {"\<\"    Object[<|\\\"Y.Rank\\\" -> 2|>] -> <|\\\"Y2.Rank\\\" -> 2, \
+\\\"ColorUseCount.Rank\\\" -> 1|>,\"\>"},
+    {"\<\"    Object[<|\\\"Y.InverseRank\\\" -> 1|>] -> <|\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2InverseRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"ColorUseCountInverseRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"Y2.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ColorUseCount.InverseRank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"YInverseRank\\\" -> 2|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"Y.InverseRank\\\" -> 2|>] -> <|\"\>"},
     {"\<\"        \\\"X\\\" -> 7,\"\>"},
     {"\<\"        \\\"X2\\\" -> 7,\"\>"},
-    {"\<\"        \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Y2InverseRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"ColorUseCountRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"X.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"Y2.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ColorUseCount.Rank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"XRank\\\" -> 2|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"X.Rank\\\" -> 2|>] -> <|\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 1,\"\>"},
-    {"\<\"        \\\"X2Rank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"ColorUseCountInverseRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"X2.Rank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"ColorUseCount.InverseRank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"XInverseRank\\\" -> 1|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"X.InverseRank\\\" -> 1|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -837,6 +994,7 @@ Cell[BoxData[
             RGBColor[1, 0, 0], Editable -> False, Selectable -> False], 
            "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
+    {"\<\"        \\\"Color\\\" -> 2,\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -856,10 +1014,10 @@ Cell[BoxData[
                GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
        "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"X2InverseRank\\\" -> 1,\"\>"},
-    {"\<\"        \\\"ColorUseCountRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"X2.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ColorUseCount.Rank\\\" -> 1\"\>"},
     {"\<\"    |>,\"\>"},
-    {"\<\"    Object[<|\\\"XInverseRank\\\" -> 2|>] -> <|\"\>"},
+    {"\<\"    Object[<|\\\"X.InverseRank\\\" -> 2|>] -> <|\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -900,12 +1058,13 @@ Cell[BoxData[
                    FrontEndResource["RGBColorValueSelector"], {
                    0, {Left, Bottom}}, {Left, Top}, 
                    "ClosingActions" -> {
-                    "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]
-               ], BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
-             "Preemptive"], 
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+             Automatic, Method -> "Preemptive"], 
             RGBColor[0, 0, 1], Editable -> False, Selectable -> False], 
            "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
       "RowDefault"]},
+    {"\<\"        \\\"Color\\\" -> 1,\"\>"},
     {
      TemplateBox[{
        TemplateBox[{"\"        \"", 
@@ -925,8 +1084,8 @@ Cell[BoxData[
                GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
        "\",\""},
       "RowDefault"]},
-    {"\<\"        \\\"X2InverseRank\\\" -> 2,\"\>"},
-    {"\<\"        \\\"ColorUseCountRank\\\" -> 1\"\>"},
+    {"\<\"        \\\"X2.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"ColorUseCount.Rank\\\" -> 1\"\>"},
     {"\<\"    |>\"\>"},
     {"\<\"|>\"\>"}
    },
@@ -942,9 +1101,9 @@ Cell[BoxData[
    3.868819148764789*^9, 3.869173565201836*^9, {3.8692542671459837`*^9, 
    3.869254311521941*^9}, 3.8692544362861996`*^9, 3.869255509947855*^9, {
    3.869260763518727*^9, 3.8692607647541714`*^9}, 3.8700267339396267`*^9, 
-   3.87012828111909*^9, 3.8701285873897743`*^9},
+   3.87012828111909*^9, 3.8701285873897743`*^9, 3.8705178495596743`*^9},
  CellLabel->
-  "Out[908]=",ExpressionUUID->"c698c323-12c0-4625-b920-146cc46f077c"]
+  "Out[2555]=",ExpressionUUID->"c1af5e8d-20c2-46c9-988c-095714cdd936"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1073,7 +1232,7 @@ Cell[BoxData[{
   3.867605091710117*^9}, {3.867605891241435*^9, 3.867605918999492*^9}, {
   3.8692544814201*^9, 3.869254484757041*^9}, {3.869255540250921*^9, 
   3.8692556533658457`*^9}, {3.870128292656845*^9, 3.8701282927810698`*^9}},
- CellLabel->"In[909]:=",
+ CellLabel->"In[2552]:=",
  CellID->57267523,
  "TestId" -> 
  "ARCMakeObjectsReferenceable-20220811-SKQ5BK",ExpressionUUID->"536ffe06-5fe5-\
@@ -1129,15 +1288,21 @@ Cell[BoxData[
              "\"}]|>\"", "\"]\""}, "RowDefault"]}, "RowDefault"], "\" ->\""}, 
         "RowDefault"], "\" <|\""},
       "RowDefault"]},
-    {"\<\"    \\\"WidthRank\\\" -> 2,\"\>"},
-    {"\<\"    \\\"WidthInverseRank\\\" -> 1,\"\>"},
-    {"\<\"    \\\"HeightRank\\\" -> 2,\"\>"},
-    {"\<\"    \\\"HeightInverseRank\\\" -> 1,\"\>"},
-    {"\<\"    \\\"LengthRank\\\" -> 2,\"\>"},
-    {"\<\"    \\\"LengthInverseRank\\\" -> 1,\"\>"},
-    {"\<\"    \\\"XRank\\\" -> 1,\"\>"},
-    {"\<\"    \\\"ColorUseCountRank\\\" -> 2,\"\>"},
-    {"\<\"    \\\"ColorUseCountInverseRank\\\" -> 1\"\>"},
+    {"\<\"    \\\"Width.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"Width.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"Height.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"Height.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"Length.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"Length.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"X.Rank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"Area.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"Area.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"FilledArea.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"FilledArea.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"FilledProportion.Rank\\\" -> 1,\"\>"},
+    {"\<\"    \\\"FilledProportion.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"ColorUseCount.Rank\\\" -> 2,\"\>"},
+    {"\<\"    \\\"ColorUseCount.InverseRank\\\" -> 1\"\>"},
     {"\<\"|>\"\>"}
    },
    DefaultBaseStyle->"Column",
@@ -1145,10 +1310,11 @@ Cell[BoxData[
    GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
   "Column"]], "Output",
  CellChangeTimes->{{3.869255611208583*^9, 3.8692556537764482`*^9}, 
-   3.869260491921548*^9, 3.8701282935810347`*^9, 3.870128591337375*^9},
+   3.869260491921548*^9, 3.8701282935810347`*^9, 3.870128591337375*^9, 
+   3.8705178456661825`*^9},
  CellLabel->
-  "Out[910]=",ExpressionUUID->"9ef31915-1335-476b-8f9c-f2987dd8512c"]
-}, Closed]]
+  "Out[2553]=",ExpressionUUID->"d9457ec9-ec6c-41dd-9dcd-9a747c393d49"]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1762,66 +1928,66 @@ Cell[1073, 38, 156, 3, 54, "Subsection",ExpressionUUID->"bd777d24-8fa9-46ff-93e7
 Cell[CellGroupData[{
 Cell[1254, 45, 3662, 85, 52, "TestUI",ExpressionUUID->"2228e8e3-2e67-4528-a2c7-52c16b346d53",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4919, 132, 1004, 23, 108, "Code",ExpressionUUID->"6c1bb74e-99c7-4e9a-8735-6b9035c26136",
+Cell[4919, 132, 1005, 23, 108, "Code",ExpressionUUID->"6c1bb74e-99c7-4e9a-8735-6b9035c26136",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->58431851]
 }, Open  ]],
-Cell[5938, 158, 25546, 491, 855, "Output",ExpressionUUID->"cc00b8a6-23a6-4f50-8b85-949f424404ed"],
+Cell[5939, 158, 32751, 648, 1009, "Output",ExpressionUUID->"6c1a0035-ba0f-483b-85d1-8e57e23168b6"],
 Cell[CellGroupData[{
-Cell[31509, 653, 3664, 85, 52, "TestUI",ExpressionUUID->"2537e51c-9352-44e9-8996-278a46d56339",
+Cell[38715, 810, 3664, 85, 52, "TestUI",ExpressionUUID->"2537e51c-9352-44e9-8996-278a46d56339",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[35176, 740, 938, 22, 108, "Code",ExpressionUUID->"ffce1b0a-4abd-4a74-9293-2ee32f11e016",
+Cell[42382, 897, 939, 22, 108, "Code",ExpressionUUID->"ffce1b0a-4abd-4a74-9293-2ee32f11e016",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->98508893]
 }, Open  ]],
-Cell[36129, 765, 8528, 181, 641, "Output",ExpressionUUID->"c698c323-12c0-4625-b920-146cc46f077c"]
+Cell[43336, 922, 8672, 183, 675, "Output",ExpressionUUID->"c1af5e8d-20c2-46c9-988c-095714cdd936"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[44694, 951, 161, 3, 54, "Subsection",ExpressionUUID->"4e5afcbf-9be9-4358-a7ff-c34c5afa38e1"],
+Cell[52045, 1110, 161, 3, 54, "Subsection",ExpressionUUID->"4e5afcbf-9be9-4358-a7ff-c34c5afa38e1"],
 Cell[CellGroupData[{
-Cell[44880, 958, 3662, 85, 52, "TestUI",ExpressionUUID->"bff0687e-6fbd-45a7-9d76-e807eaef0af0",
+Cell[52231, 1117, 3662, 85, 52, "TestUI",ExpressionUUID->"bff0687e-6fbd-45a7-9d76-e807eaef0af0",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[48545, 1045, 1433, 34, 162, "Code",ExpressionUUID->"536ffe06-5fe5-482a-9946-89522e0f5565",
+Cell[55896, 1204, 1434, 34, 162, "Code",ExpressionUUID->"536ffe06-5fe5-482a-9946-89522e0f5565",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->57267523]
 }, Open  ]],
-Cell[49993, 1082, 3205, 67, 201, "Output",ExpressionUUID->"9ef31915-1335-476b-8f9c-f2987dd8512c"]
-}, Closed]]
+Cell[57345, 1241, 3570, 74, 303, "Output",ExpressionUUID->"d9457ec9-ec6c-41dd-9dcd-9a747c393d49"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[53247, 1155, 157, 3, 67, "Section",ExpressionUUID->"d333eab8-e552-408d-b5f6-ee4f4302e521"],
+Cell[60964, 1321, 157, 3, 67, "Section",ExpressionUUID->"d333eab8-e552-408d-b5f6-ee4f4302e521"],
 Cell[CellGroupData[{
-Cell[53429, 1162, 161, 3, 54, "Subsection",ExpressionUUID->"3df70fbd-6d0b-436b-9cfc-f08b2181fd1b"],
-Cell[53593, 1167, 957, 21, 143, "Code",ExpressionUUID->"4792bacd-aeba-46eb-95f5-d9105c738ad7",
+Cell[61146, 1328, 161, 3, 54, "Subsection",ExpressionUUID->"3df70fbd-6d0b-436b-9cfc-f08b2181fd1b"],
+Cell[61310, 1333, 957, 21, 143, "Code",ExpressionUUID->"4792bacd-aeba-46eb-95f5-d9105c738ad7",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->177477896],
-Cell[54553, 1190, 15669, 312, 164, "Output",ExpressionUUID->"716a671f-96fc-4ddd-aa8f-304e69da3c65"]
+Cell[62270, 1356, 15669, 312, 164, "Output",ExpressionUUID->"716a671f-96fc-4ddd-aa8f-304e69da3c65"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[70259, 1507, 156, 3, 38, "Subsection",ExpressionUUID->"6786d59c-14b3-4e58-92db-291294183754"],
+Cell[77976, 1673, 156, 3, 38, "Subsection",ExpressionUUID->"6786d59c-14b3-4e58-92db-291294183754"],
 Cell[CellGroupData[{
-Cell[70440, 1514, 161, 3, 45, "Subsubsection",ExpressionUUID->"bc9fd219-5846-449a-bd18-15f222a84fbc"],
-Cell[70604, 1519, 1069, 26, 143, "Code",ExpressionUUID->"6eb1f943-3807-4b5f-9437-ea40ba09d8cb",
+Cell[78157, 1680, 161, 3, 45, "Subsubsection",ExpressionUUID->"bc9fd219-5846-449a-bd18-15f222a84fbc"],
+Cell[78321, 1685, 1069, 26, 143, "Code",ExpressionUUID->"6eb1f943-3807-4b5f-9437-ea40ba09d8cb",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->43666449],
-Cell[71676, 1547, 323, 6, 28, "Input",ExpressionUUID->"acf02056-2d4f-44bf-a5e0-ed7926adfc24"]
+Cell[79393, 1713, 323, 6, 28, "Input",ExpressionUUID->"acf02056-2d4f-44bf-a5e0-ed7926adfc24"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[72036, 1558, 155, 3, 37, "Subsubsection",ExpressionUUID->"c314381f-cb8a-449b-b079-804f539c45f1"],
-Cell[72194, 1563, 1079, 28, 107, "Code",ExpressionUUID->"80426ed3-fff4-4253-9d76-a8005315d8c9",
+Cell[79753, 1724, 155, 3, 37, "Subsubsection",ExpressionUUID->"c314381f-cb8a-449b-b079-804f539c45f1"],
+Cell[79911, 1729, 1079, 28, 107, "Code",ExpressionUUID->"80426ed3-fff4-4253-9d76-a8005315d8c9",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->204176910],
-Cell[73276, 1593, 525, 7, 242, "Output",ExpressionUUID->"a4672093-ec33-4ae9-85b8-332165207f33"]
+Cell[80993, 1759, 525, 7, 242, "Output",ExpressionUUID->"a4672093-ec33-4ae9-85b8-332165207f33"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]],
-Cell[73840, 1605, 154, 3, 67, "Section",ExpressionUUID->"5b9e1d06-2c05-437b-b6a3-9c0e03ca1c95"]
+Cell[81557, 1771, 154, 3, 67, "Section",ExpressionUUID->"5b9e1d06-2c05-437b-b6a3-9c0e03ca1c95"]
 }, Open  ]]
 }
 ]

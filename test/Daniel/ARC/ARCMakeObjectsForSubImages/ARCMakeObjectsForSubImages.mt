@@ -13,105 +13,109 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
-                Daniel`ARC`ARCMakeObjectsForSubImages[
-                    <|
-                        "UUID" -> "f3922cf7-30b2-4899-afb2-2d67e0ab35bd",
-                        "Image" -> Daniel`ARC`ARCScene[
-                            {
-                                {5, 1, 5, -1, -1, -1, -1, -1, -1},
-                                {1, -1, 1, -1, -1, -1, -1, -1, -1},
-                                {5, 1, 5, 5, 1, 5, -1, -1, -1},
-                                {-1, -1, -1, 1, -1, 1, -1, -1, -1},
-                                {-1, -1, -1, 5, 1, 5, 5, 1, 5},
-                                {-1, -1, -1, -1, -1, -1, 1, -1, 1},
-                                {-1, -1, -1, -1, -1, -1, 5, 1, 5}
-                            }
-                        ],
-                        "PixelPositions" -> {
-                            {1, 1},
-                            {1, 2},
-                            {1, 3},
-                            {2, 1},
-                            {2, 3},
-                            {3, 1},
-                            {3, 2},
-                            {3, 3},
-                            {3, 4},
-                            {3, 5},
-                            {3, 6},
-                            {4, 4},
-                            {4, 6},
-                            {5, 4},
-                            {5, 5},
-                            {5, 6},
-                            {5, 7},
-                            {5, 8},
-                            {5, 9},
-                            {6, 7},
-                            {6, 9},
-                            {7, 7},
-                            {7, 8},
-                            {7, 9}
-                        },
-                        "Colors" -> {1, 5},
-                        "Width" -> 9,
-                        "Height" -> 7,
-                        "Position" -> {1, 1}
-                    |>,
-                    {
-                        {{5, 1, 5}, {1, -1, 1}, {5, 1, 5}} -> <|
-                            "UUID" -> "4ed18af1-ee40-41d9-ad04-c9a0693199e4",
-                            "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCMakeObjectsForSubImages[
+                        <|
+                            "UUID" -> "f3922cf7-30b2-4899-afb2-2d67e0ab35bd",
+                            "Image" -> Daniel`ARC`ARCScene[
+                                {
+                                    {5, 1, 5, -1, -1, -1, -1, -1, -1},
+                                    {1, -1, 1, -1, -1, -1, -1, -1, -1},
+                                    {5, 1, 5, 5, 1, 5, -1, -1, -1},
+                                    {-1, -1, -1, 1, -1, 1, -1, -1, -1},
+                                    {-1, -1, -1, 5, 1, 5, 5, 1, 5},
+                                    {-1, -1, -1, -1, -1, -1, 1, -1, 1},
+                                    {-1, -1, -1, -1, -1, -1, 5, 1, 5}
+                                }
+                            ],
                             "PixelPositions" -> {
-                                {7, 2},
-                                {7, 3},
-                                {7, 4},
-                                {8, 2},
-                                {8, 4},
-                                {9, 2},
-                                {9, 3},
-                                {9, 4}
-                            },
-                            "Shapes" -> {
-                                <|
-                                    "Image" -> Daniel`ARC`ARCScene[
-                                        {{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}
-                                    ]
-                                |>
+                                {1, 1},
+                                {1, 2},
+                                {1, 3},
+                                {2, 1},
+                                {2, 3},
+                                {3, 1},
+                                {3, 2},
+                                {3, 3},
+                                {3, 4},
+                                {3, 5},
+                                {3, 6},
+                                {4, 4},
+                                {4, 6},
+                                {5, 4},
+                                {5, 5},
+                                {5, 6},
+                                {5, 7},
+                                {5, 8},
+                                {5, 9},
+                                {6, 7},
+                                {6, 9},
+                                {7, 7},
+                                {7, 8},
+                                {7, 9}
                             },
                             "Colors" -> {1, 5},
-                            "Width" -> 3,
-                            "Height" -> 3,
-                            "Position" -> {7, 2},
-                            "Y" -> 7,
-                            "X" -> 2,
-                            "AspectRatio" -> 1,
-                            "Area" -> 9,
-                            "FilledArea" -> 8,
-                            "Components" -> {
-                                <|
-                                    "Image" -> {{1}},
-                                    "Position" -> {7, 2},
-                                    "PixelPositions" -> {{7, 2}}
-                                |>
-                            }
-                        |>
-                    },
-                    Daniel`ARC`ARCScene[
+                            "Width" -> 9,
+                            "Height" -> 7,
+                            "Position" -> {1, 1}
+                        |>,
                         {
-                            {5, 1, 5, 0, 0, 0, 0, 0, 0},
-                            {1, 0, 1, 0, 0, 0, 0, 0, 0},
-                            {5, 1, 5, 5, 1, 5, 0, 0, 0},
-                            {0, 0, 0, 1, 0, 1, 0, 0, 0},
-                            {0, 0, 0, 5, 1, 5, 5, 1, 5},
-                            {0, 0, 0, 0, 0, 0, 1, 0, 1},
-                            {0, 5, 1, 5, 0, 0, 5, 1, 5},
-                            {0, 1, 0, 1, 0, 0, 0, 0, 0},
-                            {0, 5, 1, 5, 0, 0, 0, 0, 0}
-                        }
-                    ],
-                    0
+                            {{5, 1, 5}, {1, -1, 1}, {5, 1, 5}} -> <|
+                                "UUID" -> "4ed18af1-ee40-41d9-ad04-c9a0693199e4",
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}
+                                ],
+                                "PixelPositions" -> {
+                                    {7, 2},
+                                    {7, 3},
+                                    {7, 4},
+                                    {8, 2},
+                                    {8, 4},
+                                    {9, 2},
+                                    {9, 3},
+                                    {9, 4}
+                                },
+                                "Shapes" -> {
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[
+                                            {{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}
+                                        ]
+                                    |>
+                                },
+                                "Colors" -> {1, 5},
+                                "Width" -> 3,
+                                "Height" -> 3,
+                                "Position" -> {7, 2},
+                                "Y" -> 7,
+                                "X" -> 2,
+                                "AspectRatio" -> 1,
+                                "Area" -> 9,
+                                "FilledArea" -> 8,
+                                "Components" -> {
+                                    <|
+                                        "Image" -> {{1}},
+                                        "Position" -> {7, 2},
+                                        "PixelPositions" -> {{7, 2}}
+                                    |>
+                                }
+                            |>
+                        },
+                        Daniel`ARC`ARCScene[
+                            {
+                                {5, 1, 5, 0, 0, 0, 0, 0, 0},
+                                {1, 0, 1, 0, 0, 0, 0, 0, 0},
+                                {5, 1, 5, 5, 1, 5, 0, 0, 0},
+                                {0, 0, 0, 1, 0, 1, 0, 0, 0},
+                                {0, 0, 0, 5, 1, 5, 5, 1, 5},
+                                {0, 0, 0, 0, 0, 0, 1, 0, 1},
+                                {0, 5, 1, 5, 0, 0, 5, 1, 5},
+                                {0, 1, 0, 1, 0, 0, 0, 0, 0},
+                                {0, 5, 1, 5, 0, 0, 0, 0, 0}
+                            }
+                        ],
+                        0
+                    ]
                 ]
             ]
         ]
@@ -119,121 +123,16 @@ Test[
     ,
     {
         <|
-            "UUID" -> 0,
             "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
-            "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {2, 3}, {3, 1}, {3, 2}, {3, 3}},
-            "Shapes" -> {<|"Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}]|>},
-            "Colors" -> {1, 5},
-            "Width" -> 3,
-            "Height" -> 3,
-            "Position" -> {1, 1},
-            "Y" -> 1,
-            "X" -> 1,
-            "AspectRatio" -> 1,
-            "Area" -> 9,
-            "FilledArea" -> 8,
-            "Components" -> {
-                <|
-                    "Image" -> {{1}},
-                    "Position" -> {1, 1},
-                    "PixelPositions" -> {{1, 1}},
-                    "Y" -> 1,
-                    "X" -> 1,
-                    "Y2" -> 1,
-                    "X2" -> 1,
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Length" -> 1,
-                    "PrimarySizeDimension" -> "None",
-                    "AspectRatio" -> 1,
-                    "Area" -> 1,
-                    "FilledArea" -> 1,
-                    "FilledProportion" -> 1.
-                |>
-            },
-            "Y2" -> 3,
-            "X2" -> 3,
-            "Length" -> 3,
-            "PrimarySizeDimension" -> "None",
-            "FilledProportion" -> 0.8888888888888888
+            "Position" -> {1, 1}
         |>,
         <|
-            "UUID" -> 0,
             "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
-            "PixelPositions" -> {{3, 4}, {3, 5}, {3, 6}, {4, 4}, {4, 6}, {5, 4}, {5, 5}, {5, 6}},
-            "Shapes" -> {<|"Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}]|>},
-            "Colors" -> {1, 5},
-            "Width" -> 3,
-            "Height" -> 3,
-            "Position" -> {3, 4},
-            "Y" -> 3,
-            "X" -> 4,
-            "AspectRatio" -> 1,
-            "Area" -> 9,
-            "FilledArea" -> 8,
-            "Components" -> {
-                <|
-                    "Image" -> {{1}},
-                    "Position" -> {3, 4},
-                    "PixelPositions" -> {{3, 4}},
-                    "Y" -> 3,
-                    "X" -> 4,
-                    "Y2" -> 3,
-                    "X2" -> 4,
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Length" -> 1,
-                    "PrimarySizeDimension" -> "None",
-                    "AspectRatio" -> 1,
-                    "Area" -> 1,
-                    "FilledArea" -> 1,
-                    "FilledProportion" -> 1.
-                |>
-            },
-            "Y2" -> 5,
-            "X2" -> 6,
-            "Length" -> 3,
-            "PrimarySizeDimension" -> "None",
-            "FilledProportion" -> 0.8888888888888888
+            "Position" -> {3, 4}
         |>,
         <|
-            "UUID" -> 0,
             "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
-            "PixelPositions" -> {{5, 7}, {5, 8}, {5, 9}, {6, 7}, {6, 9}, {7, 7}, {7, 8}, {7, 9}},
-            "Shapes" -> {<|"Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}]|>},
-            "Colors" -> {1, 5},
-            "Width" -> 3,
-            "Height" -> 3,
-            "Position" -> {5, 7},
-            "Y" -> 5,
-            "X" -> 7,
-            "AspectRatio" -> 1,
-            "Area" -> 9,
-            "FilledArea" -> 8,
-            "Components" -> {
-                <|
-                    "Image" -> {{1}},
-                    "Position" -> {5, 7},
-                    "PixelPositions" -> {{5, 7}},
-                    "Y" -> 5,
-                    "X" -> 7,
-                    "Y2" -> 5,
-                    "X2" -> 7,
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Length" -> 1,
-                    "PrimarySizeDimension" -> "None",
-                    "AspectRatio" -> 1,
-                    "Area" -> 1,
-                    "FilledArea" -> 1,
-                    "FilledProportion" -> 1.
-                |>
-            },
-            "Y2" -> 7,
-            "X2" -> 9,
-            "Length" -> 3,
-            "PrimarySizeDimension" -> "None",
-            "FilledProportion" -> 0.8888888888888888
+            "Position" -> {5, 7}
         |>
     }
     ,

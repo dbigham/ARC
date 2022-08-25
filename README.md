@@ -31,7 +31,7 @@ https://github.com/fchollet/ARC
 * [0d3d703e](TaskNotes/0d3d703e/notes.md)
 * [1bfc4729](TaskNotes/1bfc4729/notes.md)
 
-### Personally Created Training Tasks (11)
+### Personally Created Training Tasks (12)
 
 * [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)
 * [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)
@@ -44,10 +44,11 @@ https://github.com/fchollet/ARC
 * [ifmyulnv8-shape](TaskNotes/ifmyulnv8-shape/notes.md)
 * [ifmyulnv8-dynamic-shape](TaskNotes/ifmyulnv8-dynamic-shape/notes.md)
 * [referenceable-components](TaskNotes/referenceable-components/notes.md)
+* [178fcbfb-easier](TaskNotes/178fcbfb-easier/notes.md)
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (9)
+### Training Tasks (11)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -60,11 +61,14 @@ The following ARC training tasks started passing after some different task was i
 * [d511f180](TaskNotes/d511f180/notes.md)
 * [88a10436](TaskNotes/88a10436/notes.md)
 * [d037b0a7](TaskNotes/d037b0a7/notes.md)
+* [4347f46a](TaskNotes/4347f46a/notes.md)
+* [67385a82](TaskNotes/67385a82/notes.md)
 
-### Evaluation Tasks (3)
+### Evaluation Tasks (4)
 
 The following ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or implemented specifically.
 
 * [84f2aca1](TaskNotes/84f2aca1/notes.md)
 * [66e6c45b](TaskNotes/66e6c45b/notes.md)
 * [f45f5ca7](TaskNotes/f45f5ca7/notes.md)
+* [fc754716](TaskNotes/fc754716/notes.md)

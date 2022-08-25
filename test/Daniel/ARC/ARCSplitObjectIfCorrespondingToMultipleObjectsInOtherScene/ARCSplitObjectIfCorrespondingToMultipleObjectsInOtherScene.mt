@@ -11,49 +11,53 @@
 *)
 
 Test[
-    DevTools`ERP`NormalizeOutput[
-        Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
-            <|
-                "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",
-                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, 5, 5}}],
-                "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}},
-                "Colors" -> {5},
-                "Position" -> {2, 1},
-                "Y" -> 2,
-                "X" -> 1,
-                "Y2" -> 3,
-                "X2" -> 3,
-                "Width" -> 3,
-                "Height" -> 2
-            |>,
-            {
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
                 <|
-                    "UUID" -> "ada0ee5f-9bee-4679-89b3-2bc5f13df6e5",
-                    "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}}],
-                    "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}},
-                    "Colors" -> {4},
+                    "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",
+                    "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, 5, 5}}],
+                    "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}},
+                    "Colors" -> {5},
                     "Position" -> {2, 1},
                     "Y" -> 2,
-                    "X" -> 1,
-                    "Y2" -> 2,
-                    "X2" -> 3,
-                    "Width" -> 3,
-                    "Height" -> 1
-                |>,
-                <|
-                    "UUID" -> "52b2ae0a-6f61-47f6-8065-f3dfa97aa158",
-                    "Image" -> Daniel`ARC`ARCScene[{{9, 9, 9}}],
-                    "PixelPositions" -> {{3, 1}, {3, 2}, {3, 3}},
-                    "Colors" -> {9},
-                    "Position" -> {3, 1},
-                    "Y" -> 3,
                     "X" -> 1,
                     "Y2" -> 3,
                     "X2" -> 3,
                     "Width" -> 3,
-                    "Height" -> 1
-                |>
-            }
+                    "Height" -> 2
+                |>,
+                {
+                    <|
+                        "UUID" -> "ada0ee5f-9bee-4679-89b3-2bc5f13df6e5",
+                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}}],
+                        "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}},
+                        "Colors" -> {4},
+                        "Position" -> {2, 1},
+                        "Y" -> 2,
+                        "X" -> 1,
+                        "Y2" -> 2,
+                        "X2" -> 3,
+                        "Width" -> 3,
+                        "Height" -> 1
+                    |>,
+                    <|
+                        "UUID" -> "52b2ae0a-6f61-47f6-8065-f3dfa97aa158",
+                        "Image" -> Daniel`ARC`ARCScene[{{9, 9, 9}}],
+                        "PixelPositions" -> {{3, 1}, {3, 2}, {3, 3}},
+                        "Colors" -> {9},
+                        "Position" -> {3, 1},
+                        "Y" -> 3,
+                        "X" -> 1,
+                        "Y2" -> 3,
+                        "X2" -> 3,
+                        "Width" -> 3,
+                        "Height" -> 1
+                    |>
+                },
+                10,
+                10
+            ]
         ]
     ]
     ,
@@ -79,11 +83,16 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "Colors" -> {5},
+            "Color" -> 5,
             "Position" -> {2, 1},
             "Y" -> 2,
             "X" -> 1,
+            "YInverse" -> 9,
+            "XInverse" -> 10,
             "Y2" -> 2,
             "X2" -> 3,
+            "Y2Inverse" -> 9,
+            "X2Inverse" -> 8,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -114,11 +123,16 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "Colors" -> {5},
+            "Color" -> 5,
             "Position" -> {3, 1},
             "Y" -> 3,
             "X" -> 1,
+            "YInverse" -> 8,
+            "XInverse" -> 10,
             "Y2" -> 3,
             "X2" -> 3,
+            "Y2Inverse" -> 8,
+            "X2Inverse" -> 8,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -134,36 +148,40 @@ Test[
 ]
 
 Test[
-    DevTools`ERP`NormalizeOutput[
-        Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
-            <|
-                "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",
-                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, 5, 5}}],
-                "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}},
-                "Colors" -> {5},
-                "Position" -> {2, 1},
-                "Y" -> 2,
-                "X" -> 1,
-                "Y2" -> 3,
-                "X2" -> 3,
-                "Width" -> 3,
-                "Height" -> 2
-            |>,
-            {
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
                 <|
-                    "UUID" -> "ada0ee5f-9bee-4679-89b3-2bc5f13df6e5",
-                    "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}}],
-                    "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}},
-                    "Colors" -> {4},
+                    "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",
+                    "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, 5, 5}}],
+                    "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}},
+                    "Colors" -> {5},
                     "Position" -> {2, 1},
                     "Y" -> 2,
                     "X" -> 1,
-                    "Y2" -> 2,
+                    "Y2" -> 3,
                     "X2" -> 3,
                     "Width" -> 3,
-                    "Height" -> 1
-                |>
-            }
+                    "Height" -> 2
+                |>,
+                {
+                    <|
+                        "UUID" -> "ada0ee5f-9bee-4679-89b3-2bc5f13df6e5",
+                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}}],
+                        "PixelPositions" -> {{2, 1}, {2, 2}, {2, 3}},
+                        "Colors" -> {4},
+                        "Position" -> {2, 1},
+                        "Y" -> 2,
+                        "X" -> 1,
+                        "Y2" -> 2,
+                        "X2" -> 3,
+                        "Width" -> 3,
+                        "Height" -> 1
+                    |>
+                },
+                10,
+                10
+            ]
         ]
     ]
     ,

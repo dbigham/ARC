@@ -337,3 +337,35 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220822-EGPPMW"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["178fcbfb-easier"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220826-85MO3M"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["4347f46a"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220826-0XQ193"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["67385a82"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220826-5B1ZAB"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["fc754716"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220826-QAR7GQ"
+]

@@ -697,7 +697,7 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "Position" -> <|"Y" -> 2, "X" -> 2|>,
-                "Offset" -> <|"Y" -> 1, "X" -> 0|>
+                "Offset" -> <|"Y" -> 1|>
             |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}}], "Position" -> {2, 8}|> -> <|
@@ -710,7 +710,7 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "Position" -> <|"Y" -> 2, "X" -> 5|>,
-                "Offset" -> <|"Y" -> -1, "X" -> 0|>
+                "Offset" -> <|"Y" -> -1|>
             |>
         |>
     |>
@@ -755,10 +755,14 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCFindObjectMapping[
-                Daniel`ARC`ARCParseFile[file = "jnohuorzh"]["Train", 1]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCFindObjectMapping[
+                        Daniel`ARC`ARCParseFile[file = "jnohuorzh"]["Train", 1]
+                    ]
+                ]
             ]
         ]
     ]
@@ -770,7 +774,7 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "Position" -> <|"Y" -> 4, "X" -> 3|>,
-                "Offset" -> <|"Y" -> 1, "X" -> 0|>
+                "Offset" -> <|"Y" -> 1|>
             |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {4, 5}|> -> <|
@@ -779,7 +783,7 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "Position" -> <|"Y" -> 5, "X" -> 5|>,
-                "Offset" -> <|"Y" -> 1, "X" -> 0|>
+                "Offset" -> <|"Y" -> 1|>
             |>
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {7, 9}|> -> <|
@@ -788,7 +792,7 @@ Test[
             "Transform" -> <|
                 "Type" -> "Move",
                 "Position" -> <|"Y" -> 6, "X" -> 9|>,
-                "Offset" -> <|"Y" -> -1, "X" -> 0|>
+                "Offset" -> <|"Y" -> -1|>
             |>
         |>
     |>

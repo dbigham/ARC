@@ -69,7 +69,9 @@ Test[
                         "XRank" -> 1,
                         "AspectRatioRank" -> 1
                     |>
-                }
+                },
+                10,
+                10
             ]
         ]
     ]
@@ -143,6 +145,11 @@ Test[
                 "AspectRatioRank" -> 1
             |>
         },
+        "Color" -> 8,
+        "YInverse" -> 7,
+        "XInverse" -> 8,
+        "Y2Inverse" -> 7,
+        "X2Inverse" -> 1,
         "Length" -> 8,
         "PrimarySizeDimension" -> "X",
         "AspectRatio" -> 8,

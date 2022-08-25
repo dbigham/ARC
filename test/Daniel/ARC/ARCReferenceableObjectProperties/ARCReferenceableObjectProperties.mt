@@ -30,6 +30,7 @@ Test[
     ,
     <|
         Daniel`ARC`Object[<|"Colors" -> {1}|>] -> <|
+            "Color" -> 1,
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
@@ -38,6 +39,7 @@ Test[
             }
         |>,
         Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|
+            "Color" -> 2,
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
@@ -46,6 +48,7 @@ Test[
             }
         |>,
         Daniel`ARC`Object[<|"Colors" -> {4}|>] -> <|
+            "Color" -> 4,
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
@@ -64,65 +67,65 @@ Test[
         |>,
         Daniel`ARC`Object[<|"X" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "XRank" -> 3,
-            "XInverseRank" -> 1,
-            "X2Rank" -> 3,
-            "X2InverseRank" -> 1,
+            "X.Rank" -> 3,
+            "X.InverseRank" -> 1,
+            "X2.Rank" -> 3,
+            "X2.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dh",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq"
             }
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"Y.Rank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YInverseRank" -> 3,
-            "Y2Rank" -> 1,
-            "Y2InverseRank" -> 3,
+            "Y.InverseRank" -> 3,
+            "Y2.Rank" -> 1,
+            "Y2.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dg",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742ds"
             }
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 2|>] -> <|
+        Daniel`ARC`Object[<|"Y.Rank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YInverseRank" -> 2,
-            "Y2Rank" -> 2,
-            "Y2InverseRank" -> 2,
+            "Y.InverseRank" -> 2,
+            "Y2.Rank" -> 2,
+            "Y2.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dh",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq"
             }
         |>,
-        Daniel`ARC`Object[<|"YRank" -> 3|>] -> <|
+        Daniel`ARC`Object[<|"Y.Rank" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "YInverseRank" -> 1,
-            "Y2Rank" -> 3,
-            "Y2InverseRank" -> 1,
+            "Y.InverseRank" -> 1,
+            "Y2.Rank" -> 3,
+            "Y2.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742di",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dr"
             }
         |>,
-        Daniel`ARC`Object[<|"XRank" -> 1|>] -> <|
+        Daniel`ARC`Object[<|"X.Rank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "XInverseRank" -> 3,
-            "X2Rank" -> 1,
-            "X2InverseRank" -> 3,
+            "X.InverseRank" -> 3,
+            "X2.Rank" -> 1,
+            "X2.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742di",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742ds"
             }
         |>,
-        Daniel`ARC`Object[<|"XRank" -> 2|>] -> <|
+        Daniel`ARC`Object[<|"X.Rank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
-            "XInverseRank" -> 2,
-            "X2Rank" -> 2,
-            "X2InverseRank" -> 2,
+            "X.InverseRank" -> 2,
+            "X2.Rank" -> 2,
+            "X2.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dg",
@@ -174,14 +177,18 @@ Test[
             "AspectRatio" -> 1/3,
             "Area" -> 3,
             "FilledArea" -> 3,
-            "HeightRank" -> 4,
-            "HeightInverseRank" -> 1,
-            "LengthRank" -> 4,
-            "LengthInverseRank" -> 1,
-            "YRank" -> 1,
-            "YInverseRank" -> 4,
-            "AspectRatioRank" -> 1,
-            "AspectRatioInverseRank" -> 4,
+            "Height.Rank" -> 4,
+            "Height.InverseRank" -> 1,
+            "Length.Rank" -> 4,
+            "Length.InverseRank" -> 1,
+            "Y.Rank" -> 1,
+            "Y.InverseRank" -> 4,
+            "AspectRatio.Rank" -> 1,
+            "AspectRatio.InverseRank" -> 4,
+            "Area.Rank" -> 4,
+            "Area.InverseRank" -> 1,
+            "FilledArea.Rank" -> 4,
+            "FilledArea.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dr",
@@ -195,14 +202,18 @@ Test[
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "HeightRank" -> 1,
-            "HeightInverseRank" -> 4,
-            "LengthRank" -> 1,
-            "LengthInverseRank" -> 4,
-            "YRank" -> 4,
-            "YInverseRank" -> 1,
-            "AspectRatioRank" -> 4,
-            "AspectRatioInverseRank" -> 1,
+            "Height.Rank" -> 1,
+            "Height.InverseRank" -> 4,
+            "Length.Rank" -> 1,
+            "Length.InverseRank" -> 4,
+            "Y.Rank" -> 4,
+            "Y.InverseRank" -> 1,
+            "AspectRatio.Rank" -> 4,
+            "AspectRatio.InverseRank" -> 1,
+            "Area.Rank" -> 1,
+            "Area.InverseRank" -> 4,
+            "FilledArea.Rank" -> 1,
+            "FilledArea.InverseRank" -> 4,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742do",
@@ -216,14 +227,18 @@ Test[
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "HeightRank" -> 2,
-            "HeightInverseRank" -> 3,
-            "LengthRank" -> 2,
-            "LengthInverseRank" -> 3,
-            "YRank" -> 3,
-            "YInverseRank" -> 2,
-            "AspectRatioRank" -> 3,
-            "AspectRatioInverseRank" -> 2,
+            "Height.Rank" -> 2,
+            "Height.InverseRank" -> 3,
+            "Length.Rank" -> 2,
+            "Length.InverseRank" -> 3,
+            "Y.Rank" -> 3,
+            "Y.InverseRank" -> 2,
+            "AspectRatio.Rank" -> 3,
+            "AspectRatio.InverseRank" -> 2,
+            "Area.Rank" -> 2,
+            "Area.InverseRank" -> 3,
+            "FilledArea.Rank" -> 2,
+            "FilledArea.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dp",
@@ -238,10 +253,10 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "X2" -> 2,
-            "XRank" -> 4,
-            "XInverseRank" -> 1,
-            "X2Rank" -> 4,
-            "X2InverseRank" -> 1,
+            "X.Rank" -> 4,
+            "X.InverseRank" -> 1,
+            "X2.Rank" -> 4,
+            "X2.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742do",
@@ -256,10 +271,10 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "X2" -> 4,
-            "XRank" -> 3,
-            "XInverseRank" -> 2,
-            "X2Rank" -> 3,
-            "X2InverseRank" -> 2,
+            "X.Rank" -> 3,
+            "X.InverseRank" -> 2,
+            "X2.Rank" -> 3,
+            "X2.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
@@ -274,10 +289,10 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "X2" -> 6,
-            "XRank" -> 2,
-            "XInverseRank" -> 3,
-            "X2Rank" -> 2,
-            "X2InverseRank" -> 3,
+            "X.Rank" -> 2,
+            "X.InverseRank" -> 3,
+            "X2.Rank" -> 2,
+            "X2.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dr",
@@ -292,30 +307,34 @@ Test[
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
             "X2" -> 8,
-            "XRank" -> 1,
-            "XInverseRank" -> 4,
-            "X2Rank" -> 1,
-            "X2InverseRank" -> 4,
+            "X.Rank" -> 1,
+            "X.InverseRank" -> 4,
+            "X2.Rank" -> 1,
+            "X2.InverseRank" -> 4,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dp",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742e8"
             }
         |>,
-        Daniel`ARC`Object[<|"HeightRank" -> 3|>] -> <|
+        Daniel`ARC`Object[<|"Height.Rank" -> 3|>] -> <|
             "Shapes" -> {
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
-            "HeightInverseRank" -> 2,
-            "LengthRank" -> 3,
-            "LengthInverseRank" -> 2,
-            "YRank" -> 2,
-            "YInverseRank" -> 3,
-            "AspectRatioRank" -> 2,
-            "AspectRatioInverseRank" -> 3,
+            "Height.InverseRank" -> 2,
+            "Length.Rank" -> 3,
+            "Length.InverseRank" -> 2,
+            "Y.Rank" -> 2,
+            "Y.InverseRank" -> 3,
+            "AspectRatio.Rank" -> 2,
+            "AspectRatio.InverseRank" -> 3,
+            "Area.Rank" -> 3,
+            "Area.InverseRank" -> 2,
+            "FilledArea.Rank" -> 3,
+            "FilledArea.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",

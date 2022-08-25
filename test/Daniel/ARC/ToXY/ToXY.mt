@@ -17,3 +17,27 @@ Test[
     ,
     TestID -> "ToXY-20220724-2GTJ08"
 ]
+
+Test[
+    Daniel`ARC`ToXY[{1, 0}, "RemoveZeroes" -> True]
+    ,
+    <|"Y" -> 1|>
+    ,
+    TestID -> "ToXY-20220826-CC1TI0"
+]
+
+Test[
+    Daniel`ARC`ToXY[{0, 1}, "RemoveZeroes" -> True]
+    ,
+    <|"X" -> 1|>
+    ,
+    TestID -> "ToXY-20220826-X9A0YD"
+]
+
+Test[
+    Daniel`ARC`ToXY[{0, 0}, "RemoveZeroes" -> True]
+    ,
+    <||>
+    ,
+    TestID -> "ToXY-20220826-58XO4V"
+]

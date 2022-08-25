@@ -19,7 +19,9 @@ Test[
                     "Position" -> {1, 1},
                     "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
                     "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                |>
+                |>,
+                10,
+                10
             ]
         ]
     ]
@@ -51,11 +53,16 @@ Test[
             |>
         },
         "Colors" -> {2},
+        "Color" -> 2,
         "Position" -> {1, 1},
         "Y" -> 1,
         "X" -> 1,
+        "YInverse" -> 10,
+        "XInverse" -> 10,
         "Y2" -> 3,
         "X2" -> 3,
+        "Y2Inverse" -> 8,
+        "X2Inverse" -> 8,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -88,7 +95,9 @@ Test[
                         {3, 2},
                         {3, 3}
                     }
-                |>
+                |>,
+                10,
+                10
             ]
         ]
     ]
@@ -116,11 +125,16 @@ Test[
             <|"Name" -> "Rectangle", "Filled" -> True|>
         },
         "Colors" -> {2},
+        "Color" -> 2,
         "Position" -> {1, 1},
         "Y" -> 1,
         "X" -> 1,
+        "YInverse" -> 10,
+        "XInverse" -> 10,
         "Y2" -> 3,
         "X2" -> 3,
+        "Y2Inverse" -> 8,
+        "X2Inverse" -> 8,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -135,14 +149,18 @@ Test[
 ]
 
 Test[
-    DevTools`ERP`NormalizeOutput[
-        Daniel`ARC`ARCImageRegionToObject[
-            <|
-                "Color" -> 2,
-                "Position" -> {1, 1},
-                "Image" -> {{2}},
-                "PixelPositions" -> {{1, 1}}
-            |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCImageRegionToObject[
+                <|
+                    "Color" -> 2,
+                    "Position" -> {1, 1},
+                    "Image" -> {{2}},
+                    "PixelPositions" -> {{1, 1}}
+                |>,
+                10,
+                10
+            ]
         ]
     ]
     ,
@@ -160,11 +178,16 @@ Test[
             <|"Name" -> "Rectangle", "Filled" -> True|>
         },
         "Colors" -> {2},
+        "Color" -> 2,
         "Position" -> {1, 1},
         "Y" -> 1,
         "X" -> 1,
+        "YInverse" -> 10,
+        "XInverse" -> 10,
         "Y2" -> 1,
         "X2" -> 1,
+        "Y2Inverse" -> 10,
+        "X2Inverse" -> 10,
         "Width" -> 1,
         "Height" -> 1,
         "Length" -> 1,
@@ -179,24 +202,28 @@ Test[
 ]
 
 Test[
-    DevTools`ERP`NormalizeOutput[
-        Daniel`ARC`ARCImageRegionToObject[
-            <|
-                "Color" -> 2,
-                "Position" -> {1, 1},
-                "Image" -> {{2, 2, 2}, {2, 2, 2}, {2, 2, -1}},
-                "PixelPositions" -> {
-                    {1, 1},
-                    {1, 2},
-                    {1, 3},
-                    {2, 1},
-                    {2, 2},
-                    {2, 3},
-                    {3, 1},
-                    {3, 2},
-                    {3, 3}
-                }
-            |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCImageRegionToObject[
+                <|
+                    "Color" -> 2,
+                    "Position" -> {1, 1},
+                    "Image" -> {{2, 2, 2}, {2, 2, 2}, {2, 2, -1}},
+                    "PixelPositions" -> {
+                        {1, 1},
+                        {1, 2},
+                        {1, 3},
+                        {2, 1},
+                        {2, 2},
+                        {2, 3},
+                        {3, 1},
+                        {3, 2},
+                        {3, 3}
+                    }
+                |>,
+                10,
+                10
+            ]
         ]
     ]
     ,
@@ -231,11 +258,16 @@ Test[
             |>
         },
         "Colors" -> {2},
+        "Color" -> 2,
         "Position" -> {1, 1},
         "Y" -> 1,
         "X" -> 1,
+        "YInverse" -> 10,
+        "XInverse" -> 10,
         "Y2" -> 3,
         "X2" -> 3,
+        "Y2Inverse" -> 8,
+        "X2Inverse" -> 8,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,

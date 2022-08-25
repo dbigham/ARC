@@ -21,7 +21,9 @@ Test[
                             "Position" -> {1, 1},
                             "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
                             "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                        |>
+                        |>,
+                        10,
+                        10
                     ],
                     {"ParentWidth" -> 10, "ParentHeight" -> 10}
                 ]
@@ -51,11 +53,16 @@ Test[
             <|"Name" -> "L"|>
         },
         "Colors" -> {2},
+        "Color" -> 2,
         "Position" -> {8, 1},
         "Y" -> 8,
         "X" -> 1,
+        "YInverse" -> 10,
+        "XInverse" -> 10,
         "Y2" -> 10,
         "X2" -> 3,
+        "Y2Inverse" -> 8,
+        "X2Inverse" -> 8,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,

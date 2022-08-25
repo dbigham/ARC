@@ -18,9 +18,9 @@ Test[
     ]
     ,
     {
-        <|"Length" -> 1, "LengthRank" -> 3, "LengthInverseRank" -> 1|>,
-        <|"Length" -> 5, "LengthRank" -> 2, "LengthInverseRank" -> 2|>,
-        <|"Length" -> 10, "LengthRank" -> 1, "LengthInverseRank" -> 3|>
+        <|"Length" -> 1, "Length.Rank" -> 3, "Length.InverseRank" -> 1|>,
+        <|"Length" -> 5, "Length.Rank" -> 2, "Length.InverseRank" -> 2|>,
+        <|"Length" -> 10, "Length.Rank" -> 1, "Length.InverseRank" -> 3|>
     }
     ,
     TestID -> "ARCInferRankProperties-20220804-G0RK85"

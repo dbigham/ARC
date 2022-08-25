@@ -67,7 +67,9 @@ Test[
                         |>
                     |>,
                     {<|"UUID" -> 3, "MyKey" -> 1|>, <|"UUID" -> 5, "MyKey" -> 2|>},
-                    0
+                    0,
+                    10,
+                    10
                 ]
             ]
         ]
@@ -113,6 +115,11 @@ Test[
                     "X" -> 10
                 |>
             },
+            "Color" -> 8,
+            "YInverse" -> 7,
+            "XInverse" -> 8,
+            "Y2Inverse" -> 7,
+            "X2Inverse" -> 1,
             "Length" -> 8,
             "PrimarySizeDimension" -> "X",
             "AspectRatio" -> 8,

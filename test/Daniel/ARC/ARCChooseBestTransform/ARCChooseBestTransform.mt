@@ -96,3 +96,19 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220818-247NKD"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            <|
+                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -1],
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -1]
+            |>,
+            <|"RelativePosition" -> {-2, -2}|>
+        }
+    ]
+    ,
+    <|"RelativePosition" -> {-2, -2}|>
+    ,
+    TestID -> "ARCChooseBestTransform-20220826-6O5JRI"
+]

@@ -23,13 +23,13 @@ Test[
     <|
         "Colors" -> <|"Type" -> Repeated["Color"]|>,
         "Width" -> <|"Type" -> "Integer"|>,
-        "WidthRank" -> <|
+        "Width.Rank" -> <|
             "Type" -> "Integer",
             "Rank" -> True,
             "RankOf" -> "Width",
-            "InverseRankProperty" -> "WidthInverseRank"
+            "InverseRankProperty" -> "Width.InverseRank"
         |>,
-        "WidthInverseRank" -> <|
+        "Width.InverseRank" -> <|
             "Type" -> "Integer",
             "Rank" -> True,
             "InverseRank" -> True,

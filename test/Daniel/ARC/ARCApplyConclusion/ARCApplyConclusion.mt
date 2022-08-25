@@ -184,7 +184,20 @@ Test[
         "Image" -> Daniel`ARC`ARCScene[
             {{-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}, {-1, 2, -1}, {2, -1, 2}}
         ],
-        "Position" -> {1, 1}
+        "Shape" -> Daniel`ARC`ARCScene[
+            {
+                {-1, 10, -1},
+                {10, -1, 10},
+                {-1, 10, -1},
+                {10, -1, 10},
+                {-1, 10, -1},
+                {10, -1, 10}
+            }
+        ],
+        "Position" -> {1, 1},
+        "Colors" -> {2},
+        "Width" -> 1,
+        "Height" -> 1
     |>
     ,
     TestID -> "ARCApplyConclusion-20220725-7GPVUC"

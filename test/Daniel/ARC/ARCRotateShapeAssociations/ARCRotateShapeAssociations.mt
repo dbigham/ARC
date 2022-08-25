@@ -20,7 +20,9 @@ Test[
                     "Position" -> {1, 1},
                     "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
                     "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                |>
+                |>,
+                10,
+                10
             ];
             <|
                 "Image" -> object["Image"],
@@ -90,26 +92,30 @@ Test[
 ]
 
 Test[
-    Module[
-        {},
-        object = Daniel`ARC`ARCImageRegionToObject[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Module[
+            {},
+            object = Daniel`ARC`ARCImageRegionToObject[
+                <|
+                    "Color" -> 2,
+                    "Position" -> {1, 1},
+                    "Image" -> {{-1, 1, -1}, {1, 1, 1}},
+                    "PixelPositions" -> {{1, 2}, {2, 1}, {2, 2}, {2, 3}}
+                |>,
+                10,
+                10
+            ];
             <|
-                "Color" -> 2,
-                "Position" -> {1, 1},
-                "Image" -> {{-1, 1, -1}, {1, 1, 1}},
-                "PixelPositions" -> {{1, 2}, {2, 1}, {2, 2}, {2, 3}}
+                "Image" -> object["Image"],
+                "Shapes" -> object["Shapes"],
+                "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
+                "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
+                    object["Shapes"],
+                    90,
+                    object["Image"]
+                ]
             |>
-        ];
-        <|
-            "Image" -> object["Image"],
-            "Shapes" -> object["Shapes"],
-            "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
-            "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
-                object["Shapes"],
-                90,
-                object["Image"]
-            ]
-        |>
+        ]
     ]
     ,
     <|
