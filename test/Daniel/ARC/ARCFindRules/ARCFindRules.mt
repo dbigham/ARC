@@ -136,21 +136,14 @@ Test[
             Daniel`ARC`ARCSimplifyRules[
                 Utility`BlockUUID[
                     Daniel`ARC`ARCFindRules[
-                        Daniel`ARC`ARCParseFile[file = "08ed6ac7"]["Train"],
-                        "FormMultiColorCompositeObjects" -> False,
-                        "SettleForOneExamplePerRule" -> False
+                        Daniel`ARC`ARCParseFile[file = "08ed6ac7"]["Train"]
                     ]
                 ]
             ]
         ]
     ]
     ,
-    {
-        <|"Height.Rank" -> 1|> -> <|"Color" -> 1|>,
-        <|"Height.Rank" -> 2|> -> <|"Color" -> 2|>,
-        <|"Height.Rank" -> 3|> -> <|"Color" -> 3|>,
-        <|"Height.Rank" -> 4|> -> <|"Color" -> 4|>
-    }
+    {<||> -> <|"Color" -> Daniel`ARC`ObjectValue["InputObject", "Height.Rank"]|>}
     ,
     TestID -> "ARCFindRules-20220804-KVISKF"
 ]
@@ -245,9 +238,15 @@ Test[
         <|
             "Type" -> "Group",
             "Height" -> 1,
+            "Components" -> {
+                Repeated[
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "Y" -> "Same"|>,
+                    {2}
+                ]
+            },
             "Color" -> 8,
-            "PrimarySizeDimension" -> "X",
-            "FilledArea" -> 2
+            "FilledArea" -> 2,
+            "Angle" -> 90
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -268,9 +267,15 @@ Test[
         <|
             "Type" -> "Group",
             "Width" -> 1,
+            "Components" -> {
+                Repeated[
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "X" -> "Same"|>,
+                    {2}
+                ]
+            },
             "Color" -> 8,
-            "PrimarySizeDimension" -> "Y",
-            "FilledArea" -> 2
+            "FilledArea" -> 2,
+            "Angle" -> 0
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -288,7 +293,7 @@ Test[
                 }
             |>
         |>,
-        <|"PrimarySizeDimension" -> "None"|> -> <|"Same" -> True|>
+        <||> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220812-24SCQ1"
@@ -749,36 +754,37 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[
-                Daniel`ARC`ARCParseFile[file = "178fcbfb-easier"]["Train"]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "178fcbfb-easier"]["Train"]
+                    ]
+                ]
             ]
         ]
     ]
     ,
-    {
-        <||> -> <|
-            "Shapes" -> {
-                <|"Name" -> "Line", "Angle" -> 0|>,
-                <|"Name" -> "Rectangle", "Filled" -> True|>
-            },
-            "X" -> 1,
-            "X2Inverse" -> 1
-        |>
-    }
+    {<||> -> <|"Shape" -> <|"Name" -> "Line", "Angle" -> 0|>, "X" -> 1, "X2Inverse" -> 1|>}
     ,
     TestID -> "ARCFindRules-20220826-CKGJI0"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "4347f46a"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "4347f46a"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
-    {<||> -> <|"Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> False|>}|>}
+    {<||> -> <|"Shape" -> <|"Name" -> "Rectangle", "Filled" -> False|>|>}
     ,
     TestID -> "ARCFindRules-20220826-6ENYJE"
 ]
@@ -801,4 +807,90 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220826-SXWYIL"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "178fcbfb"]["Train"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    ,
+    {
+        <|"Colors" -> {2}|> -> <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+            "Y" -> 1,
+            "Y2Inverse" -> 1
+        |>,
+        <|"Colors" -> {3} | {1}|> -> <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+            "X" -> 1,
+            "X2Inverse" -> 1
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220827-P7K0UM"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1f876c06"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|
+                "Type" -> "Group",
+                "Components" -> {
+                    Repeated[
+                        <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                        {2}
+                    ]
+                },
+                "AspectRatio" -> 1,
+                "FilledArea" -> 2
+            |> -> <|
+                "Shape" -> <|
+                    "Name" -> "Line",
+                    "Angle" -> Daniel`ARC`ObjectValue["InputObject", "Angle"]
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220827-E1WZVT"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "56ff96f3"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|
+            "Type" -> "Group",
+            "Components" -> {
+                Repeated[
+                    <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                    {2}
+                ]
+            },
+            "FilledArea" -> 2
+        |> -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>}
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220827-IC01P3"
 ]

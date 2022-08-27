@@ -40,40 +40,65 @@ Test[
         |>,
         Daniel`ARC`Object[<|"X" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "XInverse" -> 9,
             "X.Rank" -> 3,
             "X.InverseRank" -> 1,
+            "XInverse.Rank" -> 1,
+            "XInverse.InverseRank" -> 3,
             "X2.Rank" -> 3,
-            "X2.InverseRank" -> 1
+            "X2.InverseRank" -> 1,
+            "X2Inverse.Rank" -> 1,
+            "X2Inverse.InverseRank" -> 3
         |>,
         Daniel`ARC`Object[<|"Y.Rank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Y.InverseRank" -> 3,
+            "YInverse.Rank" -> 3,
+            "YInverse.InverseRank" -> 1,
             "Y2.Rank" -> 1,
-            "Y2.InverseRank" -> 3
+            "Y2.InverseRank" -> 3,
+            "Y2Inverse.Rank" -> 3,
+            "Y2Inverse.InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"Y.Rank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Y.InverseRank" -> 2,
+            "YInverse.Rank" -> 2,
+            "YInverse.InverseRank" -> 2,
             "Y2.Rank" -> 2,
-            "Y2.InverseRank" -> 2
+            "Y2.InverseRank" -> 2,
+            "Y2Inverse.Rank" -> 2,
+            "Y2Inverse.InverseRank" -> 2
         |>,
         Daniel`ARC`Object[<|"Y.Rank" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "Y.InverseRank" -> 1,
+            "YInverse.Rank" -> 1,
+            "YInverse.InverseRank" -> 3,
             "Y2.Rank" -> 3,
-            "Y2.InverseRank" -> 1
+            "Y2.InverseRank" -> 1,
+            "Y2Inverse.Rank" -> 1,
+            "Y2Inverse.InverseRank" -> 3
         |>,
         Daniel`ARC`Object[<|"X.Rank" -> 1|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "X.InverseRank" -> 3,
+            "XInverse.Rank" -> 3,
+            "XInverse.InverseRank" -> 1,
             "X2.Rank" -> 1,
-            "X2.InverseRank" -> 3
+            "X2.InverseRank" -> 3,
+            "X2Inverse.Rank" -> 3,
+            "X2Inverse.InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"X.Rank" -> 2|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
             "X.InverseRank" -> 2,
+            "XInverse.Rank" -> 2,
+            "XInverse.InverseRank" -> 2,
             "X2.Rank" -> 2,
-            "X2.InverseRank" -> 2
+            "X2.InverseRank" -> 2,
+            "X2Inverse.Rank" -> 2,
+            "X2Inverse.InverseRank" -> 2
         |>
     |>
     ,
@@ -92,39 +117,68 @@ Test[
     ]
     ,
     <|
-        Daniel`ARC`Object[<|"X" -> 3|>] -> <|"X2" -> 3, "ColorUseCount.Rank" -> 1|>,
-        Daniel`ARC`Object[<|"Y.Rank" -> 1|>] -> <|"Y2.Rank" -> 1, "ColorUseCount.Rank" -> 1|>,
-        Daniel`ARC`Object[<|"Y.Rank" -> 2|>] -> <|"Y2.Rank" -> 2, "ColorUseCount.Rank" -> 1|>,
+        Daniel`ARC`Object[<|"X" -> 3|>] -> <|
+            "XInverse" -> 7,
+            "X2" -> 3,
+            "X2Inverse" -> 7,
+            "ColorUseCount.Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Y.Rank" -> 1|>] -> <|
+            "YInverse.InverseRank" -> 1,
+            "Y2.Rank" -> 1,
+            "Y2Inverse.InverseRank" -> 1,
+            "ColorUseCount.Rank" -> 1
+        |>,
+        Daniel`ARC`Object[<|"Y.Rank" -> 2|>] -> <|
+            "YInverse.InverseRank" -> 2,
+            "Y2.Rank" -> 2,
+            "Y2Inverse.InverseRank" -> 2,
+            "ColorUseCount.Rank" -> 1
+        |>,
         Daniel`ARC`Object[<|"Y.InverseRank" -> 1|>] -> <|
             "ColorUseCount" -> 1,
+            "YInverse.Rank" -> 1,
             "Y2.InverseRank" -> 1,
+            "Y2Inverse.Rank" -> 1,
             "ColorUseCount.InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"Y.InverseRank" -> 2|>] -> <|
             "X" -> 7,
+            "XInverse" -> 3,
             "X2" -> 7,
+            "X2Inverse" -> 3,
             "X.Rank" -> 1,
+            "YInverse.Rank" -> 2,
+            "XInverse.InverseRank" -> 1,
             "Y2.InverseRank" -> 2,
             "X2.Rank" -> 1,
+            "Y2Inverse.Rank" -> 2,
+            "X2Inverse.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 1
         |>,
         Daniel`ARC`Object[<|"X.Rank" -> 2|>] -> <|
             "ColorUseCount" -> 1,
+            "XInverse.InverseRank" -> 2,
             "X2.Rank" -> 2,
+            "X2Inverse.InverseRank" -> 2,
             "ColorUseCount.InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"X.InverseRank" -> 1|>] -> <|
             "Colors" -> {2},
             "Color" -> 2,
             "Image" -> Daniel`ARC`ARCScene[{{2}}],
+            "XInverse.Rank" -> 1,
             "X2.InverseRank" -> 1,
+            "X2Inverse.Rank" -> 1,
             "ColorUseCount.Rank" -> 1
         |>,
         Daniel`ARC`Object[<|"X.InverseRank" -> 2|>] -> <|
             "Colors" -> {1},
             "Color" -> 1,
             "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "XInverse.Rank" -> 2,
             "X2.InverseRank" -> 2,
+            "X2Inverse.Rank" -> 2,
             "ColorUseCount.Rank" -> 1
         |>
     |>
@@ -163,6 +217,7 @@ Test[
         "Length.Rank" -> 2,
         "Length.InverseRank" -> 1,
         "X.Rank" -> 1,
+        "XInverse.InverseRank" -> 1,
         "Area.Rank" -> 2,
         "Area.InverseRank" -> 1,
         "FilledArea.Rank" -> 2,

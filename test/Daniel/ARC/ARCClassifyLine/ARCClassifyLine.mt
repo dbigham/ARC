@@ -25,3 +25,29 @@ Test[
     ,
     TestID -> "ARCClassifyLine-20220717-Y0EYRD"
 ]
+
+Test[
+    Daniel`ARC`ARCClassifyLine[{{1, -1, -1}, {-1, 1, -1}, {-1, -1, 1}}]
+    ,
+    <|"Name" -> "Line", "Angle" -> 135|>
+    ,
+    TestID -> "ARCClassifyLine-20220827-H7DPP5"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyLine[{{-1, -1, 1}, {-1, 1, -1}, {1, -1, -1}}]
+    ,
+    <|"Name" -> "Line", "Angle" -> 45|>
+    ,
+    TestID -> "ARCClassifyLine-20220827-XDDHR7"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        ToString[Daniel`ARC`ARCClassifyLine[{{1}}]]
+    ]
+    ,
+    "Nothing"
+    ,
+    TestID -> "ARCClassifyLine-20220827-IFL8DR"
+]

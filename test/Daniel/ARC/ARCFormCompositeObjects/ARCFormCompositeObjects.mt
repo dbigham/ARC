@@ -172,7 +172,11 @@ Test[
             "Y" -> 3,
             "X" -> 2,
             "AspectRatio" -> 1,
-            "Area" -> 5,
+            "Area" -> 9,
+            "Shapes" -> {
+                <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
+                Missing["KeyAbsent", "Shapes"]
+            },
             "Components" -> {
                 <|
                     "UUID" -> "c352b306-971b-4632-b5a0-a66a4c8e4b27",
@@ -255,10 +259,16 @@ Test[
                     "XRelative" -> 2
                 |>
             },
-            "Shapes" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
-                Missing["KeyAbsent", "Shapes"]
-            }
+            "YInverse" -> 7,
+            "XInverse" -> 8,
+            "Y2" -> 5,
+            "X2" -> 4,
+            "Y2Inverse" -> 5,
+            "X2Inverse" -> 6,
+            "Length" -> 3,
+            "PrimarySizeDimension" -> "None",
+            "FilledArea" -> 5,
+            "FilledProportion" -> 0.5555555555555556
         |>,
         <|
             "UUID" -> "0548a70a-33ec-42c5-b1c5-38e21b613ee1",
@@ -271,7 +281,11 @@ Test[
             "Y" -> 6,
             "X" -> 6,
             "AspectRatio" -> 1,
-            "Area" -> 5,
+            "Area" -> 9,
+            "Shapes" -> {
+                <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
+                Missing["KeyAbsent", "Shapes"]
+            },
             "Components" -> {
                 <|
                     "UUID" -> "7ad70b35-3033-471b-85bf-17399c3e2a35",
@@ -309,10 +323,16 @@ Test[
                     "XRelative" -> 1
                 |>
             },
-            "Shapes" -> {
-                <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
-                Missing["KeyAbsent", "Shapes"]
-            }
+            "YInverse" -> 4,
+            "XInverse" -> 4,
+            "Y2" -> 8,
+            "X2" -> 8,
+            "Y2Inverse" -> 2,
+            "X2Inverse" -> 2,
+            "Length" -> 3,
+            "PrimarySizeDimension" -> "None",
+            "FilledArea" -> 5,
+            "FilledProportion" -> 0.5555555555555556
         |>
     }
     ,

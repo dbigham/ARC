@@ -336,6 +336,18 @@ SquareButKeepSign::usage = "SquareButKeepSign  "
 
 SqrtButKeepSign::usage = "SqrtButKeepSign  "
 
+ARCFindOccludedLines::usage = "ARCFindOccludedLines  "
+
+ARCPositionBeyondLine::usage = "ARCPositionBeyondLine  "
+
+ARCLineDirections::usage = "ARCLineDirections  "
+
+ShapeQ::usage = "ShapeQ  "
+
+ARCFormCompositeObject::usage = "ARCFormCompositeObject  "
+
+ARCPrunePattern::usage = "ARCPrunePattern  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -754,6 +766,10 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                 ] /@ objects
             ]
         ];
+        
+        objects =
+            ReturnIfFailure@
+            ARCFindOccludedLines[scene, objects];
         
         (* If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]] =!= False,
             ARCEcho["Scene" -> scene];
@@ -1389,6 +1405,10 @@ $properties = <|
            of values for this property tend to penalize these conditions too much. *)
         "RuleConditionQuality" -> 1
     |>,
+    "Angle" -> <|
+        "Type" -> "Angle",
+        "Type2" -> "Angle"
+    |>,
     (* We'll put properties like Height above properties like Y, since properties like
        Height and HeightRank seem better than properties like Y for producing rules. *)
     "Width" -> <|
@@ -1417,6 +1437,16 @@ $properties = <|
         "Type2" -> "PositionDimensionValue",
         "RuleConditionQuality" -> 0.5
     |>,
+    "YInverse" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "XInverse" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
     "Y2" -> <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue",
@@ -1426,6 +1456,20 @@ $properties = <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue",
         "RuleConditionQuality" -> 0.5
+    |>,
+    "Y2Inverse" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "X2Inverse" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "ZOrder" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue"
     |>,
     "PrimarySizeDimension" -> <|
         "Type" -> "Integer",
@@ -1451,6 +1495,10 @@ $properties = <|
     "ColorUseCount" -> <|
         "Type" -> "Integer",
         "Type2" -> "Count"
+    |>,
+    "PixelPositions" -> <|
+        "Type" -> "Region",
+        "Type2" -> "Region"
     |>
 |>;
 
@@ -1917,16 +1965,57 @@ ARCClassifyLine[image_List] :=
         MatchQ[
             image,
             List[
-                Repeated[{c:Except[0]}, {2, Infinity}]
+                Repeated[{c:Except[$nonImageColor]}, {2, Infinity}]
             ]
         ],
             <|"Name" -> "Line", "Angle" -> 90|>,
         (* Horizontal *)
         MatchQ[
             image,
-            {{Repeated[c:Except[0], {2, Infinity}]}}
+            {{Repeated[c:Except[$nonImageColor], {2, Infinity}]}}
         ],
             <|"Name" -> "Line", "Angle" -> 0|>,
+        (* Diagonal *)
+        And[
+            ImageWidth[image] === ImageHeight[image],
+            ImageWidth[image] > 1,
+            With[{width = ImageWidth[image]},
+                MatchQ[
+                    image,
+                    Function[{y},
+                        Flatten[
+                            {
+                                Table[$nonImageColor, {y - 1}],
+                                Except[$nonImageColor],
+                                Table[$nonImageColor, {width - y}]
+                            },
+                            1
+                        ]
+                    ] /@ Range[ImageHeight[image]]
+                ]
+            ]
+        ],
+            <|"Name" -> "Line", "Angle" -> 135|>,
+        And[
+            ImageWidth[image] === ImageHeight[image],
+            ImageWidth[image] > 1,
+            With[{width = ImageWidth[image]},
+                MatchQ[
+                    image,
+                    Function[{y},
+                        Flatten[
+                            {
+                                Table[$nonImageColor, {width - y}],
+                                Except[$nonImageColor],
+                                Table[$nonImageColor, {y - 1}]
+                            },
+                            1
+                        ]
+                    ] /@ Range[ImageHeight[image]]
+                ]
+            ]
+        ],
+            <|"Name" -> "Line", "Angle" -> 45|>,
         True,
             Nothing
     ]
@@ -2029,6 +2118,155 @@ ARCColorToInteger[color_String] := $colorNameToInteger[color]
 ARCColorToInteger[color_Integer] := color
 
 (*!
+    \function ARCFormCompositeObject
+    
+    \calltable
+        ARCFormCompositeObject[scene, object, components] '' Forms a composite object.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFormCompositeObject]
+    
+    \maintainer danielb
+*)
+Clear[ARCFormCompositeObject];
+Options[ARCFormCompositeObject] =
+{
+    "Shape" -> Automatic    (*< The "Shape" property value to use. *)
+};
+ARCFormCompositeObject[scene_ARCScene, objectIn_, components_List, OptionsPattern[]] :=
+    Module[
+        {
+            object = objectIn,
+            sceneImage,
+            image,
+            pixelPositions,
+            colors,
+            posX,
+            posY
+        },
+        If [Length[components] === 1,
+            (* If an object only has a single component, don't populate its "Components"
+               property. *)
+            components[[1]]
+            ,
+            (*ARCEcho[SimplifyObjects[components]];*)
+            
+            If [MissingQ[object["UUID"]],
+                object["UUID"] = CreateUUID[]
+            ];
+            
+            If [MissingQ[object["PixelPositions"]],
+                object["PixelPositions"] = Sort[
+                    Join @@ components[[All, "PixelPositions"]]
+                ]
+            ];
+            
+            If [OptionValue["Shape"] =!= Automatic,
+                object["Shape"] = OptionValue["Shape"]
+            ];
+            
+            If [MissingQ[object["Position"]],
+                object["Position"] = {
+                    Min[components[[All, "Y"]]],
+                    Min[components[[All, "X"]]]
+                }
+            ];
+            
+            If [MissingQ[object["Y"]],
+                object["Y"] = object["Position"][[1]]
+            ];
+            
+            If [MissingQ[object["X"]],
+                object["X"] = object["Position"][[2]]
+            ];
+            
+            If [MissingQ[object["Width"]],
+                object["Width"] = Plus[
+                    Max[components[[All, "X2"]]],
+                    -object["X"],
+                    1
+                ]
+            ];
+            
+            If [MissingQ[object["Height"]],
+                object["Height"] = Plus[
+                    Max[components[[All, "Y2"]]],
+                    -object["Y"],
+                    1
+                ]
+            ];
+            
+            If [!IntegerQ[object["Color"]],
+                object = KeyDrop[object, "Color"]
+            ];
+            
+            (*ARCEcho[object];*)
+            
+            object = Sett[
+                object,
+                With[{position = object["Position"]},
+                    {
+                        "Image" -> (
+                            
+                            sceneImage = scene[[1]];
+                            image = Table[$nonImageColor, {object["Height"]}, {object["Width"]}];
+                            posY = position[[1]];
+                            posX = position[[2]];
+                            pixelPositions = object["PixelPositions"];
+                            
+                            Function[{pixelPosition},
+                                image[[
+                                    pixelPosition[[1]] - posY + 1,
+                                    pixelPosition[[2]] - posX + 1
+                                ]] = sceneImage[[Sequence @@ pixelPosition]]
+                            ] /@ pixelPositions;
+                            
+                            ARCScene[image]
+                        ),
+                        "Colors" -> (
+                            (* We want to sort the values so that the object references created
+                                by functions like ARCMakeObjectsReferenceable can be turned into
+                                patterns and then matching objects selected. *)
+                            colors =
+                                Sort@
+                                DeleteDuplicates@
+                                Flatten[components[[All, "Colors"]]]
+                        ),
+                        "Shapes" ->
+                            Function[{shape},
+                                (* I was going to make these monochrome to match what we did
+                                    with non-composite objects, but that breaks 3c9b0459, so
+                                    that will require more thought. *)
+                                (*ARCToMonochrome[shape, $nonImageColor]*)
+                                shape
+                            ] /@
+                                Join[
+                                    ARCImageRotations[image],
+                                    DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
+                                ],
+                        "Components" -> ARCSetRelativeXY[
+                            components,
+                            object
+                        ]
+                    }
+                ]
+            ];
+            
+            (* Incase Color got set to Missing above due to being multi-colored. *)
+            object = DeleteMissing[object];
+            
+            object = ReturnIfFailure[ARCInferObjectProperties[object, ImageWidth[scene], ImageHeight[scene]]];
+            
+            object
+        ]
+    ]
+
+(*!
     \function ARCFormCompositeObjects
     
     \calltable
@@ -2050,149 +2288,38 @@ Options[ARCFormCompositeObjects] =
     "OtherScene" -> Null        (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
 };
 ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiColorObjects_List, OptionsPattern[]] :=
-    Module[{singleColorObjectsByUUID, singleColorObjectsByPixelPosition, res, object, sceneImage, imageIn, image, colors},
+    Module[
+        {
+            singleColorObjectsByUUID,
+            singleColorObjectsByPixelPosition,
+            res
+        },
         
         singleColorObjectsByUUID = ObjectsByAttribute[singleColorObjects, "UUID"];
         singleColorObjectsByPixelPosition = ObjectsByAttribute[singleColorObjects, "PixelPosition"];
         
-        res = Function[{objectIn},
+        res = Function[{object},
             
-            object = Sett[
-                objectIn,
-                "Components" ->
-                    ARCSetRelativeXY[
-                        Lookup[
-                            singleColorObjectsByUUID,
-                            DeleteDuplicates@
-                            Lookup[
-                                singleColorObjectsByPixelPosition,
-                                objectIn["PixelPositions"],
-                                ReturnFailure[
-                                    "ObjectNotFound",
-                                    "An object couldn't be found by its pixel positions while forming composite objects.",
-                                    "PixelPositions" -> objectIn["PixelPositions"],
-                                    "Lookup" -> singleColorObjectsByPixelPosition
-                                ]
-                            ],
-                            ReturnFailure[
-                                "ObjectNotFound",
-                                "An object couldn't be found by its UUID while forming composite objects."
-                            ]
-                        ],
-                        objectIn
-                    ]
-            ];
-            
-            If [Length[object["Components"]] === 1,
-                (* If an object only has a single component, don't populate its "Components"
-                   property. *)
-                object["Components"][[1]]
-                ,
-                object = Sett[
-                    object,
-                    With[{position = object["Position"]},
-                        {
-                            "Image" -> (
-                                
-                                sceneImage = scene[[1]];
-                                imageIn = objectIn["Image"][[1]];
-                                image = Table[$nonImageColor, {object["Height"]}, {object["Width"]}];
-                                posY = position[[1]];
-                                posX = position[[2]];
-                                
-                                Function[{y},
-                                    Function[{x},
-                                        If [imageIn[[y, x]] =!= $nonImageColor,
-                                            image[[y, x]] = sceneImage[[posY + y - 1, posX + x - 1]]
-                                        ]
-                                    ] /@ Range[object["Width"]]
-                                ] /@ Range[object["Height"]];
-                                
-                                ARCScene[image]
-                            ),
-                            "Colors" -> (
-                                (* We want to sort the values so that the object references created
-                                   by functions like ARCMakeObjectsReferenceable can be turned into
-                                   patterns and then matching objects selected. *)
-                                colors =
-                                    Sort@
-                                    DeleteDuplicates@
-                                    Flatten[object["Components"][[All, "Colors"]]]
-                            ),
-                            "Color" -> InferColor[colors],
-                            "Shapes" ->
-                                Function[{shape},
-                                    (* I was going to make these monochrome to match what we did
-                                       with non-composite objects, but that breaks 3c9b0459, so
-                                       that will require more thought. *)
-                                    (*ARCToMonochrome[shape, $nonImageColor]*)
-                                    shape
-                                ] /@
-                                    Join[
-                                        ARCImageRotations[image],
-                                        DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
-                                    ]
-                        }
-                    ]
-                ];
-                
-                (* Incase Color got set to Missing above due to being multi-colored. *)
-                object = DeleteMissing[object];
-                
-                (* Decide whether to keep this as a composite object or not. *)
-                If [And[
-                        (* This mechanism was preventing 363442ee from working, because it would
-                           break up the big composite object into tiny fragments before the
-                           notable sub-image code in ARCParseScene had a chance to split the
-                           large image up into notable sub-images. It looks like we had put this
-                           in place for 05f2a901 to prevent the objects from forming a single
-                           composite object in the output. However, now that ARCFindRules will
-                           first try to find rules with forming composite objects, and if that
-                           fails, try again without forming composite rules, I don't think we
-                           need this mechanism here, at least not yet, so we'll leave this
-                           disabled. Also, perhaps this pertains to
-                           ARCParseInputAndOutputScenes-20220724-BK2FLS
-                           ARCFindObjectMapping-20220724-0WJ0TI
-                           ARCFindObjectMapping-20220805-VBJ4EU
-                           ... all of which we've disabled for now. *)
-                        False,
-                        AssociationQ[OptionValue["OtherScene"]],
-                        (* There isn't a composite object in the other scene that matches. *)
-                        MissingQ[
-                            ARCFindObjectMapping[
-                                object,
-                                OptionValue["OtherScene"]["WithMultiColorCompositeObjects"],
-                                singleOrMultiColorObjects,
-                                <|
-                                    "Width" -> ImageWidth[scene],
-                                    "Height" -> ImageHeight[scene]
-                                |>
-                            ][[2]]
-                        ],
-                        (* There _are_ matching non-composite objects in the other scene
-                           that match. *)
-                        AllTrue[
-                            object["Components"],
-                            Function[{component},
-                                !MissingQ[
-                                    ARCFindObjectMapping[
-                                        component,
-                                        OptionValue["OtherScene"]["WithoutMultiColorCompositeObjects"],
-                                        singleOrMultiColorObjects,
-                                        <|
-                                            "Width" -> ImageWidth[scene],
-                                            "Height" -> ImageHeight[scene]
-                                        |>
-                                    ][[2]]
-                                ]
-                            ]
+            ARCFormCompositeObject[
+                scene,
+                object,
+                Lookup[
+                    singleColorObjectsByUUID,
+                    DeleteDuplicates@
+                    Lookup[
+                        singleColorObjectsByPixelPosition,
+                        object["PixelPositions"],
+                        ReturnFailure[
+                            "ObjectNotFound",
+                            "An object couldn't be found by its pixel positions while forming composite objects.",
+                            "PixelPositions" -> object["PixelPositions"],
+                            "Lookup" -> singleColorObjectsByPixelPosition
                         ]
                     ],
-                    (* Upon this discovery, let's _not_ form the composite object.
-                       We'll return its components instead. *)
-                    object["Components"]
-                    ,
-                    object
+                    ReturnFailure[
+                        "ObjectNotFound",
+                        "An object couldn't be found by its UUID while forming composite objects."
+                    ]
                 ]
             ]
             
@@ -2776,10 +2903,10 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                             ],
                                 (* The image is changing, but there's a single color and it isn't
                                    changing, implying that it's the shape that's changing, so we'll
-                                   populate a "Shape" property which is the colorless form of the
+                                   populate a property which is the colorless form of the
                                    image. *)
                                 (* e.g. 3ac3eb23 *)
-                                conclusion = Prepend[conclusion, "Shape" -> ARCToMonochrome[conclusion["Image"], $nonImageColor]],
+                                conclusion = Prepend[conclusion, "MonochromeImage" -> ARCToMonochrome[conclusion["Image"], $nonImageColor]],
                                 (* Commented out Aug 24 2022 for cases like 178fcbfb-easier where
                                    we don't want to lose keys like Height. More generally, now that
                                    we're supporting minimal property sets at the top level, we
@@ -2994,6 +3121,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ] /@ examples;
         
+        (*ARCEcho[examples[[1, "ObjectMapping"]]];*)
+        
         (* Determine if input objects can be referenced in any particular ways in general. *)
         referenceableInputObjects =
             ReturnIfFailure@
@@ -3155,7 +3284,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"Colors"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3167,9 +3296,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                         "PixelPositions",
                         (* Since we already have "Colors", and "Color" duplicates that in this
                            context. (I think) *)
-                        "Color",
-                        (* TODO *)
-                        "Dimensions"
+                        "Color"
                     ]
                 ]
             ];
@@ -3177,8 +3304,16 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         If [Length[ruleSets] > 0,
             (*ARCEcho[ARCSimplifyRules[ruleSets]];*)
             returnRules[
-                ARCChooseBestRuleSet[
-                    ARCCleanRules /@ ruleSets
+                Replace[
+                    ReturnIfFailure@
+                    ARCChooseBestRuleSet[
+                        ReturnIfFailure[ARCCleanRules[#]] & /@ ruleSets
+                    ],
+                    res: Except[_List] :> ReturnFailure[
+                        "InvalidRuleResult",
+                        "After attempting to choose the best rule set, we got something that isn't a list.",
+                        "Result" -> res
+                    ]
                 ]
             ]
         ];
@@ -3270,6 +3405,13 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                     <||> -> preRules[[All, 2]]
                 |>
             ];
+        
+        If [Length[groupedByPattern] === 1 && property =!= None,
+            (* If all objects share a single property value, and this isn't the no-grouping
+               scenario (None), then we'll bail out, because we don't want to waste time
+               re-doing something that the None case will already consider. *)
+            Return[{}, Module]
+        ];
         
         If [!TrueQ[mutuallyExclusiveRules],
             unhandled = DeleteDuplicates[preRules[[All, 2]]];
@@ -4015,6 +4157,21 @@ ARCApplyConclusion[key:"Y", y_Integer, objectIn_Association, objectOut_Associati
         ]
     ]
 
+ARCApplyConclusion[key:"Y2", y2_Integer, objectIn_Association, objectOut_Association, scene_Association] :=
+    Module[{y},
+        y = Replace[
+            objectOut["Position"],
+            {
+                _Association :> objectOut["Position", "Y"],
+                _ :> objectOut[["Position", 1]]
+            }
+        ];
+        Sett[
+            objectOut,
+            "Height" -> (y2 - y + 1)
+        ]
+    ]
+
 ARCApplyConclusion[key:"X", x_Integer, objectIn_Association, objectOut_Association, scene_Association] :=
     Module[{},
         Sett[
@@ -4027,6 +4184,21 @@ ARCApplyConclusion[key:"X", x_Integer, objectIn_Association, objectOut_Associati
                     Nothing
                 ]
             }
+        ]
+    ]
+
+ARCApplyConclusion[key:"X2", x2_Integer, objectIn_Association, objectOut_Association, scene_Association] :=
+    Module[{x},
+        x = Replace[
+            objectOut["Position"],
+            {
+                _Association :> objectOut["Position", "X"],
+                _ :> objectOut[["Position", 2]]
+            }
+        ];
+        Sett[
+            objectOut,
+            "Width" -> (x2 - x + 1)
         ]
     ]
 
@@ -4196,7 +4368,7 @@ ARCApplyConclusion[key_String, value_, objectIn_Association, objectOut_Associati
 *)
 Clear[ARCRenderScene];
 ARCRenderScene[scene_Association] :=
-    Module[{output, image, posX, posY},
+    Module[{output, objects, image, posX, posY},
         
         (* Empty output image using background color. *)
         output =
@@ -4208,6 +4380,13 @@ ARCRenderScene[scene_Association] :=
                         scene["Width"]
                     }
                 ]
+            ];
+        
+        objects =
+            Reverse@
+            SortBy[
+                scene["Objects"],
+                Replace[#["ZOrder"], _Missing -> 0] &
             ];
         
         Function[{object},
@@ -4265,7 +4444,7 @@ ARCRenderScene[scene_Association] :=
                 ] /@ Range[ImageWidth[image]]
             ] /@ Range[ImageHeight[image]];
             
-        ] /@ scene["Objects"];
+        ] /@ objects;
         
         ARCScene@
         output
@@ -5086,9 +5265,16 @@ ARCEcho2[expr_] :=
 $transformTypes = <|
     Automatic -> <|
         "MinimalPropertySets" -> {
+            (* TODO: Introduce the concept of alternatives where one of the alternatives can be a
+                     list of multiple properties. That would allow us to more tightly factor
+                     these, such as "Position" | {"X", "Y"}, although perhaps we don't need to
+                     support Position and can/should replace any instances of those with X and Y
+                     here? (We should at least try that first) *)
             {"Image", "Position"},
-            {"Shape" | "Shapes", "Color", "Position", "Width" | "X2Inverse", "Height" | "Y2Inverse"},
-            {"Shape" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2Inverse", "Height" | "Y2Inverse"}
+            (* TODO: Try commenting out the following line, since the line below that supports
+                     X and Y independently, which I think would work in all cases? *)
+            {"Shape" | "MonochromeImage" | "Shapes", "Color", "Position", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"},
+            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"}
         },
         "SubProperties" -> {
             "Image" -> <||>,
@@ -5109,6 +5295,12 @@ $transformTypes = <|
             |>,
             "Shapes" -> <|
                 "ClassList" -> True
+            |>,
+            "Shape" -> <|
+                "MinimalPropertySets" -> {
+                    (* For 45 degree and 135 degree lines. e.g. 1f876c06 *)
+                    {"Name", "Angle"}
+                }
             |>
         }
     |>,
@@ -5149,11 +5341,10 @@ $transformTypes = <|
                     {"Shapes", "Width", "Height", "Color", "Position"},
                     {"Shape", "Width", "Height", "Color", "Position"},
                     (* TODO: We need two rules for this, one for X, and one for Y.
-                                See: 25d487eb *)
+                             See: 25d487eb *)
                     {"Outward", "Shape", "Direction", "Color", "X"}
                 },
                 "SubProperties" -> {
-                    "Image" -> <||>,
                     "Position" -> <|
                         "SubProperties" -> {
                             "RelativePosition" -> <|
@@ -5179,8 +5370,6 @@ $transformTypes = <|
                     "Height" -> <|
                         "ObjectGet" -> Function[#["Height"]]
                     |>,
-                    "Outward" -> <||>,
-                    "Direction" -> <||>,
                     "Y" -> <|
                         "ObjectGet" -> Function[#["Y"]]
                     |>,
@@ -5197,15 +5386,6 @@ $transformTypes = <|
         },
         "SubProperties" -> {
             "Objects" -> <|
-                "SubProperties" -> {
-                    "Image" -> <||>,
-                    "Y" -> <||>,
-                    "X" -> <||>,
-                    "Shape" -> <||>,
-                    "Color" -> <||>,
-                    "Width" -> <||>,
-                    "Height" -> <||>
-                },
                 "MinimalPropertySets" -> {
                     {"Image", "Y", "X"},
                     {"Shape", "Width", "Height", "Color", "Y", "X"}
@@ -5465,14 +5645,16 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
            at the very bottom of this function, but again, that won't catch all
            cases prior to other code below evaluating, such as the code we have for
            dealing with ClassList values, etc.) *)
-        If [property =!= None && conclusions[[All, "Input", property]] === values,
-            (* But if we're adding a component, then I don't think we want to skip
-               including this property value, since the added component isn't the
-               same object as the input. e.g. 253bf280
-               See also equivalent logic in ARCGeneralizeConclusionValueNonRecursive. *)
-            If [!MatchQ[propertyPath, {"Components", ___}],
-                Return[Nothing, Module]
-            ]
+        If [And[
+                property =!= None,
+                (* If we're trying to infer a nested property, then it presumably
+                   won't correspond to a top-level input object property, and even if it
+                   did, ARCApplyConclusion wouldn't know to take the input property
+                   value and stuff it down into this nested location. *)
+                Length[propertyPath] === 1,
+                conclusions[[All, "Input", property]] === values
+            ],
+            Return[Nothing, Module]
         ];
         
         If [And[
@@ -5516,13 +5698,20 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             ,
             If [Length[uniqueValue = DeleteDuplicates[values]] === 1,
                 (* This property has a predictable value. *)
-                If [ARCGeneralizeConclusionValueNonRecursive[
-                        propertyPath,
-                        propertyAttributes,
-                        conclusions,
-                        referenceableObjects,
-                        examples
-                    ] === Nothing,
+                If [And[
+                        (* If we're trying to infer a nested property, then it presumably
+                           won't correspond to a top-level input object property, and even if it
+                           did, ARCApplyConclusion wouldn't know to take the input property
+                           value and stuff it down into this nested location. *)
+                        Length[propertyPath] === 1,
+                        ARCGeneralizeConclusionValueNonRecursive[
+                            propertyPath,
+                            propertyAttributes,
+                            conclusions,
+                            referenceableObjects,
+                            examples
+                        ] === Nothing
+                    ],
                     (* But actually, its value is always the same as the input's value,
                        so we don't need to include this property in our rule's conclusion. *)
                     Return[Nothing, Module]
@@ -5550,7 +5739,10 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                            attributes defined sub-properties. For example, we don't want
                            to accidentally treat treat Position as a list of nested
                            structures. *)
-                        ListQ[propertyAttributes["SubProperties"]]
+                        Or[
+                            ListQ[propertyAttributes["SubProperties"]],
+                            ListQ[propertyAttributes["MinimalPropertySets"]]
+                        ]
                     ]
                 ]
             ],
@@ -5683,7 +5875,12 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
         ];*)
         
         defaultGetFunction =
-            If [propertyPath =!= {},
+            If [MatchQ[propertyPath, {_}],
+                (* We only grab a key of the same name from the input if this is a top-level
+                   property. If we're trying to infer a nested property, then it presumably
+                   won't correspond to a top-level input object property, and even if it
+                   did, ARCApplyConclusion wouldn't know to take the input property
+                   value and stuff it down into this nested location. *)
                 With[{property = property},
                     Function[#[property]]
                 ]
@@ -5718,19 +5915,8 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                     (* The first thing we should check is to ensure that these
                        sub-properties actually change from the values they have
                        in the inputs. If not, we can actually just drop this key
-                       from our rule conclusion. (Actually, for nested transform
-                       properties, like a component in an AddComponents, I don't
-                       think we'd actually want to _drop_ these keys. Wouldn't
-                       it be better to replace them with something like:
-                       ObjectValue["InputObject"],
-                       or ObjectValue["InputObject", "MyProperty"]? *)
-                    And[
-                        values === inputObjectValues,
-                        (* But if we're adding a component, then I don't think we want to skip
-                           including this property value, since the added component isn't the
-                           same object as the input. e.g. 253bf280 *)
-                        !MatchQ[propertyPath, {"Components", ___}]
-                    ],
+                       from our rule conclusion. *)
+                    values === inputObjectValues,
                         Return[Nothing, Module],
                     And[
                         AllTrue[inputObjectValues, NumberQ],
@@ -5762,7 +5948,14 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
             ARCGeneralizeConclusionValueUsingReferenceableObjects[
                 propertyPath,
                 KeyTake[conclusions, {"Value", "Example", "Input"}],
-                referenceableObjects,
+                If [!MissingQ[conclusions[[1, "Input"]]],
+                    Prepend[
+                        referenceableObjects,
+                        Object["InputObject"] -> Automatic
+                    ]
+                    ,
+                    referenceableObjects
+                ],
                 examples,
                 (* e.g. referenceable-components *)
                 "RelativePosition" -> Or[
@@ -5833,21 +6026,27 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                                         ]
                                     ]
                                     ,
-                                    ReturnIfFailure@
-                                    ARCGeneralizeConclusionValue[
-                                        Append[propertyPath, subPropertyName],
-                                        (* Property attributes *)
-                                        subPropertyAttributes,
-                                        AssociationApply[
-                                            conclusions,
-                                            <|
-                                                "Value" -> Function[
-                                                    #[subPropertyName]
-                                                ]
-                                            |>
+                                    Replace[
+                                        ReturnIfFailure@
+                                        ARCGeneralizeConclusionValue[
+                                            Append[propertyPath, subPropertyName],
+                                            (* Property attributes *)
+                                            subPropertyAttributes,
+                                            AssociationApply[
+                                                conclusions,
+                                                <|
+                                                    "Value" -> Function[
+                                                        #[subPropertyName]
+                                                    ]
+                                                |>
+                                            ],
+                                            referenceableInputObjects,
+                                            examples
                                         ],
-                                        referenceableInputObjects,
-                                        examples
+                                        (* If one of the minimal property sets is so good that it
+                                           doesn't even need to be specified in the conclusion,
+                                           then use it without considering other property sets. *)
+                                        Nothing :> Return[{Nothing}, Module]
                                     ]
                                 ]
                             ],
@@ -5903,57 +6102,61 @@ Options[ARCGeneralizeConclusionValueUsingReferenceableObjects] =
 {
     "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
 };
-ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjects_Association, examples_List, opts:OptionsPattern[]] :=
-    Module[{theseExamples, theseComponents, objects, valuesToInfer, property},
+ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjectsIn_Association, examples_List, opts:OptionsPattern[]] :=
+    Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
         $debugProperty = "Y";
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
         
-        (* For now, because we're only considering values in referenceable objects on their
-           own (not combined with values from any input objects), we can skip this function
-           if we find that not all objects in a particular example share the same
-           to-be-inferred value. If we ever remove this constraint, then we should take
-           care to avoid re-computing the below on multiple instances from `values` that
-           are objects from the same example. *)
+        (* If we find that the values we're wanting to infer aren't consistent/constant within
+           each example scene, then we can remove all referenceable objects except for
+           Object["InputObject"], since that's the only referenceable object that could
+           fulfill varying values within 1 example. *)
         FirstCase[
             Length /@ (DeleteDuplicates /@ GroupBy[values, Function[#["Example"]] -> Function[#["Value"]]]),
-            Except[1] :> Return[Missing["NotInferrable"], Module]
+            Except[1] :> (
+                referenceableObjects = Cases[referenceableObjects, Object["InputObject"]];
+                If [referenceableObjects === {},
+                    Return[Missing["NotInferrable"], Module]
+                ]
+            )
         ];
         
         valuesToInfer = values[[All, "Value"]];
         
         (*If [Last[propertyPath] === $debugProperty,
-            ARCEcho[
-                valuesToInfer
-            ]
+            ARCEcho["valuesToInfer" -> valuesToInfer]
         ];*)
         
         referenceableValues =
             Function[{reference},
                 
-                Switch[
-                    reference[[1, "Context"]],
-                    "Component",
+                Which[
+                    reference === Object["InputObject"],
+                        objects = values[[All, "Input"]],
+                    MatchQ[reference[[1, "Context"]], "Component"],
                         objects = Function[{components},
                             ReturnIfFailure@
                             GetObject[reference, components]
                         ] /@ theseComponents,
-                    "Output",
+                    MatchQ[reference[[1, "Context"]], "Output"],
                         objects = Function[{example},
                             ReturnIfFailure@
                             GetObject[reference, example["Output"]]
                         ] /@ theseExamples,
-                    _Missing,
-                        objects = Function[{example},
-                            ReturnIfFailure@
-                            GetObject[reference, example["Input"]]
-                        ] /@ theseExamples,
-                    _,
-                        ReturnFailure[
-                            "UnsupportedReferenceContext",
-                            "The reference context '" <> reference[[1, "Context"]] <> "' isn't supported by ARCGeneralizeConclusionValueUsingReferenceableObjects."
+                    True,
+                        If [MissingQ[reference[[1, "Context"]]],
+                            objects = Function[{example},
+                                ReturnIfFailure@
+                                GetObject[reference, example["Input"]]
+                            ] /@ theseExamples
+                            ,
+                            ReturnFailure[
+                                "UnsupportedReferenceContext",
+                                "The reference context '" <> reference[[1, "Context"]] <> "' isn't supported by ARCGeneralizeConclusionValueUsingReferenceableObjects."
+                            ]
                         ]
                 ];
                 
@@ -6001,16 +6204,29 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                     Nothing
                 ]
                 
-            ] /@ Keys[referenceableObjects];
+            ] /@ referenceableObjects;
         
         (* Echo[referenceableObjects -> referenceableValues]; *)
         
         If [MatchQ[referenceableValues, {__}],
-            (* TODO: Instead of just choosing the first one, choose the best one. *)
             (*If [Last[propertyPath] === $debugProperty,
                 ARCEcho["referenceableValues" -> referenceableValues]
             ];*)
-            First[referenceableValues]
+            
+            best = Normal[
+                ARCChooseBestTransform[
+                    Association[Last[propertyPath] -> #] & /@ referenceableValues
+                ]
+            ][[1, 2]];
+            
+            (*first = First[referenceableValues];
+            If [best =!= first,
+                ARCEcho["referenceableValues" -> Last[propertyPath] -> referenceableValues];
+                ARCEcho["first" -> first];
+                ARCEcho["best" -> best];
+            ];*)
+            
+            best
             ,
             Missing["NotFound"]
         ]
@@ -7509,7 +7725,7 @@ ARCChooseBestTransform[{item_}] := item
 *)
 Clear[ARCTransformScore];
 ARCTransformScore[transformIn_] :=
-    Module[{transform = transformIn, score = 0},
+    Module[{transform = transformIn, objectValueCondition, objectValueProperty, score = 0},
         
         If [AssociationQ[transform],
             transform = KeyDrop[
@@ -7517,13 +7733,25 @@ ARCTransformScore[transformIn_] :=
                 {"Examples", "ExampleCount", "UseCount", "InputObjects"}
             ]
         ];
-        
-        Cases[
+        Replace[
             transform,
-            assoc: KeyValuePattern[_ -> _ObjectValue] :> (
+            assoc: KeyValuePattern[
+                _ -> Alternatives[
+                    _ObjectValue,
+                    Inactive[Plus][_ObjectValue, _]
+                ]
+            ] :> (
                 KeyValueMap[
-                    Function[{key, objectValue},
-                        objectValueProperty = objectValue[[2]];
+                    Function[{key, rhs},
+                        Replace[
+                            rhs,
+                            ObjectValue[condition_, property_, ___] :> (
+                                objectValueCondition = condition;
+                                objectValueProperty = property
+                            ),
+                            {0, Infinity},
+                            Heads -> True
+                        ];
                         score += Which[
                             key === objectValueProperty,
                                 0,
@@ -7531,12 +7759,23 @@ ARCTransformScore[transformIn_] :=
                                 -0.5,
                             True,
                                 -1
-                        ]
+                        ];
+                        If [And[
+                                AssociationQ[objectValueCondition],
+                                objectValueCondition["Context"] === "Component"
+                            ],
+                            (* If we can use a component to infer something, that seems
+                               better in general because it's more contextual.
+                               ARCChooseBestTransform-20220827-APSTJD
+                               e.g. referenceable-components *)
+                            score += 0.7
+                        ];
                     ],
-                    Select[assoc, MatchQ[#, _ObjectValue] &]
+                    Select[assoc, !FreeQ[#, _ObjectValue] &]
                 ];
                 assoc
-            )
+            ),
+            {0, Infinity}
         ];
         
         If [score === 0,
@@ -7769,26 +8008,35 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
                             sceneWidth,
                             sceneHeight
                         ],
-                        ARCAddComponentsTransform[
-                            group,
-                            outputObject = outputObjectsByUUID2[outputObjectUUID];
-                            If [!MissingQ[outputObject["Components"]],
-                                outputObject
-                                ,
-                                Sett[outputObject, "Components" -> {outputObject}]
-                            ],
-                            (* The output objects that correspond with input objects. *)
-                            If [!MissingQ[outputObject["Components"]],
-                                Values@
-                                KeyTake[
-                                    ObjectsByAttribute[outputObject["Components"], "UUID"],
-                                    lhsGroup[[All, "OutputComponentUUID"]]
-                                ]
-                                ,
-                                {outputObject}
-                            ],
-                            (* TODO: We're supposed to pass in "Width" and "Height" here. *)
-                            <||>
+                        outputObject = outputObjectsByUUID2[outputObjectUUID];
+                        If [!MatchQ[outputObject["Components"], {__}],
+                            (* The output object doesn't have components, so we are replacing
+                               multiple input objects with a single non-composite output object. *)
+                            outputObject
+                            ,
+                            (* The output object has components, so for now we'll treat this as
+                               AddComponents. *)
+                            ARCAddComponentsTransform[
+                                group,
+                                outputObject;
+                                If [!MissingQ[outputObject["Components"]],
+                                    outputObject
+                                    ,
+                                    Sett[outputObject, "Components" -> {outputObject}]
+                                ],
+                                (* The output objects that correspond with input objects. *)
+                                If [!MissingQ[outputObject["Components"]],
+                                    Values@
+                                    KeyTake[
+                                        ObjectsByAttribute[outputObject["Components"], "UUID"],
+                                        lhsGroup[[All, "OutputComponentUUID"]]
+                                    ]
+                                    ,
+                                    {outputObject}
+                                ],
+                                (* TODO: We're supposed to pass in "Width" and "Height" here. *)
+                                <||>
+                            ]
                         ]
                     ]
             },
@@ -7820,7 +8068,7 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
 *)
 Clear[ARCSetGroupProperties];
 ARCSetGroupProperties[components_List, sceneWidth_Integer, sceneHeight_Integer] :=
-    Module[{position, y1, x1, y2, x2},
+    Module[{position, y1, x1, y2, x2, group},
         
         position = {
             y1 = Min[components[[All, "Y"]]],
@@ -7829,7 +8077,7 @@ ARCSetGroupProperties[components_List, sceneWidth_Integer, sceneHeight_Integer] 
         y2 = Max[(#["Y"] + #["Height"] - 1) & /@ components];
         x2 = Max[(#["X"] + #["Width"] - 1) & /@ components];
         
-        ARCInferObjectProperties[
+        group = ARCInferObjectProperties[
             <|
                 "Type" -> "Group",
                 "UUID" -> CreateUUID[],
@@ -7860,7 +8108,29 @@ ARCSetGroupProperties[components_List, sceneWidth_Integer, sceneHeight_Integer] 
             |>,
             sceneWidth,
             sceneHeight
-        ]
+        ];
+        
+        If [And[
+                MatchQ[components[[All, "Shape"]], {Repeated[KeyValuePattern["Name" -> "Pixel"], {2}]}],
+                Or[
+                    group["Width"] === group["Height"],
+                    group["Width"] === 1,
+                    group["Height"] === 1,
+                    Not[group["Width"] === 1 && group["Height"] === 1]
+                ]
+            ],
+            (* If we have a group with two components, which are both pixels, then we'll
+               add a property "Angle". e.g. 1f876c06 *)
+            group = Sett[
+                group,
+                "Angle" -> Mod[
+                    ArcTan[-(components[[2, "Y"]] - components[[1, "Y"]]), components[[2, "X"]] - components[[1, "X"]]] * 180 / Pi + 360,
+                    180
+                ]
+            ]
+        ];
+        
+        group
     ]
 
 (*!
@@ -8610,7 +8880,7 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "4347f46a",
             "ImplementationTime" -> Quantity[12, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 9,
+            "TotalGeneralizedSuccesses" -> 11,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 4
         |>,
@@ -8623,9 +8893,47 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "67385a82",
             "ImplementationTime" -> Quantity[12, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 9,
+            "TotalGeneralizedSuccesses" -> 11,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 4
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 27}],
+            "SucessCount" -> 33,
+            "Runtime" -> Quantity[7.4, "Minutes"],
+            "CodeLength" -> 12346,
+            "ExampleImplemented" -> "178fcbfb",
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 11,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 4
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 27}],
+            "SucessCount" -> 34,
+            "Runtime" -> Quantity[9.3, "Minutes"],
+            "RuntimeComment" -> "I'm surprised to see the runtime slow down from 7.4 minutes to 9.3 minutes here -- that probably deserves debugging to understand why. I even fixed an issue whereby it was trying all alternatives of a minimal property set item after finding one that didn't need to add anything to the output rule due to being able to use input values directly.",
+            "CodeLength" -> 12898,
+            "ExampleImplemented" -> "1f876c06",
+            "ImplementationTime" -> Quantity[6.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"56ff96f3"},
+            "TotalGeneralizedSuccesses" -> 12,
+            "NewEvaluationSuccesses" -> {"e21a174a"},
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 27}],
+            "SucessCount" -> 35,
+            "Runtime" -> Quantity[9.3, "Minutes"],
+            "CodeLength" -> 12898,
+            "ExampleImplemented" -> "56ff96f3",
+            "ImplementationTime" -> Quantity[6.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 12,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
         |>
     }
 
@@ -8838,18 +9146,11 @@ ARCCleanRules[rulesIn_List] :=
                     condition = rule[[1]];
                     conclusion = rule[[2]];
                     
-                    If [!MissingQ[conclusion["Image"]],
-                        (* If we know Image, then we can prune certain other properties that may
-                           not be constant, but which are implied if we know image.
-                           e.g. 363442ee *)
-                        conclusion = KeyDrop[conclusion, {"Width", "Height", "Length", "Colors", "Color"}]
-                    ];
-                    
-                    If [MatchQ[conclusion["Shape"], _ARCScene],
-                        conclusion = KeyDrop[conclusion, {"Width", "Height", "Length"}]
-                    ];
-                    
-                    condition -> conclusion
+                    Rule[
+                        ARCPrunePattern[condition],
+                        (* Although not a "pattern", most of the same principles apply. *)
+                        ARCPrunePattern[conclusion, "Conclusion" -> True]
+                    ]
                     ,
                     rule
                 ]
@@ -9098,24 +9399,43 @@ InferColor["Color" -> color_] :=
     \maintainer danielb
 *)
 Clear[ARCInferObjectImage];
-ARCInferObjectImage[object_Association] :=
+ARCInferObjectImage[objectIn_Association] :=
     FailureDetails[
         "ARCInferObjectImageFailure",
         "A failure occurred infering an object's image."
     ]@
-    Module[{},
+    Module[{object = objectIn},
         
         ReturnIfNotMissing[object["Image"]];
         
-        ReturnFailureIfMissing[object["Width"]];
-        ReturnFailureIfMissing[object["Height"]];
+        If [MissingQ[object["Width"]] && object["Angle"] =!= 90 && object["Shape", "Angle"] =!= 90,
+            ReturnFailure[
+                "ARCInferObjectImageFailure",
+                "Either the Width property must be specified, or the Angle must be specified to be 90.",
+                "Object" -> object
+            ]
+            ,
+            If [MissingQ[object["Width"]],
+                object["Width"] = 1
+            ]
+        ];
+        
+        If [MissingQ[object["Height"]] && object["Angle"] =!= 0 && object["Shape", "Angle"] =!= 0,
+            ReturnFailure[
+                "ARCInferObjectImageFailure",
+                "Either the Height property must be specified, or the Angle must be specified to be 0.",
+                "Object" -> object
+            ]
+            ,
+            If [MissingQ[object["Height"]],
+                object["Height"] = 1
+            ]
+        ];
         
         If [MissingQ[object["Color"]] && MissingQ[object["Colors"]],
             ReturnFailure[
                 "ARCInferObjectImageFailure",
                 "Either the Color or Colors properties must be specified.",
-                "Color" -> object["Color"],
-                "Colors" -> object["Colors"],
                 "Object" -> object
             ]
         ];
@@ -9133,8 +9453,6 @@ ARCInferObjectImage[object_Association] :=
             ReturnFailure[
                 "ARCInferObjectImageFailure",
                 "Either the Shapes or Shape properties must be specified.",
-                "Shape" -> object["Shape"],
-                "Shapes" -> object["Shapes"],
                 "Object" -> object
             ]
         ];
@@ -9235,10 +9553,32 @@ ARCInferObjectImage[
                     {width}
                 ]
             },
+        shape["Angle"] === 45,
+            Function[{y},
+                Flatten[
+                    {
+                        Table[$nonImageColor, {width - y}],
+                        color,
+                        Table[$nonImageColor, {y - 1}]
+                    },
+                    1
+                ]
+            ] /@ Range[height],
+        shape["Angle"] === 135,
+            Function[{y},
+                Flatten[
+                    {
+                        Table[$nonImageColor, {y - 1}],
+                        color,
+                        Table[$nonImageColor, {width - y}]
+                    },
+                    1
+                ]
+            ] /@ Range[height],
         True,
             ReturnFailure[
                 "UnsupportedLine",
-                "Only vertical and horizontal lines are currently supported.",
+                "Only vertical, horizontal, 45 degree, and 135 degree lines are currently supported.",
                 "Width" -> width,
                 "Height" -> height
             ]
@@ -9725,14 +10065,27 @@ ARCRuleToPattern[pattern_ -> _] :=
     ARCRuleToPattern[pattern]
 
 ARCRuleToPattern[pattern_] :=
-    KeyValuePattern@
-    Replace[
-        Normal[pattern],
-        HoldPattern[Rule]["Shapes", shape_] :> (
-            (* We want the object to have this shape as one of its shapes. *)
-            "Shapes" -> {___, KeyValuePattern[Normal[shape]], ___}
-        ),
-        {1}
+    Module[{},
+        KeyValuePattern@
+        Replace[
+            Replace[
+                Normal[pattern],
+                {
+                    HoldPattern[Rule]["Shapes", shape_] :> (
+                        (* We want the object to have this shape as one of its shapes. *)
+                        "Shapes" -> {___, KeyValuePattern[Normal[shape]], ___}
+                    )
+                },
+                {1}
+            ],
+            {
+                assoc_Association :> KeyValuePattern[Normal[assoc]],
+                "Same" -> With[{symbol = Unique[patternSymbol]},
+                    Pattern[symbol, Blank[]]
+                ]
+            },
+            {1, Infinity}
+        ]
     ]
 
 (*!
@@ -9759,7 +10112,13 @@ ARCRuleToPattern[pattern_] :=
 *)
 Clear[ARCObjectCommonalities];
 ARCObjectCommonalities[objects_List] :=
-    Module[{propertyValues, commonShapes},
+    Module[
+        {
+            propertyValues,
+            commonShapes,
+            lengths,
+            commonalitiesAcrossAllListItems
+        },
         Association[
             Function[{property},
                 propertyValues = DeleteDuplicates[objects[[All, property]]];
@@ -9774,7 +10133,53 @@ ARCObjectCommonalities[objects_List] :=
                     property -> First[propertyValues]
                     ,
                     (* Not all objects of this type have the same value for this property. *)
-                    Nothing
+                    If [And[
+                            (* All values are lists. *)
+                            MatchQ[propertyValues, {Repeated[{Repeated[_Association]}]}],
+                            (* All lists have the same size. *)
+                            Length[lengths = DeleteDuplicates[Length /@ propertyValues]] === 1
+                        ],
+                        (* Are there any property values that are the same across all
+                           list items, regardless of which list they occur in? *)
+                        commonalitiesAcrossAllListItems = ARCObjectCommonalities[
+                            Flatten[propertyValues]
+                        ];
+                        (* Are there any property values which don't universally have the same
+                           value, but within a particular list have a consistent value? *)
+                        propertiesWithSameValueWithinAList = Intersection @@ (
+                            Keys /@
+                                ARCObjectCommonalities /@
+                                (* Remove keys that all associations have the same value for. *)
+                                With[{propertiesWithPredictableValue = Keys[commonalitiesAcrossAllListItems]},
+                                    KeyDrop[#, propertiesWithPredictableValue] & /@ propertyValues
+                                ]
+                        );
+                        If [propertiesWithSameValueWithinAList =!= {},
+                            commonalitiesAcrossAllListItems = Join[
+                                commonalitiesAcrossAllListItems,
+                                AssociationThread[
+                                    propertiesWithSameValueWithinAList,
+                                    Table["Same", {Length[propertiesWithSameValueWithinAList]}]
+                                ]
+                            ]
+                        ];
+                        
+                        commonalitiesAcrossAllListItems =
+                            ARCPrunePattern[commonalitiesAcrossAllListItems];
+                        
+                        If [commonalitiesAcrossAllListItems =!= <||>,
+                            property -> {
+                                Repeated[
+                                    commonalitiesAcrossAllListItems,
+                                    {lengths[[1]]}
+                                ]
+                            }
+                            ,
+                            Nothing
+                        ]
+                        ,
+                        Nothing
+                    ]
                 ]
             ] /@ DeleteDuplicates[Flatten[Keys /@ objects]]
         ]
@@ -11548,10 +11953,18 @@ ARCPropertiesNeededForConclusions[conclusions_List] :=
 Clear[ARCSubPropertySets];
 ARCSubPropertySets[attributes_Association] :=
     Module[{},
-        If [ListQ[attributes["SubProperties"]],
+        If [ListQ[attributes["SubProperties"]] || ListQ[attributes["MinimalPropertySets"]],
             (* $transformTypes specifies which sub-properties we need to be able to
                infer, so we loop over them. *)
-            subProperties = attributes["SubProperties"];
+            subProperties = Lookup[
+                attributes,
+                "SubProperties",
+                If [ListQ[attributes["MinimalPropertySets"]],
+                    <||>
+                    ,
+                    Missing["NotFound"]
+                ]
+            ];
             If [ListQ[attributes["MinimalPropertySets"]],
                 (* There are different combinations of the properties that can be used
                     to achieve a minimally specifying set of properties. *)
@@ -11735,8 +12148,12 @@ ARCConditionsScore[conditions_Association] :=
             Total[
                 Function[{property},
                     SquareButKeepSign@
-                    ReturnIfFailure@
-                    PropertyConditionQuality[property]
+                    ReturnIfFailure[
+                        PropertyConditionQuality[property],
+                        "ARCConditionsScoreFailure",
+                        "A failure occurred computing a score for some conditions.",
+                        "Conditions" -> conditions
+                    ]
                 ] /@ Keys[conditions]
             ];
         
@@ -11849,7 +12266,9 @@ Clear[ARCChooseBestRuleSet];
 ARCChooseBestRuleSet[ruleSets_List] :=
     Module[{scored},
         
-        scored = ARCScoreRuleSets[ruleSets];
+        scored =
+            ReturnIfFailure@
+            ARCScoreRuleSets[ruleSets];
         
         (*ARCEcho[scored];*)
         
@@ -11889,9 +12308,15 @@ PropertyConditionQuality[property_String] :=
                     listPosition = Lookup[
                         $propertyListPositions,
                         property,
-                        ReturnFailure[
-                            "ARCConditionsScoreMissingProperty",
-                            "Unable to find the property " <> ToString[key] <> " in the property list."
+                        If [MatchQ[property, "Type" | "Components"],
+                            (* Not really a core property, but can occur in outputs.
+                               e.g. "Type" -> "Group" *)
+                            1
+                            ,
+                            ReturnFailure[
+                                "ARCConditionsScoreMissingProperty",
+                                "Unable to find the property " <> ToString[property] <> " in the property list."
+                            ]
                         ]
                     ];
                     
@@ -11951,6 +12376,563 @@ SqrtButKeepSign[value_] :=
         -Sqrt[Abs[value]]
         ,
         Sqrt[value]
+    ]
+
+(*!
+    \function ARCFindOccludedLines
+    
+    \calltable
+        ARCFindOccludedLines[objects, sceneWidth, sceneHeight] '' Tries to determine what lines are occluded, and forms single objects from their parts, setting ZOrder as appropriate on objects.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindOccludedLines]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindOccludedLines];
+ARCFindOccludedLines[scene_ARCScene, objects_List] :=
+    Module[
+        {
+            allLines,
+            lineFragments,
+            objectsByPixelPosition,
+            objectsByUUID,
+            processed = <||>,
+            (* What are all of the objects that got merged into larger objects? *)
+            lineFragmentsCombined = <||>,
+            occlusionFindings,
+            orderings = {},
+            extendedLines,
+            components,
+            y,
+            x,
+            y2,
+            x2,
+            newObject,
+            uuidReplacements = {}
+        },
+        
+        allLines = Select[
+            objects,
+            ShapeQ[#, "Line"] &
+        ];
+        
+        lineFragments = Select[
+            allLines,
+            And[
+                #["Width"] =!= sceneWidth,
+                #["Height"] =!= sceneHeight
+            ] &
+        ];
+        
+        objectsByPixelPosition = ObjectsByAttribute[objects, "PixelPosition"];
+        objectsByUUID = ObjectsByAttribute[objects, "UUID"];
+        
+        (* Find occlusions. *)
+        occlusionFindings = Function[{line},
+            If [!TrueQ[processed[line["UUID"]]],
+                line -> Flatten[
+                    Function[{direction},
+                        occlusionFindings = ARCFindOccludedLines[
+                            line,
+                            direction,
+                            ARCPositionBeyondLine[line, direction],
+                            objectsByPixelPosition,
+                            objectsByUUID
+                        ];
+                        If [occlusionFindings =!= {},
+                            lineFragmentsCombined[line["UUID"]] = True;
+                            Function[{occlusionFindingObject},
+                                processed[occlusionFindingObject["UUID"]] = True;
+                                lineFragmentsCombined[occlusionFindingObject["UUID"]] = True
+                            ] /@ Values[Cases[occlusionFindings, HoldPattern[Rule]["Fragment", _]]];
+                        ];
+                        occlusionFindings
+                    ] /@ ARCLineDirections[line]
+                ]
+                ,
+                Nothing
+            ]
+        ] /@ lineFragments;
+        
+        (* Process occlusions. *)
+        extendedLines = KeyValueMap[
+            Function[{line, theseOcclusionFindings},
+                If [theseOcclusionFindings =!= {},
+                    fragments = Cases[theseOcclusionFindings, HoldPattern[Rule]["Fragment", _]][[All, 2]];
+                    occludingObjects = Cases[theseOcclusionFindings, HoldPattern[Rule]["Occlusion", _]][[All, 2]];
+                    
+                    (* Produce a list of rules that indicate which objects are occluded by which other
+                    objects. *)
+                    AppendTo[
+                        orderings,
+                        (line["UUID"] -> #["UUID"]) & /@ occludingObjects
+                    ];
+                    
+                    components = Prepend[fragments, line];
+                    
+                    y = Min[components[[All, "Y"]]];
+                    x = Min[components[[All, "X"]]];
+                    
+                    y2 = Max[components[[All, "Y2"]]];
+                    x2 = Max[components[[All, "X2"]]];
+                    
+                    (* Combine the fragments into a single object. *)
+                    newObject = ARCImageRegionToObject[
+                        <|
+                            "Image" -> ARCInferObjectImage[
+                                <|"Name" -> "Line"|>,
+                                line["Color"],
+                                x2 - x + 1,
+                                y2 - y + 1
+                            ][[1]],
+                            "PixelPositions" -> Sort[
+                                Flatten[Table[{thisY, thisX}, {thisY, y, y2}, {thisX, x, x2}], 1]
+                            ],
+                            "Color" -> line["Color"],
+                            "Position" -> {y, x}
+                        |>,
+                        ImageWidth[scene],
+                        ImageHeight[scene]
+                    ];
+                    
+                    (* For use below to replace the UUIDs of the now-defunct fragments with
+                       the UUID of the object that replaces them. *)
+                    AppendTo[
+                        uuidReplacements,
+                        (# -> newObject["UUID"]) & /@ components[[All, "UUID"]]
+                    ];
+                    
+                    newObject
+                    ,
+                    Nothing
+                ]
+            ],
+            Association[occlusionFindings]
+        ];
+        
+        (* Rules specifying which objects are occluded by which other objects. *)
+        orderings = Graph[
+            Replace[
+                Flatten[orderings],
+                Flatten[uuidReplacements],
+                {2}
+            ]
+        ];
+        
+        (* Set the ZOrder of objects. *)
+        extendedLines =
+            Function[{object},
+                Sett[
+                    object,
+                    "ZOrder" -> Max[GraphDistance[orderings, object["UUID"]]]
+                ]
+            ] /@ extendedLines;
+        
+        Join[
+            extendedLines,
+            Select[
+                objects,
+                !TrueQ[lineFragmentsCombined[#["UUID"]]] &
+            ]
+        ]
+    ]
+
+ARCFindOccludedLines[line_Association, direction_List, nextPosition_List, objectsByPixelPosition_Association, objectsByUUID_Association] :=
+    Module[{nextObject, nextNextObject},
+        XEcho["ARCFindOccludedLines" -> direction -> nextPosition];
+        nextObject = objectsByPixelPosition[nextPosition];
+        If [!MissingQ[nextObject],
+            (* There is an object here beyond the line in this direction. *)
+            nextObject = objectsByUUID[nextObject];
+            If [And[
+                    ShapeQ[nextObject, "Line"],
+                    (* For now, we'll only consider there to be an occlusion if the other line
+                       is perpendicular to our line. *)
+                    line["Shape", "Angle"] =!= nextObject["Shape", "Angle"]
+                ],
+                nextNextObject = objectsByPixelPosition[nextPosition + direction];
+                If [!MissingQ[nextNextObject],
+                    nextNextObject = objectsByUUID[nextNextObject];
+                    XARCEcho2["nextNextObject" -> SimplifyObjects[nextNextObject]];
+                    If [And[
+                            nextNextObject["Color"] === line["Color"],
+                            Or[
+                                And[
+                                    ShapeQ[nextNextObject, "Line"],
+                                    line["Shape", "Angle"] === nextNextObject["Shape", "Angle"]
+                                ],
+                                ShapeQ[nextNextObject, "Pixel"]
+                            ]
+                        ],
+                        (* We've found what appears to be another fragment of our line. *)
+                        Return[
+                            {
+                                "Occlusion" -> nextObject,
+                                "Fragment" -> nextNextObject,
+                                Sequence@@
+                                ARCFindOccludedLines[
+                                    line,
+                                    direction,
+                                    If [ShapeQ[nextNextObject, "Pixel"],
+                                        nextNextObject["Position"] + direction
+                                        ,
+                                        ARCPositionBeyondLine[nextNextObject, direction]
+                                    ],
+                                    objectsByPixelPosition,
+                                    objectsByUUID
+                                ]
+                            },
+                            Module
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        
+        {}
+    ]
+
+(*!
+    \function ARCPositionBeyondLine
+    
+    \calltable
+        ARCPositionBeyondLine[line, direction] '' Given a line object and a direction, returns the next pixel position in that direction beyond the line.
+    
+    Examples:
+    
+    ARCPositionBeyondLine[<|"Y" -> 3, "X2" -> 5|>, {0, 1}] === {3, 6}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPositionBeyondLine]
+    
+    \maintainer danielb
+*)
+Clear[ARCPositionBeyondLine];
+ARCPositionBeyondLine[line_Association, direction_List] :=
+    Module[{},
+        Switch[
+            direction,
+            {1, 0},
+                {
+                    line["Y2"] + 1,
+                    line["X"]
+                },
+            {-1, 0},
+                {
+                    line["Y"] - 1,
+                    line["X"]
+                },
+            {0, 1},
+                {
+                    line["Y"],
+                    line["X2"] + 1
+                },
+            {0, -1},
+                {
+                    line["Y"],
+                    line["X"] - 1
+                }
+        ]
+    ]
+
+(*!
+    \function ARCLineDirections
+    
+    \calltable
+        ARCLineDirections[line] '' Given a line object, returns the two directions in which the line extends.
+    
+    Examples:
+    
+    ARCLineDirections[<|"Width" -> 3, "Height" -> 1|>] === {{0, -1}, {0, 1}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCLineDirections]
+    
+    \maintainer danielb
+*)
+Clear[ARCLineDirections];
+ARCLineDirections[line_] :=
+    If [line["Width"] === 1,
+        {{-1, 0}, {1, 0}}
+        ,
+        {{0, -1}, {0, 1}}
+    ]
+
+(*!
+    \function ShapeQ
+    
+    \calltable
+        ShapeQ[object, shapeName] '' Returns True if the object is of the given shape.
+    
+    Examples:
+    
+    ShapeQ[<|"Shape" -> <|"Name" -> "Line"|>|>, "Line"] === True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ShapeQ]
+    
+    \maintainer danielb
+*)
+Clear[ShapeQ];
+ShapeQ[object_Association, shapeName_String] :=
+    MatchQ[
+        object["Shape"],
+        KeyValuePattern["Name" -> shapeName]
+    ]
+
+(*!
+    \function ARCPrunePattern
+    
+    \calltable
+        ARCPrunePattern[pattern] '' Given an ARC object pattern, performs various pruning operations.
+    
+    Examples:
+    
+    ARCPrunePattern[<|"Image" -> ARCScene[{{1}}], "Width" -> 1|>] === <|"Image" -> ARCScene[{{1}}]|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPrunePattern]
+    
+    \maintainer danielb
+*)
+Clear[ARCPrunePattern];
+Options[ARCPrunePattern] =
+{
+    "Conclusion" -> False       (*< Whether the context is actually a conclusion. *)
+};
+ARCPrunePattern[patternIn_, OptionsPattern[]] :=
+    Module[{},
+        
+        pattern = patternIn;
+        
+        If [!MissingQ[pattern["Image"]] || MatchQ[pattern["Shape"], _ARCScene],
+            pattern = KeyDrop[
+                pattern,
+                Flatten@
+                {
+                    Which[
+                        MatchQ[pattern["Image"], _ARCScene] || MatchQ[pattern["Shape"], _ARCScene],
+                            {
+                                "Width",
+                                "Height",
+                                If [!MissingQ[pattern["X"]] || TrueQ[OptionValue["Conclusion"]],
+                                    {
+                                        "X2",
+                                        "X2.InverseRank",
+                                        "X2.Rank",
+                                        "X2Inverse",
+                                        "X2Inverse.InverseRank",
+                                        "X2Inverse.Rank"
+                                    }
+                                    ,
+                                    Nothing
+                                ],
+                                If [!MissingQ[pattern["Y"]] || TrueQ[OptionValue["Conclusion"]],
+                                    {
+                                        "Y2",
+                                        "Y2.InverseRank",
+                                        "Y2.Rank",
+                                        "Y2Inverse",
+                                        "Y2Inverse.InverseRank",
+                                        "Y2Inverse.Rank"
+                                    }
+                                    ,
+                                    Nothing
+                                ]
+                            },
+                        MatchQ[pattern["Image"], "Same"],
+                            Sequence @@
+                            {
+                                If [MatchQ[pattern["Width"], "Same"],
+                                    "Width"
+                                    ,
+                                    Nothing
+                                ],
+                                If [MatchQ[pattern["Height"], "Same"],
+                                    "Height"
+                                    ,
+                                    Nothing
+                                ]
+                            },
+                        True,
+                            (* If the Image is just "Same", then let's keep the "Shape"
+                               specifier if it's known. e.g. 1f876c06 *)
+                            Nothing
+                    ],
+                    "Length",
+                    "PrimarySizeDimension",
+                    "AspectRatio",
+                    "Area",
+                    "FilledArea",
+                    "FilledProportion",
+                    "ColorUseCount",
+                    "Width.Rank",
+                    "Width.InverseRank",
+                    "Height.Rank",
+                    "Height.InverseRank",
+                    "Length.Rank",
+                    "Length.InverseRank",
+                    "PrimarySizeDimension.Rank",
+                    "PrimarySizeDimension.InverseRank",
+                    "AspectRatio.Rank",
+                    "AspectRatio.InverseRank",
+                    "Area.Rank",
+                    "Area.InverseRank",
+                    "FilledArea.Rank",
+                    "FilledArea.InverseRank",
+                    "FilledProportion.Rank",
+                    "FilledProportion.InverseRank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Image"]],
+            (* If we know the image, then prune these unnecessary properties. *)
+            pattern = KeyDrop[
+                pattern,
+                Flatten@
+                {
+                    Which[
+                        MatchQ[pattern["Image"], _ARCScene],
+                            {
+                                "Shape",
+                                "Shapes",
+                                "Color",
+                                "Colors"
+                            },
+                        MatchQ[pattern["Image"], "Same"],
+                            Sequence @@
+                            {
+                                If [MatchQ[pattern["Shape"], "Same"],
+                                    "Shape"
+                                    ,
+                                    Nothing
+                                ],
+                                If [MatchQ[pattern["Color"], "Same"],
+                                    "Color"
+                                    ,
+                                    Nothing
+                                ],
+                                If [MatchQ[pattern["Colors"], "Same"],
+                                    "Colors"
+                                    ,
+                                    Nothing
+                                ]
+                            },
+                        True,
+                            (* If the Image is just "Same", then let's keep the "Shape"
+                               specifier if it's known. e.g. 1f876c06 *)
+                            Nothing
+                    ],
+                    "ColorUseCount.Rank",
+                    "ColorUseCount.InverseRank"
+                }
+            ]
+        ];
+        
+        If [MatchQ[pattern["Shape"], <|"Name" -> "Pixel"|>],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Width",
+                    "Height"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Color"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Colors"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Shape"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Shapes"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Y"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Y.InverseRank",
+                    "Y.Rank",
+                    "YInverse",
+                    "YInverse.InverseRank",
+                    "YInverse.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Y2"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Y2.InverseRank",
+                    "Y2.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["X"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "X.InverseRank",
+                    "X.Rank",
+                    "XInverse",
+                    "XInverse.InverseRank",
+                    "XInverse.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["X2"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "X2.InverseRank",
+                    "X2.Rank"
+                }
+            ]
+        ];
+        
+        If [pattern["AspectRatio"] === 1,
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "PrimarySizeDimension"
+                }
+            ]
+        ];
+        
+        If [MatchQ[pattern["Angle"], 0 | 45 | 90 | 135],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "PrimarySizeDimension"
+                }
+            ]
+        ];
+        
+        pattern
     ]
 
 End[]

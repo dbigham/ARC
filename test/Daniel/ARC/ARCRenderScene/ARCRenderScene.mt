@@ -56,3 +56,25 @@ Test[
     ,
     TestID -> "ARCRenderScene-20220722-GLEI69"
 ]
+
+Test[
+    Daniel`ARC`ARCRenderScene[
+        Daniel`ARC`ARCParseScene[Daniel`ARC`ARCParseFile["178fcbfb"]["Train", 1, "Output"]]
+    ]
+    ,
+    Daniel`ARC`ARCScene[
+        {
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {3, 3, 3, 3, 3, 3, 3, 3, 3},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 2, 0, 0, 0, 0, 0, 0}
+        }
+    ]
+    ,
+    TestID -> "ARCRenderScene-20220827-7Z6CZI"
+]

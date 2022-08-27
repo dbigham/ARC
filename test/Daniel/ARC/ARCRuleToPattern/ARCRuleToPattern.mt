@@ -47,3 +47,32 @@ Test[
     ,
     TestID -> "ARCRuleToPattern-20220812-9RDZ64"
 ]
+
+Test[
+    DevTools`ERP`NormalizeOutput[
+        Daniel`ARC`ARCRuleToPattern[
+            <|
+                "Width" -> 1,
+                "Components" -> {
+                    Repeated[<|"Shape" -> "Pixel", "Image" -> "Same"|>, {2}]
+                }
+            |>
+        ]
+    ]
+    ,
+    KeyValuePattern[
+        {
+            "Width" -> 1,
+            "Components" -> {
+                Repeated[
+                    KeyValuePattern[
+                        {"Shape" -> "Pixel", "Image" -> Daniel`ARC`Private`patternSymbol$1_}
+                    ],
+                    {2}
+                ]
+            }
+        }
+    ]
+    ,
+    TestID -> "ARCRuleToPattern-20220827-VQWZFF"
+]

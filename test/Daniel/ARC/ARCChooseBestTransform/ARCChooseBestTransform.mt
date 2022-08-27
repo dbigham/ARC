@@ -112,3 +112,45 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220826-6O5JRI"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            <|"Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X2"], -4]|>,
+            <|"Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {}|>, "Y"]|>
+        }
+    ]
+    ,
+    <|"Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {}|>, "Y"]|>
+    ,
+    TestID -> "ARCChooseBestTransform-20220827-R3ZI5X"
+]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            <|
+                "X" -> Inactive[Plus][
+                    Daniel`ARC`ObjectValue[
+                        <|"Colors" -> {1}, "Context" -> "Component"|>,
+                        "XRelative"
+                    ],
+                    1
+                ]
+            |>,
+            <|"X" -> Daniel`ARC`ObjectValue[<|"X2.InverseRank" -> 2|>, "Width"]|>
+        }
+    ]
+    ,
+    <|
+        "X" -> Inactive[Plus][
+            Daniel`ARC`ObjectValue[
+                <|"Colors" -> {1}, "Context" -> "Component"|>,
+                "XRelative"
+            ],
+            1
+        ]
+    |>
+    ,
+    TestID -> "ARCChooseBestTransform-20220827-APSTJD"
+]

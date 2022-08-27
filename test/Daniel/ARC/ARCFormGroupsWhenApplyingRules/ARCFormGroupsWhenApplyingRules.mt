@@ -213,3 +213,162 @@ Test[
     ,
     TestID -> "ARCFormGroupsWhenApplyingRules-20220812-0PAYA9"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects["ExtraKeys" -> {"Type"}][
+        Daniel`ARC`ARCFormGroupsWhenApplyingRules[
+            {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                    "PixelPositions" -> {{1, 1}},
+                    "Shape" -> <|"Name" -> "Pixel"|>,
+                    "Colors" -> {1},
+                    "Color" -> 1,
+                    "Position" -> {1, 1},
+                    "Y" -> 1,
+                    "X" -> 1,
+                    "Width" -> 1,
+                    "Height" -> 1
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                    "PixelPositions" -> {{3, 3}},
+                    "Shape" -> <|"Name" -> "Pixel"|>,
+                    "Colors" -> {1},
+                    "Color" -> 1,
+                    "Position" -> {3, 3},
+                    "Y" -> 3,
+                    "X" -> 3,
+                    "Width" -> 1,
+                    "Height" -> 1
+                |>
+            },
+            {
+                <|
+                    "Type" -> "Group",
+                    "Components" -> {
+                        Repeated[
+                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                            {2}
+                        ]
+                    }
+                |> -> <|
+                    "Color" -> 2
+                |>
+            },
+            10,
+            10
+        ]
+    ]
+    ,
+    {
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1, -1, -1}, {-1, -1, -1}, {-1, -1, 1}}],
+            "Position" -> {1, 1},
+            "Type" -> "Group"
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "PixelPositions" -> {{1, 1}},
+            "Shape" -> <|"Name" -> "Pixel"|>,
+            "Colors" -> {1},
+            "Color" -> 1,
+            "Position" -> {1, 1},
+            "Y" -> 1,
+            "X" -> 1,
+            "Width" -> 1,
+            "Height" -> 1
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "PixelPositions" -> {{3, 3}},
+            "Shape" -> <|"Name" -> "Pixel"|>,
+            "Colors" -> {1},
+            "Color" -> 1,
+            "Position" -> {3, 3},
+            "Y" -> 3,
+            "X" -> 3,
+            "Width" -> 1,
+            "Height" -> 1
+        |>
+    }
+    ,
+    TestID -> "ARCFormGroupsWhenApplyingRules-20220827-Z84ACQ"
+]
+
+Test[
+    Daniel`ARC`SimplifyObjects["ExtraKeys" -> {"Type"}][
+        Daniel`ARC`ARCFormGroupsWhenApplyingRules[
+            {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                    "PixelPositions" -> {{1, 1}},
+                    "Shape" -> <|"Name" -> "Pixel"|>,
+                    "Colors" -> {1},
+                    "Color" -> 1,
+                    "Position" -> {1, 1},
+                    "Y" -> 1,
+                    "X" -> 1,
+                    "Width" -> 1,
+                    "Height" -> 1
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                    "PixelPositions" -> {{3, 3}},
+                    "Shape" -> <|"Name" -> "Pixel"|>,
+                    "Colors" -> {2},
+                    "Color" -> 2,
+                    "Position" -> {3, 3},
+                    "Y" -> 3,
+                    "X" -> 3,
+                    "Width" -> 1,
+                    "Height" -> 1
+                |>
+            },
+            {
+                <|
+                    "Type" -> "Group",
+                    "Components" -> {
+                        Repeated[
+                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                            {2}
+                        ]
+                    }
+                |> -> <|
+                    "Color" -> 2
+                |>
+            },
+            10,
+            10
+        ]
+    ]
+    ,
+    {
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "PixelPositions" -> {{1, 1}},
+            "Shape" -> <|"Name" -> "Pixel"|>,
+            "Colors" -> {1},
+            "Color" -> 1,
+            "Position" -> {1, 1},
+            "Y" -> 1,
+            "X" -> 1,
+            "Width" -> 1,
+            "Height" -> 1
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}}],
+            "PixelPositions" -> {{3, 3}},
+            "Shape" -> <|"Name" -> "Pixel"|>,
+            "Colors" -> {2},
+            "Color" -> 2,
+            "Position" -> {3, 3},
+            "Y" -> 3,
+            "X" -> 3,
+            "Width" -> 1,
+            "Height" -> 1
+        |>
+    }
+    ,
+    TestID -> "ARCFormGroupsWhenApplyingRules-20220827-8VG4ZO"
+]

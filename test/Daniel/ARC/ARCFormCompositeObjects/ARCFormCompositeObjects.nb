@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     80607,       1756]
-NotebookOptionsPosition[     73915,       1596]
-NotebookOutlinePosition[     79575,       1737]
-CellTagsIndexPosition[     79532,       1734]
+NotebookDataLength[     81897,       1778]
+NotebookOptionsPosition[     75205,       1618]
+NotebookOutlinePosition[     80865,       1759]
+CellTagsIndexPosition[     80822,       1756]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -27,8 +27,7 @@ Cell[BoxData[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{"RunUnitTests", "[", "ARCFormCompositeObjects", "]"}]}], "Code",
  InitializationCell->False,
- CellLabel->
-  "In[565]:=",ExpressionUUID->"3b00e239-359a-4d59-b4a4-0c6cde1ad43a"],
+ CellLabel->"In[10]:=",ExpressionUUID->"3b00e239-359a-4d59-b4a4-0c6cde1ad43a"],
 
 Cell[CellGroupData[{
 
@@ -534,7 +533,7 @@ Cell[BoxData[{
    3.8671615350197396`*^9}, 3.867162090118838*^9, {3.8687946241115103`*^9, 
    3.868794630567066*^9}, {3.8687947909289055`*^9, 3.8687948238549557`*^9}, {
    3.8697728504446907`*^9, 3.8697729030501204`*^9}},
- CellLabel->"In[558]:=",
+ CellLabel->"In[12]:=",
  CellID->94346783,
  "TestId" -> 
  "ARCFormCompositeObjects-20220718-XRHLHS",ExpressionUUID->"d9460f11-794d-\
@@ -667,7 +666,34 @@ Cell[BoxData[
     {"\<\"        \\\"Y\\\" -> 3,\"\>"},
     {"\<\"        \\\"X\\\" -> 2,\"\>"},
     {"\<\"        \\\"AspectRatio\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Area\\\" -> 5,\"\>"},
+    {"\<\"        \\\"Area\\\" -> 9,\"\>"},
+    {"\<\"        \\\"Shapes\\\" -> {\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"            \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
+                 GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
+                 GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
+                 GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
+                 GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
+    {"\<\"        },\"\>"},
     {"\<\"        \\\"Components\\\" -> {\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -764,8 +790,8 @@ Cell[BoxData[
     {"\<\"                \\\"X\\\" -> 2,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 1\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 0,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 0\"\>"},
     {"\<\"            |>,\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -862,8 +888,8 @@ Cell[BoxData[
     {"\<\"                \\\"X\\\" -> 4,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 3\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 0,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 2\"\>"},
     {"\<\"            |>,\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -959,8 +985,8 @@ Cell[BoxData[
     {"\<\"                \\\"X\\\" -> 3,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 2,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 2\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 1,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 1\"\>"},
     {"\<\"            |>,\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -1057,8 +1083,8 @@ Cell[BoxData[
     {"\<\"                \\\"X\\\" -> 2,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 3,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 1\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 2,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 0\"\>"},
     {"\<\"            |>,\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -1155,37 +1181,20 @@ Cell[BoxData[
     {"\<\"                \\\"X\\\" -> 4,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 3,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 3\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 2,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 2\"\>"},
     {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
-    {"\<\"        \\\"Shapes\\\" -> {\"\>"},
-    {
-     TemplateBox[{
-       TemplateBox[{"\"            \"", 
-         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
-           TagBox[
-            
-            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
-              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
-             GridBoxBackground -> {
-              "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[1, 1, 0], {1, 2} -> 
-                 GrayLevel[0.2], {1, 3} -> RGBColor[1, 1, 0], {2, 1} -> 
-                 GrayLevel[0.2], {2, 2} -> RGBColor[1, 0, 0], {2, 3} -> 
-                 GrayLevel[0.2], {3, 1} -> RGBColor[1, 1, 0], {3, 2} -> 
-                 GrayLevel[0.2], {3, 3} -> RGBColor[1, 1, 0]}}, 
-             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-             GridBoxFrame -> {
-              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
-             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-             FrameStyle -> {
-               AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
-      "RowDefault"]},
-    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
-    {"\<\"        }\"\>"},
+    {"\<\"        \\\"YInverse\\\" -> 7,\"\>"},
+    {"\<\"        \\\"XInverse\\\" -> 8,\"\>"},
+    {"\<\"        \\\"Y2\\\" -> 5,\"\>"},
+    {"\<\"        \\\"X2\\\" -> 4,\"\>"},
+    {"\<\"        \\\"Y2Inverse\\\" -> 5,\"\>"},
+    {"\<\"        \\\"X2Inverse\\\" -> 6,\"\>"},
+    {"\<\"        \\\"Length\\\" -> 3,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimension\\\" -> \\\"None\\\",\"\>"},
+    {"\<\"        \\\"FilledArea\\\" -> 5,\"\>"},
+    {"\<\"        \\\"FilledProportion\\\" -> 0.5555555555555556\"\>"},
     {"\<\"    |>,\"\>"},
     {"\<\"    <|\"\>"},
     {"\<\"        \\\"UUID\\\" -> \
@@ -1310,7 +1319,34 @@ Cell[BoxData[
     {"\<\"        \\\"Y\\\" -> 6,\"\>"},
     {"\<\"        \\\"X\\\" -> 6,\"\>"},
     {"\<\"        \\\"AspectRatio\\\" -> 1,\"\>"},
-    {"\<\"        \\\"Area\\\" -> 5,\"\>"},
+    {"\<\"        \\\"Area\\\" -> 9,\"\>"},
+    {"\<\"        \\\"Shapes\\\" -> {\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"            \"", 
+         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
+                 RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
+                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
+                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
+    {"\<\"        },\"\>"},
     {"\<\"        \\\"Components\\\" -> {\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -1366,8 +1402,8 @@ Cell[BoxData[
               StyleBox[
                RowBox[{"RGBColor", "[", 
                  RowBox[{"1", ",", "0.5`", ",", "0"}], "]"}], NumberMarks -> 
-               False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> B\
-aseline, DefaultBaseStyle -> {}, ButtonFunction :> 
+               False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
+             Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
              With[{Typeset`box$ = EvaluationBox[]}, 
                If[
                 Not[
@@ -1395,8 +1431,8 @@ aseline, DefaultBaseStyle -> {}, ButtonFunction :>
     {"\<\"                \\\"X\\\" -> 6,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 4,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 1\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 0,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 0\"\>"},
     {"\<\"            |>,\"\>"},
     {"\<\"            <|\"\>"},
     {"\<\"                \\\"UUID\\\" -> \
@@ -1518,37 +1554,20 @@ aseline, DefaultBaseStyle -> {}, ButtonFunction :>
     {"\<\"                \\\"X\\\" -> 7,\"\>"},
     {"\<\"                \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"                \\\"Area\\\" -> 1,\"\>"},
-    {"\<\"                \\\"RelativeY\\\" -> 2,\"\>"},
-    {"\<\"                \\\"RelativeX\\\" -> 2\"\>"},
+    {"\<\"                \\\"YRelative\\\" -> 1,\"\>"},
+    {"\<\"                \\\"XRelative\\\" -> 1\"\>"},
     {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
-    {"\<\"        \\\"Shapes\\\" -> {\"\>"},
-    {
-     TemplateBox[{
-       TemplateBox[{"\"            \"", 
-         TemplateBox[{"\"<|\\\"Image\\\" -> \"", 
-           TagBox[
-            
-            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
-              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
-             GridBoxBackground -> {
-              "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
-                 RGBColor[1, 0.5, 0], {1, 3} -> GrayLevel[0.2], {2, 1} -> 
-                 RGBColor[1, 0.5, 0], {2, 2} -> RGBColor[0, 0, 1], {2, 3} -> 
-                 RGBColor[1, 0.5, 0], {3, 1} -> GrayLevel[0.2], {3, 2} -> 
-                 RGBColor[1, 0.5, 0], {3, 3} -> GrayLevel[0.2]}}, 
-             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
-             GridBoxFrame -> {
-              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
-             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
-             FrameStyle -> {
-               AbsoluteThickness[1], 
-               GrayLevel[0.5]}], "Grid"], "\"|>\""}, "RowDefault"]}, 
-        "RowDefault"], "\",\""},
-      "RowDefault"]},
-    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
-    {"\<\"        }\"\>"},
+    {"\<\"        \\\"YInverse\\\" -> 4,\"\>"},
+    {"\<\"        \\\"XInverse\\\" -> 4,\"\>"},
+    {"\<\"        \\\"Y2\\\" -> 8,\"\>"},
+    {"\<\"        \\\"X2\\\" -> 8,\"\>"},
+    {"\<\"        \\\"Y2Inverse\\\" -> 2,\"\>"},
+    {"\<\"        \\\"X2Inverse\\\" -> 2,\"\>"},
+    {"\<\"        \\\"Length\\\" -> 3,\"\>"},
+    {"\<\"        \\\"PrimarySizeDimension\\\" -> \\\"None\\\",\"\>"},
+    {"\<\"        \\\"FilledArea\\\" -> 5,\"\>"},
+    {"\<\"        \\\"FilledProportion\\\" -> 0.5555555555555556\"\>"},
     {"\<\"    |>\"\>"},
     {"\<\"}\"\>"}
    },
@@ -1568,9 +1587,12 @@ aseline, DefaultBaseStyle -> {}, ButtonFunction :>
    3.8687947020643826`*^9, {3.868794745198106*^9, 3.8687947603672495`*^9}, 
    3.868794824415242*^9, {3.868795319444189*^9, 3.8687953318828735`*^9}, {
    3.869772549052133*^9, 3.8697725512440453`*^9}, {3.8697729038259983`*^9, 
-   3.86977292676084*^9}, 3.8697729889808645`*^9, 3.8697730313062763`*^9},
- CellLabel->
-  "Out[559]=",ExpressionUUID->"088769e8-93b0-4a95-8176-4d560e49c63c"],
+   3.86977292676084*^9}, 3.8697729889808645`*^9, 3.8697730313062763`*^9, 
+   3.8705557499676375`*^9, 3.8705570431664*^9, 3.8705570780526037`*^9, {
+   3.8705571098018785`*^9, 3.870557154977973*^9}, {3.8705572063950167`*^9, 
+   3.870557234068703*^9}, 3.8705573736601095`*^9, {3.87060036515825*^9, 
+   3.8706003751391783`*^9}},
+ CellLabel->"Out[13]=",ExpressionUUID->"a409e162-b1a7-49b6-843d-8600308eab57"],
 
 Cell[CellGroupData[{
 
@@ -1738,23 +1760,23 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 95, 0, 98, "Title",ExpressionUUID->"e330c2c1-ae10-4b04-912f-2f76dbc27ea8"],
-Cell[678, 24, 258, 6, 54, "Code",ExpressionUUID->"3b00e239-359a-4d59-b4a4-0c6cde1ad43a",
+Cell[678, 24, 254, 5, 54, "Code",ExpressionUUID->"3b00e239-359a-4d59-b4a4-0c6cde1ad43a",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[961, 34, 79, 0, 67, "Section",ExpressionUUID->"0ca29079-7fa3-48dc-8e54-3a9e808ea32a"],
+Cell[957, 33, 79, 0, 67, "Section",ExpressionUUID->"0ca29079-7fa3-48dc-8e54-3a9e808ea32a"],
 Cell[CellGroupData[{
-Cell[1065, 38, 3630, 85, 52, "TestUI",ExpressionUUID->"4c9ecb18-3df1-4ce0-aca2-7c2908f9f1ff",
+Cell[1061, 37, 3630, 85, 52, "TestUI",ExpressionUUID->"4c9ecb18-3df1-4ce0-aca2-7c2908f9f1ff",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4698, 125, 19134, 415, 2592, "Code",ExpressionUUID->"d9460f11-794d-4111-9b89-9916f7d6a5b7",
+Cell[4694, 124, 19133, 415, 2592, "Code",ExpressionUUID->"d9460f11-794d-4111-9b89-9916f7d6a5b7",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->94346783]
 }, Open  ]],
-Cell[23847, 543, 49406, 1029, 3063, "Output",ExpressionUUID->"088769e8-93b0-4a95-8176-4d560e49c63c"],
+Cell[23842, 542, 50701, 1052, 3403, "Output",ExpressionUUID->"a409e162-b1a7-49b6-843d-8600308eab57"],
 Cell[CellGroupData[{
-Cell[73278, 1576, 167, 3, 54, "Subsection",ExpressionUUID->"a30323af-9fd6-4291-904f-b9bb819da0dc"],
-Cell[73448, 1581, 188, 3, 35, "Text",ExpressionUUID->"b871aa70-6527-4191-8e53-02d8e2ba58a0"],
-Cell[73639, 1586, 236, 5, 29, "Input",ExpressionUUID->"20aa739b-28bd-4471-91fb-1a851df75cf7"]
+Cell[74568, 1598, 167, 3, 54, "Subsection",ExpressionUUID->"a30323af-9fd6-4291-904f-b9bb819da0dc"],
+Cell[74738, 1603, 188, 3, 35, "Text",ExpressionUUID->"b871aa70-6527-4191-8e53-02d8e2ba58a0"],
+Cell[74929, 1608, 236, 5, 29, "Input",ExpressionUUID->"20aa739b-28bd-4471-91fb-1a851df75cf7"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

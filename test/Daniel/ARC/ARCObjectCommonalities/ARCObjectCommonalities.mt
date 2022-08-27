@@ -37,3 +37,28 @@ Test[
     ,
     TestID -> "ARCObjectCommonalities-20220812-O86QYO"
 ]
+
+Test[
+    Daniel`ARC`ARCObjectCommonalities[
+        {
+            <|
+                "Type" -> "Group",
+                "FilledArea" -> 2,
+                "Components" -> {<|"Color" -> 1, "Area" -> 1|>, <|"Color" -> 1, "Area" -> 1|>}
+            |>,
+            <|
+                "Type" -> "Group",
+                "FilledArea" -> 2,
+                "Components" -> {<|"Color" -> 2, "Area" -> 1|>, <|"Color" -> 2, "Area" -> 1|>}
+            |>
+        }
+    ]
+    ,
+    <|
+        "Type" -> "Group",
+        "FilledArea" -> 2,
+        "Components" -> {Repeated[<|"Area" -> 1, "Color" -> "Same"|>, {2}]}
+    |>
+    ,
+    TestID -> "ARCObjectCommonalities-20220827-8N6I86"
+]

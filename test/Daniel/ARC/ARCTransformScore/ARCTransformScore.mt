@@ -118,7 +118,7 @@ Test[
         ]
     ]
     ,
-    -0.58
+    -1.58
     ,
     TestID -> "ARCTransformScore-20220825-4RBNEY"
 ]
