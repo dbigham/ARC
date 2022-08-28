@@ -348,6 +348,8 @@ ARCFormCompositeObject::usage = "ARCFormCompositeObject  "
 
 ARCPrunePattern::usage = "ARCPrunePattern  "
 
+ARCAngleForTwoPoints::usage = "ARCAngleForTwoPoints  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3259,7 +3261,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                                 Flatten[Keys[objectMappings]]
                             ];
                         
-                        AppendTo[ruleSets, rules]
+                        (* ARCReplaceRulePatternsWithGroupPatternsIfAppropriate can return Missing,
+                           so we check for that before adding this to our list of rules. *)
+                        If [!MissingQ[rules],
+                            AppendTo[ruleSets, rules]
+                        ]
                         ,
                         (* The rules formed using this property do not handle the mapping of every
                            input object across all training example. *)
@@ -8123,9 +8129,9 @@ ARCSetGroupProperties[components_List, sceneWidth_Integer, sceneHeight_Integer] 
                add a property "Angle". e.g. 1f876c06 *)
             group = Sett[
                 group,
-                "Angle" -> Mod[
-                    ArcTan[-(components[[2, "Y"]] - components[[1, "Y"]]), components[[2, "X"]] - components[[1, "X"]]] * 180 / Pi + 360,
-                    180
+                "Angle" -> ARCAngleForTwoPoints[
+                    {components[[1, "Y"]], components[[1, "X"]]},
+                    {components[[2, "Y"]], components[[2, "X"]]}
                 ]
             ]
         ];
@@ -8930,6 +8936,19 @@ ARCTaskLog[] :=
             "CodeLength" -> 12898,
             "ExampleImplemented" -> "56ff96f3",
             "ImplementationTime" -> Quantity[6.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 12,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 27}],
+            "SucessCount" -> 36,
+            "Runtime" -> Quantity[11, "Minutes"],
+            "RuntimeComment" -> "Yikes! What is leading to these consistent and significant increases in runtime?"
+            "CodeLength" -> 13040,
+            "ExampleImplemented" -> "22eb0ac0",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 12,
             "NewEvaluationSuccesses" -> 0,
@@ -10032,7 +10051,22 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
                        with a group specification. *)
                     ReplacePart[
                         rule,
-                        1 -> ARCObjectCommonalities[matchingObjects]
+                        1 -> Replace[
+                            ARCObjectCommonalities[matchingObjects],
+                            <||> :> (
+                                If [Length[rules] =!= 1,
+                                    (* If we couldn't find any commonalities between the group
+                                       object, then we can't form a pattern to detect groups,
+                                       and if there is more than one rule, that tells us that
+                                       groups shouldn't apply to just any pair of things, so
+                                       we need to give up on this list of rules. *)
+                                    Return[
+                                        Missing["GroupPatternNotFound"],
+                                        Module
+                                    ]
+                                ]
+                            )
+                        ]
                     ]
                     ,
                     rule
@@ -10080,7 +10114,7 @@ ARCRuleToPattern[pattern_] :=
             ],
             {
                 assoc_Association :> KeyValuePattern[Normal[assoc]],
-                "Same" -> With[{symbol = Unique[patternSymbol]},
+                "Same" :> With[{symbol = Unique[patternSymbol]},
                     Pattern[symbol, Blank[]]
                 ]
             },
@@ -10226,6 +10260,7 @@ ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List, sceneWidth_Integer, s
                 ] /@ Subsets[objects, {2}];
             
             (* For now, we'll just try forming groups of two. *)
+            (*ARCEcho[possibleGroups[[23]]];*)
             groups = Flatten[
                 Function[{rule},
                     With[{pattern = ARCRuleToPattern[rule]},
@@ -10234,7 +10269,12 @@ ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List, sceneWidth_Integer, s
                             MatchQ[#, pattern] &
                         ]
                     ]
-                ] /@ rules
+                ] /@
+                    (* Rules that involve grouping. *)
+                    Cases[
+                        rules,
+                        HoldPattern[Rule][KeyValuePattern["Type" -> "Group"], _]
+                    ]
             ];
             
             inputObjectUUIDsThatFormedGroups =
@@ -12886,7 +12926,10 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern,
                 {
                     "Y2.InverseRank",
-                    "Y2.Rank"
+                    "Y2.Rank",
+                    "Y2Inverse",
+                    "Y2Inverse.InverseRank",
+                    "Y2Inverse.Rank"
                 }
             ]
         ];
@@ -12909,7 +12952,36 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern,
                 {
                     "X2.InverseRank",
-                    "X2.Rank"
+                    "X2.Rank",
+                    "X2Inverse",
+                    "X2Inverse.InverseRank",
+                    "X2Inverse.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[pattern["Width"]] && !MissingQ[pattern["Height"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "Length",
+                    "AspectRatio",
+                    "Area"
+                }
+            ]
+        ];
+        
+        If [And[
+                Or[
+                    !MissingQ[pattern["Width"]] && !MissingQ[pattern["Height"]],
+                    !MissingQ[pattern["Area"]]
+                ],
+                !MissingQ[pattern["FilledArea"]]
+            ],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "FilledProportion"
                 }
             ]
         ];
@@ -12933,6 +13005,33 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
         ];
         
         pattern
+    ]
+
+(*!
+    \function ARCAngleForTwoPoints
+    
+    \calltable
+        ARCAngleForTwoPoints[point1, point2] '' Given two points, what angle do they form relative to the horizontal? Normalized to minimize the angle and make it positive. (direction agnostic)
+    
+    Examples:
+    
+    ARCAngleForTwoPoints[{5, 5}, {5, 6}] === 0
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCAngleForTwoPoints]
+    
+    \maintainer danielb
+*)
+Clear[ARCAngleForTwoPoints];
+ARCAngleForTwoPoints[point1_, point2_] :=
+    Utility`ToIntegerIfNoDecimal@
+    Mod[
+        ArcTan[
+            point2[[2]] - point1[[2]],
+            -(point2[[1]] - point1[[1]])
+        ] * 180 / Pi + 360,
+        180
     ]
 
 End[]

@@ -246,7 +246,7 @@ Test[
             },
             "Color" -> 8,
             "FilledArea" -> 2,
-            "Angle" -> 90
+            "Angle" -> 0
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -275,7 +275,7 @@ Test[
             },
             "Color" -> 8,
             "FilledArea" -> 2,
-            "Angle" -> 0
+            "Angle" -> 90
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -293,7 +293,7 @@ Test[
                 }
             |>
         |>,
-        <||> -> <|"Same" -> True|>
+        <|"PrimarySizeDimension" -> "None"|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220812-24SCQ1"
@@ -893,4 +893,40 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220827-IC01P3"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "22eb0ac0"]["Train"]]
+        ]
+    ]
+    ,
+    {
+        <|"Width" -> 1|> -> <|"Same" -> True|>,
+        <|
+            "Type" -> "Group",
+            "X" -> 1,
+            "X2" -> 10,
+            "Width" -> 10,
+            "Height" -> 1,
+            "Components" -> {
+                Repeated[
+                    <|
+                        "Shape" -> <|"Name" -> "Pixel"|>,
+                        "Image" -> "Same",
+                        "Y" -> "Same",
+                        "Y2" -> "Same"
+                    |>,
+                    {2}
+                ]
+            },
+            "FilledArea" -> 2,
+            "Angle" -> 0
+        |> -> <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220828-SUS7QU"
 ]
