@@ -1436,6 +1436,21 @@ $properties = <|
         "Type" -> "Position",
         "Type2" -> "Position"
     |>,
+    "VerticalLineSymmetry" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "Symmetry",
+        "RuleConditionQuality" -> 0.8
+    |>,
+    "HorizontalLineSymmetry" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "Symmetry",
+        "RuleConditionQuality" -> 0.8
+    |>,
+    "VerticalAndHorizontalLineSymmetry" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "Symmetry",
+        "RuleConditionQuality" -> 0.8
+    |>,
     "Y" -> <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue",
@@ -2704,6 +2719,24 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         ReturnIfNotMissing@
         ARCMappingToObjectWithOverlappingFilledInPixels[object, objectsToMapTo];
         
+        (* If there is only one object in the input and only one object in the output.
+           e.g. A79310A0 *)
+        If [And[
+                Length[objectsToMapTo] === 1,
+                (* For the moment we'll be conservative and require them to have the
+                   same shape. *)
+                And[
+                    object["Shape"] === objectsToMapTo[[1, "Shape"]],
+                    object["Width"] === objectsToMapTo[[1, "Width"]],
+                    object["Height"] === objectsToMapTo[[1, "Height"]]
+                ]
+            ],
+            Return[
+                object -> objectsToMapTo[[1]],
+                Module
+            ]
+        ];
+        
         object -> Missing["NotFound"]
     ]
 
@@ -3315,7 +3348,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"VerticalLineSymmetry"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3901,7 +3934,6 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
         
         objects =
             Function[{object},
-                ReturnIfFailure@
                 ARCApplyRules[object, ruleList, parsedScene]
             ] /@ objects;
         
@@ -4065,6 +4097,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                         ReturnIfFailure@
                         ARCApplyConclusion[
                             key,
+                            ReturnIfFailure@
                             ResolveValues[value, object, scene, "Activate" -> True],
                             object,
                             objectOut,
@@ -4324,7 +4357,7 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Po
                     {
                         <|"Y" -> y_|> :> {y, objectIn["X"]},
                         <|"X" -> x_|> :> {objectIn["Y"], x},
-                        KeyValuePattern[{"Y" -> y_, "X" -> x_}] :> {objectIn["Y"], objectIn["X"]}
+                        KeyValuePattern[{"Y" -> y_, "X" -> x_}] :> {y, x}
                     }
                 ]
         }
@@ -6884,7 +6917,7 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
 *)
 Clear[ARCInferObjectProperties];
 ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
-    Module[{width, height, y, x, y2, x2, area, filledArea},
+    Module[{width, height, y, x, y2, x2, area, filledArea, verticalLineSymmetry, horizontalLineSymmetry},
         
         width = ImageWidth[object["Image"]];
         height = ImageHeight[object["Image"]];
@@ -6918,7 +6951,43 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                 (* Not the width * height area, but rather the area of the shape
                    in terms of number of pixels that aren't the background color. *)
                 "FilledArea" -> (filledArea = Length[object["PixelPositions"]]),
-                "FilledProportion" -> N[filledArea / area]
+                "FilledProportion" -> N[filledArea / area],
+                If [And[
+                        Mod[width, 2] === 0,
+                        SameQ[
+                            object["Image"][[1, All, 1 ;; width / 2]],
+                            ARCApplyImageTransforms[
+                                object["Image"][[1, All, width / 2 + 1 ;; -1]],
+                                <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                            ]
+                        ]
+                    ],
+                    "VerticalLineSymmetry" -> (verticalLineSymmetry = True)
+                    ,
+                    "VerticalLineSymmetry" -> False
+                ],
+                If [And[
+                        Mod[height, 2] === 0,
+                        SameQ[
+                            object["Image"][[1, 1 ;; height / 2]],
+                            ARCApplyImageTransforms[
+                                object["Image"][[1, height / 2 + 1 ;; -1]],
+                                <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                            ]
+                        ]
+                    ],
+                    "HorizontalLineSymmetry" -> (horizontalLineSymmetry = True)
+                    ,
+                    "HorizontalLineSymmetry" -> False
+                ],
+                If [And[
+                        TrueQ[verticalLineSymmetry],
+                        TrueQ[horizontalLineSymmetry]
+                    ],
+                    "VerticalAndHorizontalLineSymmetry" -> True
+                    ,
+                    "VerticalAndHorizontalLineSymmetry" -> False
+                ]
             |>
         ]
     ]
@@ -9036,11 +9105,11 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SucessCount" -> 38,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "4be741c5",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
@@ -9049,11 +9118,11 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SucessCount" -> 39,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "90c28cc7",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
@@ -9062,11 +9131,11 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SucessCount" -> 40,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "a87f7484",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
@@ -9075,11 +9144,11 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SucessCount" -> 41,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "e9afcf9a",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
@@ -9088,11 +9157,11 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SucessCount" -> 42,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "f8ff0b80",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
@@ -9100,13 +9169,64 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 38,
+            "SucessCount" -> 43,
             "Runtime" -> Quantity[TODO, "Minutes"],
             "CodeLength" -> 13429,
             "ExampleImplemented" -> "6F8CD79B",
             "ImplementationTime" -> Quantity[0.75, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 44,
+            "Runtime" -> Quantity[TODO, "Minutes"],
+            "CodeLength" -> 13492,
+            "ExampleImplemented" -> "72CA375D",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 45,
+            "Runtime" -> Quantity[16, "Minutes"],
+            "CodeLength" -> 13532,
+            "ExampleImplemented" -> "A79310A0",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            (* Note that I didn't re-run all of the training examples for the above two examples, so it's not known which of the 3 caused these. *)
+            "NewGeneralizedSuccesses" -> {"1cf80156", "23b5c85d"},
+            "TotalGeneralizedSuccesses" -> 19,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 46,
+            "Runtime" -> Quantity[16, "Minutes"],
+            "CodeLength" -> 13532,
+            "ExampleImplemented" -> "1cf80156",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 19,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 46,
+            "Runtime" -> Quantity[16, "Minutes"],
+            "CodeLength" -> 13532,
+            "ExampleImplemented" -> "23b5c85d",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 19,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 5
         |>
@@ -9716,7 +9836,11 @@ ARCInferObjectImage[
                         ],
                         {width - 2}
                     ],
-                    color
+                    If [width > 1,
+                        color
+                        ,
+                        Nothing
+                    ]
                 },
                 {height - 2}
             ]
@@ -13077,6 +13201,17 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 {
                     "Width",
                     "Height"
+                }
+            ]
+        ];
+        
+        If [MatchQ[patternIn["Shape"], KeyValuePattern["Name" -> "Pixel" | "Square" | "Rectangle" | "Line"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "VerticalLineSymmetry",
+                    "HorizontalLineSymmetry",
+                    "VerticalAndHorizontalLineSymmetry"
                 }
             ]
         ];

@@ -246,6 +246,8 @@ Test[
             },
             "Color" -> 8,
             "FilledArea" -> 2,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False,
             "Angle" -> 0
         |> -> <|
             "Transform" -> <|
@@ -275,6 +277,8 @@ Test[
             },
             "Color" -> 8,
             "FilledArea" -> 2,
+            "VerticalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False,
             "Angle" -> 90
         |> -> <|
             "Transform" -> <|
@@ -841,9 +845,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1f876c06"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "1f876c06"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -859,7 +869,10 @@ Test[
                     ]
                 },
                 "AspectRatio" -> 1,
-                "FilledArea" -> 2
+                "FilledArea" -> 2,
+                "VerticalLineSymmetry" -> False,
+                "HorizontalLineSymmetry" -> False,
+                "VerticalAndHorizontalLineSymmetry" -> False
             |> -> <|
                 "Shape" -> <|
                     "Name" -> "Line",
@@ -873,9 +886,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "56ff96f3"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "56ff96f3"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -888,7 +907,10 @@ Test[
                     {2}
                 ]
             },
-            "FilledArea" -> 2
+            "FilledArea" -> 2,
+            "VerticalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False
         |> -> <|
             "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>}
         |>
@@ -925,6 +947,9 @@ Test[
                 ]
             },
             "FilledArea" -> 2,
+            "VerticalLineSymmetry" -> True,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False,
             "Angle" -> 0
         |> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>
@@ -1085,4 +1110,37 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220828-RTMMEN"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "72CA375D"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"VerticalLineSymmetry" -> True|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|"VerticalLineSymmetry" -> False|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-2HEGQB"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "A79310A0"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Color" -> 2,
+            "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], 1]
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220828-KZK6G6"
 ]
