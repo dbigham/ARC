@@ -33,7 +33,7 @@ e.g.
 
 #### Finding Rules from Object Mappings
 
-When we group object mappings by the color of the input object, we see that the shape of the corresponding output object becomes predictable.
+When we group object mappings by the Y value of the input object, we see that the shape of the corresponding output object becomes predictable.
 
 
 

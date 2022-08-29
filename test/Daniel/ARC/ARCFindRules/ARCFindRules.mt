@@ -324,7 +324,7 @@ Test[
                     {10, -1, 10}
                 }
             ],
-            "Position" -> <|"RelativePosition" -> {0, -1}|>
+            "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -1]
         |>
     }
     ,
@@ -658,7 +658,8 @@ Test[
                         {10, -1, -1, -1, 10}
                     }
                 ],
-                "Position" -> <|"RelativePosition" -> {-2, -2}|>
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -2],
+                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -2]
             |>,
             <|"Width" -> 3|> -> <|
                 "Shape" -> Daniel`ARC`ARCScene[
@@ -670,7 +671,8 @@ Test[
                         {-1, -1, 10, -1, -1}
                     }
                 ],
-                "Position" -> <|"RelativePosition" -> {-1, -1}|>
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -1],
+                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -1]
             |>
         }
     |>
@@ -1057,4 +1059,30 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220828-365IJ8"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6F8CD79B"]["Train"]]
+    ]
+    ,
+    {
+        <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {
+                    <|
+                        "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> False|>},
+                        "Color" -> 8,
+                        "X" -> 1,
+                        "Y" -> 1,
+                        "X2Inverse" -> 1,
+                        "Y2Inverse" -> 1
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220828-RTMMEN"
 ]

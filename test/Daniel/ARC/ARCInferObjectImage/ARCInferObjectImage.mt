@@ -11,13 +11,16 @@
 *)
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|
-            "Shapes" -> {<|"Name" -> "Square", "Filled" -> True|>},
-            "Color" -> 2,
-            "Width" -> 3,
-            "Height" -> 3
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {<|"Name" -> "Square", "Filled" -> True|>},
+                "Color" -> 2,
+                "Width" -> 3,
+                "Height" -> 3
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 2, 2}, {2, 2, 2}}]
@@ -26,13 +29,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|
-            "Shapes" -> {<|"Name" -> "Square", "Filled" -> False|>},
-            "Color" -> 2,
-            "Width" -> 3,
-            "Height" -> 3
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {<|"Name" -> "Square", "Filled" -> False|>},
+                "Color" -> 2,
+                "Width" -> 3,
+                "Height" -> 3
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, 2}, {2, 2, 2}}]
@@ -41,8 +47,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|"Shapes" -> {<|"Name" -> "Square"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 3|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {<|"Name" -> "Square"|>},
+                "Color" -> 2,
+                "Width" -> 3,
+                "Height" -> 3
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, 2}, {2, 2, 2}}]
@@ -51,8 +65,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|"Shapes" -> {<|"Name" -> "Pixel"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 1|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {<|"Name" -> "Pixel"|>},
+                "Color" -> 2,
+                "Width" -> 1,
+                "Height" -> 1
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2}}]
@@ -61,13 +83,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|
-            "Shapes" -> {<|"Name" -> "Rectangle"|>},
-            "Color" -> 2,
-            "Width" -> 5,
-            "Height" -> 3
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {<|"Name" -> "Rectangle"|>},
+                "Color" -> 2,
+                "Width" -> 5,
+                "Height" -> 3
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2, 2, 2}, {2, -1, -1, -1, 2}, {2, 2, 2, 2, 2}}]
@@ -76,8 +101,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 3|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 3|>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {2, 2, 2}}]
@@ -86,15 +114,21 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|
-            "Shapes" -> {
-                <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
-            },
-            "Color" -> 2,
-            "Width" -> 3,
-            "Height" -> 3
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|
+                "Shapes" -> {
+                    <|
+                        "Name" -> "L",
+                        "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>
+                },
+                "Color" -> 2,
+                "Width" -> 3,
+                "Height" -> 3
+            |>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}}]
@@ -103,8 +137,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2}, {2}, {2}}]
@@ -113,8 +150,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCInferObjectImage[
-        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 1|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCInferObjectImage[
+            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 1|>,
+            <||>
+        ]
     ]
     ,
     Daniel`ARC`ARCScene[{{2, 2, 2}}]

@@ -3315,7 +3315,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Colors"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3925,7 +3925,11 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                         ],
                         (*"PixelPositions" -> TODO,*)
                         ARCInferShapeAndShapes[object["Image"][[1]]],
-                        "Colors" -> DeleteCases[DeleteDuplicates[Flatten[object["Image"][[1]]]], $nonImageColor],
+                        "Colors" ->
+                            DeleteCases[
+                                DeleteDuplicates[Flatten[object["Image"][[1]]]],
+                                $nonImageColor
+                            ],
                         "Position" -> object["Position"]
                     |>,
                     outputScene["Width"],
@@ -3937,15 +3941,23 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             (* Add objects which don't correspond with objects from the input. *)
             outputScene["Objects"] = Join[
                 outputScene["Objects"],
-                ReturnIfFailure@
-                ResolveValues[
-                    addObjects["Transform", "Objects"],
-                    <||>,
-                    outputScene,
-                    "Activate" -> True
-                ]
+                Function[{object},
+                    ARCConstructObject[
+                        object,
+                        "Scene" -> outputScene
+                    ]
+                ] /@
+                    ReturnIfFailure@
+                    ResolveValues[
+                        addObjects["Transform", "Objects"],
+                        <||>,
+                        outputScene,
+                        "Activate" -> True
+                    ]
             ]
         ];
+        
+        (*ARCEcho[outputScene["Objects"]];*)
         
         renderedScene = ARCRenderScene[outputScene];
         
@@ -4147,7 +4159,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
         ];
         
         (* e.g. Infer the Image if necessary. *)
-        objectOut = ReturnIfFailure[ARCConstructObject[objectOut]];
+        objectOut = ReturnIfFailure[ARCConstructObject[objectOut, "Scene" -> scene]];
         
         objectOut
     ]
@@ -4447,6 +4459,14 @@ ARCRenderScene[scene_Association] :=
                 ,
                 posY = object["Y"];
                 posX = object["X"];
+            ];
+            
+            If [MissingQ[object["Image"]],
+                ReturnFailure[
+                    "ARCRenderSceneFailure",
+                    "An object is missing its Image.",
+                    "Object" -> object
+                ]
             ];
             
             image = object["Image"][[1]];
@@ -5321,9 +5341,6 @@ $transformTypes = <|
                      support Position and can/should replace any instances of those with X and Y
                      here? (We should at least try that first) *)
             {"Image", "Position"},
-            (* TODO: Try commenting out the following line, since the line below that supports
-                     X and Y independently, which I think would work in all cases? *)
-            {"Shape" | "MonochromeImage" | "Shapes", "Color", "Position", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"},
             {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"}
         },
         "SubProperties" -> {
@@ -5438,7 +5455,12 @@ $transformTypes = <|
             "Objects" -> <|
                 "MinimalPropertySets" -> {
                     {"Image", "Y", "X"},
-                    {"Shape", "Width", "Height", "Color", "Y", "X"}
+                    {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"}
+                },
+                "SubProperties" -> {
+                    "Shapes" -> <|
+                        "ClassList" -> True
+                    |>
                 }
             |>
         }
@@ -5677,7 +5699,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Angle",
+        (*If [property === "Shapes",
             EchoTag["values"][values];
             (*EchoTag["Conclusion values"][conclusions[[All, "Input", property]]];*)
         ];*)
@@ -9075,6 +9097,18 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 17,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 38,
+            "Runtime" -> Quantity[TODO, "Minutes"],
+            "CodeLength" -> 13429,
+            "ExampleImplemented" -> "6F8CD79B",
+            "ImplementationTime" -> Quantity[0.75, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
         |>
     }
 
@@ -9540,7 +9574,7 @@ InferColor["Color" -> color_] :=
     \maintainer danielb
 *)
 Clear[ARCInferObjectImage];
-ARCInferObjectImage[objectIn_Association] :=
+ARCInferObjectImage[objectIn_Association, scene_Association] :=
     FailureDetails[
         "ARCInferObjectImageFailure",
         "A failure occurred infering an object's image."
@@ -9548,6 +9582,30 @@ ARCInferObjectImage[objectIn_Association] :=
     Module[{object = objectIn},
         
         ReturnIfNotMissing[object["Image"]];
+        
+        If [MissingQ[object["X2"]],
+            If [!MissingQ[object["X2Inverse"]],
+                object["X2"] = scene["Width"] - object["X2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["Y2"]],
+            If [!MissingQ[object["Y2Inverse"]],
+                object["Y2"] = scene["Height"] - object["Y2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["Width"]],
+            If [!MissingQ[object["X"]] && !MissingQ[object["X2"]],
+                object["Width"] = object["X2"] - object["X"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["Height"]],
+            If [!MissingQ[object["Y"]] && !MissingQ[object["Y2"]],
+                object["Height"] = object["Y2"] - object["Y"] + 1
+            ]
+        ];
         
         If [MissingQ[object["Width"]] && object["Angle"] =!= 90 && object["Shape", "Angle"] =!= 90,
             ReturnFailure[
@@ -11946,7 +12004,12 @@ ARCConstructObject[objectIn:KeyValuePattern[{"Outward" -> True, "Shape" -> KeyVa
             ]
         |>;
         
-        ARCConstructObject[object]
+        ARCConstructObject[
+            object,
+            "Scene" ->
+                ReturnFailureIfMissing@
+                OptionValue["Scene"]
+        ]
     ]
 
 ARCConstructObject[object_, OptionsPattern[]] :=
@@ -11954,7 +12017,13 @@ ARCConstructObject[object_, OptionsPattern[]] :=
         If [MissingQ[object["Image"]],
             Prepend[
                 object,
-                "Image" -> ReturnIfFailure[ARCInferObjectImage[object]]
+                "Image" ->
+                    ReturnIfFailure@
+                    ARCInferObjectImage[
+                        object,
+                        ReturnFailureIfMissing@
+                        OptionValue["Scene"]
+                    ]
             ]
             ,
             object
