@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     12015,        287]
-NotebookOptionsPosition[      5511,        132]
-NotebookOutlinePosition[     11012,        268]
-CellTagsIndexPosition[     10969,        265]
+NotebookDataLength[     14271,        332]
+NotebookOptionsPosition[      7388,        169]
+NotebookOutlinePosition[     12889,        305]
+CellTagsIndexPosition[     12846,        302]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -40,7 +40,7 @@ Cell[BoxData[
  RowBox[{"FunctionNotebook", "[", "ARCImplementedTasksMarkdown", 
   "]"}]], "Input",
  CellChangeTimes->{3.86896580874201*^9},
- CellLabel->"In[13]:=",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
+ CellLabel->"In[10]:=",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -63,11 +63,12 @@ Cell[BoxData[
  CellChangeTimes->{{3.8689611597062044`*^9, 3.8689611619622364`*^9}},
  CellLabel->"In[4]:=",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<23b5c85d\>\""}], ";"}], "\n", 
- RowBox[{
-  RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Input",
+  RowBox[{"example", " ", "=", " ", "\"\<40853293\>\""}], ";"}], "\n", 
+ RowBox[{"ARCTaskMarkdown", "[", "example", "]"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
    3.868965012385483*^9, 3.8689652453048477`*^9, 3.868967307532199*^9, {
    3.868967344660019*^9, 3.868967511631118*^9}, 3.8689765094326515`*^9, 
@@ -89,9 +90,39 @@ Cell[BoxData[{
    3.8706064794643135`*^9, 3.8706067101357846`*^9, {3.8706385490219884`*^9, 
    3.8706385642548018`*^9}, 3.8706409997999697`*^9, 3.870697496723273*^9, {
    3.870720583026992*^9, 3.870720657070899*^9}, {3.8707285085658407`*^9, 
-   3.8707285290872836`*^9}, {3.870762634730568*^9, 3.8707626894433355`*^9}},
- CellLabel->
-  "In[121]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+   3.8707285290872836`*^9}, {3.870762634730568*^9, 3.8707626894433355`*^9}, 
+   3.870768069482792*^9, 3.870769244963847*^9, 3.870769301385632*^9, 
+   3.870769368522227*^9, {3.8707696363152633`*^9, 3.87076964511687*^9}},
+ CellLabel->"In[39]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+
+Cell[BoxData["\<\"# 40853293\\n\\n## Examples\\n\\n![ARC examples for \
+40853293](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+40853293](rules.png?raw=true)\\n\\n## Notes\\n* Involves forming groups of \
+input objects which together correspond to a single output object.\\n* \
+Involves Z order.\\n* Two cases:\\n   * Vertical lines are in front.\\n   * \
+Horizontal lines are behind.\\n* Ideally we could form a single rule (rather \
+than two) that would contain a conditional for inferring the ZOrder.\"\>"], \
+"Output",
+ CellChangeTimes->{3.870769656612871*^9},
+ CellLabel->"Out[40]=",ExpressionUUID->"a8c78eba-e942-45ae-9c13-ccca3c5312d3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["More", "Subsection",
+ CellChangeTimes->{{3.8707696375240283`*^9, 
+  3.870769637802927*^9}},ExpressionUUID->"f9f1201d-17de-48cb-a832-\
+1c92c070ac4c"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"example", " ", "=", " ", "\"\<40853293\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Lui", "[", "example", "]"}], ";"}]}], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.8707696484218993`*^9, 
+  3.8707696515429*^9}},ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa"],
 
 Cell[CellGroupData[{
 
@@ -103,12 +134,16 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.8689542974348593`*^9, {3.8689649487869816`*^9, 3.8689649634900265`*^9}, {
    3.8689650111231766`*^9, 3.8689650115775943`*^9}},
- CellLabel->
-  "In[123]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
+ CellLabel->"In[36]:=",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1"],
 
-Cell[BoxData["\<\"# 23b5c85d\\n\\n## Examples\\n\\n![ARC examples for \
-23b5c85d](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-23b5c85d](rules.png?raw=true)\\n\\n\"\>"], "Output",
+Cell[BoxData["\<\"# 40853293\\n\\n## Examples\\n\\n![ARC examples for \
+40853293](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+40853293](rules.png?raw=true)\\n\\n## Notes\\n* Involves forming groups of \
+input objects which together correspond to a single output object.\\n* \
+Involves Z order.\\n* Two cases:\\n   * Vertical lines are in front.\\n   * \
+Horizontal lines are behind.\\n* Ideally we could form a single rule (rather \
+than two) that would contain a conditional for inferring the ZOrder.\"\>"], \
+"Output",
  CellChangeTimes->{
   3.8693311490773544`*^9, {3.869350504203313*^9, 3.8693505198795414`*^9}, {
    3.8699081679899035`*^9, 3.869908207947418*^9}, {3.869951910253415*^9, 
@@ -122,11 +157,13 @@ Cell[BoxData["\<\"# 23b5c85d\\n\\n## Examples\\n\\n![ARC examples for \
    3.870606719283552*^9, {3.8706385576204453`*^9, 3.8706385720508223`*^9}, 
    3.870641007397111*^9, 3.8706975049975376`*^9, {3.870720595937951*^9, 
    3.870720676233583*^9}, {3.870728521738686*^9, 3.870728534490101*^9}, {
-   3.8707626424979734`*^9, 3.8707626955871463`*^9}},
- CellLabel->
-  "Out[124]=",ExpressionUUID->"01d877d3-ec2a-4520-b766-8a58e4087331"]
+   3.8707626424979734`*^9, 3.8707626955871463`*^9}, 3.87076808505811*^9, 
+   3.8707692938930264`*^9, {3.870769364140514*^9, 3.870769393628994*^9}, {
+   3.870769464005795*^9, 3.8707694830062313`*^9}, {3.8707695955213394`*^9, 
+   3.8707696296402864`*^9}},
+ CellLabel->"Out[37]=",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
 }, Open  ]]
-}, Open  ]]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 },
@@ -280,13 +317,21 @@ Cell[1330, 47, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485
 Cell[CellGroupData[{
 Cell[1434, 51, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
 Cell[1703, 60, 208, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
-Cell[1914, 65, 1886, 28, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
 Cell[CellGroupData[{
-Cell[3825, 97, 396, 9, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[1936, 67, 2019, 28, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+Cell[3958, 97, 663, 9, 374, "Output",ExpressionUUID->"a8c78eba-e942-45ae-9c13-ccca3c5312d3"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4670, 112, 154, 3, 54, "Subsection",ExpressionUUID->"f9f1201d-17de-48cb-a832-1c92c070ac4c"],
+Cell[4827, 117, 315, 7, 54, "Code",ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa",
  InitializationCell->False],
-Cell[4224, 108, 1235, 18, 234, "Output",ExpressionUUID->"01d877d3-ec2a-4520-b766-8a58e4087331"]
+Cell[CellGroupData[{
+Cell[5167, 128, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+ InitializationCell->False],
+Cell[5562, 138, 1774, 25, 374, "Output",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
 }, Open  ]]
-}, Open  ]]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 }

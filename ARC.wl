@@ -384,6 +384,8 @@ SpecifiedQ = Utility`SpecifiedQ;
 FailureDetails = Utility`FailureDetails;
 EntityName = EntityLink`EntityName;
 EntityMatchQ = EntityLink`EntityMatchQ;
+SectionCellObject = DevTools`NotebookTools`SectionCellObject;
+MoveNotebook = DevTools`NotebookTools`MoveNotebook;
 
 With[{contexts = ERP`MX`MXContexts[]},
     With[{contexts2 = DeleteDuplicates[Append[contexts, "Daniel`"]]},
@@ -2923,6 +2925,7 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                                     "Y2Inverse",
                                     "Width",
                                     "Height",
+                                    "ZOrder",
                                     "Transform"
                                 }
                             ],
@@ -3962,7 +3965,12 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                                 DeleteDuplicates[Flatten[object["Image"][[1]]]],
                                 $nonImageColor
                             ],
-                        "Position" -> object["Position"]
+                        "Position" -> object["Position"],
+                        If [!MissingQ[object["ZOrder"]],
+                            "ZOrder" -> object["ZOrder"]
+                            ,
+                            Nothing
+                        ]
                     |>,
                     outputScene["Width"],
                     outputScene["Height"]
@@ -5373,8 +5381,8 @@ $transformTypes = <|
                      these, such as "Position" | {"X", "Y"}, although perhaps we don't need to
                      support Position and can/should replace any instances of those with X and Y
                      here? (We should at least try that first) *)
-            {"Image", "Position"},
-            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"}
+            {"Image", "Position", Missing["ZOrder"] | "ZOrder"},
+            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse", Missing["ZOrder"] | "ZOrder"}
         },
         "SubProperties" -> {
             "Image" -> <||>,
@@ -8058,28 +8066,60 @@ ProcessExamples[files_List] :=
 *)
 Clear[ARCNotebook];
 ARCNotebook[file_String] :=
-    Module[{},
-        CreateNamedNotebook2[
+    Module[{nb, workingSectionCells},
+        
+        nb = CreateNamedNotebook2[
             FileBaseName[file],
             "NotesSection" -> False,
             "Contents" -> {
                 Section["Example"],
                 InputCell[HoldComplete[ARCParseFile[DevTools`NotebookTools`NotebookTitle[]]]],
-                Section["Analysis"],
+                (*Section["Analysis"],*)
                 (*Subsection["Process"],*)
-                Item[""],
+                (*Item[""],*)
                 Section["Log"],
                 InputCell[HoldComplete[Now]],
-                Item["Design: X min"],
+                (*Item["Design: X min"],
                 Subitem["Start: "],
-                Subitem["Stop: "],
+                Subitem["Stop: "],*)
                 Item["Implementation: X min"],
                 Subitem["Start: "],
-                Subitem["Stop: "],
-                Section["Working"]
+                Subitem["Stop: "]
+                (*Section["Working"]*)
             },
             "ReturnNotebook" -> True
-        ]
+        ];
+        
+        (* Create the "Working" section. *)
+        If [MissingQ[SectionCellObject[nb, "Working"]],
+            
+            (* Taken from ARCNotebook["08ed6ac7"]. *)
+            workingSectionCells =
+                ReturnIfFailure@
+                Get[
+                    FileNameJoin[
+                        {
+                            DirectoryName[FindFile["Daniel`ARC`"]],
+                            "WorkingSectionCells.wl"
+                        }
+                    ]
+                ];
+            
+            SelectionMove[nb, After, Notebook];
+            NotebookWrite[nb, workingSectionCells];
+            SelectionMove[SectionCellObject[nb, "Working"], All, CellGroup];
+            FrontEndTokenExecute[nb, "OpenCloseGroup"];
+            FrontEndTokenExecute[nb, "SelectionCloseAllGroups"];
+        ];
+        
+        MoveNotebook[nb, "Right"];
+        MoveNotebook[nb, "Right"];
+        MoveNotebook[nb, "Right"];
+        
+        SelectionMove[SectionCellObject[nb, "Example"], All, CellGroup];
+        SelectionEvaluate[nb];
+        
+        nb
     ]
 
 (*!
@@ -9220,11 +9260,23 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 46,
+            "SucessCount" -> 47,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "23b5c85d",
             "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 19,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 29}],
+            "SucessCount" -> 48,
+            "Runtime" -> Quantity[16, "Minutes"],
+            "CodeLength" -> 13581,
+            "ExampleImplemented" -> "40853293",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 19,
             "NewEvaluationSuccesses" -> 0,
@@ -9473,27 +9525,27 @@ ARCCleanRules[other_] := other
 *)
 Clear[ARCPublicNotesSection];
 ARCPublicNotesSection[exampleName_String] :=
-    Module[{notebook},
+    Module[{nb, sectionCellObject, cells},
         
-        notebook = Lui`Parse`LuiParse[exampleName];
+        nb = ARCNotebook[exampleName];
         Replace[
-            notebook,
+            nb,
             {
-                HoldComplete[DevTools`NotebookTools`OpenNotebook[file_]] :> (
-                    DevTools`NotebookTools`WithNotebook[
+                _NotebookObject :> (
+                    (*DevTools`NotebookTools`WithNotebook[
                         file,
-                        Function[{nb},
+                        Function[{nb},*)
                             sectionCellObject =
                                 ReturnIfMissing@
                                 DevTools`NotebookTools`SectionCellObject[nb, "Public Notes"];
                             cells =
                                 NotebookRead /@
                                     DevTools`NotebookTools`CellObjects[sectionCellObject]
-                        ],
+                        (*],
                         (* Ideally we'd prefer not to make the notebook visible, but without
                            this it seems to misbehave at times. *)
                         "Visible" -> True
-                    ]
+                    ]*)
                 ),
                 _ :> Missing["NotFound"]
             }
@@ -10339,7 +10391,6 @@ ApplyToImage[image_List, function_] :=
 Clear[ARCReplaceRulePatternsWithGroupPatternsIfAppropriate];
 ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_List] :=
     Module[{matchingObjects},
-        
         (* Check if any of the input objects are groups. *)
         If [!FreeQ[inputObjects, KeyValuePattern["Type" -> "Group"]],
             (* There are groups. *)
@@ -12885,7 +12936,7 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
             Function[{object},
                 Sett[
                     object,
-                    "ZOrder" -> Max[GraphDistance[orderings, object["UUID"]]]
+                    "ZOrder" -> Max[Cases[GraphDistance[orderings, object["UUID"]], _Integer]]
                 ]
             ] /@ extendedLines;
         
@@ -13212,6 +13263,28 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "VerticalLineSymmetry",
                     "HorizontalLineSymmetry",
                     "VerticalAndHorizontalLineSymmetry"
+                }
+            ]
+        ];
+        
+        If [pattern["Height"] === 1,
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "HorizontalLineSymmetry",
+                    "VerticalAndHorizontalLineSymmetry",
+                    "Angle"
+                }
+            ]
+        ];
+        
+        If [pattern["Width"] === 1,
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "VerticalLineSymmetry",
+                    "VerticalAndHorizontalLineSymmetry",
+                    "Angle"
                 }
             ]
         ];

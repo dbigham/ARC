@@ -245,10 +245,7 @@ Test[
                 ]
             },
             "Color" -> 8,
-            "FilledArea" -> 2,
-            "HorizontalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False,
-            "Angle" -> 0
+            "FilledArea" -> 2
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -276,10 +273,7 @@ Test[
                 ]
             },
             "Color" -> 8,
-            "FilledArea" -> 2,
-            "VerticalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False,
-            "Angle" -> 90
+            "FilledArea" -> 2
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -832,7 +826,8 @@ Test[
         <|"Colors" -> {2}|> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
             "Y" -> 1,
-            "Y2Inverse" -> 1
+            "Y2Inverse" -> 1,
+            "ZOrder" -> 1
         |>,
         <|"Colors" -> {3} | {1}|> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
@@ -1143,4 +1138,57 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220828-KZK6G6"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "40853293"]["Train"]]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|
+                "Type" -> "Group",
+                "Height" -> 1,
+                "Components" -> {
+                    Repeated[
+                        <|
+                            "Shape" -> <|"Name" -> "Pixel"|>,
+                            "Image" -> "Same",
+                            "Y" -> "Same"
+                        |>,
+                        {2}
+                    ]
+                },
+                "FilledArea" -> 2
+            |> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                "ZOrder" -> 1
+            |>,
+            <|
+                "Type" -> "Group",
+                "Width" -> 1,
+                "Components" -> {
+                    Repeated[
+                        <|
+                            "Shape" -> <|"Name" -> "Pixel"|>,
+                            "Image" -> "Same",
+                            "X" -> "Same"
+                        |>,
+                        {2}
+                    ]
+                },
+                "FilledArea" -> 2
+            |> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220829-INX45J"
 ]

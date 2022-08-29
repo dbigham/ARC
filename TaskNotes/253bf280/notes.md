@@ -20,7 +20,7 @@
 
 #### Mapping Input Objects to Output Objects
 
-* When we are building a mapping from input objects to output objects, we notice cases where there are two input objects the map onto a single output object. When we see this, we combine those two input objects into a single “object” / group within the input, and we represent the mapping to the output object as an AddComponents transform, whereby the green line is being added as a component.
+* When we are building a mapping from input objects to output objects, we notice cases where there are two input objects that map onto a single output object. When we see this, we combine those two input objects into a single “object” / group within the input, and we represent the mapping to the output object as an AddComponents transform, whereby the green line is being added as a component.
 e.g.
 
 
