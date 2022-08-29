@@ -896,9 +896,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "22eb0ac0"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "22eb0ac0"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -912,12 +918,7 @@ Test[
             "Height" -> 1,
             "Components" -> {
                 Repeated[
-                    <|
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Image" -> "Same",
-                        "Y" -> "Same",
-                        "Y2" -> "Same"
-                    |>,
+                    <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same", "Y" -> "Same"|>,
                     {2}
                 ]
             },
@@ -929,4 +930,131 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220828-SUS7QU"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Utility`BlockUUID[
+            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "746b3537"]["Train"]]
+        ]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Shape" -> <|"Name" -> "Pixel"|>,
+                "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
+                "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-5OGS6D"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "4be741c5"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Shape" -> <|"Name" -> "Pixel"|>,
+                "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
+                "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-MUUZ8N"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "90c28cc7"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>},
+                "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
+                "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"],
+                "X2" -> Daniel`ARC`ObjectValue["InputObject", "X2.InverseRank"],
+                "Height" -> 1
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-L8TAAG"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a87f7484"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"Position" -> {1, 1}|> -> <|
+                "Image" -> Daniel`ARC`ObjectValue[<|"FilledArea.Rank" -> 1|>, "Image"]
+            |>,
+            <|"Position" -> Except[{1, 1}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-EY9YMC"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "e9afcf9a"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Position" -> {1, 1}|> -> <|
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {{10, -1, 10, -1, 10, -1}, {-1, 10, -1, 10, -1, 10}}
+                ]
+            |>,
+            <|"Position" -> {2, 1}|> -> <|
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {{-1, 10, -1, 10, -1, 10}, {10, -1, 10, -1, 10, -1}}
+                ],
+                "Y" -> 1
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-AQHB4Z"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f8ff0b80"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Shape" -> <|"Name" -> "Pixel"|>,
+                "X" -> 1,
+                "Y" -> Daniel`ARC`ObjectValue["InputObject", "Area.Rank"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220828-365IJ8"
 ]

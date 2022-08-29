@@ -350,6 +350,12 @@ ARCPrunePattern::usage = "ARCPrunePattern  "
 
 ARCAngleForTwoPoints::usage = "ARCAngleForTwoPoints  "
 
+ARCRemoveEmptySpaceQ::usage = "ARCRemoveEmptySpaceQ  "
+
+ARCConsiderMappingObjectsByColor::usage = "ARCConsiderMappingObjectsByColor  "
+
+ARCRemoveEmptySpace::usage = "ARCRemoveEmptySpace  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -377,6 +383,7 @@ CreateDirectoryIfDoesntExist = Utility`CreateDirectoryIfDoesntExist;
 SpecifiedQ = Utility`SpecifiedQ;
 FailureDetails = Utility`FailureDetails;
 EntityName = EntityLink`EntityName;
+EntityMatchQ = EntityLink`EntityMatchQ;
 
 With[{contexts = ERP`MX`MXContexts[]},
     With[{contexts2 = DeleteDuplicates[Append[contexts, "Daniel`"]]},
@@ -481,7 +488,7 @@ ARCParseFile[file_String] :=
                         ],
                         _Missing :> SelectFirst[
                             Join[ARCTrainingFiles[], ARCMyTrainingFiles[], ARCEvaluationFiles[]],
-                            StringContainsQ[#, file] &,
+                            StringContainsQ[ToLowerCase[#], ToLowerCase[file]] &,
                             ReturnFailure[
                                 "FileNotFound",
                                 "No matching training example was found.",
@@ -2470,6 +2477,9 @@ ARCFindObjectMapping[input_Association, output_Association] :=
             ReturnIfFailure@
             ARCGroupByOutputObject[mapping, outputObjects, input["Background"], input["Width"], input["Height"]];
         
+        ReturnIfNotMissing@
+        ARCConsiderMappingObjectsByColor[inputObjects, outputObjects, output, mapping];
+        
         mapping
         
         (* TODO: The return value doesn't indicate which objects exist in the output
@@ -2974,7 +2984,7 @@ Options[ARCFindRules] =
 ARCFindRules[examples_List, opts:OptionsPattern[]] :=
     Module[{res, foundRulesQ, workingRulesQ},
         
-        ReturnIfDifferingInputAndOutputSize[examples];
+        (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
         (* NOTE: We don't want to ReturnIfFailure here, since there may be cases where we are
                  unable to find rules when forming composite objects, but if we try again
@@ -3057,7 +3067,7 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         
         KeyTake[
             res,
-            {"FormMultiColorCompositeObjects", "Rules", "PartialRules"}
+            {"FormMultiColorCompositeObjects", "RemoveEmptySpace", "Rules", "PartialRules"}
         ]
     ]
 
@@ -3090,16 +3100,31 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* Helper function for producing the final return value. *)
         returnRules[rules_List] :=
-            Return[
-                <|
-                    "Examples" -> examples,
-                    "ObjectMappings" -> objectMappings,
-                    "Rules" -> Join[
-                        ARCCleanRules[rules],
-                        additionalRules
-                    ]
-                |>,
-                Module
+            Block[{rulesResult},
+                Return[
+                    rulesResult = <|
+                        If [OptionValue["FormMultiColorCompositeObjects"] =!= Automatic,
+                            "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
+                            ,
+                            Nothing
+                        ],
+                        "Rules" -> Join[
+                            ARCCleanRules[rules],
+                            additionalRules
+                        ],
+                        "Examples" -> examples,
+                        "ObjectMappings" -> objectMappings
+                    |>;
+                    If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
+                        rulesResult = Prepend[
+                            rulesResult,
+                            "RemoveEmptySpace" -> True
+                        ]
+                    ];
+                    rulesResult
+                    ,
+                    Module
+                ]
             ];
         
         examples =
@@ -3591,6 +3616,19 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ReturnIfFailure@
             ARCGroupRulesByConclusion[rules];
         
+        (* Actually, this causes us to be too liberal, resulting in garbage rules.
+           Commenting out the below and keeping it in its old spot. *)
+        (* If a rule is only supported by one example input/output pair, then we won't
+           keep it, since that is very strong evidence that we haven't found a workable
+           generalization. Note that we need to wait until this point, after we've merged
+           rules with the same conclusion, otherwise we might prematurely discard rules
+           that don't appear to have enough support. e.g. 746b3537 *)
+        (*Function[{rule},
+            If [rule[[2, "ExampleCount"]] < $MinimumExamplesPerRule,
+                Return[{}, Module]
+            ]
+        ] /@ rules;*)
+        
         (*ARCEcho[ARCSimplifyRules[rules]];*)
         
         (* Perhaps we should return not just the rules here, but also `unhandled` so that:
@@ -3816,7 +3854,7 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
 Clear[ARCApplyRules];
 
 ARCApplyRules[scene_ARCScene, rules_Association] :=
-    Module[{parsedScene, objects, ruleList = rules["Rules"], addObjects, outputScene},
+    Module[{parsedScene, objects, ruleList = rules["Rules"], addObjects, outputScene, renderedScene},
         
         If [!ListQ[ruleList],
             ReturnFailure[
@@ -3909,7 +3947,13 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             ]
         ];
         
-        ARCRenderScene[outputScene]
+        renderedScene = ARCRenderScene[outputScene];
+        
+        If [TrueQ[rules["RemoveEmptySpace"]],
+            renderedScene = ARCRemoveEmptySpace[renderedScene, outputScene["Background"]]
+        ];
+        
+        renderedScene
     ]
 
 ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
@@ -8953,6 +8997,84 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 12,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "RuntimeComment" -> "We've removed the fail-fast that was skipping any example where the input and output images weren't the same size, so we are legitimately doing a lot more work now."
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "746b3537",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"4be741c5", "90c28cc7", "a87f7484", "e9afcf9a", "f8ff0b80"},
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "4be741c5",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "90c28cc7",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "a87f7484",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "e9afcf9a",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 28}],
+            "SucessCount" -> 37,
+            "Runtime" -> Quantity[17, "Minutes"],
+            "CodeLength" -> 13294,
+            "ExampleImplemented" -> "f8ff0b80",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 17,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
         |>
     }
 
@@ -12836,34 +12958,34 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["Image"]],
+        If [!MissingQ[patternIn["Image"]],
             (* If we know the image, then prune these unnecessary properties. *)
             pattern = KeyDrop[
                 pattern,
                 Flatten@
                 {
                     Which[
-                        MatchQ[pattern["Image"], _ARCScene],
+                        MatchQ[patternIn["Image"], _ARCScene],
                             {
                                 "Shape",
                                 "Shapes",
                                 "Color",
                                 "Colors"
                             },
-                        MatchQ[pattern["Image"], "Same"],
+                        MatchQ[patternIn["Image"], "Same"],
                             Sequence @@
                             {
-                                If [MatchQ[pattern["Shape"], "Same"],
+                                If [MatchQ[patternIn["Shape"], "Same"],
                                     "Shape"
                                     ,
                                     Nothing
                                 ],
-                                If [MatchQ[pattern["Color"], "Same"],
+                                If [MatchQ[patternIn["Color"], "Same"],
                                     "Color"
                                     ,
                                     Nothing
                                 ],
-                                If [MatchQ[pattern["Colors"], "Same"],
+                                If [MatchQ[patternIn["Colors"], "Same"],
                                     "Colors"
                                     ,
                                     Nothing
@@ -12880,7 +13002,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [MatchQ[pattern["Shape"], <|"Name" -> "Pixel"|>],
+        If [MatchQ[patternIn["Shape"], <|"Name" -> "Pixel"|>],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12890,7 +13012,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["Color"]],
+        If [!MissingQ[patternIn["Color"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12899,7 +13021,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["Shape"]],
+        If [!MissingQ[patternIn["Shape"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12908,7 +13030,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["Y"]],
+        If [!MissingQ[patternIn["Y"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12918,10 +13040,18 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "YInverse.InverseRank",
                     "YInverse.Rank"
                 }
-            ]
+            ];
+            If [EntityMatchQ[patternIn["Shape"], "Pixel"],
+                pattern = KeyDrop[
+                    pattern,
+                    {
+                        "Y2"
+                    }
+                ]
+            ];
         ];
         
-        If [!MissingQ[pattern["Y2"]],
+        If [!MissingQ[patternIn["Y2"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12934,7 +13064,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["X"]],
+        If [!MissingQ[patternIn["X"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12944,10 +13074,18 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "XInverse.InverseRank",
                     "XInverse.Rank"
                 }
-            ]
+            ];
+            If [EntityMatchQ[patternIn["Shape"], "Pixel"],
+                pattern = KeyDrop[
+                    pattern,
+                    {
+                        "X2"
+                    }
+                ]
+            ];
         ];
         
-        If [!MissingQ[pattern["X2"]],
+        If [!MissingQ[patternIn["X2"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12960,7 +13098,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [!MissingQ[pattern["Width"]] && !MissingQ[pattern["Height"]],
+        If [!MissingQ[patternIn["Width"]] && !MissingQ[patternIn["Height"]],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12973,10 +13111,10 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
         
         If [And[
                 Or[
-                    !MissingQ[pattern["Width"]] && !MissingQ[pattern["Height"]],
-                    !MissingQ[pattern["Area"]]
+                    !MissingQ[patternIn["Width"]] && !MissingQ[patternIn["Height"]],
+                    !MissingQ[patternIn["Area"]]
                 ],
-                !MissingQ[pattern["FilledArea"]]
+                !MissingQ[patternIn["FilledArea"]]
             ],
             pattern = KeyDrop[
                 pattern,
@@ -12986,7 +13124,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [pattern["AspectRatio"] === 1,
+        If [patternIn["AspectRatio"] === 1,
             pattern = KeyDrop[
                 pattern,
                 {
@@ -12995,7 +13133,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
-        If [MatchQ[pattern["Angle"], 0 | 45 | 90 | 135],
+        If [MatchQ[patternIn["Angle"], 0 | 45 | 90 | 135],
             pattern = KeyDrop[
                 pattern,
                 {
@@ -13032,6 +13170,187 @@ ARCAngleForTwoPoints[point1_, point2_] :=
             -(point2[[1]] - point1[[1]])
         ] * 180 / Pi + 360,
         180
+    ]
+
+(*!
+    \function ARCConsiderMappingObjectsByColor
+    
+    \calltable
+        ARCConsiderMappingObjectsByColor[inputObjects, outputObjects, output, mappingSoFar] '' If we don't yet have a 1-to-1 mapping, but it appears that color can be used to achieve a 1-to-1 mapping, then use color to do the mapping from input objects to output objects.
+    
+    Examples:
+    
+    ARCConsiderMappingObjectsByColor[inputObjects, outputObjects, output, mappingSoFar] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCConsiderMappingObjectsByColor];
+ARCConsiderMappingObjectsByColor[inputObjects_List, outputObjects_List, output_Association, mappingSoFar_Association] :=
+    Module[{mappingByColor, colorMatch},
+        
+        (* If the number of input objects and output objects are the same, all objects are of
+           a single color not shared by any other objects, where the input colors and output
+           color lists are the same, but we haven't yet been able to find a simple 1-to-1
+           mapping between input objects and output objects, then consider whether we could use
+           color as the way to pair input and output objects. e.g. 746b3537 *)
+        If [And[
+                Length[inputObjects] === Length[outputObjects],
+                With[{colors = DeleteDuplicates[inputObjects[[All, "Color"]]]},
+                    And[
+                        (* If these are multi-color objects that don't have a specific single color,
+                           then don't use color to do the mapping. *)
+                        FreeQ[colors, _Missing],
+                        (* If there are multiple instances of any color, then don't use color to do
+                           the mapping. *)
+                        Length[inputObjects[[All, "Color"]]] === Length[colors]
+                    ]
+                ],
+                Sort[inputObjects[[All, "Color"]]] === Sort[outputObjects[[All, "Color"]]],
+                (* We haven't yet been able to find a 1-to-1 correspondence between the
+                   objects. *)
+                !MatchQ[
+                    Normal[mappingSoFar],
+                    {Repeated[HoldPattern[Rule][_Association, _Association]]}
+                ]
+            ],
+            mappingByColor = <|
+                Function[{object},
+                    Replace[
+                        ReturnIfFailure@
+                        ARCFindObjectMapping[
+                            object,
+                            colorMatch = Select[outputObjects, #["Color"] === object["Color"] &],
+                            inputObjects,
+                            output
+                        ],
+                        Except[HoldPattern[Rule][_Association, _Association]] :> (
+                            object -> First[colorMatch]
+                        )
+                    ]
+                ] /@ inputObjects
+            |>;
+            
+            If [FreeQ[mappingByColor, _Missing],
+                Return[mappingByColor, Module]
+            ];
+        ];
+        
+        Missing["NotFound"]
+    ]
+
+(*!
+    \function ARCRemoveEmptySpaceQ
+    
+    \calltable
+        ARCRemoveEmptySpaceQ[rules, examples] '' Given a list of rules, checks whether they should have empty space removed from the output.
+    
+    Examples:
+    
+    ARCRemoveEmptySpaceQ[
+        <|
+            "FormMultiColorCompositeObjects" -> False,
+            "Rules" -> {
+                <||> -> <|
+                    "Shape" -> <|"Name" -> "Pixel"|>,
+                    "X" -> ObjectValue["InputObject", "X.InverseRank"],
+                    "Y" -> ObjectValue["InputObject", "Y.InverseRank"]
+                |>
+            }
+        |>,
+        ARCParseFile["746b3537"]["Train"]
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRemoveEmptySpaceQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCRemoveEmptySpaceQ];
+ARCRemoveEmptySpaceQ[rules_Association, examples_List] :=
+    Module[{counts},
+        
+        counts = Counts[
+            Function[{example},
+                
+                actualOutputScene =
+                    ReturnIfFailure@
+                    ARCApplyRules[example["Input", "Scene"], rules];
+                
+                expectedOutputScene = example["Output", "Scene"];
+                
+                If [actualOutputScene === expectedOutputScene,
+                    (* This example was working even without removing extra space. *)
+                    Nothing
+                    ,
+                    (* Did removing extra space make the example go from not working to now
+                       working? *)
+                    ARCRemoveEmptySpace[actualOutputScene, example["Output", "Background"]] === expectedOutputScene
+                ]
+                
+            ] /@ examples
+        ];
+        
+        (* Should we remove empty space if only _some_ of the examples match their
+           expected outputs when empty space has been removed? For now, we'll remove
+           empty space if at least 50% of examples appear to go from not working
+           to working when extra space is removed. We use -1 as the default count value
+           for True so that if all examples worked without removing extra space, we
+           won't remove extra space. *)
+        Lookup[counts, True, -1] >= Lookup[counts, False, 0]
+    ]
+
+(*!
+    \function ARCRemoveEmptySpace
+    
+    \calltable
+        ARCRemoveEmptySpace[scene, backgroundColor] '' Removes empty space to the right and/or below the objects.
+    
+    Examples:
+    
+    ARCRemoveEmptySpace[ARCScene[{{1, 0, 0}, {2, 0, 0}, {1, 0, 0}}], 0] === ARCScene[{{1}, {2}, {1}}]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRemoveEmptySpace]
+    
+    \maintainer danielb
+*)
+Clear[ARCRemoveEmptySpace];
+ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_Integer] :=
+    Module[
+        {
+            scene = sceneIn[[1]],
+            width = ImageWidth[sceneIn],
+            prunedWidth,
+            height = ImageHeight[sceneIn],
+            prunedHeight
+        },
+        
+        prunedHeight = height;
+        Function[{y},
+            If [MatchQ[scene[[y]], {Repeated[backgroundColor]}],
+                prunedHeight = y -1
+            ]
+        ] /@ Range[height, 1, -1];
+        
+        prunedWidth = width;
+        Function[{x},
+            If [MatchQ[scene[[All, x]], {Repeated[backgroundColor]}],
+                prunedWidth = x - 1
+            ]
+        ] /@ Range[width, 1, -1];
+        
+        ARCScene[
+            scene[[
+                1 ;; prunedHeight,
+                1 ;; prunedWidth
+            ]]
+        ]
     ]
 
 End[]

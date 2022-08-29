@@ -916,3 +916,31 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220820-67AY0A"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCFindObjectMapping[
+                Daniel`ARC`ARCParseFile[file = "746b3537"]["Train", 1],
+                "FormMultiColorCompositeObjects" -> False
+            ]
+        ]
+    ]
+    ,
+    <|
+        <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}}], "Position" -> {2, 1}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{2}}],
+            "Position" -> {2, 1}
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}}], "Position" -> {1, 1}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "Position" -> {1, 1}
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}}], "Position" -> {3, 1}|> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "Position" -> {3, 1}
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220828-V1L3I7"
+]
