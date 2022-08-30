@@ -114,18 +114,15 @@ Test[
         ]
     ]
     ,
-    <|
-        "FormMultiColorCompositeObjects" -> False,
-        "Rules" -> {
-            <|"Colors" -> {2}|> -> <|
-                "Transform" -> <|
-                    "Type" -> "Move",
-                    "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {8}|>]
-                |>
-            |>,
-            <|"Colors" -> {8}|> -> <|"Same" -> True|>
-        }
-    |>
+    {
+        <|"Colors" -> {2}|> -> <|
+            "Transform" -> <|
+                "Type" -> "Move",
+                "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {8}|>]
+            |>
+        |>,
+        <|"Colors" -> {8}|> -> <|"Same" -> True|>
+    }
     ,
     TestID -> "ARCFindRules-20220804-KVNY6K"
 ]
@@ -1231,4 +1228,38 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220829-P274J4"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "95990924"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> 2|>|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{3}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 2, "X" -> -1|>|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 2, "X" -> 2|>|>
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220830-W6FS72"
 ]

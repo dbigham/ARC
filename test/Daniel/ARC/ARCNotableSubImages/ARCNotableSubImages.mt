@@ -23,7 +23,13 @@ Test[
         ]
     ]
     ,
-    {{{1, -1}, {-1, 1}} -> <|"Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}]|>}
+    {
+        <|
+            "Image" -> {{1, -1}, {-1, 1}},
+            "Count" -> 1,
+            "ExampleObjects" -> {<|"Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}]|>}
+        |>
+    }
     ,
     TestID -> "ARCNotableSubImages-20220725-9BDG1I"
 ]

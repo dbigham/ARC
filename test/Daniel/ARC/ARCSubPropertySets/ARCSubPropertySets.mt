@@ -25,25 +25,8 @@ Test[
                     "X" -> <|"ObjectGet" -> (#1["X"] & )|>
                 },
                 "MinimalPropertySets" -> {{"RelativePosition"}, {"Y", "X"}}
-            |>
-        },
-        {
-            Alternatives[
-                "Shape" -> <|"MinimalPropertySets" -> {{"Name", "Angle"}}|>,
-                "MonochromeImage" -> <||>,
-                "Shapes" -> <|"ClassList" -> True|>
-            ],
-            "Color" -> <||>,
-            "Position" -> <|
-                "SubProperties" -> {
-                    "RelativePosition" -> <||>,
-                    "Y" -> <|"ObjectGet" -> (#1["Y"] & )|>,
-                    "X" -> <|"ObjectGet" -> (#1["X"] & )|>
-                },
-                "MinimalPropertySets" -> {{"RelativePosition"}, {"Y", "X"}}
             |>,
-            ("Width" -> <||>) | ("X2" -> <||>) | ("X2Inverse" -> <||>),
-            ("Height" -> <||>) | ("Y2" -> <||>) | ("Y2Inverse" -> <||>)
+            "ZOrder" -> <||>
         },
         {
             Alternatives[
@@ -55,7 +38,8 @@ Test[
             ("X" -> <||>) | ("XInverse" -> <||>),
             ("Y" -> <||>) | ("YInverse" -> <||>),
             ("Width" -> <||>) | ("X2" -> <||>) | ("X2Inverse" -> <||>),
-            ("Height" -> <||>) | ("Y2" -> <||>) | ("Y2Inverse" -> <||>)
+            ("Height" -> <||>) | ("Y2" -> <||>) | ("Y2Inverse" -> <||>),
+            "ZOrder" -> <||>
         }
     }
     ,

@@ -111,10 +111,10 @@ Test[
                                 "ExampleCount" -> 3,
                                 "UseCount" -> 4,
                                 "InputObjects" -> {
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742e5",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742e6",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742gc"
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742et",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742ft",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fu",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742i0"
                                 }
                             |>,
                             <|"Colors" -> {1}|> -> <|
@@ -135,10 +135,10 @@ Test[
                                 "ExampleCount" -> 3,
                                 "UseCount" -> 4,
                                 "InputObjects" -> {
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742e4",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742e3",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742gb"
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742es",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fs",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fr",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742hz"
                                 }
                             |>,
                             <|"Colors" -> Except[{1} | {2}]|> -> <|
@@ -147,8 +147,8 @@ Test[
                                 "ExampleCount" -> 2,
                                 "UseCount" -> 2,
                                 "InputObjects" -> {
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742e7",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742gd"
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fv",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742i1"
                                 }
                             |>
                         }

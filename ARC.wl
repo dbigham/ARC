@@ -358,6 +358,14 @@ ARCRemoveEmptySpace::usage = "ARCRemoveEmptySpace  "
 
 ARCSupportedOcclusionObjectQ::usage = "ARCSupportedOcclusionObjectQ  "
 
+ARCResolveExample::usage = "ARCResolveExample  "
+
+ARCSortNotableSubImages::usage = "ARCSortNotableSubImages  "
+
+ARCContiguousSubImageQ::usage = "ARCContiguousSubImageQ  "
+
+ARCPixelColor::usage = "ARCPixelColor  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -479,36 +487,16 @@ $colorNameToInteger = AssociationInverse[$integerToColorName];
 *)
 Clear[ARCParseFile];
 ARCParseFile[file_String] :=
-    Module[{},
-        path =
-            If [FileExistsQ[file],
-                file
-                ,
-                With[{files = Join[ARCTrainingFiles[], ARCMyTrainingFiles[], ARCEvaluationFiles[]]},
-                    Replace[
-                        SelectFirst[
-                            files,
-                            FileBaseName[#] === file &
-                        ],
-                        _Missing :> SelectFirst[
-                            Join[ARCTrainingFiles[], ARCMyTrainingFiles[], ARCEvaluationFiles[]],
-                            StringContainsQ[ToLowerCase[#], ToLowerCase[file]] &,
-                            ReturnFailure[
-                                "FileNotFound",
-                                "No matching training example was found.",
-                                "File" -> file
-                            ]
-                        ]
-                    ]
-                ]
-            ];
+    Module[{exampleDetails},
+        
+        exampleDetails = ReturnIfFailure[ARCResolveExample[file]];
         
         ARCExample@
         Prepend[
             First[
                 ReturnIfFailure@
                 ARCParseFile[
-                    ReturnIfFailure[Import[path, "JSON"]]
+                    ReturnIfFailure[Import[exampleDetails["File"], "JSON"]]
                 ]
             ],
             "File" -> file
@@ -750,7 +738,10 @@ Options[ARCParseScene] =
     "OtherScene" -> Null,                                   (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
     "SingleColorObjects" -> Automatic,                      (*< If the single color objects have already been determined, they can be passed in to save time. *)
     "InferPropertiesThatRequireFullObjectList" -> True,     (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
-    "FindOcclusions" -> True                                (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
+    "FindOcclusions" -> True,                               (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
+    "NotableSubImages" -> Automatic,                        (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
+    "ExampleIndex" -> Missing["NotSpecified"],              (*< Given a list of example inputs/outputs, what example number is this scene? *)
+    "InputOrOutput" -> Missing["NotSpecified"]              (*< Is this an input scene or an output scene? *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     Module[{background, objects},
@@ -764,9 +755,15 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             ReturnIfFailure@
             ARCParseScene[scene, background, opts];
         
-        notableSubImages = ARCNotableSubImages[objects, ImageWidth[scene], ImageHeight[scene]];
+        notableSubImages =
+            Replace[
+                OptionValue["NotableSubImages"],
+                Automatic :>
+                    ReturnIfFailure@
+                    ARCNotableSubImages[objects, ImageWidth[scene], ImageHeight[scene]]
+            ];
         
-        If [MatchQ[notableSubImages, {_, __}],
+        If [MatchQ[notableSubImages, {__}],
             objects = Flatten[
                 Function[{object},
                     ReturnIfFailure@
@@ -975,9 +972,84 @@ ARCInferColorCountPropertyValues[objects_List, scene_ARCScene] :=
 Clear[ARCParseInputAndOutputScenes];
 Options[ARCParseInputAndOutputScenes] =
 {
-    "FormMultiColorCompositeObjects" -> True        (*< Whether connected single-color objects should be combined to form multi-color composite objects. *)
+    "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. *)
+    "NotableSubImages" -> Automatic                 (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
 };
-ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsPattern[]] :=
+
+ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
+    Module[{},
+        
+        (* Detect the list of notable sub-images across all input and output scenes. *)
+        notableSubImages = Flatten[
+            MapIndexed[
+                Function[{example, exampleIndex},
+                    Function[{inputOrOutput},
+                        (* This isn't our final parse of the scene, just an initial parse to detect
+                        notable sub-images. *)
+                        ReturnIfFailure@
+                        ARCNotableSubImages[
+                            Function[{object},
+                                Sett[
+                                    object,
+                                    {
+                                        (* Annotate these objects with the example they are from for
+                                           use by downstream code in ARCMakeObjectsForSubImages. *)
+                                        "ExampleIndex" -> First[exampleIndex],
+                                        "InputOrOutput" -> inputOrOutput
+                                    }
+                                ]
+                            ] /@
+                                ReturnIfFailure[
+                                    ARCParseScene[
+                                        example[inputOrOutput],
+                                        "ExampleIndex" -> First[exampleIndex],
+                                        "InputOrOutput" -> inputOrOutput,
+                                        "FindOcclusions" -> False,
+                                        "InferPropertiesThatRequireFullObjectList" -> False,
+                                        opts
+                                    ]
+                                ]["Objects"],
+                            ImageWidth[example[inputOrOutput]],
+                            ImageHeight[example[inputOrOutput]]
+                        ]
+                    ] /@ {"Input", "Output"}
+                ],
+                examples
+            ]
+        ];
+        
+        (* Combine the notable sub-images from each input/output example. *)
+        notableSubImages =
+            ARCSortNotableSubImages@
+            Values[
+                Function[{group},
+                    <|
+                        "Image" -> group[[1, "Image"]],
+                        "Count" -> Total[group[[All, "Count"]]],
+                        "ExampleObjects" -> Flatten[group[[All, "ExampleObjects"]], 1]
+                    |>
+                ] /@ GroupBy[notableSubImages, Function[#["Image"]] -> Identity]
+            ];
+        
+        (*ARCEcho["Notable sub images" -> ARCScene /@ notableSubImages[[All, "Image"]]];*)
+        
+        (* Parse each scene. *)
+        MapIndexed[
+            Function[{example, exampleIndex},
+                ReturnIfFailure@
+                ARCParseInputAndOutputScenes[
+                    example["Input"],
+                    example["Output"],
+                    First[exampleIndex],
+                    opts,
+                    "NotableSubImages" -> notableSubImages
+                ]
+            ],
+            examples
+        ]
+    ];
+
+ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleIndex_Integer, OptionsPattern[]] :=
     Module[
         {
             inputSceneParseWithoutMultiColorCompositeObjects,
@@ -993,7 +1065,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
             ARCParseScene[
                 inputScene,
                 "FormMultiColorCompositeObjects" -> False,
-                "InferPropertiesThatRequireFullObjectList" -> False
+                "InferPropertiesThatRequireFullObjectList" -> False,
+                "NotableSubImages" -> OptionValue["NotableSubImages"],
+                "ExampleIndex" -> exampleIndex,
+                "InputOrOutput" -> "Input"
             ];
         
         outputSceneParseWithoutMultiColorCompositeObjects =
@@ -1001,7 +1076,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
             ARCParseScene[
                 outputScene,
                 "FormMultiColorCompositeObjects" -> False,
-                "InferPropertiesThatRequireFullObjectList" -> False
+                "InferPropertiesThatRequireFullObjectList" -> False,
+                "NotableSubImages" -> OptionValue["NotableSubImages"],
+                "ExampleIndex" -> exampleIndex,
+                "InputOrOutput" -> "Output"
             ];
         
         If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]],
@@ -1012,7 +1090,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     inputScene,
                     "FormMultiColorCompositeObjects" -> True,
                     "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                    "InferPropertiesThatRequireFullObjectList" -> False
+                    "InferPropertiesThatRequireFullObjectList" -> False,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Input"
                 ];
             
             outputSceneParseWithMultiColorCompositeObjects =
@@ -1021,7 +1102,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     outputScene,
                     "FormMultiColorCompositeObjects" -> True,
                     "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
-                    "InferPropertiesThatRequireFullObjectList" -> False
+                    "InferPropertiesThatRequireFullObjectList" -> False,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Output"
                 ];
             
             (*ARCEcho2[outputSceneParseWithMultiColorCompositeObjects];*)
@@ -1037,7 +1121,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     "OtherScene" -> <|
                         "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                         "WithMultiColorCompositeObjects" -> outputSceneParseWithMultiColorCompositeObjects["Objects"]
-                    |>
+                    |>,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Input"
                 ];
             
             (* Parse the output scene again, this time passing along information about the objects
@@ -1051,7 +1138,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     "OtherScene" -> <|
                         "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                         "WithMultiColorCompositeObjects" -> inputSceneParseWithMultiColorCompositeObjects["Objects"]
-                    |>
+                    |>,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Output"
                 ];
             
             <|
@@ -1070,7 +1160,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     "FormMultiColorCompositeObjects" -> False,
                     "OtherScene" -> <|
                         "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
-                    |>
+                    |>,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Input"
                 ];
             
             (* Parse the output scene again, this time passing along information about the objects
@@ -1082,7 +1175,10 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, OptionsP
                     "FormMultiColorCompositeObjects" -> False,
                     "OtherScene" -> <|
                         "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
-                    |>
+                    |>,
+                    "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "ExampleIndex" -> exampleIndex,
+                    "InputOrOutput" -> "Output"
                 ];
             
             <|
@@ -2421,7 +2517,7 @@ ObjectsByAttribute[objects_List, attribute_String] :=
     \maintainer danielb
 *)
 Clear[ARCFindObjectMapping];
-Options[ARCParseInputAndOutputScenes] =
+Options[ARCFindObjectMapping] =
 {
     "FormMultiColorCompositeObjects" -> True        (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
 };
@@ -2439,6 +2535,8 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
             ARCParseInputAndOutputScenes[
                 scene1,
                 scene2,
+                (* We don't know the example number here, so use 1. *)
+                1,
                 opts
             ];
         
@@ -3171,16 +3269,14 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ]
             ];
         
-        examples =
-            Function[{example},
-                ReturnIfFailure@
-                ARCParseInputAndOutputScenes[
-                    example["Input"],
-                    example["Output"],
-                    "FormMultiColorCompositeObjects" ->
-                        OptionValue["FormMultiColorCompositeObjects"] =!= False
-                ]
-            ] /@ examplesIn;
+        examples = ARCParseInputAndOutputScenes[
+            examplesIn,
+            "FormMultiColorCompositeObjects" ->
+                OptionValue["FormMultiColorCompositeObjects"] =!= False
+        ];
+        
+        (*ARCEcho2[examples[[1]]];
+        Throw["HERE"];*)
         
         (* For each example, map input objects to output objects. *)
         examples = Function[{example},
@@ -3997,6 +4093,7 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             outputScene["Objects"] = Join[
                 outputScene["Objects"],
                 Function[{object},
+                    ReturnIfFailure@
                     ARCConstructObject[
                         object,
                         "Scene" -> outputScene
@@ -6685,9 +6782,10 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer, OptionsPattern[]] 
 *)
 Clear[ARCNotableSubImages];
 ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
-    Module[{},
-        Function[{image},
-            image[[1]] -> SelectFirst[
+    Module[{res},
+        
+        res = Function[{image},
+            image[[1]] -> Select[
                 objects,
                 (#["Image"] === image) &
             ]
@@ -6704,7 +6802,17 @@ ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
                         ]
                     ]
                 ] &
-            ]
+            ];
+        
+        ARCSortNotableSubImages[
+            Function[{group},
+                <|
+                    "Image" -> group[[1]],
+                    "Count" -> Length[group[[2]]],
+                    "ExampleObjects" -> group[[2]]
+                |>
+            ] /@ res
+        ]
     ]
 
 ImageWidth[ARCScene[image_]] := ImageWidth[image]
@@ -6729,7 +6837,17 @@ ImageHeight[ARCScene[image_]] := ImageHeight[image]
 Clear[ARCMakeObjectsForSubImages];
 Options[ARCMakeObjectsForSubImages] = Options[ARCParseScene];
 ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
-    Module[{objectWidth, objectHeight, leftoverImage, processedPartsOfImage, subImagesFound, strongSubImageQ},
+    Module[
+        {
+            objectWidth,
+            objectHeight,
+            leftoverImage,
+            processedPartsOfImage,
+            subImagesFound,
+            strongSubImageQ,
+            addComponentsDetectedQ,
+            fromSameSceneQ
+        },
         
         objectWidth = ImageWidth[object["Image"][[1]]];
         objectHeight = ImageHeight[object["Image"][[1]]];
@@ -6749,115 +6867,175 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
             }
         ];
         
-        subImagesFound = Function[{subImage},
+        subImagesFound = Function[{subImageAssoc},
             
-            (* If [ImageWidth[subImage[[1]]] === 3 && ImageHeight[subImage[[1]]] === 3,
+            addComponentsDetectedQ = False;
+            fromSameSceneQ = False;
+            
+            (*If [OptionValue["InputOrOutput"] === "Output" && OptionValue["ExampleIndex"] === 1,
+                ARCEcho[ARCScene[subImageAssoc["Image"]]];
+            ];*)
+            
+            (* Check when this notable sub-image exists in the input scene, and is within
+               the bounds of an output object that is being considered to be split up.
+               If so, don't split the object up, since our convention so far has been
+               to treat things as "AddComonents" transforms. e.g. 25d487eb *)
+            If [OptionValue["InputOrOutput"] === "Output",
+                Function[{exampleObject},
+                    If [And[
+                            exampleObject["InputOrOutput"] === "Input",
+                            ObjectWithinQ[exampleObject, object]
+                        ],
+                        addComponentsDetectedQ = True
+                    ];
+                    If [exampleObject["InputOrOutput"] === "Output",
+                        (* This notable sub-image is actually from the same scene
+                           as the object we're considering. *)
+                        fromSameSceneQ = True
+                    ]
+                ] /@ subImageAssoc["ExampleObjects"]
+            ];
+            
+            subImage = subImageAssoc["Image"];
+            
+            (* If [ImageWidth[subImage] === 3 && ImageHeight[subImage] === 3,
                 XEcho[SimplifyObjects[subImage]];
                 $debug = True
                 ,
                 $debug = False
             ]; *)
             
-            If [Or[
-                    ImageWidth[subImage[[1]]] < objectWidth,
-                    ImageHeight[subImage[[1]]] < objectHeight
+            Which[
+                Not[
+                    Or[
+                        ImageWidth[subImage] < objectWidth,
+                        ImageHeight[subImage] < objectHeight
+                    ]
                 ],
-                subImagePositions =
-                    ReturnIfFailure[
-                        (*ResourceFunction["FindSubmatrix"][*)
-                        FindSubmatrix[
-                            leftoverImage,
-                            subImage[[1]],
-                            "Positions"
-                        ]
-                    ];
-                
-                (* If [$debug,
-                    EchoIndented[subImagePositions]
-                ]; *)
-                
-                strongSubImageQ =
-                    (* If the sub-image occurs at least 3 times, then we have quite
-                       strong evidence that it's a sub-image. e.g. 363442ee *)
-                    And[
-                        Length[subImagePositions] >= 3,
-                        (* To be a bit more conservative, we'll ensure at least one of
-                           the dimensions is 3, since we do allow notable sub-images
-                           that are 2x2, which could lead to false positives. *)
-                        Or[
-                            ImageWidth[subImage[[1]]] >= 3,
-                            ImageHeight[subImage[[1]]] >= 3
-                        ],
-                        (* There must be at least two colors. e.g. n1hczotml *)
-                        Length[DeleteDuplicates[Flatten[subImage[[1]]]]] >= 2
-                    ];
-                
-                (*If [TrueQ[strongSubImageQ],
-                    ARCEcho[ARCScene[subImage[[1]]]]
-                ];*)
-                
-                Function[{subImagePosition},
-                    If [And[
-                            (* Being careful to avoid processing overlapping sub-images. *)
-                            DeleteDuplicates[
-                                Flatten[
-                                    processedPartsOfImage[[
-                                        subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage[[1]]] - 1,
-                                        subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage[[1]]] - 1
-                                    ]]
-                                ]
-                            ] === {0},
-                            Or[
-                                TrueQ[strongSubImageQ],
-                                (* We ensure that each border of the sub-image contains at least one
-                                   pixel of the background color to try to avoid situations where
-                                   there really is a contiguous image that shouldn't be split up. *)
-                                AllTrue[
-                                    ARCImageBorderingStrips[
-                                        object["Image"][[1]],
-                                        subImagePosition,
-                                        {
-                                            ImageHeight[subImage[[1]]],
-                                            ImageWidth[subImage[[1]]]
-                                        },
-                                        $nonImageColor
-                                    ],
-                                    MemberQ[#, $nonImageColor] &
-                                ]
-                            ]
-                        ],
-                        (* Paint this region of `leftoverImage` $nonImageColor so that at the end
-                           we can tell if our sub-images have accounted for all non-black pixels
-                           in the image. *)
-                        leftoverImage[[
-                            subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage[[1]]] - 1,
-                            subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage[[1]]] - 1
-                        ]] = $nonImageColor;
-                        
-                        (* Keep track of what parts of the image we've processed so that we can avoid
-                           processing overlapping sub-images. *)
-                        processedPartsOfImage[[
-                            subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage[[1]]] - 1,
-                            subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage[[1]]] - 1
-                        ]] = 1;
-                        
-                        <|
-                            "Object" -> subImage[[2]],
-                            "Position" -> subImagePosition
-                        |>
+                    If [subImageAssoc["Count"] > 1,
+                        (* This object's image _entire_ image is a notable image that occurs multiple
+                           times. We want to exit the function to avoid other smaller sub-images
+                           from breaking it up. e.g. 95990924 *)
+                        Return[object, Module]
                         ,
                         Nothing
-                    ]
-                ] /@ subImagePositions
-                ,
-                Nothing
+                    ],
+                And[
+                    TrueQ[addComponentsDetectedQ],
+                    (* Added this to try to help 6c434453, but then realized it isn't helpful
+                       there, so unsure if I should keep or remove this heuristic. *)
+                    !TrueQ[fromSameSceneQ]
+                ],
+                    (* Skip this. See above. *)
+                    Nothing,
+                True,
+                    subImagePositions =
+                        ReturnIfFailure[
+                            (*ResourceFunction["FindSubmatrix"][*)
+                            FindSubmatrix[
+                                leftoverImage,
+                                subImage,
+                                "Positions"
+                            ]
+                        ];
+                    
+                    (* If [$debug,
+                        EchoIndented[subImagePositions]
+                    ]; *)
+                    
+                    strongSubImageQ =
+                        (* If the sub-image occurs at least 3 times, then we have quite
+                        strong evidence that it's a sub-image. e.g. 363442ee *)
+                        And[
+                            Length[subImagePositions] >= 3,
+                            (* To be a bit more conservative, we'll ensure at least one of
+                            the dimensions is 3, since we do allow notable sub-images
+                            that are 2x2, which could lead to false positives. *)
+                            Or[
+                                ImageWidth[subImage] >= 3,
+                                ImageHeight[subImage] >= 3
+                            ],
+                            (* There must be at least two colors. e.g. n1hczotml *)
+                            Length[DeleteDuplicates[Flatten[subImage]]] >= 2
+                        ];
+                    
+                    (*If [TrueQ[strongSubImageQ],
+                        ARCEcho[ARCScene[subImage]]
+                    ];*)
+                    
+                    Function[{subImagePosition},
+                        If [And[
+                                (* Being careful to avoid processing overlapping sub-images. *)
+                                DeleteDuplicates[
+                                    Flatten[
+                                        processedPartsOfImage[[
+                                            subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage] - 1,
+                                            subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage] - 1
+                                        ]]
+                                    ]
+                                ] === {0},
+                                Or[
+                                    TrueQ[strongSubImageQ],
+                                    (* We ensure that each border of the sub-image contains at least one
+                                       pixel of the background color to try to avoid situations where
+                                       there really is a contiguous image that shouldn't be split up. *)
+                                    AllTrue[
+                                        ARCImageBorderingStrips[
+                                            object["Image"][[1]],
+                                            subImagePosition,
+                                            {
+                                                ImageHeight[subImage],
+                                                ImageWidth[subImage]
+                                            },
+                                            $nonImageColor
+                                        ],
+                                        MemberQ[#, $nonImageColor] &
+                                    ]
+                                ],
+                                (* If the larger image is a single color, and the sub-image within
+                                   it has a contiguous connection to the larger image via that
+                                   color, then we don't break of the image.
+                                   For example:
+                                   - The green "L" in ifmyulnv8-dynamic-shape.
+                                   Example of where we _do_ want to break things up:
+                                   - The first example input of 6c434453, where there's only
+                                     a diagonal connection between the "+" and "O". *)
+                                !And[
+                                    IntegerQ[object["Color"]],
+                                    TrueQ[ARCContiguousSubImageQ[object["Image"][[1]], subImage, subImagePosition]]
+                                ]
+                            ],
+                            (* Paint this region of `leftoverImage` $nonImageColor so that at the end
+                               we can tell if our sub-images have accounted for all non-black pixels
+                               in the image. *)
+                            leftoverImage[[
+                                subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage] - 1,
+                                subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage] - 1
+                            ]] = $nonImageColor;
+                            
+                            (* Keep track of what parts of the image we've processed so that we can avoid
+                               processing overlapping sub-images. *)
+                            processedPartsOfImage[[
+                                subImagePosition[[1]] ;; subImagePosition[[1]] + ImageHeight[subImage] - 1,
+                                subImagePosition[[2]] ;; subImagePosition[[2]] + ImageWidth[subImage] - 1
+                            ]] = 1;
+                            
+                            <|
+                                "Object" -> subImageAssoc["ExampleObjects"][[1]],
+                                "Position" -> subImagePosition
+                            |>
+                            ,
+                            Nothing
+                        ]
+                    ] /@ subImagePositions
             ]
-            
         ] /@ subImages;
         
         subImagesFound = Flatten[subImagesFound];
         
-        (*ARCEcho[SimplifyObjects[subImagesFound]];*)
+        (*If [subImagesFound =!= {},
+            ARCEcho[SimplifyObjects[object] -> SimplifyObjects[subImagesFound]]
+        ];*)
         
         Which[
             Length[subImagesFound] > 0,
@@ -8089,12 +8267,22 @@ ProcessExamples[files_List] :=
 *)
 Clear[ARCNotebook];
 ARCNotebook[file_String] :=
-    Module[{nb, workingSectionCells},
+    Module[{nb, exampleDetails, workingSectionCells},
+        
+        exampleDetails = ReturnIfFailure[ARCResolveExample[file]];
         
         nb = CreateNamedNotebook2[
             FileBaseName[file],
             "NotesSection" -> False,
             "Contents" -> {
+                Replace[
+                    exampleDetails["ExampleType"],
+                    {
+                        "EvaluationExample" -> Text["Evaluation example"],
+                        "PersonalTrainingExample" -> Text["Personal example"],
+                        _ :> Nothing
+                    }
+                ],
                 Section["Example"],
                 InputCell[HoldComplete[ARCParseFile[DevTools`NotebookTools`NotebookTitle[]]]],
                 (*Section["Analysis"],*)
@@ -9302,25 +9490,27 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 19,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "NewEvaluationSuccesses" -> {"070dd51e"},
+            "TotalEvaluationSuccesses" -> 6
         |>,
         <|
+            (* Implemented by accident *)
+            "EvaluationTask" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SucessCount" -> 49,
+            "SucessCount" -> 48,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "1A2E2828",
             "ImplementationTime" -> Quantity[3.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"445eab21"},
             "TotalGeneralizedSuccesses" -> 20,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "NewEvaluationSuccesses" -> {"1A2E2828"},
+            "TotalEvaluationSuccesses" -> 7
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SucessCount" -> 50,
+            "SucessCount" -> 49,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "445eab21",
@@ -9328,7 +9518,18 @@ ARCTaskLog[] :=
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 20,
             "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 30}],
+            "SucessCount" -> 50,
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "95990924",
+            "ImplementationTime" -> Quantity[4.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 20,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
         |>
     }
 
@@ -9621,7 +9822,7 @@ ARCImplementedTasksMarkdown[] :=
         implementedARCTrainingTasks = Select[
             ARCTaskLog[],
             Function[
-                !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]]
+                !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]] && !TrueQ[#["EvaluationTask"]]
             ]
         ][[All, "ExampleImplemented"]];
         
@@ -9961,50 +10162,52 @@ ARCInferObjectImage[
         width_,
         height_
     ] :=
-    ARCScene@
-    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
-    Which[
-        width == 1,
-            Table[
-                {color},
-                {height}
-            ],
-        height == 1,
-            {
+    Module[{},
+        ARCScene@
+        Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+        Which[
+            width == 1,
                 Table[
-                    color,
-                    {width}
-                ]
-            },
-        shape["Angle"] === 45,
-            Function[{y},
-                Flatten[
-                    {
-                        Table[$nonImageColor, {width - y}],
+                    {color},
+                    {height}
+                ],
+            height == 1,
+                {
+                    Table[
                         color,
-                        Table[$nonImageColor, {y - 1}]
-                    },
-                    1
+                        {width}
+                    ]
+                },
+            shape["Angle"] === 45,
+                Function[{y},
+                    Flatten[
+                        {
+                            Table[$nonImageColor, {width - y}],
+                            color,
+                            Table[$nonImageColor, {y - 1}]
+                        },
+                        1
+                    ]
+                ] /@ Range[height],
+            shape["Angle"] === 135,
+                Function[{y},
+                    Flatten[
+                        {
+                            Table[$nonImageColor, {y - 1}],
+                            color,
+                            Table[$nonImageColor, {width - y}]
+                        },
+                        1
+                    ]
+                ] /@ Range[height],
+            True,
+                ReturnFailure[
+                    "UnsupportedLine",
+                    "Only vertical, horizontal, 45 degree, and 135 degree lines are currently supported.",
+                    "Width" -> width,
+                    "Height" -> height
                 ]
-            ] /@ Range[height],
-        shape["Angle"] === 135,
-            Function[{y},
-                Flatten[
-                    {
-                        Table[$nonImageColor, {y - 1}],
-                        color,
-                        Table[$nonImageColor, {width - y}]
-                    },
-                    1
-                ]
-            ] /@ Range[height],
-        True,
-            ReturnFailure[
-                "UnsupportedLine",
-                "Only vertical, horizontal, 45 degree, and 135 degree lines are currently supported.",
-                "Width" -> width,
-                "Height" -> height
-            ]
+        ]
     ]
 
 ARCInferObjectImage[
@@ -11747,7 +11950,6 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                     KeyValuePattern["UUID" -> Alternatives @@ addedObjectUUIDs] :> Nothing,
                     {0, Infinity}
                 ];
-                (* HERE10 *)
                 ReturnIfFailure@
                 ARCGeneralizeConclusions[
                     Function[{item},
@@ -13803,6 +14005,172 @@ ARCSupportedOcclusionObjectQ[object_Association] :=
             KeyValuePattern[
                 {"Name" -> "Rectangle" | "Square", "Filled" -> True}
             ]
+        ]
+    ]
+
+(*!
+    \function ARCResolveExample
+    
+    \calltable
+        ARCResolveExample[exampleName] '' Given an example name, resolves it to a file name and example type, or a Failure if not found.
+    
+    \maintainer danielb
+*)
+Clear[ARCResolveExample];
+ARCResolveExample[exampleName_String] :=
+    Module[{},
+        Function[{exampleTypeDetails},
+            Replace[
+                Replace[
+                    SelectFirst[
+                        exampleTypeDetails["Files"],
+                        FileBaseName[#] === exampleName &
+                    ],
+                    _Missing :> SelectFirst[
+                        exampleTypeDetails["Files"],
+                        StringContainsQ[ToLowerCase[#], ToLowerCase[FileBaseName[exampleName]]] &
+                    ]
+                ],
+                file_String :> Return[
+                    <|
+                        "File" -> file,
+                        "ExampleType" -> exampleTypeDetails["ExampleType"]
+                    |>,
+                    Module
+                ]
+            ]
+        ] /@ {
+            <|
+                "Files" -> ARCTrainingFiles[],
+                "ExampleType" -> "TrainingExample"
+            |>,
+            <|
+                "Files" -> ARCMyTrainingFiles[],
+                "ExampleType" -> "PersonalTrainingExample"
+            |>,
+            <|
+                "Files" -> ARCEvaluationFiles[],
+                "ExampleType" -> "EvaluationExample"
+            |>
+        };
+        
+        ReturnFailure[
+            "FileNotFound",
+            "No matching training example was found.",
+            "ExampleName" -> exampleName
+        ]
+    ]
+
+(*!
+    \function ARCSortNotableSubImages
+    
+    \calltable
+        ARCSortNotableSubImages[notableSubImages] '' Sort notable sub-images so that higher priority ones (larger) are first.
+    
+    \maintainer danielb
+*)
+Clear[ARCSortNotableSubImages];
+ARCSortNotableSubImages[notableSubImages_List] :=
+    Module[{},
+        Reverse@
+        SortBy[
+            notableSubImages,
+            Function[ImageWidth[#["Image"]] * ImageHeight[#["Image"]]]
+        ]
+    ]
+
+(*!
+    \function ARCContiguousSubImageQ
+    
+    \calltable
+        ARCContiguousSubImageQ[image, subImage, subImagePosition] '' Given a sub-image, checks whether there are any single-color contiguous connections from the sub-image to other pixels in the larger image.
+    
+    Examples:
+    
+    ARCContiguousSubImageQ[
+        {{3, -1, -1, -1}, {3, -1, -1, -1}, {3, -1, -1, -1}, {3, 3, 3, 3}},
+        {{3, -1}, {3, 3}},
+        {3, 1}
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCContiguousSubImageQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCContiguousSubImageQ];
+ARCContiguousSubImageQ[image_List, subImage_List, subImagePosition_List] :=
+    Module[{subImageColoredPixelPositions, posInImage, subImageColor},
+        
+        subImageColoredPixelPositions = Position[
+            subImage,
+            Except[$nonImageColor],
+            {2},
+            Heads -> False
+        ];
+        
+        Function[{subImageColoredPixelPosition},
+            posInImage = subImageColoredPixelPosition + subImagePosition - {1, 1};
+            subImageColor = ARCPixelColor[subImage, subImageColoredPixelPosition];
+            Function[{contiguousPosition},
+                If [And[
+                        (* In the sub-image, this adjacent pixel isn't of the same color. *)
+                        !SameQ[
+                            ARCPixelColor[subImage, subImageColoredPixelPosition + contiguousPosition],
+                            subImageColor
+                        ],
+                        (* But in the larger image, it _is_ of the same color, which means
+                           that we've found a contiguous connection from the sub-image back
+                           into the larger image. *)
+                        SameQ[
+                            ARCPixelColor[image, posInImage + contiguousPosition],
+                            subImageColor
+                        ]
+                    ],
+                    Return[True, Module]
+                ]
+            ] /@ {
+                {1, 0},
+                {-1, 0},
+                {0, 1},
+                {0, -1}
+            }
+        ] /@ subImageColoredPixelPositions;
+        
+        False
+    ]
+
+(*!
+    \function ARCPixelColor
+    
+    \calltable
+        ARCPixelColor[image, position] '' Given the color of the pixel at the given position, or Missing if out of bounds.
+    
+    Examples:
+    
+    ARCPixelColor[{{1, 2}, {3, 4}}, {1, 1}] === 1
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPixelColor]
+    
+    \maintainer danielb
+*)
+Clear[ARCPixelColor];
+ARCPixelColor[image_List, position_List] :=
+    Module[{},
+        If [Or[
+                position[[1]] <= 0 || position[[1]] > ImageHeight[image],
+                position[[2]] <= 0 || position[[2]] > ImageWidth[image]
+            ],
+            Missing["OutOfBounds"]
+            ,
+            image[[Sequence @@ position]]
         ]
     ]
 

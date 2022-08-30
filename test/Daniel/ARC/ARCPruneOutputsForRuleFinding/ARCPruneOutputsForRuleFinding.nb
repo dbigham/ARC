@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    240507,       5054]
-NotebookOptionsPosition[    234059,       4899]
-NotebookOutlinePosition[    239798,       5040]
-CellTagsIndexPosition[    239755,       5037]
+NotebookDataLength[    244932,       5132]
+NotebookOptionsPosition[    238392,       4976]
+NotebookOutlinePosition[    244131,       5117]
+CellTagsIndexPosition[    244088,       5114]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -33,6 +33,13 @@ Cell[BoxData[{
 Cell[CellGroupData[{
 
 Cell["Tests", "Section",ExpressionUUID->"80f0697d-d7d7-4fc2-9a7a-29c4c4404c7a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ARCParseFile", "[", 
+   RowBox[{"file", " ", "=", " ", "\"\<0ca9ddb6\>\""}], "]"}], "[", 
+  RowBox[{"\"\<Train\>\"", ",", " ", "2"}], "]"}]], "Input",
+ CellLabel->"",ExpressionUUID->"f06a26f4-975f-4c24-aff2-1fc82e63f68f"],
 
 Cell[CellGroupData[{
 
@@ -147,8 +154,9 @@ Cell[BoxData[{
    3.8672639857708163`*^9, {3.8675066132320232`*^9, 3.8675066138571577`*^9}, {
    3.867681211470805*^9, 3.867681213968161*^9}, {3.8677467021449933`*^9, 
    3.867746702283037*^9}, {3.8677467584854803`*^9, 3.867746760612744*^9}, {
-   3.8687291230099454`*^9, 3.8687291405418005`*^9}},
- CellLabel->"In[76]:=",
+   3.8687291230099454`*^9, 3.8687291405418005`*^9}, {3.870903742824685*^9, 
+   3.8709037453713937`*^9}, {3.870903776280678*^9, 3.8709038070931716`*^9}},
+ CellLabel->"In[913]:=",
  CellID->64092711,
  "TestId" -> 
  "ARCPruneOutputsForRuleFinding-20220719-L90VO7",ExpressionUUID->"9f720e02-\
@@ -370,6 +378,7 @@ Cell[BoxData[
     {"\<\"        \\\"X2\\\" -> 4,\"\>"},
     {"\<\"        \\\"Y2Inverse\\\" -> 9,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 6,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
     {"\<\"        \\\"Height\\\" -> 1,\"\>"},
     {"\<\"        \\\"Length\\\" -> 1,\"\>"},
@@ -378,6 +387,9 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -401,6 +413,8 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse.InverseRank\\\" -> 5,\"\>"},
     {"\<\"        \\\"X2Inverse.Rank\\\" -> 3,\"\>"},
     {"\<\"        \\\"X2Inverse.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"        \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -555,8 +569,8 @@ Cell[BoxData[
           Background -> RGBColor[1., 0.9803921568627451, 0.9215686274509803], 
           BaseStyle -> {
             RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
-          BaselinePosition -> Baseline, ContentPadding -> True, FrameMargins -> {\
-{5, 5}, {3, 3}}, StripOnInput -> False], 
+          BaselinePosition -> Baseline, ContentPadding -> True, 
+          FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
          "\"<|\\\"Name\\\" -> \\\"Rectangle\\\", \\\"Filled\\\" -> True|>\"", 
          TooltipDelay -> 0.4, LabelStyle -> "TextStyling"], 
         Annotation[#, "<|\"Name\" -> \"Rectangle\", \"Filled\" -> True|>", 
@@ -626,6 +640,7 @@ Cell[BoxData[
     {"\<\"            \\\"X2\\\" -> 4,\"\>"},
     {"\<\"            \\\"Y2Inverse\\\" -> 9,\"\>"},
     {"\<\"            \\\"X2Inverse\\\" -> 6,\"\>"},
+    {"\<\"            \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"            \\\"Width\\\" -> 1,\"\>"},
     {"\<\"            \\\"Height\\\" -> 1,\"\>"},
     {"\<\"            \\\"Length\\\" -> 1,\"\>"},
@@ -634,6 +649,10 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"            \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"VerticalAndHorizontalLineSymmetry\\\" -> \
+False,\"\>"},
     {"\<\"            \\\"ColorUseCount\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -657,6 +676,8 @@ Cell[BoxData[
     {"\<\"            \\\"Y2Inverse.InverseRank\\\" -> 5,\"\>"},
     {"\<\"            \\\"X2Inverse.Rank\\\" -> 3,\"\>"},
     {"\<\"            \\\"X2Inverse.InverseRank\\\" -> 2,\"\>"},
+    {"\<\"            \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -871,6 +892,7 @@ Cell[BoxData[
     {"\<\"        \\\"X2\\\" -> 7,\"\>"},
     {"\<\"        \\\"Y2Inverse\\\" -> 7,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
     {"\<\"        \\\"Height\\\" -> 1,\"\>"},
     {"\<\"        \\\"Length\\\" -> 1,\"\>"},
@@ -879,6 +901,9 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -902,6 +927,8 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse.InverseRank\\\" -> 4,\"\>"},
     {"\<\"        \\\"X2Inverse.Rank\\\" -> 4,\"\>"},
     {"\<\"        \\\"X2Inverse.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -999,6 +1026,7 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 6,\"\>"},
     {"\<\"        \\\"Width\\\" -> 3,\"\>"},
     {"\<\"        \\\"Height\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
@@ -2010,6 +2038,7 @@ Cell[BoxData[
     {"\<\"            \\\"X2\\\" -> 7,\"\>"},
     {"\<\"            \\\"Y2Inverse\\\" -> 7,\"\>"},
     {"\<\"            \\\"X2Inverse\\\" -> 3,\"\>"},
+    {"\<\"            \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"            \\\"Width\\\" -> 1,\"\>"},
     {"\<\"            \\\"Height\\\" -> 1,\"\>"},
     {"\<\"            \\\"Length\\\" -> 1,\"\>"},
@@ -2018,6 +2047,10 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"            \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"VerticalAndHorizontalLineSymmetry\\\" -> \
+False,\"\>"},
     {"\<\"            \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"            \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -2041,6 +2074,8 @@ Cell[BoxData[
     {"\<\"            \\\"Y2Inverse.InverseRank\\\" -> 4,\"\>"},
     {"\<\"            \\\"X2Inverse.Rank\\\" -> 4,\"\>"},
     {"\<\"            \\\"X2Inverse.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -2256,6 +2291,7 @@ Cell[BoxData[
     {"\<\"        \\\"X2\\\" -> 3,\"\>"},
     {"\<\"        \\\"Y2Inverse\\\" -> 6,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 7,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
     {"\<\"        \\\"Height\\\" -> 1,\"\>"},
     {"\<\"        \\\"Length\\\" -> 1,\"\>"},
@@ -2264,6 +2300,9 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -2287,6 +2326,8 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse.InverseRank\\\" -> 3,\"\>"},
     {"\<\"        \\\"X2Inverse.Rank\\\" -> 2,\"\>"},
     {"\<\"        \\\"X2Inverse.InverseRank\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -2330,7 +2371,6 @@ Cell[BoxData[
        TemplateBox[{"\"        \"", 
          TemplateBox[{"\"\\\"Shape\\\" -> \"", 
            TagBox[
-            
             GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
               "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
@@ -2384,6 +2424,7 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 5,\"\>"},
     {"\<\"        \\\"Width\\\" -> 3,\"\>"},
     {"\<\"        \\\"Height\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
@@ -2722,6 +2763,7 @@ Cell[BoxData[
     {"\<\"            \\\"X2\\\" -> 3,\"\>"},
     {"\<\"            \\\"Y2Inverse\\\" -> 6,\"\>"},
     {"\<\"            \\\"X2Inverse\\\" -> 7,\"\>"},
+    {"\<\"            \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"            \\\"Width\\\" -> 1,\"\>"},
     {"\<\"            \\\"Height\\\" -> 1,\"\>"},
     {"\<\"            \\\"Length\\\" -> 1,\"\>"},
@@ -2730,6 +2772,10 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"            \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"VerticalAndHorizontalLineSymmetry\\\" -> \
+False,\"\>"},
     {"\<\"            \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"            \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -2753,6 +2799,8 @@ Cell[BoxData[
     {"\<\"            \\\"Y2Inverse.InverseRank\\\" -> 3,\"\>"},
     {"\<\"            \\\"X2Inverse.Rank\\\" -> 2,\"\>"},
     {"\<\"            \\\"X2Inverse.InverseRank\\\" -> 3,\"\>"},
+    {"\<\"            \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -2968,6 +3016,7 @@ Cell[BoxData[
     {"\<\"        \\\"X2\\\" -> 7,\"\>"},
     {"\<\"        \\\"Y2Inverse\\\" -> 3,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
     {"\<\"        \\\"Height\\\" -> 1,\"\>"},
     {"\<\"        \\\"Length\\\" -> 1,\"\>"},
@@ -2976,6 +3025,9 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -2999,6 +3051,8 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse.InverseRank\\\" -> 2,\"\>"},
     {"\<\"        \\\"X2Inverse.Rank\\\" -> 4,\"\>"},
     {"\<\"        \\\"X2Inverse.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -3096,6 +3150,7 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 2,\"\>"},
     {"\<\"        \\\"Width\\\" -> 3,\"\>"},
     {"\<\"        \\\"Height\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
@@ -3434,6 +3489,7 @@ Cell[BoxData[
     {"\<\"            \\\"X2\\\" -> 7,\"\>"},
     {"\<\"            \\\"Y2Inverse\\\" -> 3,\"\>"},
     {"\<\"            \\\"X2Inverse\\\" -> 3,\"\>"},
+    {"\<\"            \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"            \\\"Width\\\" -> 1,\"\>"},
     {"\<\"            \\\"Height\\\" -> 1,\"\>"},
     {"\<\"            \\\"Length\\\" -> 1,\"\>"},
@@ -3442,6 +3498,10 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"            \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"VerticalAndHorizontalLineSymmetry\\\" -> \
+False,\"\>"},
     {"\<\"            \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"            \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -3465,6 +3525,8 @@ Cell[BoxData[
     {"\<\"            \\\"Y2Inverse.InverseRank\\\" -> 2,\"\>"},
     {"\<\"            \\\"X2Inverse.Rank\\\" -> 4,\"\>"},
     {"\<\"            \\\"X2Inverse.InverseRank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -3547,8 +3609,7 @@ Cell[BoxData[
            FrameBox["\"Pixel\"", FrameStyle -> Directive[
               RGBColor[1, 0.5, 0.], "Thickness" -> 1], RoundingRadius -> 4, 
             Background -> 
-            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> 
-            {
+            RGBColor[1., 0.9803921568627451, 0.9215686274509803], BaseStyle -> {
               RGBColor[0.4, 0.21, 0.06], "FontFamily" -> "Arial"}, 
             BaselinePosition -> Baseline, ContentPadding -> True, 
             FrameMargins -> {{5, 5}, {3, 3}}, StripOnInput -> False], 
@@ -3681,6 +3742,7 @@ Cell[BoxData[
     {"\<\"        \\\"X2\\\" -> 2,\"\>"},
     {"\<\"        \\\"Y2Inverse\\\" -> 2,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 8,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
     {"\<\"        \\\"Height\\\" -> 1,\"\>"},
     {"\<\"        \\\"Length\\\" -> 1,\"\>"},
@@ -3689,6 +3751,9 @@ Cell[BoxData[
     {"\<\"        \\\"Area\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -3712,6 +3777,8 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"X2Inverse.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"X2Inverse.InverseRank\\\" -> 4,\"\>"},
+    {"\<\"        \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"        \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"        \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -3809,6 +3876,7 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 1,\"\>"},
     {"\<\"        \\\"Width\\\" -> 3,\"\>"},
     {"\<\"        \\\"Height\\\" -> 3,\"\>"},
+    {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"        \\\"Transform\\\" -> <|\"\>"},
     {"\<\"            \\\"Type\\\" -> \\\"AddComponents\\\",\"\>"},
     {"\<\"            \\\"Components\\\" -> {\"\>"},
@@ -4820,6 +4888,7 @@ Cell[BoxData[
     {"\<\"            \\\"X2\\\" -> 2,\"\>"},
     {"\<\"            \\\"Y2Inverse\\\" -> 2,\"\>"},
     {"\<\"            \\\"X2Inverse\\\" -> 8,\"\>"},
+    {"\<\"            \\\"ZOrder\\\" -> 0,\"\>"},
     {"\<\"            \\\"Width\\\" -> 1,\"\>"},
     {"\<\"            \\\"Height\\\" -> 1,\"\>"},
     {"\<\"            \\\"Length\\\" -> 1,\"\>"},
@@ -4828,6 +4897,10 @@ Cell[BoxData[
     {"\<\"            \\\"Area\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledArea\\\" -> 1,\"\>"},
     {"\<\"            \\\"FilledProportion\\\" -> 1.,\"\>"},
+    {"\<\"            \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"            \\\"VerticalAndHorizontalLineSymmetry\\\" -> \
+False,\"\>"},
     {"\<\"            \\\"ColorUseCount\\\" -> 2,\"\>"},
     {"\<\"            \\\"Width.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"Width.InverseRank\\\" -> 1,\"\>"},
@@ -4851,6 +4924,8 @@ Cell[BoxData[
     {"\<\"            \\\"Y2Inverse.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"X2Inverse.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"X2Inverse.InverseRank\\\" -> 4,\"\>"},
+    {"\<\"            \\\"ZOrder.Rank\\\" -> 1,\"\>"},
+    {"\<\"            \\\"ZOrder.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.Rank\\\" -> 1,\"\>"},
     {"\<\"            \\\"PrimarySizeDimension.InverseRank\\\" -> 1,\"\>"},
     {"\<\"            \\\"AspectRatio.Rank\\\" -> 1,\"\>"},
@@ -4892,8 +4967,10 @@ Cell[BoxData[
    3.869686792151848*^9}, 3.8696869755890136`*^9, 3.869768306826903*^9, 
    3.8698620656976433`*^9, 3.8700266551364985`*^9, 3.8703694075971737`*^9, 
    3.8703730712402706`*^9, 3.870373453774572*^9, 3.870517783152422*^9, 
-   3.8706034037517815`*^9, 3.8706364016011295`*^9},
- CellLabel->"Out[77]=",ExpressionUUID->"a5a95f2d-c54f-443a-8625-9c9a2fba7732"]
+   3.8706034037517815`*^9, 3.8706364016011295`*^9, {3.8709037772427387`*^9, 
+   3.870903811272947*^9}},
+ CellLabel->
+  "Out[914]=",ExpressionUUID->"2b72aa97-48dd-44e4-a941-38228535bb16"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -5045,15 +5122,16 @@ Cell[684, 24, 264, 6, 54, "Code",ExpressionUUID->"172f85b6-a1fa-4c6b-97c9-78a643
  InitializationCell->False],
 Cell[CellGroupData[{
 Cell[973, 34, 79, 0, 67, "Section",ExpressionUUID->"80f0697d-d7d7-4fc2-9a7a-29c4c4404c7a"],
+Cell[1055, 36, 256, 5, 29, "Input",ExpressionUUID->"f06a26f4-975f-4c24-aff2-1fc82e63f68f"],
 Cell[CellGroupData[{
-Cell[1077, 38, 3680, 85, 52, "TestUI",ExpressionUUID->"a803b983-a193-4b19-9c82-54f0f0d56eab",
+Cell[1336, 45, 3680, 85, 52, "TestUI",ExpressionUUID->"a803b983-a193-4b19-9c82-54f0f0d56eab",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4760, 125, 1331, 29, 162, "Code",ExpressionUUID->"9f720e02-2fe0-47d5-98bc-672797dd844d",
+Cell[5019, 132, 1432, 30, 162, "Code",ExpressionUUID->"9f720e02-2fe0-47d5-98bc-672797dd844d",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->64092711]
 }, Open  ]],
-Cell[6106, 157, 227925, 4738, 20237, "Output",ExpressionUUID->"a5a95f2d-c54f-443a-8625-9c9a2fba7732"]
+Cell[6466, 165, 231898, 4807, 21325, "Output",ExpressionUUID->"2b72aa97-48dd-44e4-a941-38228535bb16"]
 }, Open  ]]
 }, Open  ]]
 }

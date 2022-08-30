@@ -15,17 +15,17 @@ Test[
         Daniel`ARC`ARCRepositionObject[
             Daniel`ARC`ARCInferObjectProperties[
                 <|
-                    "Image" -> {{1, 0}, {0, 1}},
+                    "Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}],
                     "PixelPositions" -> {{1, 1}, {2, 2}},
                     "Position" -> {1, 1},
                     "Components" -> {
                         <|
-                            "Image" -> {{1}},
+                            "Image" -> Daniel`ARC`ARCScene[{{1}}],
                             "PixelPositions" -> {{1, 1}},
                             "Position" -> {1, 1}
                         |>,
                         <|
-                            "Image" -> {{1}},
+                            "Image" -> Daniel`ARC`ARCScene[{{1}}],
                             "PixelPositions" -> {{2, 2}},
                             "Position" -> {2, 2}
                         |>
@@ -34,29 +34,30 @@ Test[
                 10,
                 10
             ],
-            {9, 9},
+            {5, 5},
             10,
             10
         ]
     ]
     ,
     <|
-        "Image" -> {{1, 0}, {0, 1}},
-        "PixelPositions" -> {{9, 9}, {10, 10}},
-        "Position" -> {9, 9},
+        "Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}],
+        "PixelPositions" -> {{5, 5}, {6, 6}},
+        "Position" -> {5, 5},
         "Components" -> {
             <|
-                "Image" -> {{1}},
-                "PixelPositions" -> {{9, 9}},
-                "Position" -> {9, 9},
-                "Y" -> 9,
-                "X" -> 9,
-                "YInverse" -> 2,
-                "XInverse" -> 2,
-                "Y2" -> 9,
-                "X2" -> 9,
-                "Y2Inverse" -> 2,
-                "X2Inverse" -> 2,
+                "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                "PixelPositions" -> {{5, 5}},
+                "Position" -> {5, 5},
+                "Y" -> 5,
+                "X" -> 5,
+                "YInverse" -> 6,
+                "XInverse" -> 6,
+                "Y2" -> 5,
+                "X2" -> 5,
+                "Y2Inverse" -> 6,
+                "X2Inverse" -> 6,
+                "ZOrder" -> 0,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -64,20 +65,24 @@ Test[
                 "AspectRatio" -> 1,
                 "Area" -> 1,
                 "FilledArea" -> 1,
-                "FilledProportion" -> 1.
+                "FilledProportion" -> 1.,
+                "VerticalLineSymmetry" -> False,
+                "HorizontalLineSymmetry" -> False,
+                "VerticalAndHorizontalLineSymmetry" -> False
             |>,
             <|
-                "Image" -> {{1}},
-                "PixelPositions" -> {{10, 10}},
-                "Position" -> {10, 10},
-                "Y" -> 10,
-                "X" -> 10,
-                "YInverse" -> 1,
-                "XInverse" -> 1,
-                "Y2" -> 10,
-                "X2" -> 10,
-                "Y2Inverse" -> 1,
-                "X2Inverse" -> 1,
+                "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                "PixelPositions" -> {{6, 6}},
+                "Position" -> {6, 6},
+                "Y" -> 6,
+                "X" -> 6,
+                "YInverse" -> 5,
+                "XInverse" -> 5,
+                "Y2" -> 6,
+                "X2" -> 6,
+                "Y2Inverse" -> 5,
+                "X2Inverse" -> 5,
+                "ZOrder" -> 0,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -85,17 +90,21 @@ Test[
                 "AspectRatio" -> 1,
                 "Area" -> 1,
                 "FilledArea" -> 1,
-                "FilledProportion" -> 1.
+                "FilledProportion" -> 1.,
+                "VerticalLineSymmetry" -> False,
+                "HorizontalLineSymmetry" -> False,
+                "VerticalAndHorizontalLineSymmetry" -> False
             |>
         },
-        "Y" -> 9,
-        "X" -> 9,
-        "YInverse" -> 2,
-        "XInverse" -> 2,
-        "Y2" -> 10,
-        "X2" -> 10,
-        "Y2Inverse" -> 1,
-        "X2Inverse" -> 1,
+        "Y" -> 5,
+        "X" -> 5,
+        "YInverse" -> 6,
+        "XInverse" -> 6,
+        "Y2" -> 6,
+        "X2" -> 6,
+        "Y2Inverse" -> 5,
+        "X2Inverse" -> 5,
+        "ZOrder" -> 0,
         "Width" -> 2,
         "Height" -> 2,
         "Length" -> 2,
@@ -103,7 +112,10 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 4,
         "FilledArea" -> 2,
-        "FilledProportion" -> 0.5
+        "FilledProportion" -> 0.5,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCRepositionObject-20220725-ZLXXQD"

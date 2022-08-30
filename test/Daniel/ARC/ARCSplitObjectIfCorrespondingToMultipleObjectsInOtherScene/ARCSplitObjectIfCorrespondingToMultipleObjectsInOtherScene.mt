@@ -93,6 +93,7 @@ Test[
             "X2" -> 3,
             "Y2Inverse" -> 9,
             "X2Inverse" -> 8,
+            "ZOrder" -> 0,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -100,7 +101,10 @@ Test[
             "AspectRatio" -> 3,
             "Area" -> 3,
             "FilledArea" -> 3,
-            "FilledProportion" -> 1.
+            "FilledProportion" -> 1.,
+            "VerticalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False
         |>,
         <|
             "UUID" -> 0,
@@ -133,6 +137,7 @@ Test[
             "X2" -> 3,
             "Y2Inverse" -> 8,
             "X2Inverse" -> 8,
+            "ZOrder" -> 0,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -140,7 +145,10 @@ Test[
             "AspectRatio" -> 3,
             "Area" -> 3,
             "FilledArea" -> 3,
-            "FilledProportion" -> 1.
+            "FilledProportion" -> 1.,
+            "VerticalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False
         |>
     }
     ,

@@ -265,10 +265,14 @@ Test[
             "X2" -> 4,
             "Y2Inverse" -> 5,
             "X2Inverse" -> 6,
+            "ZOrder" -> 0,
             "Length" -> 3,
             "PrimarySizeDimension" -> "None",
             "FilledArea" -> 5,
-            "FilledProportion" -> 0.5555555555555556
+            "FilledProportion" -> 0.5555555555555556,
+            "VerticalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False
         |>,
         <|
             "UUID" -> "0548a70a-33ec-42c5-b1c5-38e21b613ee1",
@@ -329,10 +333,14 @@ Test[
             "X2" -> 8,
             "Y2Inverse" -> 2,
             "X2Inverse" -> 2,
+            "ZOrder" -> 0,
             "Length" -> 3,
             "PrimarySizeDimension" -> "None",
             "FilledArea" -> 5,
-            "FilledProportion" -> 0.5555555555555556
+            "FilledProportion" -> 0.5555555555555556,
+            "VerticalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> False,
+            "VerticalAndHorizontalLineSymmetry" -> False
         |>
     }
     ,

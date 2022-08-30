@@ -33,6 +33,7 @@ Test[
                                 Daniel`ARC`ARCParseInputAndOutputScenes[
                                     example["Input"],
                                     example["Output"],
+                                    1,
                                     "FormMultiColorCompositeObjects" -> False
                                 ]
                             ]

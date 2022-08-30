@@ -63,6 +63,7 @@ Test[
         "X2" -> 3,
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
+        "ZOrder" -> 0,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -70,7 +71,10 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 9,
         "FilledArea" -> 5,
-        "FilledProportion" -> 0.5555555555555556
+        "FilledProportion" -> 0.5555555555555556,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220717-LUDS9W"
@@ -135,6 +139,7 @@ Test[
         "X2" -> 3,
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
+        "ZOrder" -> 0,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -142,7 +147,10 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 9,
         "FilledArea" -> 9,
-        "FilledProportion" -> 1.
+        "FilledProportion" -> 1.,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220717-56GZCQ"
@@ -188,6 +196,7 @@ Test[
         "X2" -> 1,
         "Y2Inverse" -> 10,
         "X2Inverse" -> 10,
+        "ZOrder" -> 0,
         "Width" -> 1,
         "Height" -> 1,
         "Length" -> 1,
@@ -195,7 +204,10 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 1,
         "FilledArea" -> 1,
-        "FilledProportion" -> 1.
+        "FilledProportion" -> 1.,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220811-XV0TR0"
@@ -268,6 +280,7 @@ Test[
         "X2" -> 3,
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
+        "ZOrder" -> 0,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -275,7 +288,10 @@ Test[
         "AspectRatio" -> 1,
         "Area" -> 9,
         "FilledArea" -> 9,
-        "FilledProportion" -> 1.
+        "FilledProportion" -> 1.,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220811-XVU8DU"

@@ -11,15 +11,20 @@
 *)
 
 Test[
-    Length[
-        DevTools`ERP`NormalizeOutput[
-            With[
-                {parsedFile = Daniel`ARC`ARCParseFile["0ca9ddb6"]},
-                Daniel`ARC`ARCParseInputAndOutputScenes[
-                    parsedFile["Train", 1, "Input"],
-                    parsedFile["Train", 1, "Output"]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Length[
+                DevTools`ERP`NormalizeOutput[
+                    With[
+                        {parsedFile = Daniel`ARC`ARCParseFile["0ca9ddb6"]},
+                        Daniel`ARC`ARCParseInputAndOutputScenes[
+                            parsedFile["Train", 1, "Input"],
+                            parsedFile["Train", 1, "Output"],
+                            1
+                        ]
+                    ]["Output", "Objects"]
                 ]
-            ]["Output", "Objects"]
+            ]
         ]
     ]
     ,
@@ -29,16 +34,21 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
-            With[
-                {parsedFile = Daniel`ARC`ARCParseFile["25d8a9c8"]},
-                Daniel`ARC`ARCParseInputAndOutputScenes[
-                    parsedFile["Train", 3, "Input"],
-                    parsedFile["Train", 3, "Output"],
-                    "FormMultiColorCompositeObjects" -> False
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    With[
+                        {parsedFile = Daniel`ARC`ARCParseFile["25d8a9c8"]},
+                        Daniel`ARC`ARCParseInputAndOutputScenes[
+                            parsedFile["Train", 3, "Input"],
+                            parsedFile["Train", 3, "Output"],
+                            1,
+                            "FormMultiColorCompositeObjects" -> False
+                        ]
+                    ]["Output"]
                 ]
-            ]["Output"]
+            ]
         ]
     ]
     ,
@@ -65,7 +75,8 @@ Test[
                         {parsedFile = Daniel`ARC`ARCParseFile["25d8a9c8"]},
                         Daniel`ARC`ARCParseInputAndOutputScenes[
                             parsedFile["Train", 3, "Input"],
-                            parsedFile["Train", 3, "Output"]
+                            parsedFile["Train", 3, "Output"],
+                            1
                         ]
                     ]["Output"][[
                         "Objects",

@@ -150,12 +150,16 @@ Test[
         "XInverse" -> 8,
         "Y2Inverse" -> 7,
         "X2Inverse" -> 1,
+        "ZOrder" -> 0,
         "Length" -> 8,
         "PrimarySizeDimension" -> "X",
         "AspectRatio" -> 8,
         "Area" -> 8,
         "FilledArea" -> 2,
-        "FilledProportion" -> 0.25
+        "FilledProportion" -> 0.25,
+        "VerticalLineSymmetry" -> True,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False
     |>
     ,
     TestID -> "ARCSetGroupProperties-20220805-EO5LHW"

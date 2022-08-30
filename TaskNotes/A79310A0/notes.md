@@ -13,4 +13,4 @@ Enhanced the object mapping code.
 
 Previously, it would map objects that moved, or objects that changed in-place, but it wasn’t mapping objects that both moved and changed.
 
-For the moment, we only product the mapping in such cases if there’s a single object in the input/output, and they share the same shape.
+For the moment, we only produce the mapping in such cases if there’s a single object in the input/output, and they share the same shape.

@@ -63,6 +63,7 @@ Test[
         "X2" -> 3,
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
+        "ZOrder" -> 0,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -71,6 +72,9 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 5,
         "FilledProportion" -> 0.5555555555555556,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False,
         "ParentWidth" -> 10,
         "ParentHeight" -> 10
     |>

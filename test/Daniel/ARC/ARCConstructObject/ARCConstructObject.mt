@@ -92,8 +92,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCConstructObject[
-        <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConstructObject[
+            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>,
+            "Scene" -> <|"Width" -> 10, "Height" -> 10|>
+        ]
     ]
     ,
     <|

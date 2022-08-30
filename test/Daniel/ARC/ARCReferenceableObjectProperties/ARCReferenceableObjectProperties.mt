@@ -199,6 +199,7 @@ Test[
             },
             "Height" -> 3,
             "Length" -> 3,
+            "HorizontalLineSymmetry" -> False,
             "YInverse" -> 3,
             "AspectRatio" -> 1/3,
             "Area" -> 3,
@@ -308,6 +309,7 @@ Test[
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Rectangle", "Filled" -> True|>
             },
+            "HorizontalLineSymmetry" -> False,
             "XInverse" -> 6,
             "X2" -> 4,
             "X2Inverse" -> 6,
