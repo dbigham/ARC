@@ -356,6 +356,8 @@ ARCConsiderMappingObjectsByColor::usage = "ARCConsiderMappingObjectsByColor  "
 
 ARCRemoveEmptySpace::usage = "ARCRemoveEmptySpace  "
 
+ARCSupportedOcclusionObjectQ::usage = "ARCSupportedOcclusionObjectQ  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -747,7 +749,8 @@ Options[ARCParseScene] =
     "FormMultiColorCompositeObjects" -> True,               (*< Whether connected single-color objects should be combined to form multi-color composite objects. If set to Automatic, the OtherScene option will be used to help make more informed decisions. *)
     "OtherScene" -> Null,                                   (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
     "SingleColorObjects" -> Automatic,                      (*< If the single color objects have already been determined, they can be passed in to save time. *)
-    "InferPropertiesThatRequireFullObjectList" -> True      (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
+    "InferPropertiesThatRequireFullObjectList" -> True,     (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
+    "FindOcclusions" -> True                                (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     Module[{background, objects},
@@ -778,9 +781,13 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             ]
         ];
         
-        objects =
-            ReturnIfFailure@
-            ARCFindOccludedLines[scene, objects];
+        If [TrueQ[OptionValue["FindOcclusions"]],
+            objects =
+                ReturnIfFailure@
+                ARCFindOccludedLines[scene, background, objects]
+        ];
+        
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
         
         (* If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]] =!= False,
             ARCEcho["Scene" -> scene];
@@ -2724,6 +2731,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         (* If there is only one object in the input and only one object in the output.
            e.g. A79310A0 *)
         If [And[
+                Length[inputObjects] === 1,
                 Length[objectsToMapTo] === 1,
                 (* For the moment we'll be conservative and require them to have the
                    same shape. *)
@@ -3243,6 +3251,33 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho[SimplifyObjects[preRules[[All, 2]]]];*)
         (*ARCEcho[preRules[[All, 2]]];*)
         
+        (*ARCEcho[referenceableInputObjects];*)
+        
+        inputObjectsNeedingMapping = preRules[[All, 2, "Input", "UUID"]];
+        
+        (*Echo[Length[inputObjectsNeedingMapping]];*)
+        
+        (*EchoIndented[Counts[preRules[[All, 2, "Transform"]]]];*)
+        
+        (* If there are objects in the output that don't seem to correspond to objects in the
+           input, then we'll start by trying to model them. *)
+        addedObjectsRule =
+            ReturnIfFailure@
+            ReturnFailureIfMissing[
+                ARCRuleForAddedObjects[addedObjects, referenceableInputObjects, examples],
+                "AddedObjectsFailure",
+                "Unable to produce a rule for adding objects.",
+                "AddedObjects" -> addedObjects
+            ];
+        
+        additionalRules = {
+            If [AssociationQ[addedObjectsRule],
+                addedObjectsRule
+                ,
+                Nothing
+            ]
+        };
+        
         (* Special case: There's a single transformation that can be applied to any
            input object to produce the output. e.g. 3c9b0459 *)
         If [And[
@@ -3261,33 +3296,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 }
             ]
         ];
-        
-        (*ARCEcho[referenceableInputObjects];*)
-        
-        inputObjectsNeedingMapping = preRules[[All, 2, "Input", "UUID"]];
-        
-        (*Echo[Length[inputObjectsNeedingMapping]];*)
-        
-        (*EchoIndented[Counts[preRules[[All, 2, "Transform"]]]];*)
-        
-        (* If there are objects in the output that don't seem to correspond to objects in the
-           input, then we'll start by trying to model them. *)
-        addedObjectsRule =
-            ReturnIfFailure@
-            ReturnFailureIfMissing[
-                ARCRuleForAddedObjects[addedObjects, referenceableOutputObjects, examples],
-                "AddedObjectsFailure",
-                "Unable to produce a rule for adding objects.",
-                "AddedObjects" -> addedObjects
-            ];
-        
-        additionalRules = {
-            If [AssociationQ[addedObjectsRule],
-                addedObjectsRule
-                ,
-                Nothing
-            ]
-        };
         
         ruleSets = {};
         
@@ -3351,7 +3359,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"VerticalLineSymmetry"}
+                        {"Position"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3909,10 +3917,17 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                     "FormMultiColorCompositeObjects" -> False
                     ,
                     Sequence @@ {}
-                ]
+                ],
+                (* If none of the rules involved ZOrder/occluded objects, then don't consider
+                   occlusions when parsing the scene for applying rules, since there are cases
+                   where this can result in invalid scene interpretation.
+                   e.g. 90c28cc7 *)
+                "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]]
             ];
         
         objects = parsedScene["Objects"];
+        
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
         
         (* Is there a 'rule' for adding objects which don't occur in the input scene? *)
         addObjects = FirstCase[
@@ -3991,7 +4006,7 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                     ResolveValues[
                         addObjects["Transform", "Objects"],
                         <||>,
-                        outputScene,
+                        parsedScene,
                         "Activate" -> True
                     ]
             ]
@@ -5381,8 +5396,8 @@ $transformTypes = <|
                      these, such as "Position" | {"X", "Y"}, although perhaps we don't need to
                      support Position and can/should replace any instances of those with X and Y
                      here? (We should at least try that first) *)
-            {"Image", "Position", Missing["ZOrder"] | "ZOrder"},
-            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse", Missing["ZOrder"] | "ZOrder"}
+            {"Image", "Position", "ZOrder"},
+            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse", "ZOrder"}
         },
         "SubProperties" -> {
             "Image" -> <||>,
@@ -5520,6 +5535,8 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
         },
         
         (* HERE1 *)
+        
+        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> "ZOrder"][conclusions[[All, "Input"]]]];*)
         
         inputObjectComponentSets = conclusions[[All, "Input", "Components"]];
         If [MatchQ[inputObjectComponentSets, {Repeated[{__}]}],
@@ -5740,9 +5757,9 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Shapes",
+        (*If [property === "ZOrder",
             EchoTag["values"][values];
-            (*EchoTag["Conclusion values"][conclusions[[All, "Input", property]]];*)
+            EchoTag["Conclusion values"][conclusions[[All, "Input", property]]];
         ];*)
         
         If [!FreeQ[values, _Missing],
@@ -6942,6 +6959,12 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                 "X2" -> (x2 = x + width - 1),
                 "Y2Inverse" -> (sceneHeight - y2 + 1),
                 "X2Inverse" -> (sceneWidth - x2 + 1),
+                (* Default the ZOrder to 0 if not specifies. *)
+                If [MissingQ[object["ZOrder"]],
+                    "ZOrder" -> 0
+                    ,
+                    Nothing
+                ],
                 "Width" -> width,
                 "Height" -> height,
                 "Length" -> Max[width, height],
@@ -9279,6 +9302,31 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 19,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 8, 29}],
+            "SucessCount" -> 49,
+            "Runtime" -> Quantity[15, "Minutes"],
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "1A2E2828",
+            "ImplementationTime" -> Quantity[3.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"445eab21"},
+            "TotalGeneralizedSuccesses" -> 20,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 5
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 29}],
+            "SucessCount" -> 50,
+            "Runtime" -> Quantity[15, "Minutes"],
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "445eab21",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 20,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 5
         |>
@@ -11668,7 +11716,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
     \function ARCRuleForAddedObjects
     
     \calltable
-        ARCRuleForAddedObjects[addedObjects, referenceableOutputObjects] '' Given the "AddedObjects" value for each example, determines whether we support modeling those added objects, and if so returns the rule for them.
+        ARCRuleForAddedObjects[addedObjects, referenceableInputObjects, examles] '' Given the "AddedObjects" value for each example, determines whether we support modeling those added objects, and if so returns the rule for them.
     
     Examples:
     
@@ -11681,7 +11729,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
     \maintainer danielb
 *)
 Clear[ARCRuleForAddedObjects];
-ARCRuleForAddedObjects[addedObjects_List, referenceableOutputObjects_Association, examplesIn_List] :=
+ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
     Module[{examples = examplesIn, counter = 0, addedObjectUUIDs},
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
@@ -11699,15 +11747,23 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableOutputObjects_Association
                     KeyValuePattern["UUID" -> Alternatives @@ addedObjectUUIDs] :> Nothing,
                     {0, Infinity}
                 ];
+                (* HERE10 *)
                 ReturnIfFailure@
                 ARCGeneralizeConclusions[
                     Function[{item},
                         Append[item, "Example" -> ++counter]
                     ] /@ addedObjects,
-                    ReturnIfFailure@
-                    ARCMakeObjectsReferenceable[
-                        examples[[All, "Output"]],
-                        "AdditionalConditions" -> <|"Context" -> "Output"|>
+                    Join[
+                        referenceableInputObjects
+                        (* I don't think this is required. We were previously using it for
+                           31aa019c, but it can use a referenceable input object, and other
+                           examples like 1A2E2828 are needing referenceable input objects
+                           here. *)
+                        (*ReturnIfFailure@
+                        ARCMakeObjectsReferenceable[
+                            examples[[All, "Output"]],
+                            "AdditionalConditions" -> <|"Context" -> "Output"|>
+                        ]*)
                     ],
                     examples
                 ],
@@ -11987,7 +12043,6 @@ ARCFindRulesUsingRotationalNormalization[currentConclusion_, currentUnhandled_, 
             {conclusion, unhandled2} =
                 ReturnIfFailure@
                 ARCFindRules[
-                    Global`djb =
                     ARCNormalizeObjectRotation[
                         conclusionGroup,
                         examples
@@ -12788,7 +12843,9 @@ SqrtButKeepSign[value_] :=
     \function ARCFindOccludedLines
     
     \calltable
-        ARCFindOccludedLines[objects, sceneWidth, sceneHeight] '' Tries to determine what lines are occluded, and forms single objects from their parts, setting ZOrder as appropriate on objects.
+        ARCFindOccludedLines[objects, sceneWidth, sceneHeight] '' Tries to determine what lines/rectangles are occluded, and forms single objects from their parts, setting ZOrder as appropriate on objects.
+    
+    NOTE: This function's name currently refers to "Lines" but has been generalized for lines and rectangles.
     
     Examples:
     
@@ -12801,10 +12858,10 @@ SqrtButKeepSign[value_] :=
     \maintainer danielb
 *)
 Clear[ARCFindOccludedLines];
-ARCFindOccludedLines[scene_ARCScene, objects_List] :=
+ARCFindOccludedLines[scene_ARCScene, background_Integer, objects_List] :=
     Module[
         {
-            allLines,
+            allLinesOrRectangles,
             lineFragments,
             objectsByPixelPosition,
             objectsByUUID,
@@ -12823,43 +12880,70 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
             uuidReplacements = {}
         },
         
-        allLines = Select[
-            objects,
-            ShapeQ[#, "Line"] &
+        (* If an image doesn't have any background color pixels because it is jam packed with
+           objects, then don't look for occlusions, because if we find any, they will likely
+           be false positives. e.g. 25d8a9c8
+           ARCFindOccludedLines-20220829-Q1PSSK *)
+        If [Cases[Flatten[scene[[1]]], background] === {},
+            Return[objects, Module]
         ];
         
-        lineFragments = Select[
-            allLines,
-            And[
-                #["Width"] =!= sceneWidth,
-                #["Height"] =!= sceneHeight
-            ] &
+        allLinesOrRectangles = Select[
+            objects,
+            ARCSupportedOcclusionObjectQ[#] &
+        ];
+        
+        With[{sceneWidth = ImageWidth[scene], sceneHeight = ImageHeight[scene]},
+            lineFragments = Select[
+                allLinesOrRectangles,
+                And[
+                    #["Width"] =!= sceneWidth,
+                    #["Height"] =!= sceneHeight
+                ] &
+            ]
         ];
         
         objectsByPixelPosition = ObjectsByAttribute[objects, "PixelPosition"];
         objectsByUUID = ObjectsByAttribute[objects, "UUID"];
         
         (* Find occlusions. *)
-        occlusionFindings = Function[{line},
-            If [!TrueQ[processed[line["UUID"]]],
-                line -> Flatten[
+        occlusionFindings = Function[{lineOrRectangle},
+            (* If [lineOrRectangle["Position"] === {3, 3} && lineOrRectangle["Width"] === 3,
+                ARCEcho2["OBJECT" -> lineOrRectangle];
+                ARCDebug
+                ,
+                Identity
+            ]@ *)
+            If [And[
+                    !TrueQ[processed[lineOrRectangle["UUID"]]],
+                    (* We're only interested in single-color objects for now.*)
+                    !MissingQ[lineOrRectangle["Color"]]
+                ],
+                lineOrRectangle -> Flatten[
                     Function[{direction},
                         occlusionFindings = ARCFindOccludedLines[
-                            line,
+                            lineOrRectangle,
                             direction,
-                            ARCPositionBeyondLine[line, direction],
+                            ARCPositionBeyondLine[
+                                lineOrRectangle,
+                                {
+                                    lineOrRectangle["Y"],
+                                    lineOrRectangle["X"]
+                                },
+                                direction
+                            ],
                             objectsByPixelPosition,
                             objectsByUUID
                         ];
                         If [occlusionFindings =!= {},
-                            lineFragmentsCombined[line["UUID"]] = True;
+                            lineFragmentsCombined[lineOrRectangle["UUID"]] = True;
                             Function[{occlusionFindingObject},
                                 processed[occlusionFindingObject["UUID"]] = True;
                                 lineFragmentsCombined[occlusionFindingObject["UUID"]] = True
                             ] /@ Values[Cases[occlusionFindings, HoldPattern[Rule]["Fragment", _]]];
                         ];
                         occlusionFindings
-                    ] /@ ARCLineDirections[line]
+                    ] /@ ARCLineDirections[lineOrRectangle]
                 ]
                 ,
                 Nothing
@@ -12868,7 +12952,7 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
         
         (* Process occlusions. *)
         extendedLines = KeyValueMap[
-            Function[{line, theseOcclusionFindings},
+            Function[{lineOrRectangle, theseOcclusionFindings},
                 If [theseOcclusionFindings =!= {},
                     fragments = Cases[theseOcclusionFindings, HoldPattern[Rule]["Fragment", _]][[All, 2]];
                     occludingObjects = Cases[theseOcclusionFindings, HoldPattern[Rule]["Occlusion", _]][[All, 2]];
@@ -12877,10 +12961,10 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
                     objects. *)
                     AppendTo[
                         orderings,
-                        (line["UUID"] -> #["UUID"]) & /@ occludingObjects
+                        (lineOrRectangle["UUID"] -> #["UUID"]) & /@ occludingObjects
                     ];
                     
-                    components = Prepend[fragments, line];
+                    components = Prepend[fragments, lineOrRectangle];
                     
                     y = Min[components[[All, "Y"]]];
                     x = Min[components[[All, "X"]]];
@@ -12891,16 +12975,22 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
                     (* Combine the fragments into a single object. *)
                     newObject = ARCImageRegionToObject[
                         <|
-                            "Image" -> ARCInferObjectImage[
-                                <|"Name" -> "Line"|>,
-                                line["Color"],
-                                x2 - x + 1,
-                                y2 - y + 1
-                            ][[1]],
+                            "Image" ->
+                                ReturnIfFailure[
+                                    ARCInferObjectImage[
+                                        Replace[
+                                            lineOrRectangle["Shape"],
+                                            KeyValuePattern["Name" -> "Pixel"] -> <|"Name" -> "Line"|>
+                                        ],
+                                        lineOrRectangle["Color"],
+                                        x2 - x + 1,
+                                        y2 - y + 1
+                                    ]
+                                ][[1]],
                             "PixelPositions" -> Sort[
                                 Flatten[Table[{thisY, thisX}, {thisY, y, y2}, {thisX, x, x2}], 1]
                             ],
-                            "Color" -> line["Color"],
+                            "Color" -> lineOrRectangle["Color"],
                             "Position" -> {y, x}
                         |>,
                         ImageWidth[scene],
@@ -12949,46 +13039,80 @@ ARCFindOccludedLines[scene_ARCScene, objects_List] :=
         ]
     ]
 
-ARCFindOccludedLines[line_Association, direction_List, nextPosition_List, objectsByPixelPosition_Association, objectsByUUID_Association] :=
-    Module[{nextObject, nextNextObject},
-        XEcho["ARCFindOccludedLines" -> direction -> nextPosition];
+ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_List, objectsByPixelPosition_Association, objectsByUUID_Association] :=
+    Module[{nextObject, nextNextPosition, nextNextObject, comparisonProperty},
+        ARCEcho3["ARCFindOccludedLines" -> direction -> nextPosition];
         nextObject = objectsByPixelPosition[nextPosition];
-        If [!MissingQ[nextObject],
-            (* There is an object here beyond the line in this direction. *)
-            nextObject = objectsByUUID[nextObject];
-            If [And[
-                    ShapeQ[nextObject, "Line"],
-                    (* For now, we'll only consider there to be an occlusion if the other line
-                       is perpendicular to our line. *)
-                    line["Shape", "Angle"] =!= nextObject["Shape", "Angle"]
+        If [And[
+                !MissingQ[nextObject],
+                AssociationQ[nextObject = objectsByUUID[nextObject]],
+                Switch[
+                    direction,
+                    {-1 | 1, 0},
+                        And[
+                            nextObject["X"] <= lineOrRectangle["X"],
+                            nextObject["X2"] >= lineOrRectangle["X2"]
+                        ],
+                    {0, -1 | 1},
+                        And[
+                            nextObject["Y"] <= lineOrRectangle["Y"],
+                            nextObject["Y2"] >= lineOrRectangle["Y2"]
+                        ]
                 ],
-                nextNextObject = objectsByPixelPosition[nextPosition + direction];
+                (* We will for now disallow a pixel to be occluded by a line where the line
+                   is oriented not "across" the direction of occlusion but "along" it.
+                   If we don't do this, it breaks for example 253bf280.
+                   ARCFindOccludedLines-20220829-W6RA8O *)
+                Not[
+                    And[
+                        ShapeQ[lineOrRectangle, "Pixel"],
+                        ShapeQ[nextObject, "Line"],
+                        Or[
+                            Abs[direction[[1]]] === 1 && nextObject["Shape", "Angle"] === 90,
+                            Abs[direction[[2]]] === 1 && nextObject["Shape", "Angle"] === 0
+                        ]
+                    ]
+                ]
+            ],
+            (* There is an object here beyond the line/rectangle in this direction. *)
+            If [ARCSupportedOcclusionObjectQ[nextObject],
+                ARCEcho3["nextObject" -> SimplifyObjects[nextObject]];
+                nextNextPosition = ARCPositionBeyondLine[
+                    nextObject,
+                    nextPosition,
+                    direction
+                ];
+                nextNextObject = objectsByPixelPosition[nextNextPosition];
                 If [!MissingQ[nextNextObject],
                     nextNextObject = objectsByUUID[nextNextObject];
-                    XARCEcho2["nextNextObject" -> SimplifyObjects[nextNextObject]];
+                    ARCEcho3["nextNextObject" -> SimplifyObjects[nextNextObject]];
                     If [And[
-                            nextNextObject["Color"] === line["Color"],
-                            Or[
-                                And[
-                                    ShapeQ[nextNextObject, "Line"],
-                                    line["Shape", "Angle"] === nextNextObject["Shape", "Angle"]
-                                ],
-                                ShapeQ[nextNextObject, "Pixel"]
+                            nextNextObject["Color"] === lineOrRectangle["Color"],
+                            And[
+                                ARCSupportedOcclusionObjectQ[nextNextObject],
+                                comparisonProperty =
+                                    If [Abs[direction[[1]]] === 1,
+                                        "Width"
+                                        ,
+                                        "Height"
+                                    ];
+                                lineOrRectangle[comparisonProperty] === nextNextObject[comparisonProperty]
                             ]
                         ],
-                        (* We've found what appears to be another fragment of our line. *)
+                        ARCEcho3[SimplifyObjects[lineOrRectangle] -> SimplifyObjects[nextNextObject]];
+                        (* We've found what appears to be another fragment of our line/rectangle. *)
                         Return[
                             {
                                 "Occlusion" -> nextObject,
                                 "Fragment" -> nextNextObject,
                                 Sequence@@
                                 ARCFindOccludedLines[
-                                    line,
+                                    lineOrRectangle,
                                     direction,
-                                    If [ShapeQ[nextNextObject, "Pixel"],
-                                        nextNextObject["Position"] + direction
-                                        ,
-                                        ARCPositionBeyondLine[nextNextObject, direction]
+                                    ARCPositionBeyondLine[
+                                        nextNextObject,
+                                        nextNextPosition,
+                                        direction
                                     ],
                                     objectsByPixelPosition,
                                     objectsByUUID
@@ -13008,7 +13132,9 @@ ARCFindOccludedLines[line_Association, direction_List, nextPosition_List, object
     \function ARCPositionBeyondLine
     
     \calltable
-        ARCPositionBeyondLine[line, direction] '' Given a line object and a direction, returns the next pixel position in that direction beyond the line.
+        ARCPositionBeyondLine[object, position, direction] '' Given an object, a position within that object, and a direction, returns the next pixel position in that direction beyond the object.
+    
+    NOTE: The function's name refers to "Line" but we've generalized this and are using it for rectangular objects in general.
     
     Examples:
     
@@ -13021,29 +13147,29 @@ ARCFindOccludedLines[line_Association, direction_List, nextPosition_List, object
     \maintainer danielb
 *)
 Clear[ARCPositionBeyondLine];
-ARCPositionBeyondLine[line_Association, direction_List] :=
+ARCPositionBeyondLine[object_Association, position_List, direction_List] :=
     Module[{},
         Switch[
             direction,
             {1, 0},
                 {
-                    line["Y2"] + 1,
-                    line["X"]
+                    object["Y2"] + 1,
+                    position[[2]]
                 },
             {-1, 0},
                 {
-                    line["Y"] - 1,
-                    line["X"]
+                    object["Y"] - 1,
+                    position[[2]]
                 },
             {0, 1},
                 {
-                    line["Y"],
-                    line["X2"] + 1
+                    position[[1]],
+                    object["X2"] + 1
                 },
             {0, -1},
                 {
-                    line["Y"],
-                    line["X"] - 1
+                    position[[1]],
+                    object["X"] - 1
                 }
         ]
     ]
@@ -13065,11 +13191,19 @@ ARCPositionBeyondLine[line_Association, direction_List] :=
     \maintainer danielb
 *)
 Clear[ARCLineDirections];
-ARCLineDirections[line_] :=
-    If [line["Width"] === 1,
-        {{-1, 0}, {1, 0}}
+ARCLineDirections[object_] :=
+    If [ShapeQ[object, "Line"],
+        If [object["Width"] < object["Height"],
+            {{-1, 0}, {1, 0}}
+            ,
+            {{0, -1}, {0, 1}}
+        ]
         ,
-        {{0, -1}, {0, 1}}
+        (* If we have a rectangle, we want to look in all directions, because we can't use
+           the 'dominant' dimension (X vs Y) to determine which direction the rectangle
+           might be occluded in. And in theory the final shape could be an "L" or a "+",
+           so it's fine to look in all four directions. *)
+        {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
     ]
 
 (*!
@@ -13089,7 +13223,7 @@ ARCLineDirections[line_] :=
     \maintainer danielb
 *)
 Clear[ShapeQ];
-ShapeQ[object_Association, shapeName_String] :=
+ShapeQ[object_Association, shapeName_] :=
     MatchQ[
         object["Shape"],
         KeyValuePattern["Name" -> shapeName]
@@ -13419,6 +13553,16 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
+        If [!MissingQ[patternIn["ZOrder"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "ZOrder.InverseRank",
+                    "ZOrder.Rank"
+                }
+            ]
+        ];
+        
         pattern
     ]
 
@@ -13627,6 +13771,38 @@ ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_Integer] :=
                 1 ;; prunedHeight,
                 1 ;; prunedWidth
             ]]
+        ]
+    ]
+
+(*!
+    \function ARCSupportedOcclusionObjectQ
+    
+    \calltable
+        ARCSupportedOcclusionObjectQ[object] '' Returns True if this object shape is one we support wrt looking for occlusions.
+    
+    Examples:
+    
+    ARCSupportedOcclusionObjectQ[<|"Shape" -> <|"Name" -> "Square", "Filled" -> True|>|>]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSupportedOcclusionObjectQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCSupportedOcclusionObjectQ];
+ARCSupportedOcclusionObjectQ[object_Association] :=
+    Or[
+        ShapeQ[object, "Line" | "Pixel"],
+        MatchQ[
+            object["Shape"],
+            KeyValuePattern[
+                {"Name" -> "Rectangle" | "Square", "Filled" -> True}
+            ]
         ]
     ]
 

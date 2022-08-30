@@ -944,3 +944,53 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220828-V1L3I7"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCFindObjectMapping[
+                Daniel`ARC`ARCParseFile[file = "1A2E2828"]["Train", 1],
+                "FormMultiColorCompositeObjects" -> False
+            ]
+        ]
+    ]
+    ,
+    <|
+        "AddObjects" -> <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {<|"Image" -> Daniel`ARC`ARCScene[{{6}}], "Position" -> {1, 1}|>}
+            |>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}}
+            ],
+            "Position" -> {1, 2}
+        |> -> Missing[
+            "NotFound"
+        ],
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}, {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}}
+            ],
+            "Position" -> {3, 1}
+        |> -> Missing[
+            "NotFound"
+        ],
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{8}, {8}, {8}, {8}, {8}, {8}, {8}, {8}}],
+            "Position" -> {1, 8}
+        |> -> Missing[
+            "NotFound"
+        ],
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6}}],
+            "Position" -> {6, 1}
+        |> -> Missing[
+            "NotFound"
+        ]
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220829-2O97OB"
+]

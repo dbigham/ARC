@@ -11,7 +11,9 @@
 *)
 
 Test[
-    Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X2" -> 5|>, {0, 1}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X2" -> 5|>, {3, 5}, {0, 1}]
+    ]
     ,
     {3, 6}
     ,
@@ -19,7 +21,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X" -> 3|>, {0, -1}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X" -> 3|>, {3, 3}, {0, -1}]
+    ]
     ,
     {3, 2}
     ,
@@ -27,7 +31,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X" -> 3|>, {-1, 0}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCPositionBeyondLine[<|"Y" -> 3, "X" -> 3|>, {3, 3}, {-1, 0}]
+    ]
     ,
     {2, 3}
     ,
@@ -35,7 +41,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCPositionBeyondLine[<|"Y2" -> 5, "X" -> 3|>, {1, 0}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCPositionBeyondLine[<|"Y2" -> 5, "X" -> 3|>, {5, 3}, {1, 0}]
+    ]
     ,
     {6, 3}
     ,

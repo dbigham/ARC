@@ -240,11 +240,12 @@ Test[
             "Height" -> 1,
             "Components" -> {
                 Repeated[
-                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "Y" -> "Same"|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "ZOrder" -> 0, "Y" -> "Same"|>,
                     {2}
                 ]
             },
             "Color" -> 8,
+            "ZOrder" -> 0,
             "FilledArea" -> 2
         |> -> <|
             "Transform" -> <|
@@ -268,11 +269,12 @@ Test[
             "Width" -> 1,
             "Components" -> {
                 Repeated[
-                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "X" -> "Same"|>,
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8}}], "ZOrder" -> 0, "X" -> "Same"|>,
                     {2}
                 ]
             },
             "Color" -> 8,
+            "ZOrder" -> 0,
             "FilledArea" -> 2
         |> -> <|
             "Transform" -> <|
@@ -543,9 +545,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "31aa019c"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "31aa019c"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -561,23 +569,11 @@ Test[
                         <|
                             "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, 2}, {2, 2, 2}}],
                             "Y" -> Inactive[Plus][
-                                Daniel`ARC`ObjectValue[
-                                    <|
-                                        "Shape" -> <|"Name" -> "Pixel"|>,
-                                        "Context" -> "Output"
-                                    |>,
-                                    "Y"
-                                ],
+                                Daniel`ARC`ObjectValue[<|"ColorUseCount" -> 1|>, "Y"],
                                 -1
                             ],
                             "X" -> Inactive[Plus][
-                                Daniel`ARC`ObjectValue[
-                                    <|
-                                        "Shape" -> <|"Name" -> "Pixel"|>,
-                                        "Context" -> "Output"
-                                    |>,
-                                    "X"
-                                ],
+                                Daniel`ARC`ObjectValue[<|"ColorUseCount" -> 1|>, "X"],
                                 -1
                             ]
                         |>
@@ -859,10 +855,15 @@ Test[
                 "Type" -> "Group",
                 "Components" -> {
                     Repeated[
-                        <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                        <|
+                            "Shape" -> <|"Name" -> "Pixel"|>,
+                            "ZOrder" -> 0,
+                            "Image" -> "Same"
+                        |>,
                         {2}
                     ]
                 },
+                "ZOrder" -> 0,
                 "AspectRatio" -> 1,
                 "FilledArea" -> 2,
                 "VerticalLineSymmetry" -> False,
@@ -898,10 +899,11 @@ Test[
             "Type" -> "Group",
             "Components" -> {
                 Repeated[
-                    <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same"|>,
+                    <|"Shape" -> <|"Name" -> "Pixel"|>, "ZOrder" -> 0, "Image" -> "Same"|>,
                     {2}
                 ]
             },
+            "ZOrder" -> 0,
             "FilledArea" -> 2,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
@@ -937,15 +939,18 @@ Test[
             "Height" -> 1,
             "Components" -> {
                 Repeated[
-                    <|"Shape" -> <|"Name" -> "Pixel"|>, "Image" -> "Same", "Y" -> "Same"|>,
+                    <|
+                        "Shape" -> <|"Name" -> "Pixel"|>,
+                        "ZOrder" -> 0,
+                        "Image" -> "Same",
+                        "Y" -> "Same"
+                    |>,
                     {2}
                 ]
             },
+            "ZOrder" -> 0,
             "FilledArea" -> 2,
-            "VerticalLineSymmetry" -> True,
-            "HorizontalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False,
-            "Angle" -> 0
+            "VerticalLineSymmetry" -> True
         |> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>
         |>
@@ -1159,12 +1164,14 @@ Test[
                     Repeated[
                         <|
                             "Shape" -> <|"Name" -> "Pixel"|>,
+                            "ZOrder" -> 0,
                             "Image" -> "Same",
                             "Y" -> "Same"
                         |>,
                         {2}
                     ]
                 },
+                "ZOrder" -> 0,
                 "FilledArea" -> 2
             |> -> <|
                 "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
@@ -1177,12 +1184,14 @@ Test[
                     Repeated[
                         <|
                             "Shape" -> <|"Name" -> "Pixel"|>,
+                            "ZOrder" -> 0,
                             "Image" -> "Same",
                             "X" -> "Same"
                         |>,
                         {2}
                     ]
                 },
+                "ZOrder" -> 0,
                 "FilledArea" -> 2
             |> -> <|
                 "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>
@@ -1191,4 +1200,35 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220829-INX45J"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1A2E2828"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Pixel"|>,
+                            "Color" -> Daniel`ARC`ObjectValue[<|"ZOrder" -> 0|>, "Color"],
+                            "X" -> 1,
+                            "Y" -> 1,
+                            "X2" -> 1,
+                            "Y2" -> 1
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220829-P274J4"
 ]
