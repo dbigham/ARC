@@ -489,3 +489,43 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220829-VFO5ML"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["BE94B721"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220902-LPF21N"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["4258a5f9"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220902-6VIH3L"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["810b9b61"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220902-VVVTI8"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["913fb3ed"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220902-Y7GNJV"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["a61ba2ce"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220902-1R10AF"
+]

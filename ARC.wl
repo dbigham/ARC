@@ -366,6 +366,8 @@ ARCContiguousSubImageQ::usage = "ARCContiguousSubImageQ  "
 
 ARCPixelColor::usage = "ARCPixelColor  "
 
+ARCFormExceptRules::usage = "ARCFormExceptRules  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3227,6 +3229,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
     Module[
         {
             examples = examplesIn,
+            allObjects,
             returnRules,
             referenceableInputObjects,
             referenceableOutputObjects,
@@ -3251,7 +3254,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             Nothing
                         ],
                         "Rules" -> Join[
-                            ARCCleanRules[rules],
+                            ARCCleanRules[rules, allObjects],
                             additionalRules
                         ],
                         "Examples" -> examples,
@@ -3269,11 +3272,15 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ]
             ];
         
-        examples = ARCParseInputAndOutputScenes[
-            examplesIn,
-            "FormMultiColorCompositeObjects" ->
-                OptionValue["FormMultiColorCompositeObjects"] =!= False
-        ];
+        examples =
+            ReturnIfFailure@
+            ARCParseInputAndOutputScenes[
+                examplesIn,
+                "FormMultiColorCompositeObjects" ->
+                    OptionValue["FormMultiColorCompositeObjects"] =!= False
+            ];
+        
+        allObjects = Flatten[examples[[All, "Input", "Objects"]]];
         
         (*ARCEcho2[examples[[1]]];
         Throw["HERE"];*)
@@ -3478,7 +3485,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 Replace[
                     ReturnIfFailure@
                     ARCChooseBestRuleSet[
-                        ReturnIfFailure[ARCCleanRules[#]] & /@ ruleSets
+                        ReturnIfFailure[ARCCleanRules[#, allObjects]] & /@ ruleSets
                     ],
                     res: Except[_List] :> ReturnFailure[
                         "InvalidRuleResult",
@@ -3517,11 +3524,13 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             "Examples" -> examples,
             "ObjectMappings" -> objectMappings,
             "PartialRules" ->
-                ARCCleanRules@
-                Reverse@
-                SortBy[
-                    ruleFindings,
-                    Length[#["MappedInputObjects"]] &
+                ARCCleanRules[
+                    Reverse@
+                    SortBy[
+                        ruleFindings,
+                        Length[#["MappedInputObjects"]] &
+                    ],
+                    allObjects
                 ]
         |>
     ]
@@ -4975,8 +4984,8 @@ ARCParseExamples[examples_List] :=
             Sett[
                 example,
                 {
-                    "Input" -> ARCParseScene[example["Input"]],
-                    "Output" -> ARCParseScene[example["Output"]]
+                    "Input" -> ReturnIfFailure[ARCParseScene[example["Input"]]],
+                    "Output" -> ReturnIfFailure[ARCParseScene[example["Output"]]]
                 }
             ]
         ] /@ examples
@@ -8266,8 +8275,8 @@ ProcessExamples[files_List] :=
     \maintainer danielb
 *)
 Clear[ARCNotebook];
-ARCNotebook[file_String] :=
-    Module[{nb, exampleDetails, workingSectionCells},
+ARCNotebook[fileIn_String] :=
+    Module[{file = ToLowerCase[fileIn], nb, exampleDetails, workingSectionCells},
         
         exampleDetails = ReturnIfFailure[ARCResolveExample[file]];
         
@@ -9526,8 +9535,67 @@ ARCTaskLog[] :=
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "95990924",
             "ImplementationTime" -> Quantity[4.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"4258a5f9", "913fb3ed", "a61ba2ce"},
+            "TotalGeneralizedSuccesses" -> 23,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 30}],
+            "SucessCount" -> 51,
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "4258a5f9",
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 20,
+            "TotalGeneralizedSuccesses" -> 23,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 30}],
+            "SucessCount" -> 52,
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "913fb3ed",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 23,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 8, 30}],
+            "SucessCount" -> 53,
+            "CodeLength" -> 13805,
+            "ExampleImplemented" -> "a61ba2ce",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 23,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 2}],
+            "SucessCount" -> 54,
+            "CodeLength" -> 14359,
+            "ExampleImplemented" -> "BE94B721",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 23,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 2}],
+            "SucessCount" -> 55,
+            "CodeLength" -> 14359,
+            "ExampleImplemented" -> "810b9b61",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 24,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 7
         |>
@@ -9682,7 +9750,7 @@ ARCTaskMarkdown[name_String] :=
     \maintainer danielb
 *)
 Clear[ARCCleanRules];
-ARCCleanRules[rulesIn_List] :=
+ARCCleanRules[rulesIn_List, objects_List] :=
     Module[{rules = rulesIn, condition, conclusion},
         rules = Replace[
             rules,
@@ -9751,6 +9819,8 @@ ARCCleanRules[rulesIn_List] :=
                     rule
                 ]
             ] /@ rules;
+        
+        rules = ARCFormExceptRules[rules, objects];
         
         rules
     ]
@@ -10204,6 +10274,7 @@ ARCInferObjectImage[
                 ReturnFailure[
                     "UnsupportedLine",
                     "Only vertical, horizontal, 45 degree, and 135 degree lines are currently supported.",
+                    "Shape" -> shape,
                     "Width" -> width,
                     "Height" -> height
                 ]
@@ -13123,20 +13194,22 @@ ARCFindOccludedLines[scene_ARCScene, background_Integer, objects_List] :=
                 ],
                 lineOrRectangle -> Flatten[
                     Function[{direction},
-                        occlusionFindings = ARCFindOccludedLines[
-                            lineOrRectangle,
-                            direction,
-                            ARCPositionBeyondLine[
+                        occlusionFindings =
+                            ReturnIfFailure@
+                            ARCFindOccludedLines[
                                 lineOrRectangle,
-                                {
-                                    lineOrRectangle["Y"],
-                                    lineOrRectangle["X"]
-                                },
-                                direction
-                            ],
-                            objectsByPixelPosition,
-                            objectsByUUID
-                        ];
+                                direction,
+                                ARCPositionBeyondLine[
+                                    lineOrRectangle,
+                                    {
+                                        lineOrRectangle["Y"],
+                                        lineOrRectangle["X"]
+                                    },
+                                    direction
+                                ],
+                                objectsByPixelPosition,
+                                objectsByUUID
+                            ];
                         If [occlusionFindings =!= {},
                             lineFragmentsCombined[lineOrRectangle["UUID"]] = True;
                             Function[{occlusionFindingObject},
@@ -13307,7 +13380,8 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
                             {
                                 "Occlusion" -> nextObject,
                                 "Fragment" -> nextNextObject,
-                                Sequence@@
+                                Sequence @@
+                                ReturnIfFailure@
                                 ARCFindOccludedLines[
                                     lineOrRectangle,
                                     direction,
@@ -14171,6 +14245,164 @@ ARCPixelColor[image_List, position_List] :=
             Missing["OutOfBounds"]
             ,
             image[[Sequence @@ position]]
+        ]
+    ]
+
+(*!
+    \function ARCFormExceptRules
+    
+    \calltable
+        ARCFormExceptRules[rules, objects] '' Given some rules, look for cases where a rule has an Alternatives for a property that could be turned into an Except.
+    
+    Examples:
+    
+    ARCFormExceptRules[
+        {
+            <|"FilledArea.Rank" -> 1|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|"FilledArea.Rank" -> 3 | 2|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        },
+        {<|"FilledArea.Rank" -> 1|>, <|"FilledArea.Rank" -> 2|>, <|"FilledArea.Rank" -> 3|>}
+    ]
+    
+    ===
+    
+    {
+        <|"FilledArea.Rank" -> 1|> -> <|
+            "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+        |>,
+        <|"FilledArea.Rank" -> Except[1]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFormExceptRules]
+    
+    \maintainer danielb
+*)
+Clear[ARCFormExceptRules];
+ARCFormExceptRules[rulesIn_List, objects_List] :=
+    Module[
+        {
+            propertiesUsedInRuleConditions,
+            conditionValuesUsingAlternatives,
+            conditionValuesNotUsingAlternatives,
+            allValuesUsedInObjects,
+            allValuesUsedInConditions,
+            allValuesUsedInConditionsUsingAlternatives
+        },
+        
+        rules = Cases[rulesIn, _Rule];
+        
+        propertiesUsedInRuleConditions =
+            DeleteDuplicates[Flatten[Keys /@ rules[[All, 1]]]];
+        
+        replacements =
+            Function[{property},
+                
+                (* TODO: Support other types like Color (etc). *)
+                If [$properties[property, "Type"] === "Integer",
+                    
+                    conditionsValuesForProperty = Cases[
+                        rules,
+                        HoldPattern[Rule][KeyValuePattern[property -> value_], _] :> (
+                            value
+                        )
+                    ];
+                    
+                    (* The values of conditions involving this property which make use of
+                       Alternatives. *)
+                    conditionValuesUsingAlternatives = Cases[
+                        conditionsValuesForProperty,
+                        _Alternatives | HoldPattern[Except][_Alternatives]
+                    ];
+                    
+                    (* The values of conditions involving this property which do _not_ make use
+                       of Alternatives. *)
+                    conditionValuesNotUsingAlternatives = Complement[
+                        conditionsValuesForProperty,
+                        conditionValuesUsingAlternatives
+                    ];
+                    
+                    Which[
+                        And[
+                            MatchQ[conditionValuesUsingAlternatives, {_Alternatives}],
+                            conditionValuesNotUsingAlternatives =!= {}
+                        ],
+                            
+                            allValuesUsedInObjects =
+                                DeleteDuplicates[objects[[All, property]]];
+                            
+                            allValuesUsedInConditionsUsingAlternatives =
+                                DeleteDuplicates@
+                                Flatten[
+                                    List @@@ conditionValuesUsingAlternatives
+                                ];
+                            
+                            allValuesUsedInConditions =
+                                DeleteDuplicates@
+                                Join[
+                                    allValuesUsedInConditionsUsingAlternatives,
+                                    conditionValuesNotUsingAlternatives
+                                ];
+                            
+                            If [And[
+                                    (* The values used by rule conditions cover all values for this
+                                       property seen in objects. *)
+                                    Complement[allValuesUsedInObjects, allValuesUsedInConditions] === {},
+                                    (* The alternatives cover a contiguous range of integers. *)
+                                    SameQ[
+                                        Sort[DeleteMissing[allValuesUsedInConditionsUsingAlternatives]],
+                                        Range[
+                                            Min[DeleteMissing[allValuesUsedInConditionsUsingAlternatives]],
+                                            Max[DeleteMissing[allValuesUsedInConditionsUsingAlternatives]]
+                                        ]
+                                    ]
+                                ],
+                                (* Replacement rule. *)
+                                Rule[
+                                    property -> Verbatim[conditionValuesUsingAlternatives[[1]]],
+                                    property -> Except[
+                                        Replace[
+                                            conditionValuesNotUsingAlternatives,
+                                            {
+                                                {_} :> conditionValuesNotUsingAlternatives[[1]],
+                                                {__} :> Alternatives @@ conditionValuesNotUsingAlternatives
+                                            }
+                                        ]
+                                    ]
+                                ]
+                                ,
+                                Nothing
+                            ],
+                        True,
+                            Nothing
+                    ],
+                    Nothing
+                ]
+                
+            ] /@ propertiesUsedInRuleConditions;
+        
+        (* Apply the replacements to the rules. *)
+        If [MatchQ[replacements, {_, ___}],
+            Replace[
+                rulesIn,
+                HoldPattern[Rule][pattern_Association, conclusion_] :> (
+                    Rule[
+                        Association@
+                        Replace[
+                            Normal[pattern],
+                            replacements,
+                            {1}
+                        ],
+                        conclusion
+                    ]
+                ),
+                {1}
+            ]
+            ,
+            rulesIn
         ]
     ]
 

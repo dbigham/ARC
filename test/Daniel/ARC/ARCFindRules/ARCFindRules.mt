@@ -485,7 +485,7 @@ Test[
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
             <|"Width" -> 3|> -> <|"Color" -> 5|>,
-            <|"Width" -> 1 | 2|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+            <|"Width" -> Except[3]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
         }
     |>
     ,
@@ -1262,4 +1262,144 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20220830-W6FS72"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "BE94B721"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"FilledArea.Rank" -> 1|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|"FilledArea.Rank" -> Except[1]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220902-YWOP1G"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "4258a5f9"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220902-776QLJ"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "913fb3ed"]["Train"]]
+    ]
+    ,
+    {
+        <|"Image" -> Daniel`ARC`ARCScene[{{8}}]|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, -1, 4}, {4, 4, 4}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{3}}]|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {6, -1, 6}, {6, 6, 6}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>,
+        <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220902-ATD7NW"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a61ba2ce"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 3|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 3|>|>
+            |>,
+            <|"Shape" -> <|"Name" -> "L"|>|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 1|>|>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220902-II1FMH"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "810b9b61"]["Train"]]
+    ]
+    ,
+    {
+        <|"Shapes" -> <|"Name" -> "Rectangle", "Filled" -> False|>|> -> <|"Color" -> 3|>,
+        <|"Shapes" -> Except[<|"Name" -> "Rectangle", "Filled" -> False|>]|> -> <|
+            "Same" -> True
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220902-LN1NO5"
 ]

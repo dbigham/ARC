@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     13358,        310]
-NotebookOptionsPosition[      7262,        161]
-NotebookOutlinePosition[     12882,        300]
-CellTagsIndexPosition[     12839,        297]
+NotebookDataLength[     13641,        316]
+NotebookOptionsPosition[      7544,        167]
+NotebookOutlinePosition[     13164,        306]
+CellTagsIndexPosition[     13121,        303]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -57,10 +57,10 @@ Cell[BoxData[{
  CellChangeTimes->{{3.8689646210938005`*^9, 3.868964627988933*^9}, {
    3.8700890850167384`*^9, 3.870089087227268*^9}, 3.870089122019865*^9},
  CellLabel->
-  "In[968]:=",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa"],
+  "In[420]:=",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa"],
 
 Cell[BoxData["\<\"## Tasks Implemented\\n\\n### Core ARC Training Tasks \
-(30)\\n\\n* [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)\\n* \
+(31)\\n\\n* [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)\\n* \
 [3c9b0459](TaskNotes/3c9b0459/notes.md)\\n* \
 [1caeab9d](TaskNotes/1caeab9d/notes.md)\\n* \
 [b60334d2](TaskNotes/b60334d2/notes.md)\\n* \
@@ -89,7 +89,8 @@ Cell[BoxData["\<\"## Tasks Implemented\\n\\n### Core ARC Training Tasks \
 [72CA375D](TaskNotes/72CA375D/notes.md)\\n* \
 [A79310A0](TaskNotes/A79310A0/notes.md)\\n* \
 [40853293](TaskNotes/40853293/notes.md)\\n* \
-[95990924](TaskNotes/95990924/notes.md)\\n\\n### Personally Created Training \
+[95990924](TaskNotes/95990924/notes.md)\\n* \
+[BE94B721](TaskNotes/BE94B721/notes.md)\\n\\n### Personally Created Training \
 Tasks (12)\\n\\n* [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)\\n* \
 [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)\\n* \
 [jnohuorzh](TaskNotes/jnohuorzh/notes.md)\\n* \
@@ -102,7 +103,7 @@ md)\\n* [n1hczotml](TaskNotes/n1hczotml/notes.md)\\n* \
 [ifmyulnv8-dynamic-shape](TaskNotes/ifmyulnv8-dynamic-shape/notes.md)\\n* \
 [referenceable-components](TaskNotes/referenceable-components/notes.md)\\n* \
 [178fcbfb-easier](TaskNotes/178fcbfb-easier/notes.md)\\n\\n## Tasks Passing \
-via Generalization\\n\\n### Training Tasks (20)\\n\\nThe following ARC \
+via Generalization\\n\\n### Training Tasks (24)\\n\\nThe following ARC \
 training tasks started passing after some different task was \
 implemented.\\n\\n* [ea32f347](TaskNotes/ea32f347/notes.md)\\n* \
 [5521c0d9](TaskNotes/5521c0d9/notes.md)\\n* \
@@ -123,7 +124,11 @@ implemented.\\n\\n* [ea32f347](TaskNotes/ea32f347/notes.md)\\n* \
 [f8ff0b80](TaskNotes/f8ff0b80/notes.md)\\n* \
 [1cf80156](TaskNotes/1cf80156/notes.md)\\n* \
 [23b5c85d](TaskNotes/23b5c85d/notes.md)\\n* \
-[445eab21](TaskNotes/445eab21/notes.md)\\n\\n### Evaluation Tasks \
+[445eab21](TaskNotes/445eab21/notes.md)\\n* \
+[4258a5f9](TaskNotes/4258a5f9/notes.md)\\n* \
+[913fb3ed](TaskNotes/913fb3ed/notes.md)\\n* \
+[a61ba2ce](TaskNotes/a61ba2ce/notes.md)\\n* \
+[810b9b61](TaskNotes/810b9b61/notes.md)\\n\\n### Evaluation Tasks \
 (7)\\n\\nThe following ARC evaluation tasks are passing. Evaluation tasks \
 have not been analyzed or implemented specifically.\\n\\n* \
 [84f2aca1](TaskNotes/84f2aca1/notes.md)\\n* \
@@ -152,9 +157,10 @@ have not been analyzed or implemented specifically.\\n\\n* \
    3.8706410115172105`*^9, 3.8706987959489636`*^9, 3.8707206958617334`*^9, {
    3.8707286172729034`*^9, 3.870728626638069*^9}, 3.870762704439003*^9, 
    3.8707681300086365`*^9, 3.87081708550628*^9, 3.8708788851319256`*^9, 
-   3.8708789624197826`*^9, 3.8709047499394894`*^9, 3.8709048739214773`*^9},
+   3.8708789624197826`*^9, 3.8709047499394894`*^9, 3.8709048739214773`*^9, 
+   3.8711355462699394`*^9, 3.8711356200385323`*^9},
  CellLabel->
-  "Out[972]=",ExpressionUUID->"f8956439-8900-4192-b826-ece32addeade"]
+  "Out[424]=",ExpressionUUID->"985976ab-00c2-42b2-bb85-f1cbb06c798d"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -308,7 +314,7 @@ Cell[944, 33, 79, 0, 67, "Section",ExpressionUUID->"578486c2-b286-42c7-bbc9-f764
 Cell[CellGroupData[{
 Cell[1048, 37, 859, 22, 108, "Code",ExpressionUUID->"a2a4ec1e-61cd-497c-a140-dda8f4f720fa",
  InitializationCell->False],
-Cell[1910, 61, 5312, 95, 1794, "Output",ExpressionUUID->"f8956439-8900-4192-b826-ece32addeade"]
+Cell[1910, 61, 5594, 101, 1894, "Output",ExpressionUUID->"985976ab-00c2-42b2-bb85-f1cbb06c798d"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
