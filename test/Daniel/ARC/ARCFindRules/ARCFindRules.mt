@@ -1403,3 +1403,16 @@ Test[
     ,
     TestID -> "ARCFindRules-20220902-LN1NO5"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "ed36ccf7"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20220902-DZQDJD"
+]

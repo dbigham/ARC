@@ -994,3 +994,27 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220829-2O97OB"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCFindObjectMapping[
+                Daniel`ARC`ARCParseFile[file = "ed36ccf7"]["Train", 2],
+                "SingleObject" -> True
+            ]
+        ]
+    ]
+    ,
+    <|
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {-1, -1, -1}, {6, 6, -1}}],
+            "Position" -> {1, 1}
+        |> -> <|
+            "Image" -> Daniel`ARC`ARCScene[{{6, -1, -1}, {6, -1, 6}, {6, -1, 6}}],
+            "Position" -> {1, 1},
+            "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220902-PIVYPF"
+]

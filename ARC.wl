@@ -368,6 +368,10 @@ ARCPixelColor::usage = "ARCPixelColor  "
 
 ARCFormExceptRules::usage = "ARCFormExceptRules  "
 
+ARCObjectFromAllPixels::usage = "ARCObjectFromAllPixels  "
+
+ARCObjectImageShape::usage = "ARCObjectImageShape  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -737,6 +741,7 @@ Clear[ARCParseScene];
 Options[ARCParseScene] =
 {
     "FormMultiColorCompositeObjects" -> True,               (*< Whether connected single-color objects should be combined to form multi-color composite objects. If set to Automatic, the OtherScene option will be used to help make more informed decisions. *)
+    "SingleObject" -> False,                                (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "OtherScene" -> Null,                                   (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
     "SingleColorObjects" -> Automatic,                      (*< If the single color objects have already been determined, they can be passed in to save time. *)
     "InferPropertiesThatRequireFullObjectList" -> True,     (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
@@ -753,37 +758,43 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
         ];
         
-        objects =
-            ReturnIfFailure@
-            ARCParseScene[scene, background, opts];
-        
-        notableSubImages =
-            Replace[
-                OptionValue["NotableSubImages"],
-                Automatic :>
-                    ReturnIfFailure@
-                    ARCNotableSubImages[objects, ImageWidth[scene], ImageHeight[scene]]
-            ];
-        
-        If [MatchQ[notableSubImages, {__}],
-            objects = Flatten[
-                Function[{object},
-                    ReturnIfFailure@
-                    ARCMakeObjectsForSubImages[
-                        object,
-                        notableSubImages,
-                        scene,
-                        background,
-                        opts
-                    ]
-                ] /@ objects
-            ]
-        ];
-        
-        If [TrueQ[OptionValue["FindOcclusions"]],
+        If [TrueQ[OptionValue["SingleObject"]],
+            objects = {
+                ReturnIfFailure[ARCObjectFromAllPixels[scene, background]]
+            }
+            ,
             objects =
                 ReturnIfFailure@
-                ARCFindOccludedLines[scene, background, objects]
+                ARCParseScene[scene, background, opts];
+            
+            notableSubImages =
+                Replace[
+                    OptionValue["NotableSubImages"],
+                    Automatic :>
+                        ReturnIfFailure@
+                        ARCNotableSubImages[objects, ImageWidth[scene], ImageHeight[scene]]
+                ];
+            
+            If [MatchQ[notableSubImages, {__}],
+                objects = Flatten[
+                    Function[{object},
+                        ReturnIfFailure@
+                        ARCMakeObjectsForSubImages[
+                            object,
+                            notableSubImages,
+                            scene,
+                            background,
+                            opts
+                        ]
+                    ] /@ objects
+                ]
+            ];
+            
+            If [TrueQ[OptionValue["FindOcclusions"]],
+                objects =
+                    ReturnIfFailure@
+                    ARCFindOccludedLines[scene, background, objects]
+            ]
         ];
         
         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
@@ -975,53 +986,55 @@ Clear[ARCParseInputAndOutputScenes];
 Options[ARCParseInputAndOutputScenes] =
 {
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. *)
-    "NotableSubImages" -> Automatic                 (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
+    "NotableSubImages" -> Automatic,                (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
+    "SingleObject" -> False                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
     Module[{},
         
         (* Detect the list of notable sub-images across all input and output scenes. *)
-        notableSubImages = Flatten[
-            MapIndexed[
-                Function[{example, exampleIndex},
-                    Function[{inputOrOutput},
-                        (* This isn't our final parse of the scene, just an initial parse to detect
-                        notable sub-images. *)
-                        ReturnIfFailure@
-                        ARCNotableSubImages[
-                            Function[{object},
-                                Sett[
-                                    object,
-                                    {
-                                        (* Annotate these objects with the example they are from for
-                                           use by downstream code in ARCMakeObjectsForSubImages. *)
-                                        "ExampleIndex" -> First[exampleIndex],
-                                        "InputOrOutput" -> inputOrOutput
-                                    }
-                                ]
-                            ] /@
-                                ReturnIfFailure[
-                                    ARCParseScene[
-                                        example[inputOrOutput],
-                                        "ExampleIndex" -> First[exampleIndex],
-                                        "InputOrOutput" -> inputOrOutput,
-                                        "FindOcclusions" -> False,
-                                        "InferPropertiesThatRequireFullObjectList" -> False,
-                                        opts
-                                    ]
-                                ]["Objects"],
-                            ImageWidth[example[inputOrOutput]],
-                            ImageHeight[example[inputOrOutput]]
-                        ]
-                    ] /@ {"Input", "Output"}
-                ],
-                examples
-            ]
-        ];
-        
-        (* Combine the notable sub-images from each input/output example. *)
         notableSubImages =
+            If [!TrueQ[OptionValue["SingleObject"]],
+                notableSubImages = Flatten[
+                    MapIndexed[
+                        Function[{example, exampleIndex},
+                            Function[{inputOrOutput},
+                                (* This isn't our final parse of the scene, just an initial parse to detect
+                                   notable sub-images. *)
+                                ReturnIfFailure@
+                                ARCNotableSubImages[
+                                    Function[{object},
+                                        Sett[
+                                            object,
+                                            {
+                                                (* Annotate these objects with the example they are from for
+                                                   use by downstream code in ARCMakeObjectsForSubImages. *)
+                                                "ExampleIndex" -> First[exampleIndex],
+                                                "InputOrOutput" -> inputOrOutput
+                                            }
+                                        ]
+                                    ] /@
+                                        ReturnIfFailure[
+                                            ARCParseScene[
+                                                example[inputOrOutput],
+                                                "ExampleIndex" -> First[exampleIndex],
+                                                "InputOrOutput" -> inputOrOutput,
+                                                "FindOcclusions" -> False,
+                                                "InferPropertiesThatRequireFullObjectList" -> False,
+                                                opts
+                                            ]
+                                        ]["Objects"],
+                                    ImageWidth[example[inputOrOutput]],
+                                    ImageHeight[example[inputOrOutput]]
+                                ]
+                            ] /@ {"Input", "Output"}
+                        ],
+                        examples
+                    ]
+                ];
+                
+            (* Combine the notable sub-images from each input/output example. *)
             ARCSortNotableSubImages@
             Values[
                 Function[{group},
@@ -1031,7 +1044,10 @@ ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
                         "ExampleObjects" -> Flatten[group[[All, "ExampleObjects"]], 1]
                     |>
                 ] /@ GroupBy[notableSubImages, Function[#["Image"]] -> Identity]
-            ];
+            ]
+            ,
+            {}
+        ];
         
         (*ARCEcho["Notable sub images" -> ARCScene /@ notableSubImages[[All, "Image"]]];*)
         
@@ -1061,6 +1077,26 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
             outputSceneParseWithMultiColorCompositeObjects,
             outputSceneParsed
         },
+        
+        If [TrueQ[OptionValue["SingleObject"]],
+            Return[
+                <|
+                    "Input" -> ARCParseScene[
+                        inputScene,
+                        "SingleObject" -> True,
+                        "ExampleIndex" -> exampleIndex,
+                        "InputOrOutput" -> "Input"
+                    ],
+                    "Output" -> ARCParseScene[
+                        outputScene,
+                        "SingleObject" -> True,
+                        "ExampleIndex" -> exampleIndex,
+                        "InputOrOutput" -> "Output"
+                    ]
+                |>,
+                Module
+            ]
+        ];
         
         inputSceneParseWithoutMultiColorCompositeObjects =
             ReturnIfFailure@
@@ -2521,7 +2557,8 @@ ObjectsByAttribute[objects_List, attribute_String] :=
 Clear[ARCFindObjectMapping];
 Options[ARCFindObjectMapping] =
 {
-    "FormMultiColorCompositeObjects" -> True        (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
+    "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
+    "SingleObject" -> Automatic                     (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -2681,32 +2718,44 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         SelectFirst[
             objectsToMapTo,
             Function[{outputObject},
-                If [And[
-                        outputObject["Position"] == object["Position"],
-                        !MissingQ[matchingTransformImage = FirstCase[imageShapes, outputObject["Image"]]]
-                    ],
-                    (* We've found that this image in the output is a transformation of an object
-                       in the input. *)
-                    Return[
-                        object -> Append[
-                            outputObject,
-                            "Transform" -> Replace[
-                                FirstCase[
-                                    object["Shapes"],
-                                    KeyValuePattern[{"Image" -> outputObject["Image"], "Transform" -> _}]
-                                ]["Transform"],
-                                {
-                                    assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
-                                        (* The angle specified in Shapes is the angle needed to
-                                           transform the image in Shapes to the image of the
-                                           object in the training example. We want the inverse
-                                           angle for transforming an input to an output. *)
-                                        Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
-                                    )
-                                }
+                With[{outputObjectShapeImage = ARCObjectImageShape[outputObject]},
+                    If [And[
+                            outputObject["Position"] == object["Position"],
+                            !MissingQ[
+                                matchingTransformImage = FirstCase[
+                                    imageShapes,
+                                    outputObjectShapeImage
+                                ]
                             ]
                         ],
-                        Module
+                        (* We've found that this image in the output is a transformation of an object
+                        in the input. *)
+                        Return[
+                            object -> Append[
+                                outputObject,
+                                "Transform" -> Replace[
+                                    FirstCase[
+                                        object["Shapes"],
+                                        KeyValuePattern[
+                                            {
+                                                "Image" -> outputObjectShapeImage,
+                                                "Transform" -> _
+                                            }
+                                        ]
+                                    ]["Transform"],
+                                    {
+                                        assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
+                                            (* The angle specified in Shapes is the angle needed to
+                                            transform the image in Shapes to the image of the
+                                            object in the training example. We want the inverse
+                                            angle for transforming an input to an output. *)
+                                            Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
+                                        )
+                                    }
+                                ]
+                            ],
+                            Module
+                        ]
                     ]
                 ]
             ]
@@ -3123,7 +3172,8 @@ Options[ARCFindRules] =
 {
     "FormMultiColorCompositeObjects" -> Automatic,      (*< Whether connected single-color objects should be combined to form multi-color composite objects. If Automatic, we will try forming them, but if that isn't looking to work, we may also try not forming them. *)
     "UnnormalizedConclusionGroup" -> Missing[],         (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
-    "SettleForOneExamplePerRule" -> True                (*< If we can't find a workable rule set supported by 2+ examples per rule, should we try again and settle for 1+ examples per rule? *)
+    "SettleForOneExamplePerRule" -> True,               (*< If we can't find a workable rule set supported by 2+ examples per rule, should we try again and settle for 1+ examples per rule? *)
+    "SingleObject" -> Automatic                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
 };
 ARCFindRules[examples_List, opts:OptionsPattern[]] :=
     Module[{res, foundRulesQ, workingRulesQ},
@@ -3137,13 +3187,16 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                  where there isn't really a code failure, but rather we simply couldn't find
                  rules, such as in Aug 2022 how we don't yet have support for dealing with
                  AddObjects where multiple objects need to be added, and a Failure is returned. *)
-        res = arcFindRulesHelper[examples, opts];
+        If [!TrueQ[OptionValue["SingleObject"]],
+            res = arcFindRulesHelper[examples, opts]
+        ];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
         (*ARCEcho[ARCSimplifyRules[res["Rules"]]];*)
         
         If [And[
-                OptionValue["FormMultiColorCompositeObjects"] === Automatic
+                OptionValue["FormMultiColorCompositeObjects"] === Automatic,
+                !TrueQ[OptionValue["SingleObject"]]
                 (* At first we would only try parsing the scene without the formation
                    of composite objects if the scene always consisted of a single
                    composite object, but 31aa019c appears to be an example that
@@ -3170,12 +3223,10 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
             
             If [!TrueQ[workingRulesQ],
                 (* Try finding rules without forming composite objects. *)
-                res2 = ReturnIfFailure[
-                    arcFindRulesHelper[
-                        examples,
-                        "FormMultiColorCompositeObjects" -> False,
-                        opts
-                    ]
+                res2 = arcFindRulesHelper[
+                    examples,
+                    "FormMultiColorCompositeObjects" -> False,
+                    opts
                 ];
                 foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 If [foundRulesQ,
@@ -3184,6 +3235,28 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                         res2
                     |>
                 ]
+            ]
+        ];
+        
+        If [OptionValue["SingleObject"] =!= False,
+            
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+            
+            If [!TrueQ[workingRulesQ],
+                (* Try again, this time parsing the scene as a single object. *)
+                res2 = arcFindRulesHelper[examples, "SingleObject" -> True, opts];
+                foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                If [foundRulesQ,
+                    res = Prepend[
+                        res2,
+                        "SceneAsSingleObject" -> True
+                    ]
+                ];
             ]
         ];
         
@@ -3198,7 +3271,7 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
             
             If [!TrueQ[workingRulesQ] && $MinimumExamplesPerRule > 1,
                 (* Try again, this time allowing rules to be formed with only 1 example.
-                e.g. 0d3d703e *)
+                   e.g. 0d3d703e *)
                 Block[{$MinimumExamplesPerRule = 1},
                     res2 = ARCFindRules[examples, opts];
                     foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -3209,9 +3282,13 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         
         ReturnIfFailure[res];
         
+        If [!AssociationQ[res],
+            res = <||>
+        ];
+        
         KeyTake[
             res,
-            {"FormMultiColorCompositeObjects", "RemoveEmptySpace", "Rules", "PartialRules"}
+            {"SceneAsSingleObject", "FormMultiColorCompositeObjects", "RemoveEmptySpace", "Rules", "PartialRules"}
         ]
     ]
 
@@ -3277,10 +3354,15 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ARCParseInputAndOutputScenes[
                 examplesIn,
                 "FormMultiColorCompositeObjects" ->
-                    OptionValue["FormMultiColorCompositeObjects"] =!= False
+                    OptionValue["FormMultiColorCompositeObjects"] =!= False,
+                "SingleObject" ->
+                    TrueQ[OptionValue["SingleObject"]]
             ];
         
         allObjects = Flatten[examples[[All, "Input", "Objects"]]];
+        
+        (*ARCEcho[examples[[1]]];
+        Throw["HERE"];*)
         
         (*ARCEcho2[examples[[1]]];
         Throw["HERE"];*)
@@ -3295,7 +3377,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ] /@ examples;
         
-        (*ARCEcho[examples[[1, "ObjectMapping"]]];*)
+        (*ARCEcho[examples[[1, "ObjectMapping"]]];
+        Throw["HERE"];*)
+        
+        (*ARCEcho[SimplifyObjects[examples[[All, "ObjectMapping"]]]];
+        Throw["HERE"];*)
         
         (* Determine if input objects can be referenced in any particular ways in general. *)
         referenceableInputObjects =
@@ -4018,6 +4104,11 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             ReturnIfFailure@
             ARCParseScene[
                 scene,
+                If [TrueQ[rules["SceneAsSingleObject"]],
+                    "SingleObject" -> True
+                    ,
+                    Sequence @@ {}
+                ],
                 If [rules["FormMultiColorCompositeObjects"] === False,
                     "FormMultiColorCompositeObjects" -> False
                     ,
@@ -9598,6 +9689,29 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 24,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 7
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 2}],
+            "SucessCount" -> 56,
+            "CodeLength" -> 14571,
+            "ExampleImplemented" -> "ed36ccf7",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 24,
+            "NewEvaluationSuccesses" -> {"64a7c07e", "ae58858e"},
+            "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 2}],
+            "SucessCount" -> 57,
+            "CodeLength" -> 14571,
+            "ExampleImplemented" -> "27a28665",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> 1,
+            "TotalGeneralizedSuccesses" -> 25,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
         |>
     }
 
@@ -9825,7 +9939,7 @@ ARCCleanRules[rulesIn_List, objects_List] :=
         rules
     ]
 
-ARCCleanRules[other_] := other
+ARCCleanRules[other_, _] := other
 
 (*!
     \function ARCPublicNotesSection
@@ -14404,6 +14518,74 @@ ARCFormExceptRules[rulesIn_List, objects_List] :=
             ,
             rulesIn
         ]
+    ]
+
+(*!
+    \function ARCObjectFromAllPixels
+    
+    \calltable
+        ARCObjectFromAllPixels[scene, background] '' Forms a single object from all non-background-color pixels, even if parts are non-contiguous.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectFromAllPixels]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectFromAllPixels];
+ARCObjectFromAllPixels[scene_ARCScene, background_Integer] :=
+    Module[{colors, image = Replace[scene[[1]], background -> $nonImageColor, {2}]},
+        ARCInferObjectProperties[
+            <|
+                "UUID" -> CreateUUID[],
+                "Image" -> ARCScene[image],
+                "PixelPositions" -> {},
+                ARCInferShapeAndShapes[image],
+                "Colors" -> (
+                    colors =
+                        Sort[DeleteDuplicates[DeleteCases[Flatten[image], $nonImageColor]]]
+                ),
+                InferColor["Color" -> <|"Colors" -> colors|>],
+                "Position" -> {1, 1}
+            |>,
+            ImageWidth[image],
+            ImageHeight[image]
+        ]
+    ]
+
+(*!
+    \function ARCObjectImageShape
+    
+    \calltable
+        ARCObjectImageShape[object] '' Given an object, returns the image that should be used as its "shape" for looking for rotations, etc. Single colored image use a monochrome shape image, while multi - color images use a multi - color shape image.
+    
+    Examples:
+    
+    ARCObjectImageShape[<|"Colors" -> {1}, "Shapes" -> {<|"Image" -> "HERE"|>}|>]
+    
+    ===
+    
+    "HERE"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectImageShape]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectImageShape];
+ARCObjectImageShape[object_Association] :=
+    If [MatchQ[object["Colors"], {_, __}],
+        object["Image"]
+        ,
+        SelectFirst[
+            object["Shapes"],
+            MatchQ[#, Association["Image" -> _]] &
+        ]["Image"]
     ]
 
 End[]

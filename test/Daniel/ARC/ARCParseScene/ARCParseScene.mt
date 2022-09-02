@@ -2144,3 +2144,29 @@ Test[
     ,
     TestID -> "ARCParseScene-20220827-6TVDEY"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCParseScene[
+                Daniel`ARC`ARCParseFile["ed36ccf7"]["Train", 2, "Input"],
+                "SingleObject" -> True
+            ]
+        ]
+    ]
+    ,
+    <|
+        "Background" -> 0,
+        "Width" -> 3,
+        "Height" -> 3,
+        "Objects" -> {
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {-1, -1, -1}, {6, 6, -1}}],
+                "Position" -> {1, 1}
+            |>
+        },
+        "Scene" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {0, 0, 0}, {6, 6, 0}}]
+    |>
+    ,
+    TestID -> "ARCParseScene-20220902-M55N6G"
+]
