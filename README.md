@@ -1,4 +1,5 @@
 # ARC
+
 Abstraction and Reasoning Corpus
 
 My attempt at:
@@ -7,7 +8,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (33)
+### Core ARC Training Tasks (34)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -42,6 +43,7 @@ https://github.com/fchollet/ARC
 * [BE94B721](TaskNotes/BE94B721/notes.md)
 * [ed36ccf7](TaskNotes/ed36ccf7/notes.md)
 * [a740d043](TaskNotes/a740d043/notes.md)
+* [b9b7f026](TaskNotes/b9b7f026/notes.md)
 
 ### Personally Created Training Tasks (12)
 
@@ -60,7 +62,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (26)
+### Training Tasks (28)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -90,6 +92,8 @@ The following ARC training tasks started passing after some different task was i
 * [810b9b61](TaskNotes/810b9b61/notes.md)
 * [27a28665](TaskNotes/27a28665/notes.md)
 * [6e02f1e3](TaskNotes/6e02f1e3/notes.md)
+* [b2862040](TaskNotes/b2862040/notes.md)
+* [de1cd16c](TaskNotes/de1cd16c/notes.md)
 
 ### Evaluation Tasks (9)
 

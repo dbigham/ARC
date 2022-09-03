@@ -47,7 +47,8 @@ Test[
         "FilledProportion" -> 0.5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCInferObjectProperties-20220725-4TUEPU"
@@ -90,8 +91,25 @@ Test[
         "FilledProportion" -> 0.5,
         "VerticalLineSymmetry" -> True,
         "HorizontalLineSymmetry" -> True,
-        "VerticalAndHorizontalLineSymmetry" -> True
+        "VerticalAndHorizontalLineSymmetry" -> True,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCInferObjectProperties-20220828-MJXIOU"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectProperties[
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
+            "Position" -> {1, 1},
+            "Colors" -> {1}
+        |>,
+        10,
+        10
+    ]["HollowCount"]
+    ,
+    1
+    ,
+    TestID -> "ARCInferObjectProperties-20220903-BJ1CT1"
 ]

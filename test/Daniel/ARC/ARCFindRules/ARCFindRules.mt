@@ -243,7 +243,8 @@ Test[
             },
             "Color" -> 8,
             "ZOrder" -> 0,
-            "FilledArea" -> 2
+            "FilledArea" -> 2,
+            "HollowCount" -> 0
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -272,7 +273,8 @@ Test[
             },
             "Color" -> 8,
             "ZOrder" -> 0,
-            "FilledArea" -> 2
+            "FilledArea" -> 2,
+            "HollowCount" -> 0
         |> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -865,7 +867,8 @@ Test[
                 "FilledArea" -> 2,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False
+                "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0
             |> -> <|
                 "Shape" -> <|
                     "Name" -> "Line",
@@ -904,7 +907,8 @@ Test[
             "FilledArea" -> 2,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False
+            "VerticalAndHorizontalLineSymmetry" -> False,
+            "HollowCount" -> 0
         |> -> <|
             "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>}
         |>
@@ -947,7 +951,8 @@ Test[
             },
             "ZOrder" -> 0,
             "FilledArea" -> 2,
-            "VerticalLineSymmetry" -> True
+            "VerticalLineSymmetry" -> True,
+            "HollowCount" -> 0
         |> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>
         |>
@@ -1169,7 +1174,8 @@ Test[
                     ]
                 },
                 "ZOrder" -> 0,
-                "FilledArea" -> 2
+                "FilledArea" -> 2,
+                "HollowCount" -> 0
             |> -> <|
                 "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
                 "ZOrder" -> 1
@@ -1189,7 +1195,8 @@ Test[
                     ]
                 },
                 "ZOrder" -> 0,
-                "FilledArea" -> 2
+                "FilledArea" -> 2,
+                "HollowCount" -> 0
             |> -> <|
                 "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>
             |>
@@ -1390,15 +1397,17 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "810b9b61"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "810b9b61"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
-        <|"Shapes" -> <|"Name" -> "Rectangle", "Filled" -> False|>|> -> <|"Color" -> 3|>,
-        <|"Shapes" -> Except[<|"Name" -> "Rectangle", "Filled" -> False|>]|> -> <|
-            "Same" -> True
-        |>
+        <|"HollowCount" -> 0|> -> <|"Same" -> True|>,
+        <|"HollowCount" -> 1|> -> <|"Color" -> 3|>
     }
     ,
     TestID -> "ARCFindRules-20220902-LN1NO5"
@@ -1430,4 +1439,34 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220903-MEJ1SK"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b9b7f026"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Pixel"|>,
+                            "Color" -> Daniel`ARC`ObjectValue[<|"HollowCount" -> 1|>, "Color"],
+                            "X" -> 1,
+                            "Y" -> 1,
+                            "X2" -> 1,
+                            "Y2" -> 1
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-BKEW67"
 ]

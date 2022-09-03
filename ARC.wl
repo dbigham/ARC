@@ -376,6 +376,8 @@ ARCRemoveExtendedMetadataFromConclusion::usage = "ARCRemoveExtendedMetadataFromC
 
 ARCHollowCount::usage = "ARCHollowCount  "
 
+ARCUpdateReadme::usage = "ARCUpdateReadme  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1650,6 +1652,10 @@ $properties = <|
     "AspectRatio" -> <|
         "Type" -> "Integer",
         "Type2" -> "SizeDimensionRatio"
+    |>,
+    "HollowCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count"
     |>,
     "Area" -> <|
         "Type" -> "Integer",
@@ -7403,7 +7409,8 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                     "VerticalAndHorizontalLineSymmetry" -> True
                     ,
                     "VerticalAndHorizontalLineSymmetry" -> False
-                ]
+                ],
+                "HollowCount" -> ARCHollowCount[object["Image"][[1]]]
             |>
         ]
     ]
@@ -9844,6 +9851,45 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 26,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SucessCount" -> 60,
+            "Runtime" -> Quantity[1.3, "Hours"],
+            "RuntimeComment" -> "What?! Well that's not good. Why such a dramatic slowdown?",
+            "CodeLength" -> 14897,
+            "ExampleImplemented" -> "b9b7f026",
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"b2862040", "de1cd16c"},
+            "TotalGeneralizedSuccesses" -> 28,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SucessCount" -> 61,
+            "Runtime" -> Quantity[1.3, "Hours"],
+            "CodeLength" -> 14897,
+            "ExampleImplemented" -> "b2862040",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 28,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SucessCount" -> 62,
+            "Runtime" -> Quantity[1.3, "Hours"],
+            "CodeLength" -> 14897,
+            "ExampleImplemented" -> "de1cd16c",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 28,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 9
         |>
@@ -13915,6 +13961,20 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             ]
         ];
         
+        If [Or[
+                MatchQ[patternIn["Shape"], <|"Name" -> "Line" | "Pixel"|> | KeyValuePattern["Filled" -> True]],
+                patternIn["FilledProportion"] == 1
+            ],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "HollowCount",
+                    "HollowCount.Rank",
+                    "HollowCount.InverseRank"
+                }
+            ]
+        ];
+        
         If [MatchQ[patternIn["Shape"], <|"Name" -> "Pixel"|>],
             pattern = KeyDrop[
                 pattern,
@@ -13922,7 +13982,13 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "Width",
                     "Height"
                 }
-            ]
+            ];
+            If [!MissingQ[patternIn["X"]],
+                pattern = KeyDrop[pattern, "X2"]
+            ];
+            If [!MissingQ[patternIn["Y"]],
+                pattern = KeyDrop[pattern, "Y2"]
+            ];
         ];
         
         If [MatchQ[patternIn["Shape"], KeyValuePattern["Name" -> "Pixel" | "Square" | "Rectangle" | "Line"]],
@@ -14851,6 +14917,23 @@ ARCHollowCount[image_List] :=
                 #["Color"] === 10
             ] &
         ]
+    ]
+
+(*!
+    \function ARCUpdateReadme
+    
+    \calltable
+        ARCUpdateReadme[] '' Updates the README.md file with the list of implemented tasks, etc.
+    
+    \maintainer danielb
+*)
+Clear[ARCUpdateReadme];
+ARCUpdateReadme[] :=
+    Module[{},
+        StringReplaceInFiles[
+            "## Tasks Implemented" ~~ ___ -> ReturnIfFailure[ARCImplementedTasksMarkdown[]],
+            {FileNameJoin[{FileNameDrop[FindFile["ARC`"], -1], "README.md"}]}
+        ];
     ]
 
 End[]
