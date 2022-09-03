@@ -13,7 +13,10 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCRuleSetScore[
-            {<|"Color" -> 1|> -> <|"X" -> 1|>, <|"Color" -> 2|> -> <|"X" -> 2|>}
+            {
+                <|"Color" -> 1|> -> <|"X" -> 1, "Examples" -> {1, 2, 3}|>,
+                <|"Color" -> 2|> -> <|"X" -> 2|>
+            }
         ]
     ]
     ,

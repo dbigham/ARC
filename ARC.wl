@@ -372,6 +372,10 @@ ARCObjectFromAllPixels::usage = "ARCObjectFromAllPixels  "
 
 ARCObjectImageShape::usage = "ARCObjectImageShape  "
 
+ARCRemoveExtendedMetadataFromConclusion::usage = "ARCRemoveExtendedMetadataFromConclusion  "
+
+ARCHollowCount::usage = "ARCHollowCount  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -755,7 +759,8 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         
         background = ARCInferBackgroundColor[
             scene,
-            "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
+            "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"],
+            "SingleObject" -> OptionValue["SingleObject"]
         ];
         
         If [TrueQ[OptionValue["SingleObject"]],
@@ -2210,7 +2215,8 @@ ARCClassifyLine[image_List] :=
 Clear[ARCInferBackgroundColor];
 Options[ARCInferBackgroundColor] =
 {
-    "FormMultiColorCompositeObjects" -> True
+    "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
+    "SingleObject" -> False                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
 };
 ARCInferBackgroundColor[example_, OptionsPattern[]] :=
     Module[{scenes, colorCounts, stats},
@@ -2231,7 +2237,7 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
             "Counts" -> colorCounts
         |>;
         
-        XEcho[stats];
+        (*ARCEcho[example -> stats];*)
         
         (* It's not clear to me how this should be done, so for now we'll use some heuristics.
            We want to be cautious about choosing a non-black background, since the vast
@@ -2242,9 +2248,28 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
             stats["Ratio"] >= 10,
                 colorCounts[[1, 1]],
             And[
-                stats["Ratio"] >= 2,
+                If [Or[
+                        (* If we're treating the entire scene as a single object, it's more likely
+                           that the output will not have much black background showing, so we
+                           should be more conservative about using a non-black background.
+                           For example, a740d043 training example 3's output has a ratio of 2, but
+                           we don't want to treat it's background as gray. *)
+                        TrueQ[OptionValue["SingleObject"]],
+                        (* Previously we were disabling this mode for this situation, but in
+                           a740d043, that meant that this mode treated the blue background
+                           as not the background color, which led to a crazy rule set that
+                           worked for the training examples but not the test example.
+                           So, we will allow this mode for this case, but we will require
+                           a stronger ratio to consider a non-black background color.
+                           For a740d043, I believe the ratio is >= 5.8.  *)
+                        OptionValue["FormMultiColorCompositeObjects"] === False
+                    ],
+                    stats["Ratio"] >= 4
+                    ,
+                    stats["Ratio"] >= 2
+                ],
                 (* The second most common color isn't black. *)
-                colorCounts[[2, 1]] =!= 0,
+                colorCounts[[2, 1]] =!= 0
                 (* For now we're going to disable this case when we're in the mode where
                    we're not forming composite objects, because these inputs are generally
                    quite small with relatively little background color showing, so the
@@ -2256,7 +2281,9 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
                    be more lenient for the output scene, since I feel like it has been
                    more common that the output scene is sparse.
                    ARCInferBackgroundColor-20220819-226TGE *)
-                OptionValue["FormMultiColorCompositeObjects"] =!= False
+                (*OptionValue["FormMultiColorCompositeObjects"] =!= False*)
+                (* See comment higher up explaining that we used to strictly disable this,
+                   but now allow it, but require a higher ratio. *)
             ],
                 colorCounts[[1, 1]],
             True,
@@ -2583,11 +2610,12 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
         
         ARCFindObjectMapping[
             parsedScenes["Input"],
-            parsedScenes["Output"]
+            parsedScenes["Output"],
+            opts
         ]
     ]
 
-ARCFindObjectMapping[input_Association, output_Association] :=
+ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[]] :=
     Module[{outputObjects, inputObjects, inputObjectsHandled, mapping, res},
         
         outputObjects = output["Objects"];
@@ -2604,7 +2632,13 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                     Replace[
                         res =
                             ReturnIfFailure@
-                            ARCFindObjectMapping[object, outputObjects, inputObjects, output],
+                            ARCFindObjectMapping[
+                                object,
+                                outputObjects,
+                                inputObjects,
+                                output,
+                                opts
+                            ],
                         {
                             HoldPattern[Rule][inputObject_, _] :> (
                                 (* This call returned a single mapping from our input object. *)
@@ -2647,14 +2681,15 @@ ARCFindObjectMapping[input_Association, output_Association] :=
                  but don't exist in the input. *)
     ]
 
-ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List, outputScene_Association] :=
+ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List, outputScene_Association, OptionsPattern[]] :=
     Module[
         {
             matchingComponent,
             mappedToObject,
             possibleMatches,
             inputsObjectsOfType,
-            matchingComponents
+            matchingComponents,
+            removeEmptySpaceQ
         },
         
         (* Look for an exact match. *)
@@ -2766,6 +2801,23 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             objectsToMapTo,
             #["Image"] == object["Image"] &
         ];
+        (* If we weren't able to find the object in the output, but we're treating the scene
+           as a single object, then check if removing empty space from the input results
+           in a match. *)
+        If [And[
+                possibleMatches === {},
+                TrueQ[OptionValue["SingleObject"]]
+            ],
+            With[{prunedImage = ARCRemoveEmptySpace[object["Image"], $nonImageColor, "PruneLeftAndAbove" -> True]},
+                If [prunedImage =!= object["Image"],
+                    removeEmptySpaceQ = True;
+                    possibleMatches = Select[
+                        objectsToMapTo,
+                        #["Image"] == prunedImage &
+                    ]
+                ]
+            ]
+        ];
         Which[
             MatchQ[possibleMatches, {_}],
                 (* There's a single object in the output with this color + shape, so we'll treat
@@ -2774,7 +2826,12 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 mappedToObject["Transform"] = <|
                     "Type" -> "Move",
                     "Position" -> ToXY @ mappedToObject["Position"],
-                    "Offset" -> ToXY[mappedToObject["Position"] - object["Position"], "RemoveZeroes" -> True]
+                    "Offset" -> ToXY[mappedToObject["Position"] - object["Position"], "RemoveZeroes" -> True],
+                    If [TrueQ[removeEmptySpaceQ],
+                        "RemoveEmptySpace" -> True
+                        ,
+                        Nothing
+                    ]
                 |>;
                 Return[object -> mappedToObject, Module],
             MatchQ[possibleMatches, {_, __}],
@@ -3176,7 +3233,7 @@ Options[ARCFindRules] =
     "SingleObject" -> Automatic                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
 };
 ARCFindRules[examples_List, opts:OptionsPattern[]] :=
-    Module[{res, foundRulesQ, workingRulesQ},
+    Module[{res, foundRulesQ, foundRules2Q, workingRulesQ, existingRulesScore},
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
@@ -3239,7 +3296,6 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         ];
         
         If [OptionValue["SingleObject"] =!= False,
-            
             workingRulesQ =
                 If [!foundRulesQ,
                     False
@@ -3247,14 +3303,39 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                     TrueQ[ARCWorkingQ[examples, res]]
                 ];
             
-            If [!TrueQ[workingRulesQ],
+            If [Or[
+                    !TrueQ[workingRulesQ],
+                    (* Even if we have a working rule set, if it's score is sufficiently low,
+                       let's take that as evidence that we should consider whether interpreting
+                       the scene as a single object yields a better rule set.
+                       e.g. a740d043 *)
+                    And[
+                        (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2,
+                        (* For now we will disallow SingleObject mode here if we're allowing single
+                           examples per rule, otherwise it can produce a rule set that just maps
+                           from a whole input scene to a whole output scene. *)
+                        $MinimumExamplesPerRule > 1
+                    ]
+                ],
                 (* Try again, this time parsing the scene as a single object. *)
                 res2 = arcFindRulesHelper[examples, "SingleObject" -> True, opts];
-                foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
-                If [foundRulesQ,
-                    res = Prepend[
+                foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                
+                If [foundRules2Q,
+                    res2 = Prepend[
                         res2,
                         "SceneAsSingleObject" -> True
+                    ];
+                    If [And[
+                            TrueQ[ARCWorkingQ[examples, res2]],
+                            Or[
+                                !TrueQ[workingRulesQ],
+                                (* e.g. a740d043 *)
+                                (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 2.5
+                            ]
+                        ],
+                        foundRules2 = True;
+                        res = res2
                     ]
                 ];
             ]
@@ -3288,7 +3369,7 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         
         KeyTake[
             res,
-            {"SceneAsSingleObject", "FormMultiColorCompositeObjects", "RemoveEmptySpace", "Rules", "PartialRules"}
+            {"SceneAsSingleObject", "FormMultiColorCompositeObjects", "RemoveEmptySpace", "Background", "Rules", "PartialRules"}
         ]
     ]
 
@@ -3325,10 +3406,29 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             Block[{rulesResult},
                 Return[
                     rulesResult = <|
+                        If [OptionValue["SingleObject"] =!= True,
+                            "SingleObject" -> True
+                            ,
+                            Nothing
+                        ],
                         If [OptionValue["FormMultiColorCompositeObjects"] =!= Automatic,
                             "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
                             ,
                             Nothing
+                        ],
+                        With[
+                            {
+                                inputBackgrounds = DeleteDuplicates[examples[[All, "Input", "Background"]]],
+                                outputBackgrounds = DeleteDuplicates[examples[[All, "Output", "Background"]]]
+                            },
+                            If [And[
+                                    inputBackgrounds =!= outputBackgrounds,
+                                    MatchQ[outputBackgrounds, {_}]
+                                ],
+                                "Background" -> First[outputBackgrounds]
+                                ,
+                                Nothing
+                            ]
                         ],
                         "Rules" -> Join[
                             ARCCleanRules[rules, allObjects],
@@ -3373,7 +3473,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 example,
                 "ObjectMapping" ->
                     ReturnIfFailure@
-                    ARCFindObjectMapping[example]
+                    ARCFindObjectMapping[
+                        example,
+                        "SingleObject" -> TrueQ[OptionValue["SingleObject"]]
+                    ]
             ]
         ] /@ examples;
         
@@ -4211,6 +4314,10 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
         
         (*ARCEcho[outputScene["Objects"]];*)
         
+        If [IntegerQ[rules["Background"]],
+            outputScene["Background"] = rules["Background"]
+        ];
+        
         renderedScene = ARCRenderScene[outputScene];
         
         If [TrueQ[rules["RemoveEmptySpace"]],
@@ -4326,16 +4433,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                         Nothing :> Return[Nothing, Module]
                     ];
             ],
-            KeyDrop[
-                conclusion,
-                {
-                    "Examples",
-                    "ExampleCount",
-                    "UseCount",
-                    "InputObjects",
-                    "RotationNormalization"
-                }
-            ]
+            ARCRemoveExtendedMetadataFromConclusion[conclusion]
         ];
         
         (* If this isn't a named "transform" but rather is just setting one or more
@@ -4419,6 +4517,15 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Delete"], objectIn_Association, objectOut_Association, scene_Association] :=
     Nothing
+
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "RemoveEmptySpace"], objectIn_Association, objectOut_Association, scene_Association] :=
+    Sett[
+        objectOut,
+        {
+            "Image" -> ARCRemoveEmptySpace[objectIn["Image"], $nonImageColor],
+            "Position" -> {1, 1}
+        }
+    ]
 
 ARCApplyConclusion[key:"Position", KeyValuePattern["RelativePosition" -> relativePosition_], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
@@ -7580,19 +7687,23 @@ ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
             Replace[
                 example,
                 objectMapping:KeyValuePattern[inputObject_ -> outputObject:KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "Move"]]] :> (
-                    Sett[
-                        objectMapping,
-                        inputObject -> Sett[
-                            outputObject,
-                            "Transform" -> ARCAddMoveAttributes[
-                                inputObject,
+                    If [!MatchQ[outputObject, KeyValuePattern["Transform" -> KeyValuePattern[{"Offset" -> <||>, "RemoveEmptySpace" -> True}]]],
+                        Sett[
+                            objectMapping,
+                            inputObject -> Sett[
                                 outputObject,
-                                example["Output", "Objects"],
-                                example["Output", "Scene"],
-                                ARCColorToInteger[example["Output", "Background"]],
-                                referenceableOutputObjects
+                                "Transform" -> ARCAddMoveAttributes[
+                                    inputObject,
+                                    outputObject,
+                                    example["Output", "Objects"],
+                                    example["Output", "Scene"],
+                                    ARCColorToInteger[example["Output", "Background"]],
+                                    referenceableOutputObjects
+                                ]
                             ]
                         ]
+                        ,
+                        objectMapping
                     ]
                 ),
                 {1}
@@ -8178,10 +8289,7 @@ ARCTransformScore[transformIn_] :=
     Module[{transform = transformIn, objectValueCondition, objectValueProperty, score = 0},
         
         If [AssociationQ[transform],
-            transform = KeyDrop[
-                transform,
-                {"Examples", "ExampleCount", "UseCount", "InputObjects"}
-            ]
+            transform = ARCRemoveExtendedMetadataFromConclusion[transform]
         ];
         Replace[
             transform,
@@ -9712,6 +9820,32 @@ ARCTaskLog[] :=
             "TotalGeneralizedSuccesses" -> 25,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SucessCount" -> 58,
+            "Runtime" -> Quantity[20, "Minutes"],
+            "CodeLength" -> 14763,
+            "ExampleImplemented" -> "a740d043",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            (* I think? *)
+            "NewGeneralizedSuccesses" -> {"6e02f1e3"},
+            "TotalGeneralizedSuccesses" -> 26,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SucessCount" -> 59,
+            "Runtime" -> Quantity[20, "Minutes"],
+            "CodeLength" -> 14763,
+            "ExampleImplemented" -> "6e02f1e3",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 26,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 9
         |>
     }
 
@@ -9866,6 +10000,7 @@ ARCTaskMarkdown[name_String] :=
 Clear[ARCCleanRules];
 ARCCleanRules[rulesIn_List, objects_List] :=
     Module[{rules = rulesIn, condition, conclusion},
+        
         rules = Replace[
             rules,
             {
@@ -9899,6 +10034,14 @@ ARCCleanRules[rulesIn_List, objects_List] :=
                     }
                 ] :>
                     KeyDrop[assoc, "Colors"],
+                assoc: KeyValuePattern[
+                    {
+                        "Type" -> "Move",
+                        "Offset" -> <||>,
+                        "RemoveEmptySpace" -> True
+                    }
+                ] :>
+                    <|"Type" -> "RemoveEmptySpace"|>,
                 assoc: KeyValuePattern[
                     {
                         "Type" -> "Move",
@@ -12951,18 +13094,20 @@ ARCScoreRuleSets[ruleSets_List] :=
 *)
 Clear[ARCRuleSetScore];
 ARCRuleSetScore[ruleSet_List] :=
-    Module[{},
+    Module[{pattern, conclusion},
         Total[
             Function[{rule},
                 If [MatchQ[rule, _Rule],
+                    pattern = rule[[1]];
+                    conclusion = ARCRemoveExtendedMetadataFromConclusion[rule[[2]]];
                     SqrtButKeepSign@
                     Plus[
                         SquareButKeepSign@
                         ReturnIfFailure@
-                        ARCConditionsScore[rule[[1]]],
+                        ARCConditionsScore[pattern],
                         SquareButKeepSign@
                         ReturnIfFailure@
-                        ARCTransformScore[rule[[2]]]
+                        ARCTransformScore[conclusion]
                     ]
                     ,
                     -(ARCExpressionComplexity[rule] ^ 2)
@@ -14132,35 +14277,77 @@ ARCRemoveEmptySpaceQ[rules_Association, examples_List] :=
     \maintainer danielb
 *)
 Clear[ARCRemoveEmptySpace];
-ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_Integer] :=
+Options[ARCRemoveEmptySpace] =
+{
+    "PruneLeftAndAbove" -> True     (*< Whether we shouldn't just prune to the right and below, but also to the left and above.*)
+};
+ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
     Module[
         {
             scene = sceneIn[[1]],
             width = ImageWidth[sceneIn],
             prunedWidth,
             height = ImageHeight[sceneIn],
-            prunedHeight
+            prunedHeight,
+            prunedY = 1,
+            prunedX = 1
         },
         
         prunedHeight = height;
-        Function[{y},
-            If [MatchQ[scene[[y]], {Repeated[backgroundColor]}],
-                prunedHeight = y -1
-            ]
-        ] /@ Range[height, 1, -1];
+        Block[{},
+            Function[{y},
+                If [MatchQ[scene[[y]], {Repeated[backgroundColor]}],
+                    prunedHeight = y - 1
+                    ,
+                    Return[Null, Block]
+                ]
+            ] /@ Range[height, 1, -1]
+        ];
         
         prunedWidth = width;
-        Function[{x},
-            If [MatchQ[scene[[All, x]], {Repeated[backgroundColor]}],
-                prunedWidth = x - 1
-            ]
-        ] /@ Range[width, 1, -1];
+        Block[{},
+            Function[{x},
+                If [MatchQ[scene[[All, x]], {Repeated[backgroundColor]}],
+                    prunedWidth = x - 1
+                    ,
+                    Return[Null, Block]
+                ]
+            ] /@ Range[width, 1, -1]
+        ];
         
-        ARCScene[
-            scene[[
-                1 ;; prunedHeight,
-                1 ;; prunedWidth
-            ]]
+        If [TrueQ[OptionValue["PruneLeftAndAbove"]],
+            Block[{},
+                Function[{y},
+                    If [MatchQ[scene[[y]], {Repeated[backgroundColor]}],
+                        prunedY = y + 1
+                        ,
+                        Return[Null, Block]
+                    ]
+                ] /@ Range[1, height];
+                prunedHeight -= prunedY
+            ];
+            
+            Block[{},
+                Function[{x},
+                    If [MatchQ[scene[[All, x]], {Repeated[backgroundColor]}],
+                        prunedX = x + 1
+                        ,
+                        Return[Null, Block]
+                    ]
+                ] /@ Range[1, width];
+                prunedWidth -= prunedX
+            ];
+        ];
+        
+        If [prunedWidth <= 0 || prunedHeight <= 0,
+            sceneIn
+            ,
+            ARCScene[
+                scene[[
+                    prunedY ;; prunedHeight,
+                    prunedX ;; prunedWidth
+                ]]
+            ]
         ]
     ]
 
@@ -14586,6 +14773,84 @@ ARCObjectImageShape[object_Association] :=
             object["Shapes"],
             MatchQ[#, Association["Image" -> _]] &
         ]["Image"]
+    ]
+
+(*!
+    \function ARCRemoveExtendedMetadataFromConclusion
+    
+    \calltable
+        ARCRemoveExtendedMetadataFromConclusion[conclusion] '' Given a rule conclusion, removes the extended metadata key/values, such as ExampleCount, InputObjects, etc.
+    
+    Examples:
+    
+    ARCRemoveExtendedMetadataFromConclusion[<|"a" -> 1, "Examples" -> 2|>] === <|"a" -> 1|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRemoveExtendedMetadataFromConclusion]
+    
+    \maintainer danielb
+*)
+Clear[ARCRemoveExtendedMetadataFromConclusion];
+ARCRemoveExtendedMetadataFromConclusion[conclusion_Association] :=
+    KeyDrop[
+        conclusion,
+        {
+            "Examples",
+            "ExampleCount",
+            "UseCount",
+            "InputObjects",
+            "RotationNormalization"
+        }
+    ]
+
+(*!
+    \function ARCHollowCount
+    
+    \calltable
+        ARCHollowCount[image] '' Given an image, returns an integer to specify how many internal "hollows" there are of the background color.
+    
+    Examples:
+    
+    ARCHollowCount[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}] === 1
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCHollowCount]
+    
+    \maintainer danielb
+*)
+Clear[ARCHollowCount];
+ARCHollowCount[image_List] :=
+    Module[{paddedImage, width = ImageWidth[image], height = ImageHeight[image]},
+        
+        (* Pad the image with a border that is the same color as the background color
+           which will form a predictable component to show us all of the background
+           color pixels that aren't internal. *)
+        paddedImage = Join[
+            {Table[-1, {width + 2}]},
+            Function[{row},
+                {-1, Sequence @@ row, -1}
+            ] /@ image,
+            {Table[-1, {width + 2}]}
+        ];
+        
+        (* Change background color pixels to white since otherwise they won't be
+           seen as image regions below. *)
+        paddedImage = Replace[paddedImage, -1 -> 10, {2}];
+        
+        Length@
+        Select[
+            ARCContiguousImageRegions[
+                paddedImage,
+                "Background" -> 999
+            ][[1]],
+            And[
+                (* Remove the object that formed for the padding we added. *)
+                #["Position"] =!= {1, 1},
+                #["Color"] === 10
+            ] &
+        ]
     ]
 
 End[]

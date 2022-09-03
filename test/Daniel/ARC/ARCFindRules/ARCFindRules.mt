@@ -1416,3 +1416,18 @@ Test[
     ,
     TestID -> "ARCFindRules-20220902-DZQDJD"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a740d043"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "RemoveEmptySpace" -> True,
+        "Background" -> 0,
+        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "RemoveEmptySpace"|>|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-MEJ1SK"
+]

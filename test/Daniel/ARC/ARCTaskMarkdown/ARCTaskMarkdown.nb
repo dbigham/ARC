@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     14518,        338]
-NotebookOptionsPosition[      7633,        175]
-NotebookOutlinePosition[     13134,        311]
-CellTagsIndexPosition[     13091,        308]
+NotebookDataLength[     16157,        361]
+NotebookOptionsPosition[      9271,        198]
+NotebookOutlinePosition[     14772,        334]
+CellTagsIndexPosition[     14729,        331]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -40,7 +40,8 @@ Cell[BoxData[
  RowBox[{"FunctionNotebook", "[", "ARCImplementedTasksMarkdown", 
   "]"}]], "Input",
  CellChangeTimes->{3.86896580874201*^9},
- CellLabel->"In[10]:=",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
+ CellLabel->
+  "In[549]:=",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -67,7 +68,7 @@ Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<ae58858e\>\""}], ";"}], "\n", 
+  RowBox[{"example", " ", "=", " ", "\"\<a740d043\>\""}], ";"}], "\n", 
  RowBox[{"ARCTaskMarkdown", "[", "example", "]"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
    3.868965012385483*^9, 3.8689652453048477`*^9, 3.868967307532199*^9, {
@@ -96,21 +97,43 @@ Cell[BoxData[{
    3.8708170603452177`*^9, 3.870817068658045*^9}, {3.8709047166037054`*^9, 
    3.8709047357586555`*^9}, {3.871135501263815*^9, 3.87113553018217*^9}, 
    3.871135797738858*^9, {3.871145809987007*^9, 3.871145820354887*^9}, {
-   3.87115007821167*^9, 3.8711500833867364`*^9}},
+   3.87115007821167*^9, 3.8711500833867364`*^9}, {3.8712149390769444`*^9, 
+   3.8712149478069696`*^9}, 3.871215222609932*^9},
  CellLabel->
-  "In[247]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+  "In[556]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
 
-Cell[BoxData["\<\"# ae58858e\\n\\n## Examples\\n\\n![ARC examples for \
-ae58858e](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-ae58858e](rules.png?raw=true)\\n\\n\"\>"], "Output",
+Cell[BoxData["\<\"# a740d043\\n\\n## Examples\\n\\n![ARC examples for \
+a740d043](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+a740d043](rules.png?raw=true)\\n\\n## Notes\\nThe approach we\
+\[CloseCurlyQuote]re using with this input is to treat the scene as a single \
+object, which helps in the case of the second training example where the two \
+objects are non-contiguous and so would normally be treated as two different \
+objects.\\n\\nThe downside to treating the scene as a single object is that \
+there is a lot of empty space \[OpenCurlyDoubleQuote]surrounding\
+\[CloseCurlyDoubleQuote] (but within) the object, which we don\
+\[CloseCurlyQuote]t want, so when we\[CloseCurlyQuote]re building the mapping \
+from input objects to output objects, upon not being able to find a \
+corresponding object in an output scene, we try removing empty space, which \
+in this case allows a mapping to be found.\\n\\nA significant additional \
+challenge is that the scene-as-single-object mode wasn\[CloseCurlyQuote]t \
+even getting the chance to run, because a rule set is found when processing \
+the scenes in the standard way:\\n\\n\\n![image \
+1](image1.png?raw=true)\\n\\nThis rule set is nonsensical and doesn\
+\[CloseCurlyQuote]t generalize to the test example.\\n\\nTo deal with this, \
+we need to try finding a rule set using the scene-as-single-object approach \
+even if we find what appears to be a working rule set parsing the scene using \
+a preferred parsing mode. If we find another working rule set, we can then \
+compare the complexity of the rule sets, choosing the scene-as-single-object \
+rule set if it is sufficiently better.\\n\"\>"], "Output",
  CellChangeTimes->{
   3.870769656612871*^9, {3.8708170635949364`*^9, 3.870817070290192*^9}, {
    3.8709047194667892`*^9, 3.870904738223603*^9}, {3.871135503599166*^9, 
    3.8711355340753126`*^9}, 3.8711357997908297`*^9, 3.871135945065899*^9, {
    3.8711458138073993`*^9, 3.871145822293874*^9}, {3.8711500804095297`*^9, 
-   3.871150085962124*^9}},
+   3.871150085962124*^9}, {3.871214941602316*^9, 3.8712149509768586`*^9}, 
+   3.8712152248514576`*^9},
  CellLabel->
-  "Out[248]=",ExpressionUUID->"758e5486-bce1-41c4-8e86-b395968c1e37"]
+  "Out[557]=",ExpressionUUID->"245f053f-8fb9-43ee-b846-6dc5e16e37a8"]
 }, Open  ]]
 }, Open  ]],
 
@@ -316,26 +339,26 @@ Cell[670, 24, 225, 5, 54, "Code",ExpressionUUID->"1dabb0f9-608c-4b55-b80d-7dbded
  InitializationCell->False],
 Cell[CellGroupData[{
 Cell[920, 33, 152, 3, 67, "Section",ExpressionUUID->"2ca3cfd3-74c7-47aa-993a-09c545fdb199"],
-Cell[1075, 38, 218, 4, 29, "Input",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
+Cell[1075, 38, 222, 5, 29, "Input",ExpressionUUID->"639ffec2-3012-479f-be76-6fd94a7ec33a"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1330, 47, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
+Cell[1334, 48, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
 Cell[CellGroupData[{
-Cell[1434, 51, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
-Cell[1703, 60, 208, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
+Cell[1438, 52, 266, 7, 32, "Item",ExpressionUUID->"ee490cc3-75ae-4390-9f99-ce31f74261ba"],
+Cell[1707, 61, 208, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
 Cell[CellGroupData[{
-Cell[1936, 67, 2297, 33, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
-Cell[4236, 102, 630, 10, 234, "Output",ExpressionUUID->"758e5486-bce1-41c4-8e86-b395968c1e37"]
+Cell[1940, 68, 2373, 34, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+Cell[4316, 104, 2188, 31, 674, "Output",ExpressionUUID->"245f053f-8fb9-43ee-b846-6dc5e16e37a8"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4915, 118, 154, 3, 54, "Subsection",ExpressionUUID->"f9f1201d-17de-48cb-a832-1c92c070ac4c"],
-Cell[5072, 123, 315, 7, 54, "Code",ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa",
+Cell[6553, 141, 154, 3, 54, "Subsection",ExpressionUUID->"f9f1201d-17de-48cb-a832-1c92c070ac4c"],
+Cell[6710, 146, 315, 7, 54, "Code",ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[5412, 134, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[7050, 157, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[5807, 144, 1774, 25, 374, "Output",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
+Cell[7445, 167, 1774, 25, 374, "Output",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]
