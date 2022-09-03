@@ -128,6 +128,35 @@ Test[
         "Area" -> 9,
         "Shapes" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {4, 4, -1, -1, 4, 4},
+                        {4, 4, -1, -1, 4, 4},
+                        {-1, -1, 2, 2, -1, -1},
+                        {-1, -1, 2, 2, -1, -1},
+                        {4, 4, -1, -1, 4, 4},
+                        {4, 4, -1, -1, 4, 4}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                        {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                        {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                        {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                        {4, 4, 4, -1, -1, -1, 4, 4, 4}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+            |>,
             Missing["KeyAbsent", "Shapes"]
         },
         "Components" -> {
@@ -225,7 +254,8 @@ Test[
         "FilledProportion" -> 0.5555555555555556,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCFormCompositeObject-20220827-8TL849"

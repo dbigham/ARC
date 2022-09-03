@@ -561,3 +561,27 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220903-V3K03S"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["c59eb873"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220903-FA0AC3"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["9172f3a0"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220903-QNVUP2"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["d4469b4b"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220903-8BBPPH"
+]

@@ -1070,8 +1070,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f8ff0b80"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f8ff0b80"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1115,8 +1119,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "72CA375D"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "72CA375D"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1469,4 +1477,70 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220903-BKEW67"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "c59eb873"]["Train"]]
+    ]
+    ,
+    <|
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "Scaled", "Factor" -> 2.|>|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-NF9PTM"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "9172f3a0"]["Train"]]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*3],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*3],
+        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "Scaled", "Factor" -> 3.|>|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-7LU3CS"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d4469b4b"]["Train"]]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"Colors" -> {2}|> -> <|
+                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {-1, 5, -1}, {-1, 5, -1}}],
+                "XInverse" -> 3,
+                "YInverse" -> 3
+            |>,
+            <|"Colors" -> {1}|> -> <|
+                "Image" -> Daniel`ARC`ARCScene[{{-1, 5, -1}, {5, 5, 5}, {-1, 5, -1}}],
+                "XInverse" -> 3,
+                "YInverse" -> 3
+            |>,
+            <|"Colors" -> {3}|> -> <|
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 5}, {-1, -1, 5}, {5, 5, 5}}],
+                "XInverse" -> 3,
+                "YInverse" -> 3
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-I4JTV7"
 ]

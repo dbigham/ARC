@@ -1018,3 +1018,35 @@ Test[
     ,
     TestID -> "ARCFindObjectMapping-20220902-PIVYPF"
 ]
+
+Test[
+    Daniel`ARC`SimplifyObjects[
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCFindObjectMapping[
+                Daniel`ARC`ARCParseFile[file = "c59eb873"]["Train", 1]
+            ]
+        ]
+    ]
+    ,
+    <|
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{-1, 5, 1}, {5, 5, 5}, {2, 5, -1}}],
+            "Position" -> {1, 1}
+        |> -> <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {-1, -1, 5, 5, 1, 1},
+                    {-1, -1, 5, 5, 1, 1},
+                    {5, 5, 5, 5, 5, 5},
+                    {5, 5, 5, 5, 5, 5},
+                    {2, 2, 5, 5, -1, -1},
+                    {2, 2, 5, 5, -1, -1}
+                }
+            ],
+            "Position" -> {1, 1},
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 2.|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindObjectMapping-20220903-SUJGE6"
+]

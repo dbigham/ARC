@@ -378,6 +378,14 @@ ARCHollowCount::usage = "ARCHollowCount  "
 
 ARCUpdateReadme::usage = "ARCUpdateReadme  "
 
+ARCImageScalings::usage = "ARCImageScalings  "
+
+ARCScaleImage::usage = "ARCScaleImage  "
+
+ARCListMultiplier::usage = "ARCListMultiplier  "
+
+ARCGeneralizeValue::usage = "ARCGeneralizeValue  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1733,7 +1741,12 @@ ARCClassifyShape[image_List, OptionsPattern[]] :=
     Module[{},
         {
             If [TrueQ[OptionValue["IncludeImageShapes"]],
-                ARCImageRotations[ARCToMonochrome[image, $nonImageColor]]
+                With[{monochrome = ARCToMonochrome[image, $nonImageColor]},
+                    Join[
+                        ARCImageRotations[monochrome],
+                        ARCImageScalings[monochrome]
+                    ]
+                ]
                 ,
                 Nothing
             ],
@@ -2447,6 +2460,7 @@ ARCFormCompositeObject[scene_ARCScene, objectIn_, components_List, OptionsPatter
                             ] /@
                                 Join[
                                     ARCImageRotations[image],
+                                    ARCImageScalings[image],
                                     DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
                                 ],
                         "Components" -> ARCSetRelativeXY[
@@ -2770,7 +2784,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                             ]
                         ],
                         (* We've found that this image in the output is a transformation of an object
-                        in the input. *)
+                           in the input. *)
                         Return[
                             object -> Append[
                                 outputObject,
@@ -2787,10 +2801,13 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                                     {
                                         assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
                                             (* The angle specified in Shapes is the angle needed to
-                                            transform the image in Shapes to the image of the
-                                            object in the training example. We want the inverse
-                                            angle for transforming an input to an output. *)
+                                               transform the image in Shapes to the image of the
+                                               object in the training example. We want the inverse
+                                               angle for transforming an input to an output. *)
                                             Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
+                                        ),
+                                        assoc:KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}] :> (
+                                            Sett[assoc, "Factor" -> N[1 / assoc["Factor"]]]
                                         )
                                     }
                                 ]
@@ -3328,10 +3345,6 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                 foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 
                 If [foundRules2Q,
-                    res2 = Prepend[
-                        res2,
-                        "SceneAsSingleObject" -> True
-                    ];
                     If [And[
                             TrueQ[ARCWorkingQ[examples, res2]],
                             Or[
@@ -3375,7 +3388,16 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         
         KeyTake[
             res,
-            {"SceneAsSingleObject", "FormMultiColorCompositeObjects", "RemoveEmptySpace", "Background", "Rules", "PartialRules"}
+            {
+                "SceneAsSingleObject",
+                "FormMultiColorCompositeObjects",
+                "RemoveEmptySpace",
+                "Background",
+                "Width",
+                "Height",
+                "Rules",
+                "PartialRules"
+            }
         ]
     ]
 
@@ -3412,8 +3434,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             Block[{rulesResult},
                 Return[
                     rulesResult = <|
-                        If [OptionValue["SingleObject"] =!= True,
-                            "SingleObject" -> True
+                        If [TrueQ[OptionValue["SingleObject"]],
+                            "SceneAsSingleObject" -> True
                             ,
                             Nothing
                         ],
@@ -3436,6 +3458,50 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                                 Nothing
                             ]
                         ],
+                        With[
+                            {
+                                widthExpression = ARCGeneralizeValue[
+                                    examples[[All, "Input", "Width"]],
+                                    examples[[All, "Output", "Width"]],
+                                    ObjectValue["InputScene", "Width"],
+                                    (* For now we won't specify constants widths because that
+                                       seems to produce things that don't generalize as well,
+                                       such as 72CA375D being given a fixed height of 2. *)
+                                    (* But if a greater width is required, let's
+                                       note that, otherwise (at least for now) this would
+                                       cause a failure due to not being able to render
+                                       the object due to the input not being large
+                                       enough. e.g. 9172f3a0
+                                       One unintended consequence of how we have implemented
+                                       this is that it's also throwing away dynamic
+                                       width/height expressions if they are smaller
+                                       than the input, but I think that's what we want
+                                       since our guess is that RemoveEmptySpace is
+                                       probably a better way to deal with this for
+                                       now. *)
+                                    "OnlyIfLarger" -> True
+                                ],
+                                heightExpression = ARCGeneralizeValue[
+                                    examples[[All, "Input", "Height"]],
+                                    examples[[All, "Output", "Height"]],
+                                    ObjectValue["InputScene", "Height"],
+                                    "OnlyIfLarger" -> True
+                                ]
+                            },
+                            <|
+                                If [SpecifiedQ[widthExpression],
+                                    "Width" -> widthExpression
+                                    ,
+                                    Nothing
+                                ]
+                                ,
+                                If [SpecifiedQ[heightExpression],
+                                    "Height" -> heightExpression
+                                    ,
+                                    Nothing
+                                ]
+                            |>
+                        ],
                         "Rules" -> Join[
                             ARCCleanRules[rules, allObjects],
                             additionalRules
@@ -3443,6 +3509,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                         "Examples" -> examples,
                         "ObjectMappings" -> objectMappings
                     |>;
+                    
+                    (*ARCEcho2[ARCSimplifyRules[KeyDrop[rulesResult, {"Examples", "ObjectMappings"}]]];*)
+                    
                     If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
                         rulesResult = Prepend[
                             rulesResult,
@@ -4262,7 +4331,35 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
         
         outputScene = Sett[
             parsedScene,
-            "Objects" -> objects
+            {
+                "Objects" -> objects,
+                If [SpecifiedQ[rules["Width"]],
+                    "Width" ->
+                        ToIntegerIfNoDecimal@
+                        Activate[
+                            Replace[
+                                rules["Width"],
+                                ObjectValue["InputScene", "Width"] :> parsedScene["Width"],
+                                {0, Infinity}
+                            ]
+                        ]
+                    ,
+                    Nothing
+                ],
+                If [SpecifiedQ[rules["Height"]],
+                    "Height" ->
+                        ToIntegerIfNoDecimal@
+                        Activate[
+                            Replace[
+                                rules["Height"],
+                                ObjectValue["InputScene", "Height"] :> parsedScene["Height"],
+                                {0, Infinity}
+                            ]
+                        ]
+                    ,
+                    Nothing
+                ]
+            }
         ];
         
         (* Convert our sparse output objects to fuller objects that have their various
@@ -4676,6 +4773,12 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Rotation"],
     Sett[
         objectOut,
         "Image" -> RotateImage[objectIn["Image"], value["Angle"]]
+    ]
+
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Scaled"], objectIn_Association, objectOut_Association, scene_Association] :=
+    Sett[
+        objectOut,
+        "Image" -> ARCScaleImage[objectIn["Image"], value["Factor"]]
     ]
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Position" -> _}], objectIn_Association, objectOut_Association, scene_Association] :=
@@ -8969,7 +9072,7 @@ ARCTaskLog[] :=
                list of an evaluation task starts passing, but we don't increase SuccessCount since
                that is currently specific to training tasks. (we also don't increase it if adding
                a personal example that we've implemented) *)
-            "SucessCount" -> 1,
+            "SuccessCount" -> 1,
             (* How long it is currently taking to run all of the training tasks. *)
             "Runtime" -> Quantity[1.5, "Minutes"],
             (* The number of lines of code I've now written. *)
@@ -8986,7 +9089,7 @@ ARCTaskLog[] :=
             "TotalEvaluationSuccesses" -> 0
         |>,
         <|
-            "SucessCount" -> 2,
+            "SuccessCount" -> 2,
             "Runtime" -> Quantity[1.5, "Minutes"],
             "ExampleImplemented" -> "3c9b0459",
             "NewGeneralizedSuccesses" -> 0,
@@ -8994,7 +9097,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 24}],
-            "SucessCount" -> 3,
+            "SuccessCount" -> 3,
             "Runtime" -> Quantity[2.8, "Minutes"],
             "RuntimeComment" -> "Slowed down from 1.5 minutes to 2.8 minutes July 24 2022 when we implemented \"Forming Composite Objects Can't Assume\" for 1caeab9d.",
             "CodeLength" -> 3034,
@@ -9004,7 +9107,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 4,
+            "SuccessCount" -> 4,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3491,
             "ExampleImplemented" -> "b60334d2",
@@ -9013,7 +9116,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 5,
+            "SuccessCount" -> 5,
             "Runtime" -> Quantity[3.8, "Minutes"],
             "RuntimeComment" -> "I'm surprised this went up for this input. Did I just not notice it going up for the previous input, or did I really make a change here that slowed things down?",
             "CodeLength" -> 3549,
@@ -9024,7 +9127,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 6,
+            "SuccessCount" -> 6,
             "Runtime" -> Quantity[3, "Minutes"],
             "RuntimeComment" -> "I'm now explicitly skipping inputs where the input and output grids are different sizes.",
             "CodeLength" -> 3618,
@@ -9035,7 +9138,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 7,
+            "SuccessCount" -> 7,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3697,
             "ExampleImplemented" -> "e76a88a6",
@@ -9045,7 +9148,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 8,
+            "SuccessCount" -> 8,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3698,
             "Comment" -> "I also took the opportunity to expand the list of properties we consider for rule formation to include: Width, Height, Position, Y, X, AspectRatio, Area, FilledArea. Still notably absent: Shapes",
@@ -9056,7 +9159,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SucessCount" -> 9,
+            "SuccessCount" -> 9,
             "Runtime" -> Quantity[4.1, "Minutes"],
             "RuntimeComment" -> "ARCFindRules was enhanced to also consider Except[_] rules, which presumably adds runtime.",
             "CodeLength" -> 3869,
@@ -9067,7 +9170,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 4}],
-            "SucessCount" -> 10,
+            "SuccessCount" -> 10,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 4505,
             "ExampleImplemented" -> "05f2a901",
@@ -9077,7 +9180,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 5}],
-            "SucessCount" -> 11,
+            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 4799,
             "ExampleImplemented" -> "08ed6ac7",
@@ -9090,14 +9193,14 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SucessCount" -> 11,
+            "SuccessCount" -> 11,
             "ExampleImplemented" -> "jnohuorzh-easier",
             "ImplementationTime" -> Quantity[0.25, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SucessCount" -> 11,
+            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5226,
             "ExampleImplemented" -> "ihiz27k2n",
@@ -9109,8 +9212,8 @@ ARCTaskLog[] :=
         |>,
         <|
             "PersonalExample" -> True,
-            "Timestamp" -> DateObject[{2022, 6, 8}],
-            "SucessCount" -> 11,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5291,
             "ExampleImplemented" -> "jnohuorzh",
@@ -9121,8 +9224,8 @@ ARCTaskLog[] :=
             "TotalEvaluationSuccesses" -> 0
         |>,
         <|
-            "Timestamp" -> DateObject[{2022, 6, 8}],
-            "SucessCount" -> 12,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SuccessCount" -> 12,
             "Runtime" -> Quantity[3.6, "Minutes"],
             "CodeLength" -> 5386,
             "ExampleImplemented" -> "a61f2674",
@@ -9134,8 +9237,8 @@ ARCTaskLog[] :=
         |>,
         <|
             "GeneralizedSuccess" -> True,
-            "Timestamp" -> DateObject[{2022, 6, 8}],
-            "SucessCount" -> 13,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.6, "Minutes"],
             "CodeLength" -> 5386,
             "ExampleImplemented" -> "ea32f347",
@@ -9147,8 +9250,8 @@ ARCTaskLog[] :=
         |>,
         <|
             "PersonalExample" -> True,
-            "Timestamp" -> DateObject[{2022, 6, 8}],
-            "SucessCount" -> 13,
+            "Timestamp" -> DateObject[{2022, 8, 6}],
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 5551,
             "ExampleImplemented" -> "0uduqqj6f",
@@ -9161,7 +9264,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5703,
             "ExampleImplemented" -> "2wfys5w64",
@@ -9174,7 +9277,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5875,
             "ExampleImplemented" -> "2wfys5w64-relative-right-side",
@@ -9187,7 +9290,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5875,
             "ExampleImplemented" -> "n1hczotml",
@@ -9200,7 +9303,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 8}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             (* Note that this increase in code size wasn't for this example, but rather was due
                to code for publishing task notes, etc. *)
@@ -9215,7 +9318,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 10}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 7258,
             "ExampleImplemented" -> "ifmyulnv8-shape",
@@ -9228,7 +9331,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 12}],
-            "SucessCount" -> 13,
+            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.8, "Minutes"],
             "CodeLength" -> 7541,
             "ExampleImplemented" -> "ifmyulnv8-dynamic-shape",
@@ -9240,7 +9343,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 12}],
-            "SucessCount" -> 14,
+            "SuccessCount" -> 14,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 7838,
             "ExampleImplemented" -> "253bf280",
@@ -9253,7 +9356,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 14,
+            "SuccessCount" -> 14,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "CodeLengthComment" -> "Also includes in-progress work for 25d487eb.",
@@ -9267,7 +9370,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 15,
+            "SuccessCount" -> 15,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "5521c0d9",
@@ -9280,7 +9383,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 16,
+            "SuccessCount" -> 16,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "6c434453",
@@ -9293,7 +9396,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 17,
+            "SuccessCount" -> 17,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "6e82a1ae",
@@ -9306,7 +9409,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 18,
+            "SuccessCount" -> 18,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "aabf363d",
@@ -9318,7 +9421,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 19,
+            "SuccessCount" -> 19,
             "Runtime" -> Quantity[6.1, "Minutes"],
             "CodeLength" -> 9489,
             "ExampleImplemented" -> "25d8a9c8",
@@ -9331,7 +9434,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 20,
+            "SuccessCount" -> 20,
             "Runtime" -> Quantity[6.1, "Minutes"],
             "CodeLength" -> 9489,
             "ExampleImplemented" -> "b1948b0a",
@@ -9343,7 +9446,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 21,
+            "SuccessCount" -> 21,
             "Runtime" -> Quantity[6.4, "Minutes"],
             "CodeLength" -> 9598,
             "ExampleImplemented" -> "c8f0f002",
@@ -9356,7 +9459,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SucessCount" -> 22,
+            "SuccessCount" -> 22,
             "Runtime" -> Quantity[6.4, "Minutes"],
             "CodeLength" -> 9598,
             "ExampleImplemented" -> "d511f180",
@@ -9368,7 +9471,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 20}],
-            "SucessCount" -> 23,
+            "SuccessCount" -> 23,
             "Runtime" -> Quantity[4.8, "Minutes"],
             "CodeLength" -> 9972,
             "ExampleImplemented" -> "31aa019c",
@@ -9380,7 +9483,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 21}],
-            "SucessCount" -> 24,
+            "SuccessCount" -> 24,
             "Runtime" -> Quantity[5.6, "Minutes"],
             "CodeLength" -> 10281,
             "ExampleImplemented" -> "363442ee",
@@ -9393,7 +9496,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 21}],
-            "SucessCount" -> 25,
+            "SuccessCount" -> 25,
             "Runtime" -> Quantity[5.6, "Minutes"],
             "CodeLength" -> 10281,
             "ExampleImplemented" -> "88a10436",
@@ -9405,7 +9508,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SucessCount" -> 26,
+            "SuccessCount" -> 26,
             "Runtime" -> Quantity[4.3, "Minutes"],
             "CodeLength" -> 10850,
             "ExampleImplemented" -> "25d487eb",
@@ -9417,7 +9520,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SucessCount" -> 27,
+            "SuccessCount" -> 27,
             "Runtime" -> Quantity[4.3, "Minutes"],
             "CodeLength" -> 10929,
             "ExampleImplemented" -> "0962bcdd",
@@ -9429,7 +9532,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SucessCount" -> 28,
+            "SuccessCount" -> 28,
             "Runtime" -> Quantity[5.2, "Minutes"],
             "CodeLength" -> 11003,
             "ExampleImplemented" -> "0d3d703e",
@@ -9442,7 +9545,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SucessCount" -> 29,
+            "SuccessCount" -> 29,
             "Runtime" -> Quantity[5.2, "Minutes"],
             "CodeLength" -> 11003,
             "ExampleImplemented" -> "d037b0a7",
@@ -9454,7 +9557,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 23}],
-            "SucessCount" -> 30,
+            "SuccessCount" -> 30,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 11069,
             "ExampleImplemented" -> "1bfc4729",
@@ -9467,7 +9570,7 @@ ARCTaskLog[] :=
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SucessCount" -> 30,
+            "SuccessCount" -> 30,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "RuntimeComment" -> "We no longer take the first minimal property set that we find but rather compute all of them and choose the best, and we now have a list of minimal property sets for the case that a named transform isn't found.",
             "CodeLength" -> 11845,
@@ -9481,7 +9584,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SucessCount" -> 31,
+            "SuccessCount" -> 31,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "4347f46a",
@@ -9494,7 +9597,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SucessCount" -> 32,
+            "SuccessCount" -> 32,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "67385a82",
@@ -9506,7 +9609,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SucessCount" -> 33,
+            "SuccessCount" -> 33,
             "Runtime" -> Quantity[7.4, "Minutes"],
             "CodeLength" -> 12346,
             "ExampleImplemented" -> "178fcbfb",
@@ -9518,7 +9621,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SucessCount" -> 34,
+            "SuccessCount" -> 34,
             "Runtime" -> Quantity[9.3, "Minutes"],
             "RuntimeComment" -> "I'm surprised to see the runtime slow down from 7.4 minutes to 9.3 minutes here -- that probably deserves debugging to understand why. I even fixed an issue whereby it was trying all alternatives of a minimal property set item after finding one that didn't need to add anything to the output rule due to being able to use input values directly.",
             "CodeLength" -> 12898,
@@ -9532,7 +9635,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SucessCount" -> 35,
+            "SuccessCount" -> 35,
             "Runtime" -> Quantity[9.3, "Minutes"],
             "CodeLength" -> 12898,
             "ExampleImplemented" -> "56ff96f3",
@@ -9544,7 +9647,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SucessCount" -> 36,
+            "SuccessCount" -> 36,
             "Runtime" -> Quantity[11, "Minutes"],
             "RuntimeComment" -> "Yikes! What is leading to these consistent and significant increases in runtime?"
             "CodeLength" -> 13040,
@@ -9557,7 +9660,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 37,
+            "SuccessCount" -> 37,
             "Runtime" -> Quantity[17, "Minutes"],
             "RuntimeComment" -> "We've removed the fail-fast that was skipping any example where the input and output images weren't the same size, so we are legitimately doing a lot more work now."
             "CodeLength" -> 13294,
@@ -9571,7 +9674,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 38,
+            "SuccessCount" -> 38,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "4be741c5",
@@ -9584,7 +9687,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 39,
+            "SuccessCount" -> 39,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "90c28cc7",
@@ -9597,7 +9700,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 40,
+            "SuccessCount" -> 40,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "a87f7484",
@@ -9610,7 +9713,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 41,
+            "SuccessCount" -> 41,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "e9afcf9a",
@@ -9623,7 +9726,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 42,
+            "SuccessCount" -> 42,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "f8ff0b80",
@@ -9635,7 +9738,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 43,
+            "SuccessCount" -> 43,
             "Runtime" -> Quantity[TODO, "Minutes"],
             "CodeLength" -> 13429,
             "ExampleImplemented" -> "6F8CD79B",
@@ -9647,7 +9750,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 44,
+            "SuccessCount" -> 44,
             "Runtime" -> Quantity[TODO, "Minutes"],
             "CodeLength" -> 13492,
             "ExampleImplemented" -> "72CA375D",
@@ -9659,7 +9762,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 45,
+            "SuccessCount" -> 45,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "A79310A0",
@@ -9673,7 +9776,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 46,
+            "SuccessCount" -> 46,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "1cf80156",
@@ -9686,7 +9789,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SucessCount" -> 47,
+            "SuccessCount" -> 47,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "23b5c85d",
@@ -9698,7 +9801,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SucessCount" -> 48,
+            "SuccessCount" -> 48,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13581,
             "ExampleImplemented" -> "40853293",
@@ -9712,7 +9815,7 @@ ARCTaskLog[] :=
             (* Implemented by accident *)
             "EvaluationTask" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SucessCount" -> 48,
+            "SuccessCount" -> 48,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "1A2E2828",
@@ -9725,7 +9828,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SucessCount" -> 49,
+            "SuccessCount" -> 49,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "445eab21",
@@ -9737,7 +9840,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SucessCount" -> 50,
+            "SuccessCount" -> 50,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "95990924",
             "ImplementationTime" -> Quantity[4.5, "Hours"],
@@ -9749,7 +9852,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SucessCount" -> 51,
+            "SuccessCount" -> 51,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "4258a5f9",
             "ImplementationTime" -> Quantity[0, "Hours"],
@@ -9761,7 +9864,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SucessCount" -> 52,
+            "SuccessCount" -> 52,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "913fb3ed",
             "ImplementationTime" -> Quantity[0, "Hours"],
@@ -9773,7 +9876,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SucessCount" -> 53,
+            "SuccessCount" -> 53,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "a61ba2ce",
             "ImplementationTime" -> Quantity[0, "Hours"],
@@ -9784,7 +9887,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SucessCount" -> 54,
+            "SuccessCount" -> 54,
             "CodeLength" -> 14359,
             "ExampleImplemented" -> "BE94B721",
             "ImplementationTime" -> Quantity[1, "Hours"],
@@ -9796,7 +9899,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SucessCount" -> 55,
+            "SuccessCount" -> 55,
             "CodeLength" -> 14359,
             "ExampleImplemented" -> "810b9b61",
             "ImplementationTime" -> Quantity[0, "Hours"],
@@ -9807,7 +9910,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SucessCount" -> 56,
+            "SuccessCount" -> 56,
             "CodeLength" -> 14571,
             "ExampleImplemented" -> "ed36ccf7",
             "ImplementationTime" -> Quantity[1, "Hours"],
@@ -9819,7 +9922,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SucessCount" -> 57,
+            "SuccessCount" -> 57,
             "CodeLength" -> 14571,
             "ExampleImplemented" -> "27a28665",
             "ImplementationTime" -> Quantity[1, "Hours"],
@@ -9830,7 +9933,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SucessCount" -> 58,
+            "SuccessCount" -> 58,
             "Runtime" -> Quantity[20, "Minutes"],
             "CodeLength" -> 14763,
             "ExampleImplemented" -> "a740d043",
@@ -9844,7 +9947,7 @@ ARCTaskLog[] :=
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SucessCount" -> 59,
+            "SuccessCount" -> 59,
             "Runtime" -> Quantity[20, "Minutes"],
             "CodeLength" -> 14763,
             "ExampleImplemented" -> "6e02f1e3",
@@ -9856,7 +9959,7 @@ ARCTaskLog[] :=
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SucessCount" -> 60,
+            "SuccessCount" -> 60,
             "Runtime" -> Quantity[1.3, "Hours"],
             "RuntimeComment" -> "What?! Well that's not good. Why such a dramatic slowdown?",
             "CodeLength" -> 14897,
@@ -9864,13 +9967,13 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"b2862040", "de1cd16c"},
             "TotalGeneralizedSuccesses" -> 28,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "NewEvaluationSuccesses" -> {"37d3e8b2", "4364c1c4"},
+            "TotalEvaluationSuccesses" -> 11
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SucessCount" -> 61,
+            "SuccessCount" -> 61,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 14897,
             "ExampleImplemented" -> "b2862040",
@@ -9878,12 +9981,12 @@ ARCTaskLog[] :=
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 28,
             "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "TotalEvaluationSuccesses" -> 11
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SucessCount" -> 62,
+            "SuccessCount" -> 62,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 14897,
             "ExampleImplemented" -> "de1cd16c",
@@ -9891,7 +9994,45 @@ ARCTaskLog[] :=
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 28,
             "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 63,
+            "Runtime" -> Quantity[1.2, "Hours"],
+            "CodeLength" -> 15160,
+            "ExampleImplemented" -> "c59eb873",
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "NewGeneralizedSuccesses" -> {"9172f3a0", "d4469b4b"},
+            "TotalGeneralizedSuccesses" -> 30,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 64,
+            "Runtime" -> Quantity[1.2, "Hours"],
+            "CodeLength" -> 15160,
+            "ExampleImplemented" -> "9172f3a0",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 30,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 65,
+            "Runtime" -> Quantity[1.2, "Hours"],
+            "CodeLength" -> 15160,
+            "ExampleImplemented" -> "d4469b4b",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 30,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
         |>
     }
 
@@ -14934,6 +15075,200 @@ ARCUpdateReadme[] :=
             "## Tasks Implemented" ~~ ___ -> ReturnIfFailure[ARCImplementedTasksMarkdown[]],
             {FileNameJoin[{FileNameDrop[FindFile["ARC`"], -1], "README.md"}]}
         ];
+    ]
+
+(*!
+    \function ARCImageScalings
+    
+    \calltable
+        ARCImageScalings[image] '' Given an image, produces variations that have been scaled.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCImageScalings]
+    
+    \maintainer danielb
+*)
+Clear[ARCImageScalings];
+ARCImageScalings[image_List] :=
+    Module[{scaledImage, width = ImageWidth[image], height = ImageHeight[image]},
+        Function[{factor},
+            scaledImage = Null;
+            If [Or[
+                    factor > 1,
+                    And[
+                        factor < 1,
+                        width * factor >= 1,
+                        height * factor >= 1,
+                        IntegerQ[Utility`ToIntegerIfNoDecimal[width * factor]],
+                        IntegerQ[Utility`ToIntegerIfNoDecimal[height * factor]],
+                        (* Can be down-scaled exactly, since we can restore it to it's original
+                           form by up-scaling again. *)
+                        ARCScaleImage[scaledImage = ARCScaleImage[image, factor], 1 / factor] === image
+                    ]
+                ],
+                If [scaledImage === Null,
+                    scaledImage = ARCScaleImage[image, factor]
+                ];
+                <|
+                    "Image" -> ARCScene[scaledImage],
+                    "Transform" -> <|
+                        "Type" -> "Scaled",
+                        "Factor" -> N[1 / factor]
+                    |>
+                |>
+                ,
+                Nothing
+            ]
+        ] /@ {0.25, 0.5, 2, 3}
+    ]
+
+(*!
+    \function ARCScaleImage
+    
+    \calltable
+        ARCScaleImage[image, factor] '' Scales the given image by the given factor.
+    
+    Examples:
+    
+    ARCScene[ARCScaleImage[{{1, -1, 1}, {-1, 1, -1}, {-1, -1, 1}}, 2]]
+    
+    ===
+    
+    ARCScene[
+        {
+            {1, 1, -1, -1, 1, 1},
+            {1, 1, -1, -1, 1, 1},
+            {-1, -1, 1, 1, -1, -1},
+            {-1, -1, 1, 1, -1, -1},
+            {-1, -1, -1, -1, 1, 1},
+            {-1, -1, -1, -1, 1, 1}
+        }
+    ]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCScaleImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCScaleImage];
+ARCScaleImage[image_List, factor_] :=
+    Module[{},
+        IntegerPart[
+            ImageData[
+                ImageResize[
+                    Image[image],
+                    ImageWidth[image] * factor
+                ]
+            ]
+        ]
+    ]
+
+ARCScaleImage[ARCScene[image_], factor_] :=
+    ARCScene[ARCScaleImage[image, factor]]
+
+(*!
+    \function ARCListMultiplier
+    
+    \calltable
+        ARCListMultiplier[list1, list2] '' If list2 is multiplicative factor of list1, that factor is returned, otherwise Missing is returned.
+    
+    Examples:
+    
+    ARCListMultiplier[{1, 2, 3}, {2, 4, 6}] === 2
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCListMultiplier]
+    
+    \maintainer danielb
+*)
+Clear[ARCListMultiplier];
+ARCListMultiplier[list1_List, list2_List] :=
+    Module[{factors},
+        
+        factors = N[list2 / list1];
+        
+        factors = DeleteDuplicates[factors];
+        
+        If [MatchQ[factors, {_Integer | _Real}],
+            ToIntegerIfNoDecimal[factors[[1]]]
+            ,
+            Missing["None"]
+        ]
+    ]
+
+(*!
+    \function ARCGeneralizeValue
+    
+    \calltable
+        ARCGeneralizeValue[inputValues, outputValues, inputValueReference] '' Given some input values and their corresponding output values, tries to produce an expression to specify the output values, potentially as an expression that references the input value.
+    
+    Examples:
+    
+    ARCGeneralizeValue[{1, 2, 3}, {2, 4, 6}, ObjectValue["InputScene", "MyValue"]]
+    
+    ===
+    
+    Inactive[ObjectValue["InputScene", "MyValue"]*2]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGeneralizeValue]
+    
+    \maintainer danielb
+*)
+Clear[ARCGeneralizeValue];
+Options[ARCGeneralizeValue] =
+{
+    "OnlyIfLarger" -> False     (*< Only produce an expression if the output values are larger than the input values. *)
+};
+ARCGeneralizeValue[inputValues_List, outputValues_List, inputValueReference_, OptionsPattern[]] :=
+    Module[{multiplier, uniqueValues, largerQ = False},
+        
+        multiplier = ARCListMultiplier[
+            inputValues,
+            outputValues
+        ];
+        
+        uniqueValues = DeleteDuplicates[outputValues];
+        
+        Which[
+            SpecifiedQ[multiplier] && multiplier > 1,
+                largerQ = True,
+            MatchQ[uniqueValues, {Except[_Missing]}] && uniqueValues[[1]] > inputValues[[1]],
+                largerQ = True
+        ];
+        
+        Which[
+            multiplier === 1,
+                Missing[],
+            And[
+                SpecifiedQ[multiplier],
+                Or[
+                    !TrueQ[OptionValue["OnlyIfLarger"]],
+                    largerQ
+                ]
+            ],
+                With[{multiplier = multiplier},
+                    Inactive[inputValueReference * multiplier]
+                ],
+            And[
+                MatchQ[uniqueValues, {Except[_Missing]}],
+                Or[
+                    !TrueQ[OptionValue["OnlyIfLarger"]],
+                    largerQ
+                ]
+            ],
+                uniqueValues[[1]],
+            True,
+                Missing[]
+        ]
     ]
 
 End[]
