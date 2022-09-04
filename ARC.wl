@@ -386,6 +386,10 @@ ARCListMultiplier::usage = "ARCListMultiplier  "
 
 ARCGeneralizeValue::usage = "ARCGeneralizeValue  "
 
+ARCDropObjectProperties::usage = "ARCDropObjectProperties  "
+
+ARCFixUnwantedManyToOneMappings::usage = "ARCFixUnwantedManyToOneMappings  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -460,15 +464,15 @@ $nonImageColor = -1;
 
 $integerToColor = <|
     0 -> Black,
-    1 -> Blue,
-    2 -> Red,
-    3 -> Green,
-    4 -> Yellow,
-    5 -> Gray,
-    6 -> Blend[{Pink, Purple}],
-    7 -> Orange,
-    8 -> Lighter[Lighter[Blue]],
-    9 -> Blend[{Darker[Brown], Red}],
+    1 -> RGBColor["#0074d9"],
+    2 -> RGBColor["#ff4136"],
+    3 -> RGBColor["#2ecc40"],
+    4 -> RGBColor["#ffdc00"],
+    5 -> RGBColor["#aaa"],
+    6 -> RGBColor["#f012be"],
+    7 -> RGBColor["#ff851b"],
+    8 -> RGBColor["#7fdbff"],
+    9 -> RGBColor["#870c25"],
     10 -> White
 |>;
 
@@ -2151,64 +2155,74 @@ ARCIndent[expr_, opts:OptionsPattern[]] :=
 *)
 Clear[ARCClassifyLine];
 ARCClassifyLine[image_List] :=
-    Which[
-        (* Vertical *)
-        MatchQ[
-            image,
-            List[
-                Repeated[{c:Except[$nonImageColor]}, {2, Infinity}]
-            ]
-        ],
-            <|"Name" -> "Line", "Angle" -> 90|>,
-        (* Horizontal *)
-        MatchQ[
-            image,
-            {{Repeated[c:Except[$nonImageColor], {2, Infinity}]}}
-        ],
+    If [ARCClassifyPixel[image] =!= Nothing,
+        {
             <|"Name" -> "Line", "Angle" -> 0|>,
-        (* Diagonal *)
-        And[
-            ImageWidth[image] === ImageHeight[image],
-            ImageWidth[image] > 1,
-            With[{width = ImageWidth[image]},
-                MatchQ[
-                    image,
-                    Function[{y},
-                        Flatten[
-                            {
-                                Table[$nonImageColor, {y - 1}],
-                                Except[$nonImageColor],
-                                Table[$nonImageColor, {width - y}]
-                            },
-                            1
-                        ]
-                    ] /@ Range[ImageHeight[image]]
-                ]
-            ]
-        ],
+            <|"Name" -> "Line", "Angle" -> 90|>,
             <|"Name" -> "Line", "Angle" -> 135|>,
-        And[
-            ImageWidth[image] === ImageHeight[image],
-            ImageWidth[image] > 1,
-            With[{width = ImageWidth[image]},
-                MatchQ[
-                    image,
-                    Function[{y},
-                        Flatten[
-                            {
-                                Table[$nonImageColor, {width - y}],
-                                Except[$nonImageColor],
-                                Table[$nonImageColor, {y - 1}]
-                            },
-                            1
-                        ]
-                    ] /@ Range[ImageHeight[image]]
+            <|"Name" -> "Line", "Angle" -> 45|>
+        },
+        Which[
+            (* Vertical *)
+            MatchQ[
+                image,
+                List[
+                    Repeated[{c:Except[$nonImageColor]}, {1, Infinity}]
                 ]
-            ]
-        ],
-            <|"Name" -> "Line", "Angle" -> 45|>,
-        True,
-            Nothing
+            ],
+                (* TODO: If the pixel is of length 1, then technically it isn't just this
+                        type of line but all rotations. *)
+                <|"Name" -> "Line", "Angle" -> 90|>,
+            (* Horizontal *)
+            MatchQ[
+                image,
+                {{Repeated[c:Except[$nonImageColor], {1, Infinity}]}}
+            ],
+                <|"Name" -> "Line", "Angle" -> 0|>,
+            (* Diagonal *)
+            And[
+                ImageWidth[image] === ImageHeight[image],
+                ImageWidth[image] > 1,
+                With[{width = ImageWidth[image]},
+                    MatchQ[
+                        image,
+                        Function[{y},
+                            Flatten[
+                                {
+                                    Table[$nonImageColor, {y - 1}],
+                                    Except[$nonImageColor],
+                                    Table[$nonImageColor, {width - y}]
+                                },
+                                1
+                            ]
+                        ] /@ Range[ImageHeight[image]]
+                    ]
+                ]
+            ],
+                <|"Name" -> "Line", "Angle" -> 135|>,
+            And[
+                ImageWidth[image] === ImageHeight[image],
+                ImageWidth[image] > 1,
+                With[{width = ImageWidth[image]},
+                    MatchQ[
+                        image,
+                        Function[{y},
+                            Flatten[
+                                {
+                                    Table[$nonImageColor, {width - y}],
+                                    Except[$nonImageColor],
+                                    Table[$nonImageColor, {y - 1}]
+                                },
+                                1
+                            ]
+                        ] /@ Range[ImageHeight[image]]
+                    ]
+                ]
+            ],
+                <|"Name" -> "Line", "Angle" -> 45|>,
+            True,
+                Nothing
+        ]
     ]
 
 (*!
@@ -2678,6 +2692,12 @@ ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[
                 ]
             ] /@ inputObjects
         |>;
+        
+        (* Are there any many-to-one mappings that we want to fix due to one of the objects
+           being an exact image match and one or more not being an exact match? e.g. a87f7484 *)
+        mapping =
+            ReturnIfFailure@
+            ARCFixUnwantedManyToOneMappings[mapping];
         
         (*ARCEcho[SimplifyObjects[mapping]];*)
         
@@ -3415,18 +3435,19 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
     Module[
         {
             examples = examplesIn,
+            widthExpression,
+            heightExpression,
             allObjects,
             returnRules,
             referenceableInputObjects,
             referenceableOutputObjects,
             objectMappings,
-            preRules,
-            rules,
             ruleSets,
-            transform,
             mappedInputObjects,
-            addedObjects,
-            additionalRules = {}
+            additionalRules = {},
+            ruleSets2,
+            ruleFindings2,
+            additionalRules2
         },
         
         (* Helper function for producing the final return value. *)
@@ -3458,49 +3479,15 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                                 Nothing
                             ]
                         ],
-                        With[
-                            {
-                                widthExpression = ARCGeneralizeValue[
-                                    examples[[All, "Input", "Width"]],
-                                    examples[[All, "Output", "Width"]],
-                                    ObjectValue["InputScene", "Width"],
-                                    (* For now we won't specify constants widths because that
-                                       seems to produce things that don't generalize as well,
-                                       such as 72CA375D being given a fixed height of 2. *)
-                                    (* But if a greater width is required, let's
-                                       note that, otherwise (at least for now) this would
-                                       cause a failure due to not being able to render
-                                       the object due to the input not being large
-                                       enough. e.g. 9172f3a0
-                                       One unintended consequence of how we have implemented
-                                       this is that it's also throwing away dynamic
-                                       width/height expressions if they are smaller
-                                       than the input, but I think that's what we want
-                                       since our guess is that RemoveEmptySpace is
-                                       probably a better way to deal with this for
-                                       now. *)
-                                    "OnlyIfLarger" -> True
-                                ],
-                                heightExpression = ARCGeneralizeValue[
-                                    examples[[All, "Input", "Height"]],
-                                    examples[[All, "Output", "Height"]],
-                                    ObjectValue["InputScene", "Height"],
-                                    "OnlyIfLarger" -> True
-                                ]
-                            },
-                            <|
-                                If [SpecifiedQ[widthExpression],
-                                    "Width" -> widthExpression
-                                    ,
-                                    Nothing
-                                ]
-                                ,
-                                If [SpecifiedQ[heightExpression],
-                                    "Height" -> heightExpression
-                                    ,
-                                    Nothing
-                                ]
-                            |>
+                        If [SpecifiedQ[widthExpression],
+                            "Width" -> widthExpression
+                            ,
+                            Nothing
+                        ],
+                        If [SpecifiedQ[heightExpression],
+                            "Height" -> heightExpression
+                            ,
+                            Nothing
                         ],
                         "Rules" -> Join[
                             ARCCleanRules[rules, allObjects],
@@ -3533,6 +3520,71 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "SingleObject" ->
                     TrueQ[OptionValue["SingleObject"]]
             ];
+        
+        widthExpression = ARCGeneralizeValue[
+            examples[[All, "Input", "Width"]],
+            examples[[All, "Output", "Width"]],
+            ObjectValue["InputScene", "Width"],
+            (* For now we won't specify constants widths because that seems to produce things
+               that don't generalize as well, such as 72CA375D being given a fixed height of 2. *)
+            (* But if a greater width is required, let's note that, otherwise (at least for now)
+               this would cause a failure due to not being able to render the object due to the
+               input not being large enough. e.g. 9172f3a0
+               One unintended consequence of how we have implemented this is that it's also
+               throwing away dynamic width/height expressions if they are smaller than the input,
+               but I think that's what we want since our guess is that RemoveEmptySpace is probably
+               a better way to deal with this for now. *)
+            "OnlyIfLarger" -> True
+        ];
+        
+        heightExpression = ARCGeneralizeValue[
+            examples[[All, "Input", "Height"]],
+            examples[[All, "Output", "Height"]],
+            ObjectValue["InputScene", "Height"],
+            "OnlyIfLarger" -> True
+        ];
+        
+        If [Not[
+                Or[
+                    SpecifiedQ[widthExpression],
+                    examples[[All, "Output", "Width"]] === examples[[All, "Input", "Width"]]
+                ]
+            ],
+            (* The width of the output scene isn't dependably known, so properties like
+               XInverse, X2Inverse, etc. shouldn't be used. e.g. d631b094 *)
+            examples = ARCDropObjectProperties[
+                examples,
+                {
+                    "XInverse",
+                    "XInverse.Rank",
+                    "XInverse.InverseRank",
+                    "X2Inverse",
+                    "X2Inverse.Rank",
+                    "X2Inverse.InverseRank"
+                }
+            ]
+        ];
+        
+        If [Not[
+                Or[
+                    SpecifiedQ[heightExpression],
+                    examples[[All, "Output", "Height"]] === examples[[All, "Input", "Height"]]
+                ]
+            ],
+            (* The height of the output scene isn't dependably known, so properties like
+               YInverse, Y2Inverse, etc. shouldn't be used. *)
+            examples = ARCDropObjectProperties[
+                examples,
+                {
+                    "YInverse",
+                    "YInverse.Rank",
+                    "YInverse.InverseRank",
+                    "Y2Inverse",
+                    "Y2Inverse.Rank",
+                    "Y2Inverse.InverseRank"
+                }
+            ]
+        ];
         
         allObjects = Flatten[examples[[All, "Input", "Objects"]]];
         
@@ -3586,6 +3638,105 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (*ARCEcho[SimplifyObjects[objectMappings]];*)
         
+        (*ARCEcho2[objectMappings];*)
+        (*ARCEcho[objectMappings];*)
+        
+        {ruleSets, ruleFindings, additionalRules} =
+            ReturnIfFailure@
+            ARCFindRules[examples, objectMappings, referenceableInputObjects];
+        
+        If [And[
+                (* We weren't able to find a rule set. *)
+                ruleSets === {},
+                (* All output scenes have a single object. *)
+                DeleteDuplicates[Length /@ examples[[All, "Output", "Objects"]]] === {1},
+                (* It isn't the case that all objects in all scenes get deleted due to them not
+                   being mapped to an output object. *)
+                !MatchQ[
+                    DeleteDuplicates[Flatten[(Normal /@ objectMappings)[[All, All, 2]]]],
+                    {_Missing}
+                ]
+            ],
+            (* We weren't able to find rules, but the output scene always has a single object, so
+               it would be worth us trying to find rules again using no object mapping.
+               i.e. To assume that we're going to just delete all input objects and try to infer
+               the properties of the output object. *)
+            
+            {ruleSets2, ruleFindings2, additionalRules2} =
+                ReturnIfFailure@
+                ARCFindRules[
+                    examples,
+                    Function[{output},
+                        <|
+                            ARCAddedObjectsMapping[{output[["Objects", 1]]}]
+                        |>
+                    ] /@ examples[[All, "Output"]],
+                    referenceableInputObjects
+                ];
+            
+            If [Length[additionalRules2] > 0,
+                ruleSets = {
+                    {
+                        If [DeleteDuplicates[Length /@ examples[[All, "Input", "Objects"]]] =!= {0},
+                            (* Delete any input objects that were present since we only need to
+                               add objects. *)
+                            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+                            ,
+                            Nothing
+                        ]
+                    }
+                };
+                additionalRules = additionalRules2
+            ];
+        ];
+        
+        If [Length[ruleSets] > 0,
+            (*ARCEcho[ARCSimplifyRules[ruleSets]];*)
+            returnRules[
+                Replace[
+                    ReturnIfFailure@
+                    ARCChooseBestRuleSet[
+                        ReturnIfFailure[ARCCleanRules[#, allObjects]] & /@ ruleSets
+                    ],
+                    res: Except[_List] :> ReturnFailure[
+                        "InvalidRuleResult",
+                        "After attempting to choose the best rule set, we got something that isn't a list.",
+                        "Result" -> res
+                    ]
+                ]
+            ]
+        ];
+        
+        <|
+            "Examples" -> examples,
+            "ObjectMappings" -> objectMappings,
+            "PartialRules" ->
+                ARCCleanRules[
+                    Reverse@
+                    SortBy[
+                        ruleFindings,
+                        Length[#["MappedInputObjects"]] &
+                    ],
+                    allObjects
+                ]
+        |>
+    ]
+
+(* Try to find rules given object mappings. *)
+ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Association] :=
+    Module[
+        {
+            objectMappings = objectMappingsIn,
+            addedObjects,
+            addedObjectsRule,
+            preRules,
+            inputObjectsNeedingMapping,
+            additionalRules,
+            rules,
+            ruleSets,
+            ruleFindings
+        },
+        
         (* Form rules for removed/deleted objects. i.e. Objects that we weren't able to
            map. *)
         objectMappings = Replace[
@@ -3593,9 +3744,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             _Missing :> <|"Transform" -> <|"Type" -> "Delete"|>|>,
             {2}
         ];
-        
-        (*ARCEcho[SimplifyObjects[objectMappings]];*)
-        (*ARCEcho[objectMappings];*)
         
         (* Are there any objects that need to be added? If so, remove them from the
            object mappings, since they aren't true mappings that downstream code will know
@@ -3637,6 +3785,19 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "AddedObjects" -> addedObjects
             ];
         
+        If [AssociationQ[addedObjectsRule] && inputObjectsNeedingMapping === {},
+            (* There aren't any input objects needing to be mapped, we just needed to find
+               a rule for adding objects, which we have done. *)
+            Return[
+                {
+                    {},
+                    <||>,
+                    {addedObjectsRule}
+                },
+                Module
+            ]
+        ];
+        
         additionalRules = {
             If [AssociationQ[addedObjectsRule],
                 addedObjectsRule
@@ -3656,11 +3817,18 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     transform = DeleteDuplicates[preRules[[All, 2, "Transform"]]],
                     {_}
                 ]
-        ]   ,
-            returnRules[
+            ],
+            Return[
                 {
-                    <||> -> <|"Transform" -> transform[[1]]|>
-                }
+                    {
+                        {
+                            <||> -> <|"Transform" -> transform[[1]]|>
+                        }
+                    },
+                    <||>,
+                    additionalRules
+                },
+                Module
             ]
         ];
         
@@ -3726,7 +3894,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Position"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -3743,60 +3911,44 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ]
             ];
         
-        If [Length[ruleSets] > 0,
-            (*ARCEcho[ARCSimplifyRules[ruleSets]];*)
-            returnRules[
-                Replace[
-                    ReturnIfFailure@
-                    ARCChooseBestRuleSet[
-                        ReturnIfFailure[ARCCleanRules[#, allObjects]] & /@ ruleSets
-                    ],
-                    res: Except[_List] :> ReturnFailure[
-                        "InvalidRuleResult",
-                        "After attempting to choose the best rule set, we got something that isn't a list.",
-                        "Result" -> res
-                    ]
-                ]
+        If [ruleSets === {},
+            (* If none of the properties produced rules that span all input objects, try combining
+               properties like HeightRank and HeightInverseRank to see if they can together span
+               all inputs. *)
+            KeyValueMap[
+                Function[{rankPropertyName, rankPropertyAttributes},
+                    mappedInputObjects = Union[
+                        ruleFindings[rankPropertyName, "MappedInputObjects"] /. _Missing :> {},
+                        ruleFindings[rankPropertyAttributes["InverseRankProperty"], "MappedInputObjects"] /. _Missing :> {}
+                    ];
+                    If [SameQ[
+                            Length[mappedInputObjects],
+                            Length[inputObjectsNeedingMapping]
+                        ],
+                        Return[
+                            {
+                                {
+                                    Join[
+                                        ruleFindings[rankPropertyName, "Rules"],
+                                        ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
+                                    ]
+                                },
+                                ruleFindings,
+                                additionalRules
+                            },
+                            Module
+                        ]
+                    ];
+                ],
+                Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
             ]
         ];
         
-        (* If none of the properties produced rules that span all input objects, try combining
-           properties like HeightRank and HeightInverseRank to see if they can together span
-           all inputs. *)
-        KeyValueMap[
-            Function[{rankPropertyName, rankPropertyAttributes},
-                mappedInputObjects = Union[
-                    ruleFindings[rankPropertyName, "MappedInputObjects"] /. _Missing :> {},
-                    ruleFindings[rankPropertyAttributes["InverseRankProperty"], "MappedInputObjects"] /. _Missing :> {}
-                ];
-                If [SameQ[
-                        Length[mappedInputObjects],
-                        Length[inputObjectsNeedingMapping]
-                    ],
-                    returnRules[
-                        Join[
-                            ruleFindings[rankPropertyName, "Rules"],
-                            ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
-                        ]
-                    ]
-                ];
-            ],
-            Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
-        ];
-        
-        <|
-            "Examples" -> examples,
-            "ObjectMappings" -> objectMappings,
-            "PartialRules" ->
-                ARCCleanRules[
-                    Reverse@
-                    SortBy[
-                        ruleFindings,
-                        Length[#["MappedInputObjects"]] &
-                    ],
-                    allObjects
-                ]
-        |>
+        {
+            ruleSets,
+            ruleFindings,
+            additionalRules
+        }
     ]
 
 ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_Association, examples_List] :=
@@ -3834,7 +3986,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                                 mutuallyExclusiveRules = False;
                                 Function[{value},
                                     <|property -> value|> -> item[[2]]
-                                ] /@ propertyValue
+                                ] /@ Replace[propertyValue, _Missing :> {}]
                                 ,
                                 <|property -> propertyValue|> -> item[[2]]
                             ]
@@ -4053,9 +4205,11 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
 
 (* `conclusionGroup` is a group of conclusion RHSs that might share the fact that the
    corresponding input objects had the same value for some property, etc. *)
-ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, examples_List, unhandledIn_List, mutuallyExclusiveRules: True | False, OptionsPattern[]] :=
+ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, examples_List, unhandledIn_List, mutuallyExclusiveRules: True | False, OptionsPattern[]] :=
     Module[
         {
+            conclusionGroup = conclusionGroupIn,
+            conclusionTransformTypes,
             unhandled = unhandledIn,
             conclusion,
             theseExamples,
@@ -4067,19 +4221,30 @@ ARCFindRules[conclusionGroup_List, referenceableInputObjects_Association, exampl
         
         (* HERE0 *)
         
-        (*ARCEcho[SimplifyObjects[groupedByConclusion]];*)
-        (*ARCEcho[Values[groupedByConclusion][[All, "Shape"]]];*)
-        (*ARCEcho[groupedByConclusion];*)
+        (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
+        (*ARCEcho[Values[conclusionGroup][[All, "Shape"]]];*)
+        (*ARCEcho[conclusionGroup];*)
         
-        Which[
-            Quiet[
+        If [Quiet[
                 Length[
                     conclusionTransformTypes =
                         DeleteDuplicates[conclusionGroup[[All, "Transform", "Type"]]]
                 ]
              ] =!= 1,
-                Missing["InconsistentTransform"],
-            
+             (* If some object mappings have a Transform specified, and some do not, then
+                before giving up, we'll just remove the Transform metadata and below
+                we'll try directly inferring the output object properties.
+                This can be important in cases where Transform gets applied to one
+                or more mappings but not to others, where we'd prefer it if none
+                of the mappings had been interpreted as a Transform.
+                e.g. d631b094 *)
+            conclusionGroup =
+                Function[{conclusion},
+                    KeyDrop[conclusion, "Transform"]
+                ] /@ conclusionGroup;
+        ];
+        
+        Which[
             Length[
                 groupedByConclusion = GroupBy[
                     conclusionGroup,
@@ -4265,7 +4430,6 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
     \maintainer danielb
 *)
 Clear[ARCApplyRules];
-
 ARCApplyRules[scene_ARCScene, rules_Association] :=
     Module[{parsedScene, objects, ruleList = rules["Rules"], addObjects, outputScene, renderedScene},
         
@@ -4324,15 +4488,9 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
         (*Global`rules = ruleList;
         Global`object = objects[[1]];*)
         
-        objects =
-            Function[{object},
-                ARCApplyRules[object, ruleList, parsedScene]
-            ] /@ objects;
-        
         outputScene = Sett[
             parsedScene,
             {
-                "Objects" -> objects,
                 If [SpecifiedQ[rules["Width"]],
                     "Width" ->
                         ToIntegerIfNoDecimal@
@@ -4359,6 +4517,19 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                     ,
                     Nothing
                 ]
+            }
+        ];
+        
+        objects =
+            Function[{object},
+                ReturnIfFailure@
+                ARCApplyRules[object, ruleList, parsedScene]
+            ] /@ objects;
+        
+        outputScene = Sett[
+            outputScene,
+            {
+                "Objects" -> objects
             }
         ];
         
@@ -4421,7 +4592,13 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             outputScene["Background"] = rules["Background"]
         ];
         
-        renderedScene = ARCRenderScene[outputScene];
+        renderedScene =
+            ReturnIfFailure@
+            ARCRenderScene[
+                outputScene,
+                "OutputWidthSpecified" -> SpecifiedQ[rules["Width"]],
+                "OutputHeightSpecified" -> SpecifiedQ[rules["Height"]]
+            ];
         
         If [TrueQ[rules["RemoveEmptySpace"]],
             renderedScene = ARCRemoveEmptySpace[renderedScene, outputScene["Background"]]
@@ -4898,8 +5075,71 @@ ARCApplyConclusion[key_String, value_, objectIn_Association, objectOut_Associati
     \maintainer danielb
 *)
 Clear[ARCRenderScene];
-ARCRenderScene[scene_Association] :=
-    Module[{output, objects, image, posX, posY},
+Options[ARCRenderScene] =
+{
+    "OutputWidthSpecified" -> False,    (*< Does the rule set specify what the width of the output scene should be? *)
+    "OutputHeightSpecified" -> False    (*< Does the rule set specify what the width of the output scene should be? *)
+};
+ARCRenderScene[scene_Association, OptionsPattern[]] :=
+    Module[{sceneWidth, sceneHeight, output, objects, image, posX, posY},
+        
+        objects =
+            Reverse@
+            SortBy[
+                scene["Objects"],
+                Replace[#["ZOrder"], _Missing -> 0] &
+            ];
+        
+        sceneWidth = scene["Width"];
+        sceneHeight = scene["Height"];
+        
+        (* Detect whether we need to make the output image wider or taller. e.g. d631b094 *)
+        If [Or[
+                !TrueQ[OptionValue["OutputWidthSpecified"]],
+                !TrueQ[OptionValue["OutputHeightSpecified"]]
+            ],
+            Function[{object},
+                
+                If [ListQ[object["Position"]],
+                    posY = object["Position"][[1]];
+                    posX = object["Position"][[2]];
+                    ,
+                    posY = object["Y"];
+                    posX = object["X"];
+                ];
+                
+                If [MissingQ[object["Image"]],
+                    ReturnFailure[
+                        "ARCRenderSceneFailure",
+                        "An object is missing its Image.",
+                        "Object" -> object
+                    ]
+                ];
+                
+                image = object["Image"][[1]];
+                
+                If [And[
+                        posY + ImageHeight[image] - 1 > sceneHeight,
+                        !TrueQ[OptionValue["OutputHeightSpecified"]]
+                    ],
+                    (* This object requires that the output scene be taller, so we'll make it
+                       taller. *)
+                    sceneHeight = posY + ImageHeight[image] - 1;
+                    (*Echo["sceneHeight expansion" -> sceneHeight];*)
+                ];
+                
+                If [And[
+                        posX + ImageWidth[image] - 1 > sceneWidth,
+                        !TrueQ[OptionValue["OutputWidthSpecified"]]
+                    ],
+                    (* This object requires that the output scene be wider, so we'll make it
+                       wider. e.g. d631b094 *)
+                    sceneWidth = posX + ImageWidth[image] - 1;
+                    (*Echo["sceneWidth expansion" -> sceneWidth];*)
+                ];
+                
+            ] /@ objects
+        ];
         
         (* Empty output image using background color. *)
         output =
@@ -4907,17 +5147,10 @@ ARCRenderScene[scene_Association] :=
                 ConstantArray[
                     backgroundColor,
                     {
-                        scene["Height"],
-                        scene["Width"]
+                        sceneHeight,
+                        sceneWidth
                     }
                 ]
-            ];
-        
-        objects =
-            Reverse@
-            SortBy[
-                scene["Objects"],
-                Replace[#["ZOrder"], _Missing -> 0] &
             ];
         
         Function[{object},
@@ -4941,23 +5174,23 @@ ARCRenderScene[scene_Association] :=
             image = object["Image"][[1]];
             
             Which[
-                posY + ImageHeight[image] - 1 > scene["Height"],
+                posY + ImageHeight[image] - 1 > sceneHeight,
                     ReturnFailure[
                         "ObjectOutsideOfSceneBoundary",
                         "The image extends beyond the bottom of the scene.",
                         "Object" -> object,
                         "ObjectY" -> posY,
                         "ObjectHeight" -> ImageHeight[image],
-                        "SceneHeight" -> scene["Height"]
+                        "SceneHeight" -> sceneHeight
                     ],
-                posX + ImageWidth[image] - 1 > scene["Width"],
+                posX + ImageWidth[image] - 1 > sceneWidth,
                     ReturnFailure[
                         "ObjectOutsideOfSceneBoundary",
                         "The image extends beyond the right side of the scene.",
                         "Object" -> object,
                         "ObjectX" -> posX,
                         "ObjectHeight" -> ImageWidth[image],
-                        "SceneHeight" -> scene["Width"]
+                        "SceneHeight" -> sceneWidth
                     ],
                 posY < 1,
                     ReturnFailure[
@@ -6149,6 +6382,7 @@ ToPosition[expr_, parentObject_ : Null] :=
 *)
 Clear[ARCGeneralizeConclusionValue];
 ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
+    (* HERE2 *)
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     Module[
         {
@@ -6164,15 +6398,13 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
             subPropertySets
         },
         
-        (* HERE2 *)
-        
         ARCEcho3["propertyPath" -> propertyPath];
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "ZOrder",
-            EchoTag["values"][values];
-            EchoTag["Conclusion values"][conclusions[[All, "Input", property]]];
+        (*If [property === "Image",
+            ARCEcho["values" -> values];
+            ARCEcho["Conclusion values" -> conclusions[[All, "Input", property]]];
         ];*)
         
         If [!FreeQ[values, _Missing],
@@ -8744,8 +8976,10 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
                                     ,
                                     {outputObject}
                                 ],
-                                (* TODO: We're supposed to pass in "Width" and "Height" here. *)
-                                <||>
+                                <|
+                                    "Width" -> sceneWidth,
+                                    "Height" -> sceneHeight
+                                |>
                             ]
                         ]
                     ]
@@ -10029,6 +10263,18 @@ ARCTaskLog[] :=
             "CodeLength" -> 15160,
             "ExampleImplemented" -> "d4469b4b",
             "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 30,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 66,
+            "Runtime" -> Quantity[TODO, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "d631b094",
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 30,
             "NewEvaluationSuccesses" -> 0,
@@ -12449,6 +12695,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
 Clear[ARCRuleForAddedObjects];
 ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
     Module[{examples = examplesIn, counter = 0, addedObjectUUIDs},
+        
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
         Which[
@@ -15268,6 +15515,106 @@ ARCGeneralizeValue[inputValues_List, outputValues_List, inputValueReference_, Op
                 uniqueValues[[1]],
             True,
                 Missing[]
+        ]
+    ]
+
+(*!
+    \function ARCDropObjectProperties
+    
+    \calltable
+        ARCDropObjectProperties[examples, properties] '' Given a list of examples, modifies nested objects to drop the given properties.
+    
+    Examples:
+    
+    ARCDropObjectProperties[
+        {<|"Input" -> <|"Objects" -> {<|"X" -> 1, "XInverse" -> 2|>}|>|>},
+        {"XInverse"}
+    ]
+    
+    ===
+    
+    {<|"Input" -> <|"Objects" -> {<|"X" -> 1|>}|>|>}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCDropObjectProperties]
+    
+    \maintainer danielb
+*)
+Clear[ARCDropObjectProperties];
+ARCDropObjectProperties[examples_List, properties_List] :=
+    Replace[
+        examples,
+        thisScene: KeyValuePattern["Objects" -> _List] :> (
+            Sett[
+                thisScene,
+                "Objects" -> Function[{object},
+                    KeyDrop[
+                        object,
+                        properties
+                    ]
+                ] /@ thisScene["Objects"]
+            ]
+        ),
+        {0, Infinity}
+    ]
+
+(*!
+    \function ARCFixUnwantedManyToOneMappings
+    
+    \calltable
+        ARCFixUnwantedManyToOneMappings[mapping] '' Are there any many-to-one mappings that we want to fix due to one of the objects being an exact image match and one or more not being an exact match?
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFixUnwantedManyToOneMappings]
+    
+    \maintainer danielb
+*)
+Clear[ARCFixUnwantedManyToOneMappings];
+ARCFixUnwantedManyToOneMappings[mapping_Association] :=
+    Module[{uniqueInputObjectImages},
+        
+        XARCEcho2[mapping];
+        
+        uniqueInputObjectImages =
+            Select[
+                Normal[Counts[Keys[mapping][[All, "Image"]]]],
+                #[[2]] === 1 &
+            ][[All, 1]];
+        
+        outputObjectMappingCounts =
+            Counts[
+                Cases[Values[mapping], KeyValuePattern["UUID" -> _]][[All, "UUID"]]
+            ];
+        
+        If [uniqueInputObjectImages =!= {},
+            Association@
+            KeyValueMap[
+                Function[{inputObject, outputObject},
+                    If [And[
+                            outputObjectMappingCounts[outputObject["UUID"]] > 1,
+                            MemberQ[uniqueInputObjectImages, outputObject["Image"]],
+                            inputObject["Image"] =!= outputObject["Image"]
+                        ],
+                        (* We've found an input object that was mapped to the same output object
+                           as another input object, but this mapping doesn't have the same image
+                           in the input and output, whereas the other mapping does, and that image
+                           is unique in the set of input objects, so we'll favor the other mapping
+                           and discard this one. e.g. a87f7484 *)
+                        inputObject -> Missing["NotFound"]
+                        ,
+                        inputObject -> outputObject
+                    ]
+                ],
+                mapping
+            ]
+            ,
+            mapping
         ]
     ]
 

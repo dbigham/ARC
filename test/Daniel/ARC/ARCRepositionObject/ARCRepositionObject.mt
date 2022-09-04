@@ -12,31 +12,33 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Daniel`ARC`ARCRepositionObject[
-            Daniel`ARC`ARCInferObjectProperties[
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}],
-                    "PixelPositions" -> {{1, 1}, {2, 2}},
-                    "Position" -> {1, 1},
-                    "Components" -> {
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{1}}],
-                            "PixelPositions" -> {{1, 1}},
-                            "Position" -> {1, 1}
-                        |>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{1}}],
-                            "PixelPositions" -> {{2, 2}},
-                            "Position" -> {2, 2}
-                        |>
-                    }
-                |>,
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCRepositionObject[
+                Daniel`ARC`ARCInferObjectProperties[
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{1, -1}, {-1, 1}}],
+                        "PixelPositions" -> {{1, 1}, {2, 2}},
+                        "Position" -> {1, 1},
+                        "Components" -> {
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                                "PixelPositions" -> {{1, 1}},
+                                "Position" -> {1, 1}
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{1}}],
+                                "PixelPositions" -> {{2, 2}},
+                                "Position" -> {2, 2}
+                            |>
+                        }
+                    |>,
+                    10,
+                    10
+                ],
+                {5, 5},
                 10,
                 10
-            ],
-            {5, 5},
-            10,
-            10
+            ]
         ]
     ]
     ,
@@ -68,7 +70,8 @@ Test[
                 "FilledProportion" -> 1.,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False
+                "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0
             |>,
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{1}}],
@@ -93,7 +96,8 @@ Test[
                 "FilledProportion" -> 1.,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False
+                "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0
             |>
         },
         "Y" -> 5,
@@ -115,7 +119,8 @@ Test[
         "FilledProportion" -> 0.5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCRepositionObject-20220725-ZLXXQD"

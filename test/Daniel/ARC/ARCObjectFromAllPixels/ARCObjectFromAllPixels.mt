@@ -64,7 +64,8 @@ Test[
         "FilledProportion" -> 0.,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCObjectFromAllPixels-20220902-DYB839"

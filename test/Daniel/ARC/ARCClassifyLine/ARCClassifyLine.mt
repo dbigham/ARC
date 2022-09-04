@@ -44,10 +44,15 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        ToString[Daniel`ARC`ARCClassifyLine[{{1}}]]
+        Daniel`ARC`ARCClassifyLine[{{1}}]
     ]
     ,
-    "Nothing"
+    {
+        <|"Name" -> "Line", "Angle" -> 0|>,
+        <|"Name" -> "Line", "Angle" -> 90|>,
+        <|"Name" -> "Line", "Angle" -> 135|>,
+        <|"Name" -> "Line", "Angle" -> 45|>
+    }
     ,
     TestID -> "ARCClassifyLine-20220827-IFL8DR"
 ]

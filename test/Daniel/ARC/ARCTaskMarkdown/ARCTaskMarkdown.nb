@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     14640,        331]
-NotebookOptionsPosition[      7880,        171]
-NotebookOutlinePosition[     13381,        307]
-CellTagsIndexPosition[     13338,        304]
+NotebookDataLength[     15376,        339]
+NotebookOptionsPosition[      8615,        179]
+NotebookOutlinePosition[     14116,        315]
+CellTagsIndexPosition[     14073,        312]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -57,7 +57,7 @@ Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"example", " ", "=", " ", "\"\<d4469b4b\>\""}], ";"}], "\n", 
+  RowBox[{"example", " ", "=", " ", "\"\<d631b094\>\""}], ";"}], "\n", 
  RowBox[{"ARCTaskMarkdown", "[", "example", "]"}]}], "Input",
  CellChangeTimes->{{3.8689649380423017`*^9, 3.8689649396500463`*^9}, 
    3.868965012385483*^9, 3.8689652453048477`*^9, 3.868967307532199*^9, {
@@ -90,13 +90,21 @@ Cell[BoxData[{
    3.8712149478069696`*^9}, 3.871215222609932*^9, 3.8712270233914285`*^9, {
    3.8712322013017607`*^9, 3.871232210830022*^9}, 3.8712363191850815`*^9, {
    3.871237558270727*^9, 3.871237567983632*^9}, {3.8712437513598514`*^9, 
-   3.87124375954482*^9}},
- CellLabel->
-  "In[1309]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+   3.87124375954482*^9}, 3.8712864377641935`*^9},
+ CellLabel->"In[56]:=",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
 
-Cell[BoxData["\<\"# d4469b4b\\n\\n## Examples\\n\\n![ARC examples for \
-d4469b4b](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
-d4469b4b](rules.png?raw=true)\\n\\n\"\>"], "Output",
+Cell[BoxData["\<\"# d631b094\\n\\n## Examples\\n\\n![ARC examples for \
+d631b094](examples.png?raw=true)\\n\\n## Rules (DSL)\\n\\n![DSL rules for \
+d631b094](rules.png?raw=true)\\n\\n## Notes\\n* When we classify shapes, we \
+should classify pixels also as \[OpenCurlyDoubleQuote]lines\
+\[CloseCurlyDoubleQuote] of length 1. This is necessary so that the rule \
+finder sees that all output objects are lines.\\n* To avoid bad rules, if our \
+output scenes aren\[CloseCurlyQuote]t constant in width and height, then we \
+should remove object properties like XInverse and X2Inverse, which are only \
+usable if output dimensions are consistent.\\n* If output objects are larger \
+than the default width/height of the output scene (which is inherited from \
+the input), then instead of failing, we should gracefully increase the width \
+or height of the output scene as appropriate.\"\>"], "Output",
  CellChangeTimes->{
   3.870769656612871*^9, {3.8708170635949364`*^9, 3.870817070290192*^9}, {
    3.8709047194667892`*^9, 3.870904738223603*^9}, {3.871135503599166*^9, 
@@ -105,9 +113,9 @@ d4469b4b](rules.png?raw=true)\\n\\n\"\>"], "Output",
    3.871150085962124*^9}, {3.871214941602316*^9, 3.8712149509768586`*^9}, 
    3.8712152248514576`*^9, 3.871227027310976*^9, {3.871232207890304*^9, 
    3.871232216769026*^9}, 3.8712363224054923`*^9, {3.871237565283413*^9, 
-   3.871237573084035*^9}, {3.871243753951414*^9, 3.87124376766963*^9}},
- CellLabel->
-  "Out[1310]=",ExpressionUUID->"7b059ed7-843f-4874-8696-fb7bd5db2289"]
+   3.871237573084035*^9}, {3.871243753951414*^9, 3.87124376766963*^9}, 
+   3.871286441332152*^9},
+ CellLabel->"Out[57]=",ExpressionUUID->"d2e765c0-aa51-4923-aa38-ab89bbc185da"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -318,17 +326,17 @@ Cell[CellGroupData[{
 Cell[1334, 48, 79, 0, 67, "Section",ExpressionUUID->"69ba7aca-a4ce-40bf-8c3f-485e1726500d"],
 Cell[1416, 50, 208, 3, 29, "Input",ExpressionUUID->"65babb58-5c29-41fb-b4d1-1d5ecdbbd64f"],
 Cell[CellGroupData[{
-Cell[1649, 57, 2575, 37, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
-Cell[4227, 96, 898, 13, 234, "Output",ExpressionUUID->"7b059ed7-843f-4874-8696-fb7bd5db2289"]
+Cell[1649, 57, 2594, 36, 50, "Input",ExpressionUUID->"91149a12-1e50-497b-a4bb-94ae3146bbe3"],
+Cell[4246, 95, 1614, 22, 374, "Output",ExpressionUUID->"d2e765c0-aa51-4923-aa38-ab89bbc185da"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5162, 114, 154, 3, 54, "Subsection",ExpressionUUID->"f9f1201d-17de-48cb-a832-1c92c070ac4c"],
-Cell[5319, 119, 315, 7, 54, "Code",ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa",
+Cell[5897, 122, 154, 3, 54, "Subsection",ExpressionUUID->"f9f1201d-17de-48cb-a832-1c92c070ac4c"],
+Cell[6054, 127, 315, 7, 54, "Code",ExpressionUUID->"0664bd39-0451-43a5-a445-39654b19c2aa",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[5659, 130, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
+Cell[6394, 138, 392, 8, 54, "Code",ExpressionUUID->"8e7f1e69-6c8d-4a11-9221-ff4b107368b1",
  InitializationCell->False],
-Cell[6054, 140, 1774, 25, 374, "Output",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
+Cell[6789, 148, 1774, 25, 374, "Output",ExpressionUUID->"94838527-5731-44d0-8883-b6c4a26578e3"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]

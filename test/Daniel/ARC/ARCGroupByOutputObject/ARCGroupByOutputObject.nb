@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     36073,        839]
-NotebookOptionsPosition[     29597,        683]
-NotebookOutlinePosition[     35183,        823]
-CellTagsIndexPosition[     35140,        820]
+NotebookDataLength[     36405,        825]
+NotebookOptionsPosition[     29929,        669]
+NotebookOutlinePosition[     35515,        809]
+CellTagsIndexPosition[     35472,        806]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -271,7 +271,7 @@ Cell[BoxData[{
    3.868717804720674*^9}, {3.868717925423966*^9, 3.868717930425669*^9}, {
    3.868717960574427*^9, 3.8687179658851337`*^9}, {3.868718714203685*^9, 
    3.868718924122839*^9}, {3.870372684419089*^9, 3.87037268540196*^9}},
- CellLabel->"In[933]:=",
+ CellLabel->"In[226]:=",
  CellID->649144,
  "TestId" -> 
  "ARCGroupByOutputObject-20220805-OLUF8Y",ExpressionUUID->"b58bbc93-7167-4010-\
@@ -295,14 +295,12 @@ Cell[BoxData[
                "\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1], {1, 2} -> GrayLevel[0.2], {1, 3} -> 
-                 GrayLevel[0.2], {1, 4} -> GrayLevel[0.2], {1, 5} -> 
-                 GrayLevel[0.2], {1, 6} -> GrayLevel[0.2], {1, 7} -> 
-                 GrayLevel[0.2], {1, 8} -> RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {1, 2} -> 
+                 GrayLevel[0.2], {1, 3} -> GrayLevel[0.2], {1, 4} -> 
+                 GrayLevel[0.2], {1, 5} -> GrayLevel[0.2], {1, 6} -> 
+                 GrayLevel[0.2], {1, 7} -> GrayLevel[0.2], {1, 8} -> 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -315,8 +313,8 @@ Cell[BoxData[
     {"\<\"        \\\"PixelPositions\\\" -> {{4, 3}, {4, 10}},\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"        \\\"Colors\\\" -> \"", 
-         TemplateBox[{"\"{\"", 
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Colors\\\" -> {\"", 
            InterpretationBox[
             ButtonBox[
              TooltipBox[
@@ -325,36 +323,33 @@ Cell[BoxData[
                  RectangleBox[{0, 0}]}, {
                  GrayLevel[0], 
                  RectangleBox[{1, -1}]}, {
-                 RGBColor[
-                  Rational[5, 9], 
-                  Rational[5, 9], 1], 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.], 
                  RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
                "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
                FrameStyle -> 
                RGBColor[
-                0.37037037037037035`, 0.37037037037037035`, 
-                 0.6666666666666666], FrameTicks -> None, PlotRangePadding -> 
-               None, ImageSize -> 
+                0.3320261437908497, 0.5725490196078431, 0.6666666666666667], 
+               FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
                Dynamic[{
                  Automatic, 
                   1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
                    Magnification])}]], 
               StyleBox[
                RowBox[{"RGBColor", "[", 
+                 
                  RowBox[{
-                   FractionBox["5", "9"], ",", 
-                   FractionBox["5", "9"], ",", "1"}], "]"}], NumberMarks -> 
-               False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-             Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
+                  "0.4980392156862745`", ",", "0.8588235294117647`", ",", 
+                   "1.`"}], "]"}], NumberMarks -> False]], Appearance -> None,
+              BaseStyle -> {}, BaselinePosition -> Baseline, 
+             DefaultBaseStyle -> {}, ButtonFunction :> 
              With[{Typeset`box$ = EvaluationBox[]}, 
                If[
                 Not[
                  AbsoluteCurrentValue["Deployed"]], 
                 SelectionMove[Typeset`box$, All, Expression]; 
                 FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-                FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]; 
+                FrontEnd`Private`$ColorSelectorInitialColor = 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]; 
                 FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
                 MathLink`CallFrontEnd[
                   FrontEnd`AttachCell[Typeset`box$, 
@@ -364,10 +359,9 @@ Cell[BoxData[
                     "SelectionDeparture", "ParentChanged", 
                     "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
              Automatic, Method -> "Preemptive"], 
-            RGBColor[
-             Rational[5, 9], 
-             Rational[5, 9], 1], Editable -> False, Selectable -> False], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], Editable -> 
+            False, Selectable -> False], "\"}\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
     {"\<\"        \\\"Position\\\" -> {4, 3},\"\>"},
     {"\<\"        \\\"Y\\\" -> 4,\"\>"},
@@ -388,9 +382,8 @@ Cell[BoxData[
             GridBox[{{"\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -401,59 +394,58 @@ Cell[BoxData[
        "\",\""},
       "RowDefault"]},
     {"\<\"                \\\"PixelPositions\\\" -> {{4, 3}},\"\>"},
-    {"\<\"                \\\"Colors\\\" -> {\"\>"},
     {
-     TemplateBox[{"\"                    \"", 
-       InterpretationBox[
-        ButtonBox[
-         TooltipBox[
-          GraphicsBox[{{
-             GrayLevel[0], 
-             RectangleBox[{0, 0}]}, {
-             GrayLevel[0], 
-             RectangleBox[{1, -1}]}, {
-             RGBColor[
-              Rational[5, 9], 
-              Rational[5, 9], 1], 
-             RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
-           "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, FrameStyle -> 
-           RGBColor[
-            0.37037037037037035`, 0.37037037037037035`, 0.6666666666666666], 
-           FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
-           Dynamic[{
-             Automatic, 
-              1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
-               Magnification])}]], 
-          StyleBox[
-           RowBox[{"RGBColor", "[", 
-             RowBox[{
-               FractionBox["5", "9"], ",", 
-               FractionBox["5", "9"], ",", "1"}], "]"}], NumberMarks -> 
-           False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-         Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
-         With[{Typeset`box$ = EvaluationBox[]}, 
-           If[
-            Not[
-             AbsoluteCurrentValue["Deployed"]], 
-            SelectionMove[Typeset`box$, All, Expression]; 
-            FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-            FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[
-               Rational[5, 9], 
-               Rational[5, 9], 1]; 
-            FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
-            MathLink`CallFrontEnd[
-              FrontEnd`AttachCell[Typeset`box$, 
-               FrontEndResource["RGBColorValueSelector"], {
-               0, {Left, Bottom}}, {Left, Top}, 
-               "ClosingActions" -> {
-                "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]], 
-         BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
-         "Preemptive"], 
-        RGBColor[
-         Rational[5, 9], 
-         Rational[5, 9], 1], Editable -> False, Selectable -> False]},
+     TemplateBox[{
+       TemplateBox[{"\"                \"", 
+         TemplateBox[{"\"\\\"Colors\\\" -> {\"", 
+           InterpretationBox[
+            ButtonBox[
+             TooltipBox[
+              GraphicsBox[{{
+                 GrayLevel[0], 
+                 RectangleBox[{0, 0}]}, {
+                 GrayLevel[0], 
+                 RectangleBox[{1, -1}]}, {
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.], 
+                 RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+               "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+               FrameStyle -> 
+               RGBColor[
+                0.3320261437908497, 0.5725490196078431, 0.6666666666666667], 
+               FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              StyleBox[
+               RowBox[{"RGBColor", "[", 
+                 
+                 RowBox[{
+                  "0.4980392156862745`", ",", "0.8588235294117647`", ",", 
+                   "1.`"}], "]"}], NumberMarks -> False]], Appearance -> None,
+              BaseStyle -> {}, BaselinePosition -> Baseline, 
+             DefaultBaseStyle -> {}, ButtonFunction :> 
+             With[{Typeset`box$ = EvaluationBox[]}, 
+               If[
+                Not[
+                 AbsoluteCurrentValue["Deployed"]], 
+                SelectionMove[Typeset`box$, All, Expression]; 
+                FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                FrontEnd`Private`$ColorSelectorInitialColor = 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]; 
+                FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                MathLink`CallFrontEnd[
+                  FrontEnd`AttachCell[Typeset`box$, 
+                   FrontEndResource["RGBColorValueSelector"], {
+                   0, {Left, Bottom}}, {Left, Top}, 
+                   "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+             Automatic, Method -> "Preemptive"], 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], Editable -> 
+            False, Selectable -> False], "\"}\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"                },\"\>"},
     {"\<\"                \\\"Position\\\" -> {4, 3},\"\>"},
     {"\<\"                \\\"Width\\\" -> 1,\"\>"},
     {"\<\"                \\\"Height\\\" -> 1,\"\>"},
@@ -472,9 +464,8 @@ Cell[BoxData[
             GridBox[{{"\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -485,59 +476,58 @@ Cell[BoxData[
        "\",\""},
       "RowDefault"]},
     {"\<\"                \\\"PixelPositions\\\" -> {{4, 10}},\"\>"},
-    {"\<\"                \\\"Colors\\\" -> {\"\>"},
     {
-     TemplateBox[{"\"                    \"", 
-       InterpretationBox[
-        ButtonBox[
-         TooltipBox[
-          GraphicsBox[{{
-             GrayLevel[0], 
-             RectangleBox[{0, 0}]}, {
-             GrayLevel[0], 
-             RectangleBox[{1, -1}]}, {
-             RGBColor[
-              Rational[5, 9], 
-              Rational[5, 9], 1], 
-             RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
-           "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, FrameStyle -> 
-           RGBColor[
-            0.37037037037037035`, 0.37037037037037035`, 0.6666666666666666], 
-           FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
-           Dynamic[{
-             Automatic, 
-              1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
-               Magnification])}]], 
-          StyleBox[
-           RowBox[{"RGBColor", "[", 
-             RowBox[{
-               FractionBox["5", "9"], ",", 
-               FractionBox["5", "9"], ",", "1"}], "]"}], NumberMarks -> 
-           False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-         Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
-         With[{Typeset`box$ = EvaluationBox[]}, 
-           If[
-            Not[
-             AbsoluteCurrentValue["Deployed"]], 
-            SelectionMove[Typeset`box$, All, Expression]; 
-            FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-            FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[
-               Rational[5, 9], 
-               Rational[5, 9], 1]; 
-            FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
-            MathLink`CallFrontEnd[
-              FrontEnd`AttachCell[Typeset`box$, 
-               FrontEndResource["RGBColorValueSelector"], {
-               0, {Left, Bottom}}, {Left, Top}, 
-               "ClosingActions" -> {
-                "SelectionDeparture", "ParentChanged", "EvaluatorQuit"}]]]], 
-         BaseStyle -> Inherited, Evaluator -> Automatic, Method -> 
-         "Preemptive"], 
-        RGBColor[
-         Rational[5, 9], 
-         Rational[5, 9], 1], Editable -> False, Selectable -> False]},
+     TemplateBox[{
+       TemplateBox[{"\"                \"", 
+         TemplateBox[{"\"\\\"Colors\\\" -> {\"", 
+           InterpretationBox[
+            ButtonBox[
+             TooltipBox[
+              GraphicsBox[{{
+                 GrayLevel[0], 
+                 RectangleBox[{0, 0}]}, {
+                 GrayLevel[0], 
+                 RectangleBox[{1, -1}]}, {
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.], 
+                 RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+               "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+               FrameStyle -> 
+               RGBColor[
+                0.3320261437908497, 0.5725490196078431, 0.6666666666666667], 
+               FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              StyleBox[
+               RowBox[{"RGBColor", "[", 
+                 
+                 RowBox[{
+                  "0.4980392156862745`", ",", "0.8588235294117647`", ",", 
+                   "1.`"}], "]"}], NumberMarks -> False]], Appearance -> None,
+              BaseStyle -> {}, BaselinePosition -> Baseline, 
+             DefaultBaseStyle -> {}, ButtonFunction :> 
+             With[{Typeset`box$ = EvaluationBox[]}, 
+               If[
+                Not[
+                 AbsoluteCurrentValue["Deployed"]], 
+                SelectionMove[Typeset`box$, All, Expression]; 
+                FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                FrontEnd`Private`$ColorSelectorInitialColor = 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]; 
+                FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                MathLink`CallFrontEnd[
+                  FrontEnd`AttachCell[Typeset`box$, 
+                   FrontEndResource["RGBColorValueSelector"], {
+                   0, {Left, Bottom}}, {Left, Top}, 
+                   "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+             Automatic, Method -> "Preemptive"], 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], Editable -> 
+            False, Selectable -> False], "\"}\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
-    {"\<\"                },\"\>"},
     {"\<\"                \\\"Position\\\" -> {4, 10},\"\>"},
     {"\<\"                \\\"Width\\\" -> 1,\"\>"},
     {"\<\"                \\\"Height\\\" -> 1,\"\>"},
@@ -560,7 +550,8 @@ Cell[BoxData[
     {"\<\"        \\\"FilledProportion\\\" -> 0.25,\"\>"},
     {"\<\"        \\\"VerticalLineSymmetry\\\" -> True,\"\>"},
     {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
-    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False\"\>"},
+    {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
+    {"\<\"        \\\"HollowCount\\\" -> 0\"\>"},
     {"\<\"    |> -> <|\"\>"},
     {"\<\"        \\\"UUID\\\" -> 0,\"\>"},
     {"\<\"        \\\"MyKey\\\" -> 1\"\>"},
@@ -576,9 +567,8 @@ Cell[BoxData[
             GridBox[{{"\"\""}}, AutoDelete -> False, 
              GridBoxBackground -> {
               "Columns" -> {{None}}, "Rows" -> {{None}}, 
-               "ItemsIndexed" -> {{1, 1} -> RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]}}, 
              GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
              GridBoxFrame -> {
               "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
@@ -591,8 +581,8 @@ Cell[BoxData[
     {"\<\"        \\\"PixelPositions\\\" -> {{6, 6}},\"\>"},
     {
      TemplateBox[{
-       TemplateBox[{"\"        \\\"Colors\\\" -> \"", 
-         TemplateBox[{"\"{\"", 
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Colors\\\" -> {\"", 
            InterpretationBox[
             ButtonBox[
              TooltipBox[
@@ -601,36 +591,33 @@ Cell[BoxData[
                  RectangleBox[{0, 0}]}, {
                  GrayLevel[0], 
                  RectangleBox[{1, -1}]}, {
-                 RGBColor[
-                  Rational[5, 9], 
-                  Rational[5, 9], 1], 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.], 
                  RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
                "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
                FrameStyle -> 
                RGBColor[
-                0.37037037037037035`, 0.37037037037037035`, 
-                 0.6666666666666666], FrameTicks -> None, PlotRangePadding -> 
-               None, ImageSize -> 
+                0.3320261437908497, 0.5725490196078431, 0.6666666666666667], 
+               FrameTicks -> None, PlotRangePadding -> None, ImageSize -> 
                Dynamic[{
                  Automatic, 
                   1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
                    Magnification])}]], 
               StyleBox[
                RowBox[{"RGBColor", "[", 
+                 
                  RowBox[{
-                   FractionBox["5", "9"], ",", 
-                   FractionBox["5", "9"], ",", "1"}], "]"}], NumberMarks -> 
-               False]], Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
-             Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
+                  "0.4980392156862745`", ",", "0.8588235294117647`", ",", 
+                   "1.`"}], "]"}], NumberMarks -> False]], Appearance -> None,
+              BaseStyle -> {}, BaselinePosition -> Baseline, 
+             DefaultBaseStyle -> {}, ButtonFunction :> 
              With[{Typeset`box$ = EvaluationBox[]}, 
                If[
                 Not[
                  AbsoluteCurrentValue["Deployed"]], 
                 SelectionMove[Typeset`box$, All, Expression]; 
                 FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
-                FrontEnd`Private`$ColorSelectorInitialColor = RGBColor[
-                   Rational[5, 9], 
-                   Rational[5, 9], 1]; 
+                FrontEnd`Private`$ColorSelectorInitialColor = 
+                 RGBColor[0.4980392156862745, 0.8588235294117647, 1.]; 
                 FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
                 MathLink`CallFrontEnd[
                   FrontEnd`AttachCell[Typeset`box$, 
@@ -640,10 +627,9 @@ Cell[BoxData[
                     "SelectionDeparture", "ParentChanged", 
                     "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
              Automatic, Method -> "Preemptive"], 
-            RGBColor[
-             Rational[5, 9], 
-             Rational[5, 9], 1], Editable -> False, Selectable -> False], 
-           "\"}\""}, "RowDefault"]}, "RowDefault"], "\",\""},
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], Editable -> 
+            False, Selectable -> False], "\"}\""}, "RowDefault"]}, 
+        "RowDefault"], "\",\""},
       "RowDefault"]},
     {"\<\"        \\\"Position\\\" -> {6, 6},\"\>"},
     {"\<\"        \\\"Width\\\" -> 1,\"\>"},
@@ -675,9 +661,9 @@ Cell[BoxData[
    3.8693390725797496`*^9, 3.8693394176995935`*^9, {3.869341419467755*^9, 
    3.8693414302541637`*^9}, 3.869418971308652*^9, {3.870372685782741*^9, 
    3.8703726974257708`*^9}, 3.8705179158257732`*^9, 3.8706364612453737`*^9, 
-   3.8709039144661474`*^9},
+   3.8709039144661474`*^9, 3.8712896819484215`*^9},
  CellLabel->
-  "Out[934]=",ExpressionUUID->"58344267-1d60-4adc-9ae5-51710ac371c0"]
+  "Out[227]=",ExpressionUUID->"79fc18ae-faec-4703-9aba-422a3c66ce6c"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -838,7 +824,7 @@ Cell[5303, 142, 6370, 135, 936, "Code",ExpressionUUID->"b58bbc93-7167-4010-8912-
  InitializationCell->False,
  CellID->649144]
 }, Open  ]],
-Cell[11688, 280, 17881, 399, 1405, "Output",ExpressionUUID->"58344267-1d60-4adc-9ae5-51710ac371c0"]
+Cell[11688, 280, 18213, 385, 1353, "Output",ExpressionUUID->"79fc18ae-faec-4703-9aba-422a3c66ce6c"]
 }, Open  ]]
 }, Open  ]]
 }

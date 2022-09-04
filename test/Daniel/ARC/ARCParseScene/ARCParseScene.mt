@@ -55,6 +55,35 @@ Test[
                         "Image" -> Daniel`ARC`ARCScene[{{2, 8, 8}, {2, 1, 8}, {2, 2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2},
+                                {2, 2, 1, 1, 8, 8},
+                                {2, 2, 1, 1, 8, 8},
+                                {2, 2, 8, 8, 8, 8},
+                                {2, 2, 8, 8, 8, 8}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 1, 1, 1, 8, 8, 8},
+                                {2, 2, 2, 1, 1, 1, 8, 8, 8},
+                                {2, 2, 2, 1, 1, 1, 8, 8, 8},
+                                {2, 2, 2, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 8, 8, 8, 8, 8, 8}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Square"|>,
                     <|"Name" -> "Rectangle"|>,
                     <|"Name" -> "Square", "Filled" -> True|>,
@@ -82,6 +111,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "Components" -> {
                     <|
                         "UUID" -> 0,
@@ -148,6 +178,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
                     |>,
@@ -159,8 +190,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -187,6 +223,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>,
@@ -245,6 +282,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>
@@ -277,6 +315,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 1,
                 "Area.InverseRank" -> 1,
                 "FilledArea.Rank" -> 1,
@@ -315,6 +355,35 @@ Test[
                 "Shapes" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {4, 4, -1, -1, 4, 4},
+                                {4, 4, -1, -1, 4, 4},
+                                {-1, -1, 2, 2, -1, -1},
+                                {-1, -1, 2, 2, -1, -1},
+                                {4, 4, -1, -1, 4, 4},
+                                {4, 4, -1, -1, 4, 4}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                                {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                                {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                                {-1, -1, -1, 2, 2, 2, -1, -1, -1},
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4},
+                                {4, 4, 4, -1, -1, -1, 4, 4, 4}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>
                 },
                 "Colors" -> {2, 4},
@@ -339,6 +408,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "Components" -> {
                     <|
                         "UUID" -> 0,
@@ -348,8 +418,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -376,6 +451,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
                     |>,
@@ -387,8 +463,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -415,6 +496,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 2
                     |>,
@@ -426,8 +508,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -454,6 +541,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>,
@@ -465,8 +553,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -493,6 +586,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 2,
                         "XRelative" -> 0
                     |>,
@@ -504,8 +598,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -532,6 +631,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 2,
                         "XRelative" -> 2
                     |>
@@ -564,6 +664,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 1,
                 "Area.InverseRank" -> 1,
                 "FilledArea.Rank" -> 1,
@@ -579,6 +681,35 @@ Test[
                 "Shapes" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, -1, 7, 7, -1, -1},
+                                {-1, -1, 7, 7, -1, -1},
+                                {7, 7, 1, 1, 7, 7},
+                                {7, 7, 1, 1, 7, 7},
+                                {-1, -1, 7, 7, -1, -1},
+                                {-1, -1, 7, 7, -1, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1},
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1},
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1},
+                                {7, 7, 7, 1, 1, 1, 7, 7, 7},
+                                {7, 7, 7, 1, 1, 1, 7, 7, 7},
+                                {7, 7, 7, 1, 1, 1, 7, 7, 7},
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1},
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1},
+                                {-1, -1, -1, 7, 7, 7, -1, -1, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>
                 },
                 "Colors" -> {1, 7},
@@ -603,6 +734,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "Components" -> {
                     <|
                         "UUID" -> 0,
@@ -641,6 +773,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
                     |>,
@@ -652,8 +785,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -680,6 +818,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>
@@ -712,6 +851,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 1,
                 "Area.InverseRank" -> 1,
                 "FilledArea.Rank" -> 1,
@@ -851,6 +992,221 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {7, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                                {7, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, -1, -1, -1, -1, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, -1, -1, -1, -1, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, -1, -1, -1, -1, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, -1, -1, -1, -1, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {
+                                    7,
+                                    7,
+                                    7,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1
+                                },
+                                {
+                                    7,
+                                    7,
+                                    7,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1
+                                },
+                                {
+                                    7,
+                                    7,
+                                    7,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1
+                                },
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>
                 },
                 "Colors" -> {5, 7},
@@ -875,6 +1231,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 1,
                 "Components" -> {
                     <|
                         "UUID" -> 0,
@@ -884,8 +1241,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -912,6 +1274,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
                     |>,
@@ -1024,6 +1387,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 1,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>
@@ -1056,6 +1420,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 2,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 2,
                 "Area.Rank" -> 1,
                 "Area.InverseRank" -> 5,
                 "FilledArea.Rank" -> 1,
@@ -1106,6 +1472,7 @@ Test[
                 "VerticalLineSymmetry" -> True,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
@@ -1135,6 +1502,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 2,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 2,
+                "HollowCount.Rank" -> 2,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 4,
                 "Area.InverseRank" -> 2,
                 "FilledArea.Rank" -> 4,
@@ -1187,6 +1556,7 @@ Test[
                 "VerticalLineSymmetry" -> True,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
@@ -1216,6 +1586,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 2,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 2,
+                "HollowCount.Rank" -> 2,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 4,
                 "Area.InverseRank" -> 2,
                 "FilledArea.Rank" -> 4,
@@ -1233,8 +1605,13 @@ Test[
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                     <|"Name" -> "Pixel"|>,
+                    <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
                     <|"Name" -> "Rectangle"|>,
+                    <|"Name" -> "Line", "Angle" -> 0|>,
+                    <|"Name" -> "Line", "Angle" -> 90|>,
+                    <|"Name" -> "Line", "Angle" -> 135|>,
+                    <|"Name" -> "Line", "Angle" -> 45|>,
                     <|"Name" -> "Square", "Filled" -> True|>,
                     <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
@@ -1261,6 +1638,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
                 "Width.Rank" -> 3,
                 "Width.InverseRank" -> 1,
@@ -1290,6 +1668,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 2,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 2,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 5,
                 "Area.InverseRank" -> 1,
                 "FilledArea.Rank" -> 5,
@@ -1364,6 +1744,92 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, -1, -1, -1, -1, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, -1, -1, -1, -1, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    5,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    -1,
+                                    5,
+                                    5,
+                                    5
+                                },
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                                {-1, -1, -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>
                 },
                 "Colors" -> {5, 7},
@@ -1388,6 +1854,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 1,
                 "Components" -> {
                     <|
                         "UUID" -> 0,
@@ -1397,8 +1864,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -1425,6 +1897,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
                     |>,
@@ -1518,6 +1991,7 @@ Test[
                         "VerticalLineSymmetry" -> False,
                         "HorizontalLineSymmetry" -> False,
                         "VerticalAndHorizontalLineSymmetry" -> False,
+                        "HollowCount" -> 1,
                         "YRelative" -> 0,
                         "XRelative" -> 1
                     |>
@@ -1550,6 +2024,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 2,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 2,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 2,
                 "Area.Rank" -> 2,
                 "Area.InverseRank" -> 4,
                 "FilledArea.Rank" -> 2,
@@ -1592,6 +2068,7 @@ Test[
                 "VerticalLineSymmetry" -> True,
                 "HorizontalLineSymmetry" -> True,
                 "VerticalAndHorizontalLineSymmetry" -> True,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 4,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
@@ -1621,6 +2098,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 2,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 2,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 3,
                 "Area.InverseRank" -> 3,
                 "FilledArea.Rank" -> 3,
@@ -1675,8 +2154,13 @@ Test[
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                     <|"Name" -> "Pixel"|>,
+                    <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
                     <|"Name" -> "Rectangle"|>,
+                    <|"Name" -> "Line", "Angle" -> 0|>,
+                    <|"Name" -> "Line", "Angle" -> 90|>,
+                    <|"Name" -> "Line", "Angle" -> 135|>,
+                    <|"Name" -> "Line", "Angle" -> 45|>,
                     <|"Name" -> "Square", "Filled" -> True|>,
                     <|"Name" -> "Rectangle", "Filled" -> True|>
                 },
@@ -1703,6 +2187,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 1,
                 "Width.Rank" -> 3,
                 "Width.InverseRank" -> 1,
@@ -1732,6 +2217,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 3,
                 "Area.InverseRank" -> 1,
                 "FilledArea.Rank" -> 3,
@@ -1806,6 +2293,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 3,
@@ -1835,6 +2323,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 1,
                 "Area.InverseRank" -> 3,
                 "FilledArea.Rank" -> 1,
@@ -1899,6 +2389,7 @@ Test[
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
+                "HollowCount" -> 0,
                 "ColorUseCount" -> 3,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
@@ -1928,6 +2419,8 @@ Test[
                 "PrimarySizeDimension.InverseRank" -> 1,
                 "AspectRatio.Rank" -> 1,
                 "AspectRatio.InverseRank" -> 1,
+                "HollowCount.Rank" -> 1,
+                "HollowCount.InverseRank" -> 1,
                 "Area.Rank" -> 2,
                 "Area.InverseRank" -> 2,
                 "FilledArea.Rank" -> 2,

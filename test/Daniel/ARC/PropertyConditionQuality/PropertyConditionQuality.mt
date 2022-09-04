@@ -15,7 +15,7 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Color"]
     ]
     ,
-    -0.03076923076923077
+    -0.029411764705882353
     ,
     TestID -> "PropertyConditionQuality-20220826-8NFDPP"
 ]
@@ -53,7 +53,7 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Width"]
     ]
     ,
-    -0.1076923076923077
+    -0.10294117647058823
     ,
     TestID -> "PropertyConditionQuality-20220826-6OCF5M"
 ]
@@ -63,7 +63,7 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Width.Rank"]
     ]
     ,
-    -0.46153846153846156
+    -0.45588235294117646
     ,
     TestID -> "PropertyConditionQuality-20220826-8AGQEV"
 ]

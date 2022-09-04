@@ -12,16 +12,18 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCImageRegionToObject[
-                <|
-                    "Color" -> 2,
-                    "Position" -> {1, 1},
-                    "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
-                    "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                |>,
-                10,
-                10
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                Daniel`ARC`ARCImageRegionToObject[
+                    <|
+                        "Color" -> 2,
+                        "Position" -> {1, 1},
+                        "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
+                        "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
+                    |>,
+                    10,
+                    10
+                ]
             ]
         ]
     ]
@@ -74,7 +76,8 @@ Test[
         "FilledProportion" -> 0.5555555555555556,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220717-LUDS9W"
@@ -82,26 +85,28 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCImageRegionToObject[
-                <|
-                    "Color" -> 2,
-                    "Position" -> {1, 1},
-                    "Image" -> {{2, 2, 2}, {2, 2, 2}, {2, 2, 2}},
-                    "PixelPositions" -> {
-                        {1, 1},
-                        {1, 2},
-                        {1, 3},
-                        {2, 1},
-                        {2, 2},
-                        {2, 3},
-                        {3, 1},
-                        {3, 2},
-                        {3, 3}
-                    }
-                |>,
-                10,
-                10
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                Daniel`ARC`ARCImageRegionToObject[
+                    <|
+                        "Color" -> 2,
+                        "Position" -> {1, 1},
+                        "Image" -> {{2, 2, 2}, {2, 2, 2}, {2, 2, 2}},
+                        "PixelPositions" -> {
+                            {1, 1},
+                            {1, 2},
+                            {1, 3},
+                            {2, 1},
+                            {2, 2},
+                            {2, 3},
+                            {3, 1},
+                            {3, 2},
+                            {3, 3}
+                        }
+                    |>,
+                    10,
+                    10
+                ]
             ]
         ]
     ]
@@ -150,7 +155,8 @@ Test[
         "FilledProportion" -> 1.,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220717-56GZCQ"
@@ -158,16 +164,18 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCImageRegionToObject[
-                <|
-                    "Color" -> 2,
-                    "Position" -> {1, 1},
-                    "Image" -> {{2}},
-                    "PixelPositions" -> {{1, 1}}
-                |>,
-                10,
-                10
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                Daniel`ARC`ARCImageRegionToObject[
+                    <|
+                        "Color" -> 2,
+                        "Position" -> {1, 1},
+                        "Image" -> {{2}},
+                        "PixelPositions" -> {{1, 1}}
+                    |>,
+                    10,
+                    10
+                ]
             ]
         ]
     ]
@@ -180,8 +188,13 @@ Test[
         "Shapes" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
             <|"Name" -> "Pixel"|>,
+            <|"Name" -> "Line"|>,
             <|"Name" -> "Square"|>,
             <|"Name" -> "Rectangle"|>,
+            <|"Name" -> "Line", "Angle" -> 0|>,
+            <|"Name" -> "Line", "Angle" -> 90|>,
+            <|"Name" -> "Line", "Angle" -> 135|>,
+            <|"Name" -> "Line", "Angle" -> 45|>,
             <|"Name" -> "Square", "Filled" -> True|>,
             <|"Name" -> "Rectangle", "Filled" -> True|>
         },
@@ -207,7 +220,8 @@ Test[
         "FilledProportion" -> 1.,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220811-XV0TR0"
@@ -291,7 +305,8 @@ Test[
         "FilledProportion" -> 1.,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
-        "VerticalAndHorizontalLineSymmetry" -> False
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCImageRegionToObject-20220811-XVU8DU"

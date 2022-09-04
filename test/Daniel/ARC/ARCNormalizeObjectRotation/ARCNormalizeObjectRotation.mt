@@ -12,20 +12,22 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCNormalizeObjectRotation[
-                Utility`Sett[
-                    Daniel`ARC`ARCImageRegionToObject[
-                        <|
-                            "Color" -> 2,
-                            "Position" -> {1, 1},
-                            "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
-                            "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                        |>,
-                        10,
-                        10
-                    ],
-                    {"ParentWidth" -> 10, "ParentHeight" -> 10}
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                Daniel`ARC`ARCNormalizeObjectRotation[
+                    Utility`Sett[
+                        Daniel`ARC`ARCImageRegionToObject[
+                            <|
+                                "Color" -> 2,
+                                "Position" -> {1, 1},
+                                "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
+                                "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
+                            |>,
+                            10,
+                            10
+                        ],
+                        {"ParentWidth" -> 10, "ParentHeight" -> 10}
+                    ]
                 ]
             ]
         ]
@@ -75,6 +77,7 @@ Test[
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0,
         "ParentWidth" -> 10,
         "ParentHeight" -> 10
     |>

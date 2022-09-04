@@ -42,8 +42,13 @@ Test[
     ,
     {
         <|"Name" -> "Pixel"|>,
+        <|"Name" -> "Line"|>,
         <|"Name" -> "Square"|>,
         <|"Name" -> "Rectangle"|>,
+        <|"Name" -> "Line", "Angle" -> 0|>,
+        <|"Name" -> "Line", "Angle" -> 90|>,
+        <|"Name" -> "Line", "Angle" -> 135|>,
+        <|"Name" -> "Line", "Angle" -> 45|>,
         <|"Name" -> "Square", "Filled" -> True|>,
         <|"Name" -> "Rectangle", "Filled" -> True|>
     }
@@ -110,9 +115,11 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[
-        {{1, -1, -1}, {1, -1, -1}, {1, 1, 1}},
-        "IncludeImageShapes" -> True
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[
+            {{1, -1, -1}, {1, -1, -1}, {1, 1, 1}},
+            "IncludeImageShapes" -> True
+        ]
     ]
     ,
     {
@@ -129,6 +136,35 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
             |>
         },
         <|"Name" -> "L"|>

@@ -12,64 +12,66 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Function[
-            Replace[
-                #1,
-                assoc_Association :> DevTools`ERP`NormalizeOutput[assoc],
-                {1, Infinity},
-                Heads -> True
-            ]
-        ][
-            Normal[
-                Daniel`ARC`ARCGroupByOutputObject[
-                    <|
+        DevTools`TestingTools`SlowTest[
+            Function[
+                Replace[
+                    #1,
+                    assoc_Association :> DevTools`ERP`NormalizeOutput[assoc],
+                    {1, Infinity},
+                    Heads -> True
+                ]
+            ][
+                Normal[
+                    Daniel`ARC`ARCGroupByOutputObject[
                         <|
-                            "UUID" -> 1,
-                            "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                            "PixelPositions" -> {{4, 3}},
-                            "Colors" -> {8},
-                            "Position" -> {4, 3},
-                            "Width" -> 1,
-                            "Height" -> 1,
-                            "Length" -> 1,
-                            "Y" -> 4,
-                            "X" -> 3
-                        |> -> <|
-                            "UUID" -> 3
+                            <|
+                                "UUID" -> 1,
+                                "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                                "PixelPositions" -> {{4, 3}},
+                                "Colors" -> {8},
+                                "Position" -> {4, 3},
+                                "Width" -> 1,
+                                "Height" -> 1,
+                                "Length" -> 1,
+                                "Y" -> 4,
+                                "X" -> 3
+                            |> -> <|
+                                "UUID" -> 3
+                            |>,
+                            <|
+                                "UUID" -> 2,
+                                "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                                "PixelPositions" -> {{4, 10}},
+                                "Colors" -> {8},
+                                "Position" -> {4, 10},
+                                "Width" -> 1,
+                                "Height" -> 1,
+                                "Length" -> 1,
+                                "Y" -> 4,
+                                "X" -> 10
+                            |> -> <|
+                                "UUID" -> 3
+                            |>,
+                            <|
+                                "UUID" -> 4,
+                                "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                                "PixelPositions" -> {{6, 6}},
+                                "Colors" -> {8},
+                                "Position" -> {6, 6},
+                                "Width" -> 1,
+                                "Height" -> 1,
+                                "Length" -> 1,
+                                "Y" -> 6,
+                                "X" -> 6
+                            |> -> <|
+                                "UUID" -> 5
+                            |>
                         |>,
-                        <|
-                            "UUID" -> 2,
-                            "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                            "PixelPositions" -> {{4, 10}},
-                            "Colors" -> {8},
-                            "Position" -> {4, 10},
-                            "Width" -> 1,
-                            "Height" -> 1,
-                            "Length" -> 1,
-                            "Y" -> 4,
-                            "X" -> 10
-                        |> -> <|
-                            "UUID" -> 3
-                        |>,
-                        <|
-                            "UUID" -> 4,
-                            "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                            "PixelPositions" -> {{6, 6}},
-                            "Colors" -> {8},
-                            "Position" -> {6, 6},
-                            "Width" -> 1,
-                            "Height" -> 1,
-                            "Length" -> 1,
-                            "Y" -> 6,
-                            "X" -> 6
-                        |> -> <|
-                            "UUID" -> 5
-                        |>
-                    |>,
-                    {<|"UUID" -> 3, "MyKey" -> 1|>, <|"UUID" -> 5, "MyKey" -> 2|>},
-                    0,
-                    10,
-                    10
+                        {<|"UUID" -> 3, "MyKey" -> 1|>, <|"UUID" -> 5, "MyKey" -> 2|>},
+                        0,
+                        10,
+                        10
+                    ]
                 ]
             ]
         ]
@@ -129,7 +131,8 @@ Test[
             "FilledProportion" -> 0.25,
             "VerticalLineSymmetry" -> True,
             "HorizontalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False
+            "VerticalAndHorizontalLineSymmetry" -> False,
+            "HollowCount" -> 0
         |> -> <|
             "UUID" -> 0,
             "MyKey" -> 1

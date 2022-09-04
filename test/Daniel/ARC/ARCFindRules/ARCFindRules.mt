@@ -161,7 +161,7 @@ Test[
     ]
     ,
     {
-        <|"AspectRatio" -> 1|> -> <|
+        <|"Shapes" -> <|"Name" -> "Square"|>|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
@@ -172,7 +172,7 @@ Test[
                 }
             |>
         |>,
-        <|"AspectRatio" -> Except[1]|> -> <|"Same" -> True|>
+        <|"Shapes" -> Except[<|"Name" -> "Square"|>]|> -> <|"Same" -> True|>
     }
     ,
     TestID -> "ARCFindRules-20220807-UIY7RU"
@@ -1004,8 +1004,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "90c28cc7"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "90c28cc7"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1013,7 +1017,10 @@ Test[
         "RemoveEmptySpace" -> True,
         "Rules" -> {
             <||> -> <|
-                "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>},
+                "Shapes" -> {
+                    <|"Name" -> "Line", "Angle" -> 0|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
+                },
                 "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
                 "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"],
                 "X2" -> Daniel`ARC`ObjectValue["InputObject", "X2.InverseRank"],
@@ -1026,18 +1033,34 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a87f7484"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a87f7484"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
         "FormMultiColorCompositeObjects" -> False,
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <|"Position" -> {1, 1}|> -> <|
-                "Image" -> Daniel`ARC`ObjectValue[<|"FilledArea.Rank" -> 1|>, "Image"]
-            |>,
-            <|"Position" -> Except[{1, 1}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Image" -> Daniel`ARC`ObjectValue[
+                                <|"FilledArea.Rank" -> 1|>,
+                                "Image"
+                            ],
+                            "Y" -> 1,
+                            "X" -> 1
+                        |>
+                    }
+                |>
+            |>
         }
     |>
     ,
@@ -1525,22 +1548,40 @@ Test[
         "RemoveEmptySpace" -> True,
         "Rules" -> {
             <|"Colors" -> {2}|> -> <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {-1, 5, -1}, {-1, 5, -1}}],
-                "XInverse" -> 3,
-                "YInverse" -> 3
+                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {-1, 5, -1}, {-1, 5, -1}}]
             |>,
             <|"Colors" -> {1}|> -> <|
-                "Image" -> Daniel`ARC`ARCScene[{{-1, 5, -1}, {5, 5, 5}, {-1, 5, -1}}],
-                "XInverse" -> 3,
-                "YInverse" -> 3
+                "Image" -> Daniel`ARC`ARCScene[{{-1, 5, -1}, {5, 5, 5}, {-1, 5, -1}}]
             |>,
             <|"Colors" -> {3}|> -> <|
-                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 5}, {-1, -1, 5}, {5, 5, 5}}],
-                "XInverse" -> 3,
-                "YInverse" -> 3
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 5}, {-1, -1, 5}, {5, 5, 5}}]
             |>
         }
     |>
     ,
     TestID -> "ARCFindRules-20220903-I4JTV7"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d631b094"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Shapes" -> {
+                    <|"Name" -> "Line", "Angle" -> 0|>,
+                    <|"Name" -> "Rectangle", "Filled" -> True|>
+                },
+                "X" -> 1,
+                "Y" -> 1,
+                "X2" -> Daniel`ARC`ObjectValue["InputObject", "FilledArea"],
+                "Y2" -> 1
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220903-Q5SIX5"
 ]

@@ -44,8 +44,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -69,8 +74,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -94,8 +104,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -119,8 +134,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -246,8 +266,13 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Line"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
+                        <|"Name" -> "Line", "Angle" -> 0|>,
+                        <|"Name" -> "Line", "Angle" -> 90|>,
+                        <|"Name" -> "Line", "Angle" -> 135|>,
+                        <|"Name" -> "Line", "Angle" -> 45|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -271,8 +296,13 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Line"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
+                        <|"Name" -> "Line", "Angle" -> 0|>,
+                        <|"Name" -> "Line", "Angle" -> 90|>,
+                        <|"Name" -> "Line", "Angle" -> 135|>,
+                        <|"Name" -> "Line", "Angle" -> 45|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -296,8 +326,13 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Line"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
+                        <|"Name" -> "Line", "Angle" -> 0|>,
+                        <|"Name" -> "Line", "Angle" -> 90|>,
+                        <|"Name" -> "Line", "Angle" -> 135|>,
+                        <|"Name" -> "Line", "Angle" -> 45|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -321,8 +356,13 @@ Test[
                     "Shapes" -> {
                         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                         <|"Name" -> "Pixel"|>,
+                        <|"Name" -> "Line"|>,
                         <|"Name" -> "Square"|>,
                         <|"Name" -> "Rectangle"|>,
+                        <|"Name" -> "Line", "Angle" -> 0|>,
+                        <|"Name" -> "Line", "Angle" -> 90|>,
+                        <|"Name" -> "Line", "Angle" -> 135|>,
+                        <|"Name" -> "Line", "Angle" -> 45|>,
                         <|"Name" -> "Square", "Filled" -> True|>,
                         <|"Name" -> "Rectangle", "Filled" -> True|>
                     },
@@ -377,8 +417,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -402,8 +447,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -427,8 +477,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -452,8 +507,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -556,8 +616,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -581,8 +646,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -606,8 +676,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },
@@ -631,8 +706,13 @@ Test[
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
                             <|"Name" -> "Pixel"|>,
+                            <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
                             <|"Name" -> "Rectangle"|>,
+                            <|"Name" -> "Line", "Angle" -> 0|>,
+                            <|"Name" -> "Line", "Angle" -> 90|>,
+                            <|"Name" -> "Line", "Angle" -> 135|>,
+                            <|"Name" -> "Line", "Angle" -> 45|>,
                             <|"Name" -> "Square", "Filled" -> True|>,
                             <|"Name" -> "Rectangle", "Filled" -> True|>
                         },

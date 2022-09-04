@@ -210,6 +210,7 @@ Test[
     ]
     ,
     Daniel`ARC`Object[<|"Colors" -> Except[{5}]|>] -> <|
+        "HollowCount" -> 0,
         "Width.Rank" -> 2,
         "Width.InverseRank" -> 1,
         "Height.Rank" -> 2,
@@ -218,6 +219,8 @@ Test[
         "Length.InverseRank" -> 1,
         "X.Rank" -> 1,
         "XInverse.InverseRank" -> 1,
+        "HollowCount.Rank" -> 2,
+        "HollowCount.InverseRank" -> 1,
         "Area.Rank" -> 2,
         "Area.InverseRank" -> 1,
         "FilledArea.Rank" -> 2,
