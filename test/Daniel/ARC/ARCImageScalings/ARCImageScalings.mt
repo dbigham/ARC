@@ -79,3 +79,14 @@ Test[
     ,
     TestID -> "ARCImageScalings-20220903-0BU4F1"
 ]
+
+Test[
+    Daniel`ARC`ARCImageScalings[{{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}][[1]]
+    ,
+    <|
+        "Image" -> Daniel`ARC`ARCScene[{{1}}],
+        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 3.|>
+    |>
+    ,
+    TestID -> "ARCImageScalings-20220904-OV6BCS"
+]

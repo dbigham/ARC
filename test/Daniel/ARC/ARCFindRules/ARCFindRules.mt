@@ -1585,3 +1585,21 @@ Test[
     ,
     TestID -> "ARCFindRules-20220903-Q5SIX5"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "5614dbcf"]["Train"]]
+    ]
+    ,
+    <|
+        "Denoise" -> True,
+        "SceneAsSingleObject" -> True,
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*0.3333333333333333],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*0.3333333333333333],
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220904-JVUY94"
+]

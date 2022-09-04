@@ -390,6 +390,16 @@ ARCDropObjectProperties::usage = "ARCDropObjectProperties  "
 
 ARCFixUnwantedManyToOneMappings::usage = "ARCFixUnwantedManyToOneMappings  "
 
+ARCDenoise::usage = "ARCDenoise  "
+
+ARCSurroundingPixels::usage = "ARCSurroundingPixels  "
+
+ARCNoiseObjects::usage = "ARCNoiseObjects  "
+
+ARCImageColors::usage = "ARCImageColors  "
+
+ARCRulesForOutput::usage = "ARCRulesForOutput  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1459,7 +1469,7 @@ ARCImageRegionToObject[region_Association, sceneWidth_Integer, sceneHeight_Integ
                     ]
                 ],
                 "PixelPositions" -> region["PixelPositions"],
-                ARCInferShapeAndShapes[region["Image"]],
+                ARCInferShapeAndShapes[region["Image"], {region["Color"]}],
                 "Colors" -> {region["Color"]},
                 InferColor["Color" -> <|"Colors" -> {region["Color"]}|>],
                 "Position" -> region["Position"]
@@ -3273,10 +3283,21 @@ Options[ARCFindRules] =
     "FormMultiColorCompositeObjects" -> Automatic,      (*< Whether connected single-color objects should be combined to form multi-color composite objects. If Automatic, we will try forming them, but if that isn't looking to work, we may also try not forming them. *)
     "UnnormalizedConclusionGroup" -> Missing[],         (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
     "SettleForOneExamplePerRule" -> True,               (*< If we can't find a workable rule set supported by 2+ examples per rule, should we try again and settle for 1+ examples per rule? *)
-    "SingleObject" -> Automatic                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "SingleObject" -> Automatic,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "Denoise" -> Automatic                              (*< Should we consider removing noise from the image? *)
 };
-ARCFindRules[examples_List, opts:OptionsPattern[]] :=
-    Module[{res, foundRulesQ, foundRules2Q, workingRulesQ, existingRulesScore},
+ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
+    Module[
+        {
+            examples = examplesIn,
+            res,
+            foundRulesQ,
+            foundRules2Q,
+            workingRulesQ,
+            existingRulesScore,
+            denoiseResult,
+            denoisedQ = False
+        },
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
@@ -3339,6 +3360,7 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
         ];
         
         If [OptionValue["SingleObject"] =!= False,
+            
             workingRulesQ =
                 If [!foundRulesQ,
                     False
@@ -3364,6 +3386,8 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                 res2 = arcFindRulesHelper[examples, "SingleObject" -> True, opts];
                 foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 
+                (*ARCEcho2[ARCRulesForOutput[res2]];*)
+                
                 If [foundRules2Q,
                     If [And[
                             TrueQ[ARCWorkingQ[examples, res2]],
@@ -3373,10 +3397,43 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
                                 (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 2.5
                             ]
                         ],
-                        foundRules2 = True;
+                        foundRulesQ = True;
                         res = res2
                     ]
                 ];
+            ]
+        ];
+        
+        If [MatchQ[OptionValue["Denoise"], Automatic | True],
+            
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+            
+            If [!TrueQ[workingRulesQ],
+                
+                denoiseResult =
+                    ReturnIfFailure[ARCDenoise[examples]];
+                
+                If [TrueQ[denoiseResult["Denoised"]],
+                    
+                    Block[{$denoised = True},
+                        res2 = ARCFindRules[
+                            denoiseResult["Examples"],
+                            "Denoise" -> False,
+                            opts
+                        ]
+                    ];
+                    foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                    
+                    If [foundRules2Q && TrueQ[ARCWorkingQ[examples, res2]],
+                        foundRulesQ = True;
+                        res = res2
+                    ]
+                ]
             ]
         ];
         
@@ -3406,19 +3463,7 @@ ARCFindRules[examples_List, opts:OptionsPattern[]] :=
             res = <||>
         ];
         
-        KeyTake[
-            res,
-            {
-                "SceneAsSingleObject",
-                "FormMultiColorCompositeObjects",
-                "RemoveEmptySpace",
-                "Background",
-                "Width",
-                "Height",
-                "Rules",
-                "PartialRules"
-            }
-        ]
+        ARCRulesForOutput[res]
     ]
 
 (*!
@@ -3455,6 +3500,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             Block[{rulesResult},
                 Return[
                     rulesResult = <|
+                        If [TrueQ[$denoised],
+                            "Denoise" -> True
+                            ,
+                            Nothing
+                        ],
                         If [TrueQ[OptionValue["SingleObject"]],
                             "SceneAsSingleObject" -> True
                             ,
@@ -3504,7 +3554,31 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             rulesResult,
                             "RemoveEmptySpace" -> True
                         ]
+                        ,
+                        (* If we're not removing empty space, but inputs and outputs are
+                           different sizes, then we should now consider whether we could
+                           infer the width and height of outputs, even if it is smaller. *)
+                        widthExpression = ARCGeneralizeValue[
+                            examples[[All, "Input", "Width"]],
+                            examples[[All, "Output", "Width"]],
+                            ObjectValue["InputScene", "Width"]
+                        ];
+                        
+                        heightExpression = ARCGeneralizeValue[
+                            examples[[All, "Input", "Height"]],
+                            examples[[All, "Output", "Height"]],
+                            ObjectValue["InputScene", "Height"]
+                        ];
+                        
+                        If [SpecifiedQ[widthExpression],
+                            rulesResult["Width"] = widthExpression
+                        ];
+                        
+                        If [SpecifiedQ[heightExpression],
+                            rulesResult["Height"] = heightExpression
+                        ];
                     ];
+                    
                     rulesResult
                     ,
                     Module
@@ -3610,7 +3684,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho[examples[[1, "ObjectMapping"]]];
         Throw["HERE"];*)
         
-        (*ARCEcho[SimplifyObjects[examples[[All, "ObjectMapping"]]]];
+        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
         Throw["HERE"];*)
         
         (* Determine if input objects can be referenced in any particular ways in general. *)
@@ -3644,6 +3718,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         {ruleSets, ruleFindings, additionalRules} =
             ReturnIfFailure@
             ARCFindRules[examples, objectMappings, referenceableInputObjects];
+        
+        (*ARCEcho2[ruleSets];*)
         
         If [And[
                 (* We weren't able to find a rule set. *)
@@ -4430,8 +4506,18 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
     \maintainer danielb
 *)
 Clear[ARCApplyRules];
-ARCApplyRules[scene_ARCScene, rules_Association] :=
-    Module[{parsedScene, objects, ruleList = rules["Rules"], addObjects, outputScene, renderedScene},
+ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
+    Module[
+        {
+            scene = sceneIn,
+            parsedScene,
+            objects,
+            ruleList = rules["Rules"],
+            addObjects,
+            outputScene,
+            renderedScene,
+            colors
+        },
         
         If [!ListQ[ruleList],
             ReturnFailure[
@@ -4440,6 +4526,10 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                 "Scene" -> scene,
                 "ARCFindRulesResult" -> rules
             ]
+        ];
+        
+        If [TrueQ[rules["Denoise"]],
+            scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
         ];
         
         parsedScene =
@@ -4533,6 +4623,8 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
             }
         ];
         
+        colors = ARCImageColors[object["Image"]];
+        
         (* Convert our sparse output objects to fuller objects that have their various
            properties set so that when applying "AddObjects" rules, if their object
            reference patterns need to make use of those properties, they'll be set. *)
@@ -4547,12 +4639,8 @@ ARCApplyRules[scene_ARCScene, rules_Association] :=
                             "Object" -> object
                         ],
                         (*"PixelPositions" -> TODO,*)
-                        ARCInferShapeAndShapes[object["Image"][[1]]],
-                        "Colors" ->
-                            DeleteCases[
-                                DeleteDuplicates[Flatten[object["Image"][[1]]]],
-                                $nonImageColor
-                            ],
+                        ARCInferShapeAndShapes[object["Image"][[1]], colors],
+                        "Colors" -> colors,
                         "Position" -> object["Position"],
                         If [!MissingQ[object["ZOrder"]],
                             "ZOrder" -> object["ZOrder"]
@@ -10271,12 +10359,50 @@ ARCTaskLog[] :=
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
             "SuccessCount" -> 66,
-            "Runtime" -> Quantity[TODO, "Hours"],
+            "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "d631b094",
             "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"9af7a82c", "d9fac9be"},
+            "TotalGeneralizedSuccesses" -> 32,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 67,
+            "Runtime" -> Quantity[1.3, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "9af7a82c",
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 30,
+            "TotalGeneralizedSuccesses" -> 32,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 3}],
+            "SuccessCount" -> 67,
+            "Runtime" -> Quantity[1.3, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "d9fac9be",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 32,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 11
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 68,
+            "Runtime" -> Quantity[TODO, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "5614dbcf",
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 32,
             "NewEvaluationSuccesses" -> 0,
             "TotalEvaluationSuccesses" -> 11
         |>
@@ -12184,7 +12310,8 @@ ARCRotateShapeAssociations[shapes_, angle_, image_] :=
                ARCRotateShapeAssociation and will instead do the more expensive thing of
                taking the image, rotating it, and classifying it. *)
             ARCInferShapeAndShapes[
-                RotateImage[image, angle][[1]]
+                RotateImage[image, angle][[1]],
+                ARCImageColors[image]
             ]
             ,
             (* Abandoned for now. I implemented ARCRotateShapeAssociation because I felt it would
@@ -12220,7 +12347,7 @@ ARCRotateShapeAssociations[shapes_, angle_, image_] :=
     \maintainer danielb
 *)
 Clear[ARCInferShapeAndShapes];
-ARCInferShapeAndShapes[image_List] :=
+ARCInferShapeAndShapes[image_List, colors_List] :=
     Module[
         {
             monochrome = ARCToMonochrome[image, $nonImageColor],
@@ -12230,12 +12357,29 @@ ARCInferShapeAndShapes[image_List] :=
             "Shape" -> Replace[
                 shapes,
                 {
-                    {} :> ARCScene[monochrome],
+                    {} :>
+                        ARCScene@
+                        If [Length[colors] === 1,
+                            monochrome
+                            ,
+                            image
+                        ],
                     list_List :> First[ARCPruneAlternatives[list, "Shapes", "Most" -> "Specific"]]
                 }
             ],
             "Shapes" -> Join[
-                ARCImageRotations[monochrome],
+                ARCImageRotations@
+                If [Length[colors] === 1,
+                    monochrome
+                    ,
+                    image
+                ],
+                ARCImageScalings@
+                If [Length[colors] === 1,
+                    monochrome
+                    ,
+                    image
+                ],
                 shapes
             ]
         |>
@@ -14699,7 +14843,13 @@ ARCRemoveEmptySpaceQ[rules_Association, examples_List] :=
                     ,
                     (* Did removing extra space make the example go from not working to now
                        working? *)
-                    ARCRemoveEmptySpace[actualOutputScene, example["Output", "Background"]] === expectedOutputScene
+                    Replace[
+                        ARCRemoveEmptySpace[actualOutputScene, example["Output", "Background"]] === expectedOutputScene,
+                        (* After removing extra space, this example isn't working, so we should
+                           abort and not indicate that empty space should be removed.
+                           e.g. 5614dbcf *)
+                        False :> Return[False, Module]
+                    ]
                 ]
                 
             ] /@ examples
@@ -15180,16 +15330,16 @@ ARCFormExceptRules[rulesIn_List, objects_List] :=
 Clear[ARCObjectFromAllPixels];
 ARCObjectFromAllPixels[scene_ARCScene, background_Integer] :=
     Module[{colors, image = Replace[scene[[1]], background -> $nonImageColor, {2}]},
+        
+        colors = ARCImageColors[image];
+        
         ARCInferObjectProperties[
             <|
                 "UUID" -> CreateUUID[],
                 "Image" -> ARCScene[image],
                 "PixelPositions" -> {},
-                ARCInferShapeAndShapes[image],
-                "Colors" -> (
-                    colors =
-                        Sort[DeleteDuplicates[DeleteCases[Flatten[image], $nonImageColor]]]
-                ),
+                ARCInferShapeAndShapes[image, colors],
+                "Colors" -> colors,
                 InferColor["Color" -> <|"Colors" -> colors|>],
                 "Position" -> {1, 1}
             |>,
@@ -15371,7 +15521,7 @@ ARCImageScalings[image_List] :=
                 ,
                 Nothing
             ]
-        ] /@ {0.25, 0.5, 2, 3}
+        ] /@ {0.25, 0.33333333333333333333333, 0.5, 2, 3}
     ]
 
 (*!
@@ -15616,6 +15766,267 @@ ARCFixUnwantedManyToOneMappings[mapping_Association] :=
             ,
             mapping
         ]
+    ]
+
+(*!
+    \function ARCDenoise
+    
+    \calltable
+        ARCDenoise[image, noiseObjects] '' Tries to remove the noise objects.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCDenoise]
+    
+    \maintainer danielb
+*)
+Clear[ARCDenoise];
+ARCDenoise[imageIn_List, noiseObjects_List] :=
+    Module[{image = imageIn},
+        
+        Function[{noiseObject},
+            image = ARCDenoise[
+                image,
+                noiseObject
+            ]
+        ] /@ noiseObjects;
+        
+        image
+    ]
+
+ARCDenoise[imageIn_List, noiseObject_Association] :=
+    Module[{image = imageIn},
+        
+        surroundingPixelColors =
+            Counts@
+            DeleteMissing@
+            ARCSurroundingPixels[noiseObject, image];
+        
+        maxColorCount = Max[surroundingPixelColors];
+        
+        mostCommonColors = Select[
+            surroundingPixelColors,
+            # === maxColorCount &
+        ];
+        
+        (* For now we'll assume the noise object is a pixel, and we won't have
+           any special handling for the case where there are multiple colors
+           with the same count. *)
+        With[{color = First[Keys[mostCommonColors]]},
+            image[[
+                noiseObject["Y"],
+                noiseObject["X"]
+            ]] = color
+        ];
+        
+        image
+    ]
+
+ARCDenoise[image_ARCScene, noiseObjects_List] :=
+    Module[{},
+        ARCScene@
+        ReturnIfFailure@
+        ARCDenoise[
+            image[[1]],
+            noiseObjects
+        ]
+    ]
+
+ARCDenoise[image_ARCScene] :=
+    Module[{parsedScene},
+        
+        parsedScene =
+            ReturnIfFailure@
+            ARCParseScene[image, "FormMultiColorCompositeObjects" -> False];
+        
+        noiseObjects = ARCNoiseObjects[parsedScene["Objects"]];
+        
+        If [noiseObjects =!= {},
+            <|
+                "Denoised" -> True,
+                "Image" -> ARCDenoise[image, noiseObjects]
+            |>
+            ,
+            <|
+                "Denoised" -> False,
+                "Image" -> image
+            |>
+        ]
+    ]
+
+ARCDenoise[examples_List] :=
+    Module[{denoisedQ = False, denoiseResult},
+        <|
+            "Examples" ->
+                Function[{example},
+                    denoiseResult = ReturnIfFailure[ARCDenoise[example["Input"]]];
+                    If [TrueQ[denoiseResult["Denoised"]],
+                        denoisedQ = True;
+                        Sett[example, "Input" -> denoiseResult["Image"]]
+                        ,
+                        example
+                    ]
+                ] /@ examples,
+            "Denoised" -> denoisedQ
+        |>
+    ]
+
+(*!
+    \function ARCSurroundingPixels
+    
+    \calltable
+        ARCSurroundingPixels[object, image] '' Given an object, returns the colors of surrounding pixels.
+    
+    Treats the object as a rectangle, regardless of whether its edge pixels are filled in or not.
+    
+    Examples:
+    
+    ARCSurroundingPixels[
+        <|"X" -> 2, "Y" -> 2, "X2" -> 2, "Y2" -> 2|>,
+        {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
+    ]
+    
+    ===
+    
+    {1, 2, 3, 4, 6, 7, 8, 9}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSurroundingPixels]
+    
+    \maintainer danielb
+*)
+Clear[ARCSurroundingPixels];
+ARCSurroundingPixels[object_Association, image_] :=
+    Module[{pixelLocations, y},
+        
+        pixelLocations = Join[
+            (* Top *)
+            y = object["Y"] - 1;
+            Function[{x},
+                {y, x}
+            ] /@ Range[object["X"] - 1, object["X2"] + 1]
+            ,
+            (* Left *)
+            x = object["X"] - 1;
+            Function[{y},
+                {y, x}
+            ] /@ Range[object["Y"], object["Y"]]
+            ,
+            (* Right *)
+            x = object["X2"] + 1;
+            Function[{y},
+                {y, x}
+            ] /@ Range[object["Y"], object["Y"]]
+            ,
+            (* Bottom *)
+            y = object["Y2"] + 1;
+            Function[{x},
+                {y, x}
+            ] /@ Range[object["X"] - 1, object["X2"] + 1]
+        ];
+        
+        Function[{pixelLocation},
+            ARCPixelColor[image, pixelLocation]
+        ] /@ pixelLocations
+    ]
+
+(*!
+    \function ARCNoiseObjects
+    
+    \calltable
+        ARCNoiseObjects[objects] '' Returns the objects which might be noise.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCNoiseObjects]
+    
+    \maintainer danielb
+*)
+Clear[ARCNoiseObjects];
+ARCNoiseObjects[objects_List] :=
+    Module[{pixels},
+        
+        pixels = Select[
+            objects,
+            ShapeQ[#, "Pixel"] &
+        ];
+        
+        If [And[
+                (* TODO: If all pixels in all input scenes are this color, and other
+                         scenes have >= 4, then we shouldn't require every input scene
+                         to have >= 4. *)
+                Length[pixels] >= 4,
+                (* The pixels are all the same color. *)
+                MatchQ[DeleteDuplicates[pixels[[All, "Color"]]], {_}]
+            ],
+            pixels
+            ,
+            {}
+        ]
+    ]
+
+(*!
+    \function ARCImageColors
+    
+    \calltable
+        ARCImageColors[image] '' Given an image, returns its list of colors.
+    
+    Doesn't include $nonImageColor.
+    
+    Examples:
+    
+    ARCImageColors[{{1, 2, 0}, {0, 0, 3}}] === {0, 1, 2, 3}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCImageColors]
+    
+    \maintainer danielb
+*)
+Clear[ARCImageColors];
+ARCImageColors[image_] :=
+    Sort@
+    DeleteCases[
+        DeleteDuplicates[Flatten[Replace[image, _ARCScene :> image[[1]]]]],
+        $nonImageColor
+    ]
+
+(*!
+    \function ARCRulesForOutput
+    
+    \calltable
+        ARCRulesForOutput[rules] '' Given a rules association, prepares it for final output.
+    
+    Examples:
+    
+    ARCRulesForOutput[rules] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCRulesForOutput];
+ARCRulesForOutput[rules_Association] :=
+    KeyTake[
+        rules,
+        {
+            "Denoise",
+            "SceneAsSingleObject",
+            "FormMultiColorCompositeObjects",
+            "RemoveEmptySpace",
+            "Background",
+            "Width",
+            "Height",
+            "Rules",
+            "PartialRules"
+        }
     ]
 
 End[]
