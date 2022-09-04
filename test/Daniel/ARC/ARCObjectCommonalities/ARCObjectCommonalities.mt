@@ -62,3 +62,37 @@ Test[
     ,
     TestID -> "ARCObjectCommonalities-20220827-8N6I86"
 ]
+
+Test[
+    Daniel`ARC`ARCObjectCommonalities[
+        {<|"a" -> 1, "b" -> 2|>, <|"a" -> 1|>, <|"a" -> 1, "b" -> 2, "c" -> 3|>},
+        "IgnoreMissing" -> True
+    ]
+    ,
+    <|"a" -> 1, "b" -> 2, "c" -> 3|>
+    ,
+    TestID -> "ARCObjectCommonalities-20220904-BEU9JW"
+]
+
+Test[
+    Daniel`ARC`ARCObjectCommonalities[{<|"a" -> 1, "b" -> 2|>, <|"a" -> 1|>}]
+    ,
+    <|"a" -> 1|>
+    ,
+    TestID -> "ARCObjectCommonalities-20220904-I37QPI"
+]
+
+Test[
+    Daniel`ARC`ARCObjectCommonalities[
+        {
+            <|"a" -> 1, "b" -> <|"c" -> 2, "d" -> 3|>|>,
+            <|"a" -> 1, "b" -> <|"c" -> 2, "d" -> 4|>|>
+        },
+        "IgnoreMissing" -> True,
+        "Recursive" -> True
+    ]
+    ,
+    <|"a" -> 1, "b" -> <|"c" -> 2|>|>
+    ,
+    TestID -> "ARCObjectCommonalities-20220904-W8XO3M"
+]

@@ -161,3 +161,41 @@ Test[
     ,
     TestID -> "ARCInferObjectImage-20220812-EY6ET2"
 ]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>},
+            "Color" -> 2,
+            "Width" -> 5,
+            "Height" -> 3
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2, 2, 2, 2}, {2, 2, 2, 2, 2}, {2, 2, 2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220904-VCU0OW"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 1|>,
+                "Border" -> <|"Color" -> 4|>
+            |>,
+            "Width" -> 6,
+            "Height" -> 4
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[
+        {{4, 4, 4, 4, 4, 4}, {4, 1, 1, 1, 1, 4}, {4, 1, 1, 1, 1, 4}, {4, 4, 4, 4, 4, 4}}
+    ]
+    ,
+    TestID -> "ARCInferObjectImage-20220904-RENOKC"
+]

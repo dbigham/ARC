@@ -197,7 +197,7 @@ Test[
                 "Type" -> "AddComponents",
                 "Components" -> {
                     <|
-                        "Shapes" -> {<|"Name" -> "Square", "Filled" -> True|>},
+                        "Shape" -> <|"Name" -> "Square", "Filled" -> True|>,
                         "Width" -> Inactive[Plus][
                             Daniel`ARC`ObjectValue["InputObject", "Width"],
                             -2
@@ -438,11 +438,7 @@ Test[
         ]
     ]
     ,
-    {
-        <|"FilledArea" -> 4|> -> <|"Color" -> 1|>,
-        <|"FilledArea" -> 3|> -> <|"Color" -> 2|>,
-        <|"FilledArea" -> 2|> -> <|"Color" -> 3|>
-    }
+    {<||> -> <|"Color" -> Daniel`ARC`ObjectValue["InputObject", "FilledArea.Rank"]|>}
     ,
     TestID -> "ARCFindRules-20220819-N9WT39"
 ]
@@ -641,7 +637,7 @@ Test[
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Width" -> 1|> -> <|
+            <|"Area.Rank" -> 2|> -> <|
                 "Shape" -> Daniel`ARC`ARCScene[
                     {
                         {10, -1, -1, -1, 10},
@@ -654,7 +650,7 @@ Test[
                 "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -2],
                 "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -2]
             |>,
-            <|"Width" -> 3|> -> <|
+            <|"Area.Rank" -> 1|> -> <|
                 "Shape" -> Daniel`ARC`ARCScene[
                     {
                         {-1, -1, 10, -1, -1},
@@ -785,15 +781,21 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "fc754716"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "fc754716"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
     {
         <||> -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> False|>},
+            "Shape" -> <|"Name" -> "Rectangle", "Filled" -> False|>,
             "X" -> 1,
             "Y" -> 1,
             "X2Inverse" -> 1,
@@ -910,7 +912,7 @@ Test[
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0
         |> -> <|
-            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>}
+            "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>
         |>
     }
     ,
@@ -1116,8 +1118,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6F8CD79B"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6F8CD79B"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
@@ -1126,7 +1132,7 @@ Test[
                 "Type" -> "AddObjects",
                 "Objects" -> {
                     <|
-                        "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> False|>},
+                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> False|>,
                         "Color" -> 8,
                         "X" -> 1,
                         "Y" -> 1,
@@ -1164,8 +1170,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "A79310A0"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "A79310A0"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
@@ -1563,8 +1573,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d631b094"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d631b094"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1602,4 +1616,31 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220904-JVUY94"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "694f12f3"]["Train"]]
+    ]
+    ,
+    {
+        <|"Area.Rank" -> 2|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 1|>,
+                "Border" -> <|"Color" -> 4|>
+            |>
+        |>,
+        <|"Area.Rank" -> 1|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 2|>,
+                "Border" -> <|"Color" -> 4|>
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220904-WFSK8X"
 ]

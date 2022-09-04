@@ -1516,7 +1516,7 @@ ARCImageRegionToObject[ARCImageRegions[regions_List], sceneWidth_Integer, sceneH
 *)
 Clear[ARCAddRankProperties];
 ARCAddRankProperties[properties_Association] :=
-    Module[{numericProperties},
+    Module[{numericProperties, ruleConditionQuality},
         
         numericProperties = Select[properties, #["Type"] === "Integer" &];
         
@@ -1524,18 +1524,38 @@ ARCAddRankProperties[properties_Association] :=
             properties,
             Association[
                 Function[{propertyName},
+                    If [MatchQ[propertyName, "Area"],
+                        (* To beat out more specific / less general properties like Width.
+                           e.g. 694f12f3
+                           One downside is that this means that 0962bcdd favors Area.Rank for
+                           its condition instead of Width, which isn't ideal, but that still
+                           functionally works. *)
+                        ruleConditionQuality = 0.95
+                        ,
+                        ruleConditionQuality = Nothing
+                    ];
                     {
                         StringJoin[propertyName, ".Rank"] -> <|
                             "Type" -> "Integer",
                             "Rank" -> True,
                             "RankOf" -> propertyName,
-                            "InverseRankProperty" -> propertyName <> ".InverseRank"
+                            "InverseRankProperty" -> propertyName <> ".InverseRank",
+                            If [ruleConditionQuality =!= Nothing,
+                                "RuleConditionQuality" -> ruleConditionQuality
+                                ,
+                                Nothing
+                            ]
                         |>,
                         StringJoin[propertyName, ".InverseRank"] -> <|
                             "Type" -> "Integer",
                             "Rank" -> True,
                             "InverseRank" -> True,
-                            "RankOf" -> propertyName
+                            "RankOf" -> propertyName,
+                            If [ruleConditionQuality =!= Nothing,
+                                "RuleConditionQuality" -> ruleConditionQuality
+                                ,
+                                Nothing
+                            ]
                         |>
                     }
                 ] /@ Keys[numericProperties]
@@ -1886,53 +1906,107 @@ ARCClassifySquare[image_List] :=
 *)
 Clear[ARCClassifyRectange];
 ARCClassifyRectange[image_List] :=
-    (* Question: Should rectangles with a width or height of 1 be given the "Rectangle"
-                 designation in addition to "Line"? *)
-    If [MatchQ[
-            image,
-            Alternatives[
-                (* Filled rectangle. *)
-                List[
-                    Repeated[
+    Module[
+        {
+            interiorColors,
+            interiorColor,
+            borderColors,
+            borderColor
+        },
+        (* Question: Should rectangles with a width or height of 1 be given the "Rectangle"
+                     designation in addition to "Line"? *)
+        If [Or[
+                (* All pixels are non-background color. *)
+                MatchQ[
+                    image,
+                    Alternatives[
                         List[
-                            Repeated[c:Except[$nonImageColor]]
+                            Repeated[
+                                List[
+                                    Repeated[c:Except[$nonImageColor]]
+                                ]
+                            ]
                         ]
                     ]
                 ],
-                (* Empty rectangle. *)
-                List[
-                    (* Horizontal line. *)
-                    List[Repeated[c:Except[$nonImageColor]]],
-                    Repeated[
-                        List[
-                            Except[$nonImageColor],
-                            Repeated[_, {0, Infinity}],
-                            Except[$nonImageColor]
+                (* Border is all one color. *)
+                MatchQ[
+                    image,
+                    (* Empty rectangle. *)
+                    List[
+                        (* Horizontal line. *)
+                        List[Repeated[c:Except[$nonImageColor]]],
+                        Repeated[
+                            List[
+                                c:Except[$nonImageColor],
+                                Repeated[_, {0, Infinity}],
+                                c:Except[$nonImageColor]
+                            ],
+                            {0, Infinity}
                         ],
-                        {0, Infinity}
-                    ],
-                    (* Horizontal line. *)
-                    List[Repeated[c:Except[$nonImageColor]]]
+                        (* Horizontal line. *)
+                        List[Repeated[c:Except[$nonImageColor]]]
+                    ]
                 ]
-            ]
-        ],
-        <|
-            "Name" -> "Rectangle",
-            Which[
-                And[
-                    Length[image] >= 2,
-                    Length[image[[1]]] >= 2,
-                    MatchQ[DeleteDuplicates[Flatten[image[[2 ;; -2, 2 ;; -2]]]], {$nonImageColor}]
+            ],
+            
+            interiorColors =
+                If [And[
+                        Length[image] >= 2,
+                        Length[image[[1]]] >= 2
+                    ],
+                    DeleteDuplicates[Flatten[image[[2 ;; -2, 2 ;; -2]]]]
+                    ,
+                    {}
+                ];
+            
+            borderColors =
+                DeleteDuplicates@
+                Join[
+                    image[[1, 1 ;; -1]],
+                    image[[1 ;; -1, 1]],
+                    image[[1 ;; -1, -1]],
+                    image[[-1, 1 ;; -1]]
+                ];
+            
+            If [MatchQ[interiorColors, {Except[$nonImageColor]}],
+                interiorColor = interiorColors[[1]]
+            ];
+            
+            If [MatchQ[borderColors, {_}],
+                borderColor = borderColors[[1]]
+            ];
+            
+            <|
+                "Name" -> "Rectangle",
+                Which[
+                    Or[
+                        Length[image] <= 2,
+                        Length[image[[1]]] <= 2,
+                        MatchQ[DeleteDuplicates[Flatten[image[[2 ;; -2, 2 ;; -2]]]], {Except[$nonImageColor]}]
+                    ],
+                        "Filled" -> True,
+                    MatchQ[interiorColors, {$nonImageColor}],
+                        "Filled" -> False,
+                    True,
+                        Nothing
                 ],
-                    "Filled" -> False,
-                MatchQ[DeleteDuplicates[Flatten[image]], {_}],
-                    "Filled" -> True,
-                True,
+                If [And[
+                        SpecifiedQ[interiorColor],
+                        SpecifiedQ[borderColor],
+                        interiorColor =!= borderColor
+                    ],
+                    <|
+                        "Interior" -> <|"Color" -> interiorColor|>,
+                        "Border" -> <|"Color" -> borderColor|>
+                    |>
+                    ,
                     Nothing
-            ]
-        |>
-        ,
-        Nothing
+                ]
+            |>
+            ,
+            Nothing
+        ]
     ]
 
 (*!
@@ -2141,6 +2215,7 @@ ARCIndent[expr_, opts:OptionsPattern[]] :=
                 Heads -> True
             ]
             ,
+            "FormatNamedAssociations" -> False,
             "FormattedHeads" -> {ARCScene, RGBColor, GrayLevel, TestResultObject},
             opts,
             "ColumnsAvailable" -> 90
@@ -2474,19 +2549,8 @@ ARCFormCompositeObject[scene_ARCScene, objectIn_, components_List, OptionsPatter
                                 DeleteDuplicates@
                                 Flatten[components[[All, "Colors"]]]
                         ),
-                        "Shapes" ->
-                            Function[{shape},
-                                (* I was going to make these monochrome to match what we did
-                                    with non-composite objects, but that breaks 3c9b0459, so
-                                    that will require more thought. *)
-                                (*ARCToMonochrome[shape, $nonImageColor]*)
-                                shape
-                            ] /@
-                                Join[
-                                    ARCImageRotations[image],
-                                    ARCImageScalings[image],
-                                    DeleteCases[Flatten[{object["Shapes"]}], KeyValuePattern["Image" -> _]]
-                                ],
+                        Normal@
+                        ARCInferShapeAndShapes[image, colors],
                         "Components" -> ARCSetRelativeXY[
                             components,
                             object
@@ -2995,7 +3059,14 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 (* For the moment we'll be conservative and require them to have the
                    same shape. *)
                 And[
-                    object["Shape"] === objectsToMapTo[[1, "Shape"]],
+                    Or[
+                        object["Shape"] === objectsToMapTo[[1, "Shape"]],
+                        And[
+                            MatchQ[object["Shape"], KeyValuePattern["Name" -> _]],
+                            MatchQ[objectsToMapTo[[1, "Shape"]], KeyValuePattern["Name" -> _]],
+                            object["Shape", "Name"] === objectsToMapTo[[1, "Shape", "Name"]]
+                        ]
+                    ],
                     object["Width"] === objectsToMapTo[[1, "Width"]],
                     object["Height"] === objectsToMapTo[[1, "Height"]]
                 ]
@@ -3295,8 +3366,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             foundRules2Q,
             workingRulesQ,
             existingRulesScore,
-            denoiseResult,
-            denoisedQ = False
+            denoiseResult
         },
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
@@ -3681,10 +3751,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ] /@ examples;
         
-        (*ARCEcho[examples[[1, "ObjectMapping"]]];
+        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
         Throw["HERE"];*)
         
-        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
+        (*ARCEcho[examples[[1, "ObjectMapping"]]];
         Throw["HERE"];*)
         
         (* Determine if input objects can be referenced in any particular ways in general. *)
@@ -3970,7 +4040,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"Area.Rank"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -6131,7 +6201,15 @@ $transformTypes = <|
                      support Position and can/should replace any instances of those with X and Y
                      here? (We should at least try that first) *)
             {"Image", "Position", "ZOrder"},
-            {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse", "ZOrder"}
+            {
+                "Shape" | "MonochromeImage" | "Shapes",
+                "Color" | Missing["Color"],
+                "X" | "XInverse",
+                "Y" | "YInverse",
+                "Width" | "X2" | "X2Inverse",
+                "Height" | "Y2" | "Y2Inverse",
+                "ZOrder"
+            }
         },
         "SubProperties" -> {
             "Image" -> <||>,
@@ -6490,10 +6568,34 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Image",
-            ARCEcho["values" -> values];
-            ARCEcho["Conclusion values" -> conclusions[[All, "Input", property]]];
+        (*If [property === "Shape",
+            ARCEcho["Conclusion values" -> values];
+            ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
+        
+        (* Properties who's values are association "entities" with their own sub-property
+           values might involve ways to take a list of values and find the most general
+           "intersection" of them. For example, shapes fall into a graph with IsA
+           relationships, such as "square IsA rectangle". e.g. 694f12f3 *)
+        If [property === "Shape",
+            Replace[
+                ReturnIfFailure@
+                ARCPruneAlternatives[
+                    values,
+                    property,
+                    (* I'm a bit confused on whether this should be "General" or
+                       "Specific" or something more nuanced. For 694f12f3, if we set this
+                       to "Specific", then it concludes that output objects are
+                       squares, which is incorrect, since in general they are
+                       rectangles. *)
+                    "Most" -> "General"
+                ],
+                {generalizedValue_} :> Return[
+                    property -> generalizedValue,
+                    Module
+                ]
+            ]
+        ];
         
         If [!FreeQ[values, _Missing],
             Return[Missing["NotInferrable", "RequiredValuesMissing"], Module]
@@ -7515,7 +7617,7 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
             (* Check when this notable sub-image exists in the input scene, and is within
                the bounds of an output object that is being considered to be split up.
                If so, don't split the object up, since our convention so far has been
-               to treat things as "AddComonents" transforms. e.g. 25d487eb *)
+               to treat things as "AddComponents" transforms. e.g. 25d487eb *)
             If [OptionValue["InputOrOutput"] === "Output",
                 Function[{exampleObject},
                     If [And[
@@ -10397,14 +10499,104 @@ ARCTaskLog[] :=
         <|
             "Timestamp" -> DateObject[{2022, 9, 4}],
             "SuccessCount" -> 68,
-            "Runtime" -> Quantity[TODO, "Hours"],
+            "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "5614dbcf",
             "ImplementationTime" -> Quantity[2, "Hours"],
+            "NewGeneralizedSuccesses" -> {"42a50994", "6150a2bd"},
+            "TotalGeneralizedSuccesses" -> 34,
+            "NewEvaluationSuccesses" -> {"60c09cac"},
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 69,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "42a50994",
+            "ImplementationTime" -> Quantity[0, "Hours"],
             "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 32,
+            "TotalGeneralizedSuccesses" -> 34,
             "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 70,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 15434,
+            "ExampleImplemented" -> "6150a2bd",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 34,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 71,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 16242,
+            "ExampleImplemented" -> "694f12f3",
+            "ImplementationTime" -> Quantity[4, "Hours"],
+            "NewGeneralizedSuccesses" -> {"50cb2852", "b230c067", "bb43febb", "bdad9b1f"},
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 72,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 16242,
+            "ExampleImplemented" -> "50cb2852",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 73,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 16242,
+            "ExampleImplemented" -> "b230c067",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 74,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 16242,
+            "ExampleImplemented" -> "bb43febb",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 75,
+            "Runtime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 16242,
+            "ExampleImplemented" -> "bdad9b1f",
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
         |>
     }
 
@@ -10886,7 +11078,7 @@ ARCInferObjectImage[objectIn_Association, scene_Association] :=
         "ARCInferObjectImageFailure",
         "A failure occurred infering an object's image."
     ]@
-    Module[{object = objectIn},
+    Module[{object = objectIn, color},
         
         ReturnIfNotMissing[object["Image"]];
         
@@ -10938,21 +11130,28 @@ ARCInferObjectImage[objectIn_Association, scene_Association] :=
             ]
         ];
         
-        If [MissingQ[object["Color"]] && MissingQ[object["Colors"]],
-            ReturnFailure[
-                "ARCInferObjectImageFailure",
-                "Either the Color or Colors properties must be specified.",
-                "Object" -> object
-            ]
-        ];
-        
-        If [MissingQ[object["Color"]] && !MatchQ[object["Colors"], {_}],
-            ReturnFailure[
-                "ARCInferObjectImageFailure",
-                "If the Colors property is specified for use with inferring an object's image, there must be a single color.",
-                "Colors" -> object["Colors"],
-                "Object" -> object
-            ]
+        Which[
+            !MissingQ[object["Color"]],
+                color = object["Color"],
+            !FreeQ[object["Shape"], KeyValuePattern["Color" -> _]],
+                color = Automatic,
+            !MissingQ[object["Colors"]],
+                If [!MatchQ[object["Colors"], {_}],
+                    ReturnFailure[
+                        "ARCInferObjectImageFailure",
+                        "If the Colors property is specified for use with inferring an object's image, there must be a single color.",
+                        "Colors" -> object["Colors"],
+                        "Object" -> object
+                    ]
+                    ,
+                    color = object["Colors"][[1]]
+                ],
+            True,
+                ReturnFailure[
+                    "ARCInferObjectImageFailure",
+                    "Either the Color or Colors properties must be specified.",
+                    "Object" -> object
+                ]
         ];
         
         If [MissingQ[object["Shapes"]] && MissingQ[object["Shape"]],
@@ -10987,10 +11186,7 @@ ARCInferObjectImage[objectIn_Association, scene_Association] :=
                 ,
                 First[ARCPruneAlternatives[object["Shapes"], "Shapes", "Most" -> "Specific"]]
             ],
-            Replace[
-                object["Color"],
-                _Missing :> First[object["Colors"]]
-            ],
+            color,
             object["Width"],
             object["Height"]
         ]
@@ -10998,49 +11194,87 @@ ARCInferObjectImage[objectIn_Association, scene_Association] :=
 
 ARCInferObjectImage[
         shape: KeyValuePattern["Name" -> "Square" | "Rectangle"],
-        color_Integer,
+        color_,
         width_,
         height_
     ] :=
-    ARCScene@
-    (* I don't think this is required, at least not at this time, but will add it here
-       incase it's ever needed in the future. *)
-    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
-    {
-        (* Horizontal line. *)
-        Table[color, {width}],
-        If [height >= 3,
-            Sequence @@
-            Table[
-                {
-                    color,
-                    Sequence @@
-                    Table[
-                        If [TrueQ[shape["Filled"]],
-                            color
-                            ,
-                            $nonImageColor
-                        ],
-                        {width - 2}
-                    ],
-                    If [width > 1,
-                        color
-                        ,
-                        Nothing
-                    ]
-                },
-                {height - 2}
+    Module[{borderColor = Missing[], interiorColor = Missing[]},
+        
+        If [IntegerQ[shape["Border", "Color"]],
+            borderColor = shape["Border", "Color"]
+        ];
+        
+        If [IntegerQ[shape["Interior", "Color"]],
+            interiorColor = shape["Interior", "Color"]
+        ];
+        
+        If [IntegerQ[color],
+            If [!SpecifiedQ[borderColor],
+                borderColor = color
+            ];
+            If [TrueQ[shape["Filled"]] && !SpecifiedQ[interiorColor],
+                interiorColor = color
             ]
-            ,
-            Nothing
-        ],
-        If [height >= 2,
+        ];
+        
+        ReturnFailureIfMissing[
+            borderColor,
+            "ARCInferObjectImageBorderColorFailure",
+            "Unable to infer the border color of a rectangle.",
+            "Shape" -> shape,
+            "Color" -> color
+        ];
+        
+        If [TrueQ[shape["Filled"]],
+            ReturnFailureIfMissing[
+                interiorColor,
+                "ARCInferObjectImageInteriorColorFailure",
+                "Unable to infer the interior color of a rectangle.",
+                "Shape" -> shape,
+                "Color" -> color
+            ]
+        ];
+        
+        ARCScene@
+        (* I don't think this is required, at least not at this time, but will add it here
+           incase it's ever needed in the future. *)
+        Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+        {
             (* Horizontal line. *)
-            Table[color, {width}]
-            ,
-            Nothing
-        ]
-    }
+            Table[borderColor, {width}],
+            If [height >= 3,
+                Sequence @@
+                Table[
+                    {
+                        borderColor,
+                        Sequence @@
+                        Table[
+                            If [TrueQ[shape["Filled"]] || IntegerQ[shape["Interior", "Color"]],
+                                interiorColor
+                                ,
+                                $nonImageColor
+                            ],
+                            {width - 2}
+                        ],
+                        If [width > 1,
+                            borderColor
+                            ,
+                            Nothing
+                        ]
+                    },
+                    {height - 2}
+                ]
+                ,
+                Nothing
+            ],
+            If [height >= 2,
+                (* Horizontal line. *)
+                Table[borderColor, {width}]
+                ,
+                Nothing
+            ]
+        }
+    ]
 
 ARCInferObjectImage[
         shape: KeyValuePattern["Name" -> "Line"],
@@ -11638,7 +11872,12 @@ ARCRuleToPattern[pattern_] :=
     \maintainer danielb
 *)
 Clear[ARCObjectCommonalities];
-ARCObjectCommonalities[objects_List] :=
+Options[ARCObjectCommonalities] =
+{
+    "Recursive" -> False,       (*< Whether to recurse inside of nested associations. *)
+    "IgnoreMissing" -> False    (*< If an object doesn't specify a value for a property, can we keep the common value used by other objects for that property? *)
+};
+ARCObjectCommonalities[objects_List, opts:OptionsPattern[]] :=
     Module[
         {
             propertyValues,
@@ -11649,6 +11888,9 @@ ARCObjectCommonalities[objects_List] :=
         Association[
             Function[{property},
                 propertyValues = DeleteDuplicates[objects[[All, property]]];
+                If [TrueQ[OptionValue["IgnoreMissing"]],
+                    propertyValues = DeleteMissing[propertyValues]
+                ];
                 If [property === "Shapes",
                     commonShapes = Intersection @@ propertyValues;
                     If [MatchQ[commonShapes, {__}],
@@ -11660,52 +11902,63 @@ ARCObjectCommonalities[objects_List] :=
                     property -> First[propertyValues]
                     ,
                     (* Not all objects of this type have the same value for this property. *)
-                    If [And[
+                    Which[
+                        And[
                             (* All values are lists. *)
                             MatchQ[propertyValues, {Repeated[{Repeated[_Association]}]}],
                             (* All lists have the same size. *)
                             Length[lengths = DeleteDuplicates[Length /@ propertyValues]] === 1
                         ],
-                        (* Are there any property values that are the same across all
-                           list items, regardless of which list they occur in? *)
-                        commonalitiesAcrossAllListItems = ARCObjectCommonalities[
-                            Flatten[propertyValues]
-                        ];
-                        (* Are there any property values which don't universally have the same
-                           value, but within a particular list have a consistent value? *)
-                        propertiesWithSameValueWithinAList = Intersection @@ (
-                            Keys /@
-                                ARCObjectCommonalities /@
-                                (* Remove keys that all associations have the same value for. *)
-                                With[{propertiesWithPredictableValue = Keys[commonalitiesAcrossAllListItems]},
-                                    KeyDrop[#, propertiesWithPredictableValue] & /@ propertyValues
-                                ]
-                        );
-                        If [propertiesWithSameValueWithinAList =!= {},
-                            commonalitiesAcrossAllListItems = Join[
-                                commonalitiesAcrossAllListItems,
-                                AssociationThread[
-                                    propertiesWithSameValueWithinAList,
-                                    Table["Same", {Length[propertiesWithSameValueWithinAList]}]
-                                ]
-                            ]
-                        ];
-                        
-                        commonalitiesAcrossAllListItems =
-                            ARCPrunePattern[commonalitiesAcrossAllListItems];
-                        
-                        If [commonalitiesAcrossAllListItems =!= <||>,
-                            property -> {
-                                Repeated[
+                            (* Are there any property values that are the same across all
+                            list items, regardless of which list they occur in? *)
+                            commonalitiesAcrossAllListItems = ARCObjectCommonalities[
+                                Flatten[propertyValues]
+                            ];
+                            (* Are there any property values which don't universally have the same
+                            value, but within a particular list have a consistent value? *)
+                            propertiesWithSameValueWithinAList = Intersection @@ (
+                                Keys /@
+                                    ARCObjectCommonalities /@
+                                    (* Remove keys that all associations have the same value for. *)
+                                    With[{propertiesWithPredictableValue = Keys[commonalitiesAcrossAllListItems]},
+                                        KeyDrop[#, propertiesWithPredictableValue] & /@ propertyValues
+                                    ]
+                            );
+                            If [propertiesWithSameValueWithinAList =!= {},
+                                commonalitiesAcrossAllListItems = Join[
                                     commonalitiesAcrossAllListItems,
-                                    {lengths[[1]]}
+                                    AssociationThread[
+                                        propertiesWithSameValueWithinAList,
+                                        Table["Same", {Length[propertiesWithSameValueWithinAList]}]
+                                    ]
                                 ]
-                            }
-                            ,
+                            ];
+                            
+                            commonalitiesAcrossAllListItems =
+                                ARCPrunePattern[commonalitiesAcrossAllListItems];
+                            
+                            If [commonalitiesAcrossAllListItems =!= <||>,
+                                property -> {
+                                    Repeated[
+                                        commonalitiesAcrossAllListItems,
+                                        {lengths[[1]]}
+                                    ]
+                                }
+                                ,
+                                Nothing
+                            ],
+                        (* All values are associations, and we've been asked to recurse into
+                           nested associations. *)
+                        MatchQ[propertyValues, {Repeated[_Association]}],
+                            Replace[
+                                ReturnIfFailure[ARCObjectCommonalities[propertyValues, opts]],
+                                {
+                                    <||> :> Nothing,
+                                    nestedComonalities_ :> (property -> nestedComonalities)
+                                }
+                            ],
+                        True,
                             Nothing
-                        ]
-                        ,
-                        Nothing
                     ]
                 ]
             ] /@ DeleteDuplicates[Flatten[Keys /@ objects]]
@@ -13738,8 +13991,12 @@ ARCConditionsScore[conditions_Association] :=
         ]
     ]
 
-(* ARCFindRules-20220817-R66XW8 *)
-ARCConditionsScore[<||>] := 0.5
+(* If something doesn't require any conditions, that means it is quite general,
+   so we want to encourage that, and it should definitely win out (or at least
+   not be penalyzed) relative to explicit property conditions.
+   ARCFindRules-20220817-R66XW8
+   ARCFindRules-20220828-365IJ8 *)
+ARCConditionsScore[<||>] := 1.4
 
 (*!
     \function ARCExpressionComplexity

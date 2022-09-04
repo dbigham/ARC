@@ -172,3 +172,20 @@ Test[
     ,
     TestID -> "ARCClassifyShape-20220816-BZP8Q9"
 ]
+
+Test[
+    Daniel`ARC`ARCClassifyShape[{{1, 1, 1, 1}, {1, 2, 2, 1}, {1, 2, 2, 1}, {1, 1, 1, 1}}]
+    ,
+    {
+        <|"Name" -> "Square"|>,
+        <|"Name" -> "Rectangle"|>,
+        <|"Name" -> "Square", "Interior" -> <|"Color" -> 2|>, "Border" -> <|"Color" -> 1|>|>,
+        <|
+            "Name" -> "Rectangle",
+            "Interior" -> <|"Color" -> 2|>,
+            "Border" -> <|"Color" -> 1|>
+        |>
+    }
+    ,
+    TestID -> "ARCClassifyShape-20220904-D3DVF3"
+]
