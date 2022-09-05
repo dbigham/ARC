@@ -30,16 +30,16 @@ e.g.
 
 #### Finding Rules from Object Mappings
 
-* We initially group the object mappings using the PrimarySizeDimension property, and find rules for transforming inputs to outputs.
+* We initially group the object mappings using the Angle property, and find rules for transforming inputs to outputs.
 * However, if we try to apply those rules to a new input, they won’t apply to any inputs, because the input objects aren’t yet grouped. We need something in the rules to tell the system to try forming groups of input objects prior to applying the rules.
-* To solve this, after producing our initial ruleset, we check the input objects from the training set that apply to each rule, and if given a rule those input objects are “groups” of disconnected objects, we embellish the pattern portion of the rule with all of the common property values of those groups.
-e.g.
+* To solve this, after producing our initial ruleset, we check the input objects from the training set that apply to each rule, and if given a rule those input objects are “groups” of disconnected objects, we form group specifications with all of the common property values of objects in those groups.
+For example, here are the group specifications we use for this task:
 
 
 
 ![image 2](image2.png?raw=true)
 
-* Then, when applying a ruleset to a new input, if any of the rule patterns have “Type” -> “Group”, we consider whether any groups of input objects, if they were to form a group, would match that pattern. If so, we form a grouped input object instead of having those input objects be on their own.
+* Then, when applying a ruleset to a new input, if the “Group” specifies a list of group patterns, we consider whether any groups of input objects, if they were to form a group, would match that pattern. If so, we form a grouped input object instead of having those input objects be on their own.
 * Once this has been done, the rules can be applied as normal.
 
 

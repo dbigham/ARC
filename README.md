@@ -49,7 +49,7 @@ https://github.com/fchollet/ARC
 * [5614dbcf](TaskNotes/5614dbcf/notes.md)
 * [694f12f3](TaskNotes/694f12f3/notes.md)
 
-### Personally Created Training Tasks (13)
+### Personally Created Training Tasks (14)
 
 * [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)
 * [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)
@@ -64,10 +64,11 @@ https://github.com/fchollet/ARC
 * [referenceable-components](TaskNotes/referenceable-components/notes.md)
 * [178fcbfb-easier](TaskNotes/178fcbfb-easier/notes.md)
 * [middle](TaskNotes/middle/notes.md)
+* [surface-pixel-count](TaskNotes/surface-pixel-count/notes.md)
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (38)
+### Training Tasks (41)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -102,15 +103,18 @@ The following ARC training tasks started passing after some different task was i
 * [9172f3a0](TaskNotes/9172f3a0/notes.md)
 * [d4469b4b](TaskNotes/d4469b4b/notes.md)
 * [9af7a82c](TaskNotes/9af7a82c/notes.md)
-* [d9fac9be](TaskNotes/d9fac9be/notes.md)
 * [42a50994](TaskNotes/42a50994/notes.md)
 * [6150a2bd](TaskNotes/6150a2bd/notes.md)
 * [50cb2852](TaskNotes/50cb2852/notes.md)
 * [b230c067](TaskNotes/b230c067/notes.md)
 * [bb43febb](TaskNotes/bb43febb/notes.md)
 * [bdad9b1f](TaskNotes/bdad9b1f/notes.md)
+* [794b24be](TaskNotes/794b24be/notes.md)
+* [85c4e7cd](TaskNotes/85c4e7cd/notes.md)
+* [ba97ae07](TaskNotes/ba97ae07/notes.md)
+* [ff28f65a](TaskNotes/ff28f65a/notes.md)
 
-### Evaluation Tasks (12)
+### Evaluation Tasks (14)
 
 The following ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or implemented specifically.
 
@@ -126,3 +130,5 @@ The following ARC evaluation tasks are passing. Evaluation tasks have not been a
 * [37d3e8b2](TaskNotes/37d3e8b2/notes.md)
 * [4364c1c4](TaskNotes/4364c1c4/notes.md)
 * [60c09cac](TaskNotes/60c09cac/notes.md)
+* [85b81ff1](TaskNotes/85b81ff1/notes.md)
+* [e41c6fd3](TaskNotes/e41c6fd3/notes.md)

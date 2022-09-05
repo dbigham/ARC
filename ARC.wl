@@ -400,6 +400,14 @@ ARCImageColors::usage = "ARCImageColors  "
 
 ARCRulesForOutput::usage = "ARCRulesForOutput  "
 
+ARCSurfacePixelCount::usage = "ARCSurfacePixelCount  "
+
+ARCMXPut::usage = "ARCMXPut  "
+
+ARCMXFile::usage = "ARCMXFile  "
+
+ARCMXGet::usage = "ARCMXGet  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1731,6 +1739,10 @@ $properties = <|
         "Type" -> "Integer",
         "Type2" -> "AreaProportion"
     |>,
+    "SurfacePixelCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count"
+    |>,
     (* The number of pixels in the scene with this color. *)
     "ColorUseCount" -> <|
         "Type" -> "Integer",
@@ -1739,6 +1751,12 @@ $properties = <|
     "PixelPositions" -> <|
         "Type" -> "Region",
         "Type2" -> "Region"
+    |>,
+    (* Set in a rule condition when some or all of the matched objects need to first
+       be formed from a group of non-contiguous objects in the scene. Not set on input
+       objects. *)
+    "Group" -> <|
+        "RuleConditionQuality" -> 0.5
     |>
 |>;
 
@@ -1943,7 +1961,7 @@ ARCClassifyRectange[image_List] :=
                         List[
                             Repeated[
                                 List[
-                                    Repeated[c:Except[$nonImageColor]]
+                                    Repeated[Except[$nonImageColor]]
                                 ]
                             ]
                         ]
@@ -1955,12 +1973,12 @@ ARCClassifyRectange[image_List] :=
                     (* Empty rectangle. *)
                     List[
                         (* Horizontal line. *)
-                        List[Repeated[c:Except[$nonImageColor]]],
+                        List[Repeated[Except[$nonImageColor]]],
                         Repeated[
                             List[
-                                c:Except[$nonImageColor],
+                                Except[$nonImageColor],
                                 Repeated[_, {0, Infinity}],
-                                c:Except[$nonImageColor]
+                                Except[$nonImageColor]
                             ],
                             {0, Infinity}
                         ],
@@ -2202,9 +2220,9 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
 *)
 Clear[ARCIndent];
 ARCIndent[expr_, opts:OptionsPattern[]] :=
-    Module[{temporaryAssociationSymbol},
+    Module[{temporaryAssociationSymbol, expr2},
         Indent3[
-            Replace2[
+            expr2 = Replace2[
                 expr,
                 temporaryAssociationSymbol,
                 {
@@ -2235,7 +2253,13 @@ ARCIndent[expr_, opts:OptionsPattern[]] :=
                 Heads -> True
             ]
             ,
-            "FormatNamedAssociations" -> False,
+            (* If named entities have additional key/values beyond "Name", then we don't want to
+               format them, otherwise if we export the expression to the web, people won't be able
+               to see those extended key/value pairs. *)
+            "FormatNamedAssociations" -> MatchQ[
+                Cases[expr2, KeyValuePattern["Name" -> _], Infinity],
+                {Repeated[Association["Name" -> _]]}
+            ],
             "FormattedHeads" -> {ARCScene, RGBColor, GrayLevel, TestResultObject},
             opts,
             "ColumnsAvailable" -> 90
@@ -2744,7 +2768,7 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
     ]
 
 ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[]] :=
-    Module[{outputObjects, inputObjects, inputObjectsHandled, mapping, res},
+    Module[{outputObjects, inputObjects, inputObjectsHandled, mapping, objectsNotMappedTo, objectsNotMappedFrom, res},
         
         outputObjects = output["Objects"];
         inputObjects = input["Objects"];
@@ -2787,6 +2811,24 @@ ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[
             ] /@ inputObjects
         |>;
         
+        (* If both the input and output consist of a single object, then we'll produce a mapping
+           between them. For the moment we'll only do this in SingleObject mode. e.g. ff28f65a
+           The reason we don't do this immediately is for cases where the object has been
+           rotated, etc, where the deeper ARCFindObjectMapping down value detects that and
+           specifies a Transform rotation, etc. *)
+        If [And[
+                MatchQ[Values[mapping], {_Missing}],
+                TrueQ[OptionValue["SingleObject"]],
+                Length[input["Objects"]] === 1 && Length[output["Objects"]] === 1
+            ],
+            Return[
+                <|
+                    input["Objects"][[1]] -> output["Objects"][[1]]
+                |>,
+                Module
+            ]
+        ];
+        
         (* Are there any many-to-one mappings that we want to fix due to one of the objects
            being an exact image match and one or more not being an exact match? e.g. a87f7484 *)
         mapping =
@@ -2794,6 +2836,34 @@ ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[
             ARCFixUnwantedManyToOneMappings[mapping];
         
         (*ARCEcho[SimplifyObjects[mapping]];*)
+        
+        objectsNotMappedTo =
+            ReturnIfFailure@
+            ARCOutputObjectsNotMappedTo[outputObjects, mapping];
+        
+        objectsNotMappedFrom =
+            Keys@
+            Select[mapping, MissingQ];
+        
+        (* If we have an equal number of objects in the input and output that haven't been mapped
+           yet, and they uniquely overlap each other, then add them as mappings. *)
+        If [Length[objectsNotMappedFrom] === Length[objectsNotMappedTo],
+            Replace[
+                Function[{object},
+                    ARCMappingToObjectWithOverlappingFilledInPixels[
+                        object,
+                        objectsNotMappedTo,
+                        (* e.g. surface-pixel-count *)
+                        "OverlapRequired" -> "Overlap",
+                        (* e.g. surface-pixel-count *)
+                        "Colors" -> "Overlap"
+                    ]
+                ] /@ objectsNotMappedFrom,
+                newMappings: {Repeated[HoldPattern[Rule][_, _Association]]} :> (
+                    mapping = Join[mapping, Association[newMappings]]
+                )
+            ]
+        ];
         
         (* Are there any objects in the output that don't have a corresponding input object? *)
         mapping = <|
@@ -3174,7 +3244,10 @@ SimplifyObjects["Expression" -> expr_, OptionsPattern[]] :=
         Replace2[
             expr,
             temporaryAssociationSymbol,
-            object:temporaryAssociationSymbol[___, "UUID" -> _, ___] :>
+            object:Alternatives[
+                temporaryAssociationSymbol[___, "UUID" -> _, ___],
+                temporaryAssociationSymbol[___, "Image" -> _ARCScene, ___]
+             ] :>
                 KeyTake[Association @@ object, {"Image", "Position", "Transform", Sequence @@ OptionValue["ExtraKeys"]}],
             {0, Infinity}
         ]
@@ -3296,7 +3369,7 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                     If [Complement[Normal[conclusionKeysFromInput], Normal[inputObject]] === {},
                         conclusion = <|
                             "Same" -> True,
-                            KeyTake[conclusion, {"Example", "Input"}]
+                            conclusion
                         |>
                         ,
                         Which[
@@ -3578,7 +3651,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             referenceableOutputObjects,
             objectMappings,
             ruleSets,
-            mappedInputObjects,
             additionalRules = {},
             ruleSets2,
             ruleFindings2,
@@ -3586,7 +3658,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         },
         
         (* Helper function for producing the final return value. *)
-        returnRules[rules_List] :=
+        returnRules[rules_Association] :=
             Block[{rulesResult},
                 Return[
                     rulesResult = <|
@@ -3630,9 +3702,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             Nothing
                         ],
                         "Rules" -> Join[
-                            ARCCleanRules[rules, allObjects],
+                            ARCCleanRules[rules["Rules"], allObjects],
                             additionalRules
                         ],
+                        KeyTake[rules, "Groups"],
                         "Examples" -> examples,
                         "ObjectMappings" -> objectMappings
                     |>;
@@ -3805,15 +3878,16 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho2[objectMappings];*)
         (*ARCEcho[objectMappings];*)
         
-        {ruleSets, ruleFindings, additionalRules} =
-            ReturnIfFailure@
-            ARCFindRules[examples, objectMappings, referenceableInputObjects];
+        res = ARCFindRules[examples, objectMappings, referenceableInputObjects];
         
         (*ARCEcho2[ruleSets];*)
         
         If [And[
                 (* We weren't able to find a rule set. *)
-                ruleSets === {},
+                Or[
+                    FailureQ[res],
+                    res[[1]] === {}
+                ],
                 (* All output scenes have a single object. *)
                 DeleteDuplicates[Length /@ examples[[All, "Output", "Objects"]]] === {1},
                 (* It isn't the case that all objects in all scenes get deleted due to them not
@@ -3842,18 +3916,23 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             
             If [Length[additionalRules2] > 0,
                 ruleSets = {
-                    {
-                        If [DeleteDuplicates[Length /@ examples[[All, "Input", "Objects"]]] =!= {0},
-                            (* Delete any input objects that were present since we only need to
-                               add objects. *)
-                            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
-                            ,
-                            Nothing
-                        ]
-                    }
+                    <|
+                        "Rules" -> {
+                            If [DeleteDuplicates[Length /@ examples[[All, "Input", "Objects"]]] =!= {0},
+                                (* Delete any input objects that were present since we only need to
+                                   add objects. *)
+                                <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+                                ,
+                                Nothing
+                            ]
+                        }
+                    |>
                 };
                 additionalRules = additionalRules2
-            ];
+            ]
+            ,
+            ReturnIfFailure[res];
+            {ruleSets, ruleFindings, additionalRules} = res
         ];
         
         If [Length[ruleSets] > 0,
@@ -3864,9 +3943,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     ARCChooseBestRuleSet[
                         ReturnIfFailure[ARCCleanRules[#, allObjects]] & /@ ruleSets
                     ],
-                    res: Except[_List] :> ReturnFailure[
+                    res: Except[KeyValuePattern["Rules" -> _List]] :> ReturnFailure[
                         "InvalidRuleResult",
-                        "After attempting to choose the best rule set, we got something that isn't a list.",
+                        "After attempting to choose the best rule set, we got something that isn't an association.",
                         "Result" -> res
                     ]
                 ]
@@ -3900,7 +3979,8 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
             additionalRules,
             rules,
             ruleSets,
-            ruleFindings
+            ruleFindings,
+            groups
         },
         
         (* Form rules for removed/deleted objects. i.e. Objects that we weren't able to
@@ -3987,9 +4067,11 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
             Return[
                 {
                     {
-                        {
-                            <||> -> <|"Transform" -> transform[[1]]|>
-                        }
+                        <|
+                            "Rules" -> {
+                                <||> -> <|"Transform" -> transform[[1]]|>
+                            }
+                        |>
                     },
                     <||>,
                     additionalRules
@@ -4024,7 +4106,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         ],
                         (* The rules formed using this property handle the mapping of every input
                            object in every training example. *)
-                        rules =
+                        groups =
                             ReturnIfFailure@
                             ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[
                                 rules,
@@ -4034,7 +4116,17 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         (* ARCReplaceRulePatternsWithGroupPatternsIfAppropriate can return Missing,
                            so we check for that before adding this to our list of rules. *)
                         If [!MissingQ[rules],
-                            AppendTo[ruleSets, rules]
+                            AppendTo[
+                                ruleSets,
+                                <|
+                                    "Rules" -> rules,
+                                    If [groups =!= {},
+                                        "Groups" -> groups
+                                        ,
+                                        Nothing
+                                    ]
+                                |>
+                            ]
                         ]
                         ,
                         (* The rules formed using this property do not handle the mapping of every
@@ -4060,7 +4152,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Area.Rank"}
+                        {"FilledArea"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -4074,7 +4166,8 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                            context. (I think) *)
                         "Color",
                         "XRelative",
-                        "YRelative"
+                        "YRelative",
+                        "Group"
                     ]
                 ]
             ];
@@ -4096,10 +4189,12 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         Return[
                             {
                                 {
-                                    Join[
-                                        ruleFindings[rankPropertyName, "Rules"],
-                                        ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
-                                    ]
+                                    <|
+                                        "Rules" -> Join[
+                                            ruleFindings[rankPropertyName, "Rules"],
+                                            ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
+                                        ]
+                                    |>
                                 },
                                 ruleFindings,
                                 additionalRules
@@ -4389,7 +4484,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
         
         (* HERE0 *)
         
-        (*ARCEcho[SimplifyObjects[conclusionGroup]];*)
+        (*ARCEcho2[conclusionGroup];*)
         (*ARCEcho[Values[conclusionGroup][[All, "Shape"]]];*)
         (*ARCEcho[conclusionGroup];*)
         
@@ -4419,7 +4514,6 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                     Function[KeyDrop[#, {"Example", "Input"}]]
                 ]
             ] > 1,
-                
                 (* This pattern has multiple possible conclusions, but before we discard it,
                    we should see whether it's possible to generalize those conclusions. *)
                 conclusion =
@@ -4428,8 +4522,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                         Flatten[Values[groupedByConclusion]],
                         referenceableInputObjects,
                         examples
-                    ]
-                ,
+                    ],
             Length[groupedByConclusion] === 1,
                 (* This pattern has only one RHS, so we can form a rule using it. *)
                 conclusion = groupedByConclusion[[1, 1]];
@@ -4658,17 +4751,21 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ruleList = DeleteCases[ruleList, addObjects]
         ];
         
-        objects =
-            ReturnIfFailure@
-            ARCFormGroupsWhenApplyingRules[
-                objects,
-                ruleList,
-                ImageWidth[scene[[1]]],
-                ImageHeight[scene[[1]]]
-            ];
+        If [MatchQ[rules["Groups"], {__}],
+            objects =
+                ReturnIfFailure@
+                ARCFormGroupsWhenApplyingRules[
+                    objects,
+                    rules["Groups"],
+                    ImageWidth[scene[[1]]],
+                    ImageHeight[scene[[1]]]
+                ]
+        ];
         
         (*Global`rules = ruleList;
         Global`object = objects[[1]];*)
+        
+        (*ARCEcho2[ruleList];*)
         
         outputScene = Sett[
             parsedScene,
@@ -4766,7 +4863,7 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ]
         ];
         
-        (*ARCEcho[outputScene["Objects"]];*)
+        (*ARCEcho2[outputScene["Objects"]];*)
         
         If [IntegerQ[rules["Background"]],
             outputScene["Background"] = rules["Background"]
@@ -4793,6 +4890,12 @@ ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
             object = Replace[
                 ReturnIfFailure[ARCApplyRules[object, rule, scene]],
                 Nothing :> Return[Nothing, Module]
+            ];
+            If [object =!= objectIn,
+                (* For now, we will only allow one rule to be applied to an object. A case where
+                   this is needed is d511f180, otherwise one rule changes an object's color,
+                   and the next rule changes it back. *)
+                Return[object, Module]
             ]
         ] /@ rules;
         
@@ -4873,11 +4976,6 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                 
                 key = keyIn;
                 value = valueIn;
-                
-                If [key === "Color",
-                    key = "Colors";
-                    value = {value}
-                ];
                 
                 objectOut =
                     Replace[
@@ -4969,8 +5067,43 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                 ]
         ];
         
+        If [MissingQ[objectOut["Shape"]] && !MissingQ[objectIn["Shape"]],
+            objectOut["Shape"] = objectIn["Shape"]
+        ];
+        
         (* e.g. Infer the Image if necessary. *)
-        objectOut = ReturnIfFailure[ARCConstructObject[objectOut, "Scene" -> scene]];
+        objectOut = Replace[
+            ARCConstructObject[objectOut, "Scene" -> scene],
+            _Failure :> (
+                If [And[
+                        MissingQ[objectOut["Image"]],
+                        MatchQ[objectOut["Shape"], objectIn["Shape"] | _Missing],
+                        Or[MissingQ[objectOut["Shapes"]], SubsetQ[objectIn["Shapes"], objectOut["Shapes"]]],
+                        MatchQ[objectOut["Colors"], objectIn["Colors"] | _Missing],
+                        MatchQ[objectOut["Width"], objectIn["Width"] | _Missing],
+                        MatchQ[objectOut["Height"], objectIn["Height"] | _Missing]
+                    ],
+                    (* Try inheriting the image from the input. It seems that in most cases,
+                       a rule's conclusion has enough essential information to be able to
+                       render the object after being applied, but in some cases, such as if
+                       the conclusion is really a move, setting "X" and "Y", the objectOut
+                       won't have properties like Shape set. Another possible approach here
+                       would be to just inherit property values from the input in a more
+                       robust/appropriate fashion. (And for 08ed6ac7, it looks like Shape
+                       indeed was missing here, so we do now inherit that just above if it's
+                       not set on the output object but is set on the input object.
+                       I'm confused why we're seemingly needing to do that now (Sept 5 2022)
+                       but weren't needing to do that previously.)
+                       e.g. a87f7484 *)
+                    Sett[
+                        objectOut,
+                        "Image" -> objectIn["Image"]
+                    ]
+                    ,
+                    objectOut
+                ]
+            )
+        ];
         
         objectOut
     ]
@@ -5120,10 +5253,31 @@ ARCApplyConclusion[key:"Shape", value: KeyValuePattern["Image" -> _], objectIn_A
         "Image" -> ARCColorize[value, objectIn[["Colors", 1]]]
     ]
 
-ARCApplyConclusion[key:"Colors", {value_}, objectIn_Association, objectOut_Association, scene_Association] :=
+ARCApplyConclusion[key:"Colors", {value_}, object_Association, objectOut_Association, scene_Association] :=
+    ARCApplyConclusion["Color", value, object, objectOut, scene]
+
+ARCApplyConclusion[key:"Color", value_, objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        "Image" -> ARCColorize[objectIn["Image"], value]
+        {
+            "Color" -> value,
+            "Colors" -> {value},
+            If [value =!= objectIn["Color"],
+                "Image" -> Replace[
+                    FirstCase[{objectIn["Image"], objectIn["Shape"]}, _ARCScene],
+                    {
+                        _Missing :> (
+                            Missing["ToGenerate"]
+                        ),
+                        image_ARCScene :> (
+                            ARCColorize[image, value]
+                        )
+                    }
+                ]
+                ,
+                Nothing
+            ]
+        }
     ]
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Rotation"], objectIn_Association, objectOut_Association, scene_Association] :=
@@ -5235,7 +5389,18 @@ ARCApplyConclusion[key:"Transform", transform_, objectIn_Association, objectOut_
 ARCApplyConclusion[key_String, value_, objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        key -> value
+        {
+            key -> value,
+            (* e.g. surface-pixel-count *)
+            If [And[
+                    MatchQ[key, "Width" | "Height" | "Shapes" | "Color"],
+                    objectIn[key] =!= value
+                ],
+                "Image" -> Missing["ToGenerate"]
+                ,
+                Nothing
+            ]
+        }
     ]
 
 (*!
@@ -6225,7 +6390,23 @@ $transformTypes = <|
             {"Image", "Position", "ZOrder"},
             {
                 "Shape" | "MonochromeImage" | "Shapes",
-                "Color" | Missing["Color"],
+                Alternatives[
+                    "Color",
+                    Missing["Color"] /;
+                        (* We can't allow the color to be Missing in all cases, or it breaks
+                           321b1fc6 due to it thinking it's sufficient to know the Shape without
+                           knowing the color. So we only allow it to be missing if the Shape
+                           specifies the colors (e.g. bb43febb). *)
+                        MatchQ[
+                            #["Shape"],
+                            KeyValuePattern[
+                                {
+                                    "Border" -> KeyValuePattern["Color" -> _],
+                                    "Interior" -> KeyValuePattern["Color" -> _]
+                                }
+                            ]
+                        ]
+                ],
                 "X" | "XInverse",
                 "Y" | "YInverse",
                 "Width" | "X2" | "X2Inverse",
@@ -6395,6 +6576,12 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
         ];
         
         Which[
+            (* Always "Same" -> True"? *)
+            AllTrue[
+                conclusions,
+                MatchQ[#, KeyValuePattern["Same" -> True]] &
+            ],
+                Return[<|"Same" -> True|>, Module],
             (* Always a transform of the same type? *)
             AllTrue[
                 conclusions,
@@ -6590,7 +6777,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Shape",
+        (*If [property === "Image",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -6968,7 +7155,9 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
     Module[
         {
             subPropertyAlternatives,
-            subPropertyResults
+            subPropertyResults,
+            conditionNotMetQ,
+            conclusionsSoFar = <||>
         },
         Association[
             Function[{subPropertySpec},
@@ -6985,7 +7174,13 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                     Association@
                     Replace[
                         subPropertyAlternatives,
-                        propertyName: _String | Missing[_String] :> propertyName -> <||>,
+                        {
+                            propertyName: _String | Missing[_String] :> propertyName -> <||>,
+                            HoldPattern[Condition][
+                                propertyName: _String | Missing[_String],
+                                condition_
+                             ] :> propertyName -> <|"Condition" -> Hold[condition]|>
+                        },
                         {1}
                     ];
                 
@@ -6994,47 +7189,70 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                     Module[{},
                         KeyValueMap[
                             Function[{subPropertyName, subPropertyAttributes},
-                                If [MatchQ[subPropertyName, Missing[_String]],
-                                    (* We're OK with this property simply being unspecified
-                                       in the conclusions. If so, we don't need to specify
-                                       this property in the final rule's conclusion. *)
-                                    With[{propertyName = subPropertyName[[1]]},
-                                        If [MatchQ[
-                                                conclusions[[All, "Value", propertyName]],
-                                                {Repeated[_Missing]}
-                                            ],
-                                            (* We don't need to specify this property since
-                                               it's always missing. *)
-                                            Return[{}, Module]
-                                            ,
-                                            (* The values aren't always missing, so we do
-                                               need to specify this property. *)
-                                            Nothing
-                                        ]
-                                    ]
-                                    ,
-                                    Replace[
-                                        ReturnIfFailure@
-                                        ARCGeneralizeConclusionValue[
-                                            Append[propertyPath, subPropertyName],
-                                            (* Property attributes *)
-                                            subPropertyAttributes,
-                                            AssociationApply[
-                                                conclusions,
-                                                <|
-                                                    "Value" -> Function[
-                                                        #[subPropertyName]
-                                                    ]
-                                                |>
-                                            ],
-                                            referenceableInputObjects,
-                                            examples
+                                
+                                conditionNotMetQ = False;
+                                
+                                If [!MissingQ[subPropertyAttributes["Condition"]],
+                                    If [!TrueQ[
+                                            ReleaseHold@
+                                            Replace[
+                                                subPropertyAttributes["Condition"],
+                                                # -> conclusionsSoFar, {0, Infinity},
+                                                Heads -> True
+                                            ]
                                         ],
-                                        (* If one of the minimal property sets is so good that it
-                                           doesn't even need to be specified in the conclusion,
-                                           then use it without considering other property sets. *)
-                                        Nothing :> Return[{Nothing}, Module]
+                                        (* This property has a condition specified that must be
+                                           true for it to apply, and that condition evaluated to
+                                           false, so we'll have to abort the use of this property. *)
+                                        conditionNotMetQ = True
                                     ]
+                                ];
+                                
+                                Which[
+                                    TrueQ[conditionNotMetQ],
+                                        Missing[subPropertyName, "ConditionNotMet"],
+                                    MatchQ[subPropertyName, Missing[_String]],
+                                        (* We're OK with this property simply being unspecified
+                                           in the conclusions. If so, we don't need to specify
+                                           this property in the final rule's conclusion. *)
+                                        With[{propertyName = subPropertyName[[1]]},
+                                            If [MatchQ[
+                                                    conclusions[[All, "Value", propertyName]],
+                                                    {Repeated[_Missing]}
+                                                ],
+                                                (* We don't need to specify this property since
+                                                it's always missing. *)
+                                                Return[{}, Module]
+                                                ,
+                                                (* The values aren't always missing, so we do
+                                                need to specify this property. *)
+                                                Nothing
+                                            ]
+                                        ],
+                                    True,
+                                        (* Try to generalize the values for this property. *)
+                                        Replace[
+                                            ReturnIfFailure@
+                                            ARCGeneralizeConclusionValue[
+                                                Append[propertyPath, subPropertyName],
+                                                (* Property attributes *)
+                                                subPropertyAttributes,
+                                                AssociationApply[
+                                                    conclusions,
+                                                    <|
+                                                        "Value" -> Function[
+                                                            #[subPropertyName]
+                                                        ]
+                                                    |>
+                                                ],
+                                                referenceableInputObjects,
+                                                examples
+                                            ],
+                                            (* If one of the minimal property sets is so good that it
+                                            doesn't even need to be specified in the conclusion,
+                                            then use it without considering other property sets. *)
+                                            Nothing :> Return[{Nothing}, Module]
+                                        ]
                                 ]
                             ],
                             subPropertyAlternatives
@@ -7047,7 +7265,10 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                            don't change. *)
                         subPropertyResults === {}
                     ],
-                    ARCChooseBestTransform[DeleteMissing[subPropertyResults]]
+                    With[{thisTransform = ARCChooseBestTransform[DeleteMissing[subPropertyResults]]},
+                        conclusionsSoFar = Append[conclusionsSoFar, thisTransform]
+                    ];
+                    conclusionsSoFar
                     ,
                     Return[
                         Missing[
@@ -7547,7 +7768,11 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer, OptionsPattern[]] 
 *)
 Clear[ARCNotableSubImages];
 ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
-    Module[{res},
+    Module[{res, colorCount},
+        
+        colorCount =
+            Length@
+            DeleteCases[DeleteDuplicates[Flatten[objects[[All, "Image", 1]]]], $nonImageColor];
         
         res = Function[{image},
             image[[1]] -> Select[
@@ -7558,8 +7783,20 @@ ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
             Select[
                 DeleteDuplicates[objects[[All, "Image"]]],
                 And[
-                    ImageWidth[#] >= 2,
-                    ImageHeight[#] >= 2,
+                    Or[
+                        And[
+                            colorCount > 1,
+                            ImageWidth[#] >= 2,
+                            ImageHeight[#] >= 2
+                        ],
+                        (* If the entire image has only 1 non-background color, then we want to
+                           be extra careful not to get false positives. e.g. 42a50994 *)
+                        And[
+                            colorCount === 1,
+                            ImageWidth[#] >= 3,
+                            ImageHeight[#] >= 3
+                        ]
+                    ],
                     Not[
                         And[
                             ImageWidth[#] === sceneWidth,
@@ -7665,9 +7902,9 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
             
             (* If [ImageWidth[subImage] === 3 && ImageHeight[subImage] === 3,
                 XEcho[SimplifyObjects[subImage]];
-                $debug = True
+                $arcDebug = True
                 ,
-                $debug = False
+                $arcDebug = False
             ]; *)
             
             Which[
@@ -7678,7 +7915,7 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                     ]
                 ],
                     If [subImageAssoc["Count"] > 1,
-                        (* This object's image _entire_ image is a notable image that occurs multiple
+                        (* This object's _entire_ image is a notable image that occurs multiple
                            times. We want to exit the function to avoid other smaller sub-images
                            from breaking it up. e.g. 95990924 *)
                         Return[object, Module]
@@ -7704,18 +7941,18 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                             ]
                         ];
                     
-                    (* If [$debug,
+                    (* If [$arcDebug,
                         EchoIndented[subImagePositions]
                     ]; *)
                     
                     strongSubImageQ =
                         (* If the sub-image occurs at least 3 times, then we have quite
-                        strong evidence that it's a sub-image. e.g. 363442ee *)
+                           strong evidence that it's a sub-image. e.g. 363442ee *)
                         And[
                             Length[subImagePositions] >= 3,
                             (* To be a bit more conservative, we'll ensure at least one of
-                            the dimensions is 3, since we do allow notable sub-images
-                            that are 2x2, which could lead to false positives. *)
+                               the dimensions is 3, since we do allow notable sub-images
+                               that are 2x2, which could lead to false positives. *)
                             Or[
                                 ImageWidth[subImage] >= 3,
                                 ImageHeight[subImage] >= 3
@@ -7936,6 +8173,7 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                    in terms of number of pixels that aren't the background color. *)
                 "FilledArea" -> (filledArea = Length[object["PixelPositions"]]),
                 "FilledProportion" -> N[filledArea / area],
+                "SurfacePixelCount" -> ARCSurfacePixelCount[object["Image"][[1]]],
                 If [And[
                         Mod[width, 2] === 0,
                         SameQ[
@@ -9530,1123 +9768,756 @@ ARCTaskLog[] :=
             (* Whether ExampleImplemented wasn't actually implemented specifically by me but rather
                started working 'for free' after implementing a different task. *)
             "GeneralizedSuccess" -> False,
-            (* How many _training_ tasks are currently passing. Note that we do add entries to this
-               list of an evaluation task starts passing, but we don't increase SuccessCount since
-               that is currently specific to training tasks. (we also don't increase it if adding
-               a personal example that we've implemented) *)
-            "SuccessCount" -> 1,
             (* How long it is currently taking to run all of the training tasks. *)
             "Runtime" -> Quantity[1.5, "Minutes"],
             (* The number of lines of code I've now written. *)
             "CodeLength" -> Missing["NotRecorded"],
             (* Which task/example I just implemented. *)
-            "ExampleImplemented" -> "0ca9ddb6",
-            (* How many additional training tasks started passing after implementing the above task. *)
-            "NewGeneralizedSuccesses" -> 0,
-            (* How many training tasks in total are now passing which I didn't work on specifically. *)
-            "TotalGeneralizedSuccesses" -> 0,
-            (* How many evaluation tasks started passing after implementing the above task. *)
-            "NewEvaluationSuccesses" -> 0,
-            (* How many evaluation tasks in total are now passing (all of which I didn't work on specifically). *)
-            "TotalEvaluationSuccesses" -> 0
+            "ExampleImplemented" -> "0ca9ddb6"
         |>,
         <|
-            "SuccessCount" -> 2,
             "Runtime" -> Quantity[1.5, "Minutes"],
-            "ExampleImplemented" -> "3c9b0459",
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ExampleImplemented" -> "3c9b0459"
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 24}],
-            "SuccessCount" -> 3,
             "Runtime" -> Quantity[2.8, "Minutes"],
             "RuntimeComment" -> "Slowed down from 1.5 minutes to 2.8 minutes July 24 2022 when we implemented \"Forming Composite Objects Can't Assume\" for 1caeab9d.",
             "CodeLength" -> 3034,
-            "ExampleImplemented" -> "1caeab9d",
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ExampleImplemented" -> "1caeab9d"
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 4,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3491,
-            "ExampleImplemented" -> "b60334d2",
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ExampleImplemented" -> "b60334d2"
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 5,
             "Runtime" -> Quantity[3.8, "Minutes"],
             "RuntimeComment" -> "I'm surprised this went up for this input. Did I just not notice it going up for the previous input, or did I really make a change here that slowed things down?",
             "CodeLength" -> 3549,
             "ExampleImplemented" -> "25ff71a9",
-            "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[1, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 6,
             "Runtime" -> Quantity[3, "Minutes"],
             "RuntimeComment" -> "I'm now explicitly skipping inputs where the input and output grids are different sizes.",
             "CodeLength" -> 3618,
             "ExampleImplemented" -> "3ac3eb23",
-            "ImplementationTime" -> Quantity[0.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[0.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 7,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3697,
             "ExampleImplemented" -> "e76a88a6",
-            "ImplementationTime" -> Quantity[1.8, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[1.8, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 8,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 3698,
             "Comment" -> "I also took the opportunity to expand the list of properties we consider for rule formation to include: Width, Height, Position, Y, X, AspectRatio, Area, FilledArea. Still notably absent: Shapes",
             "ExampleImplemented" -> "c0f76784",
-            "ImplementationTime" -> Quantity[3, "Minutes"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[3, "Minutes"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 7, 25}],
-            "SuccessCount" -> 9,
             "Runtime" -> Quantity[4.1, "Minutes"],
             "RuntimeComment" -> "ARCFindRules was enhanced to also consider Except[_] rules, which presumably adds runtime.",
             "CodeLength" -> 3869,
             "ExampleImplemented" -> "321b1fc6",
-            "ImplementationTime" -> Quantity[1.8, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[1.8, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 4}],
-            "SuccessCount" -> 10,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 4505,
             "ExampleImplemented" -> "05f2a901",
-            "ImplementationTime" -> Quantity[5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0
+            "ImplementationTime" -> Quantity[5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 5}],
-            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 4799,
             "ExampleImplemented" -> "08ed6ac7",
-            "ImplementationTime" -> Quantity[1.75, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "ImplementationTime" -> Quantity[1.75, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 11,
             "ExampleImplemented" -> "jnohuorzh-easier",
             "ImplementationTime" -> Quantity[0.25, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5226,
             "ExampleImplemented" -> "ihiz27k2n",
-            "ImplementationTime" -> Quantity[2.75, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "ImplementationTime" -> Quantity[2.75, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 11,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5291,
             "ExampleImplemented" -> "jnohuorzh",
-            "ImplementationTime" -> Quantity[0.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 0,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "ImplementationTime" -> Quantity[0.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 12,
             "Runtime" -> Quantity[3.6, "Minutes"],
             "CodeLength" -> 5386,
             "ExampleImplemented" -> "a61f2674",
             "ImplementationTime" -> Quantity[2, "Hours"],
-            "NewGeneralizedSuccesses" -> {"ea32f347"},
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "NewGeneralizedSuccesses" -> {"ea32f347"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.6, "Minutes"],
             "CodeLength" -> 5386,
             "ExampleImplemented" -> "ea32f347",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 6}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3, "Minutes"],
             "CodeLength" -> 5551,
             "ExampleImplemented" -> "0uduqqj6f",
-            "ImplementationTime" -> Quantity[1.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 0
+            "ImplementationTime" -> Quantity[1.5, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5703,
             "ExampleImplemented" -> "2wfys5w64",
             "ImplementationTime" -> Quantity[2, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> {"84f2aca1"},
-            "TotalEvaluationSuccesses" -> 1
+            "NewEvaluationSuccesses" -> {"84f2aca1"}
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5875,
             "ExampleImplemented" -> "2wfys5w64-relative-right-side",
-            "ImplementationTime" -> Quantity[2.7, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[2.7, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 7}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 5875,
             "ExampleImplemented" -> "n1hczotml",
-            "ImplementationTime" -> Quantity[5, "Minutes"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[5, "Minutes"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 8}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             (* Note that this increase in code size wasn't for this example, but rather was due
                to code for publishing task notes, etc. *)
             "CodeLength" -> 6544,
             "ExampleImplemented" -> "ifmyulnv8",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 10}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.1, "Minutes"],
             "CodeLength" -> 7258,
             "ExampleImplemented" -> "ifmyulnv8-shape",
-            "ImplementationTime" -> Quantity[7.75, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[7.75, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 12}],
-            "SuccessCount" -> 13,
             "Runtime" -> Quantity[3.8, "Minutes"],
             "CodeLength" -> 7541,
             "ExampleImplemented" -> "ifmyulnv8-dynamic-shape",
-            "ImplementationTime" -> Quantity[5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 12}],
-            "SuccessCount" -> 14,
             "Runtime" -> Quantity[3.7, "Minutes"],
             "CodeLength" -> 7838,
             "ExampleImplemented" -> "253bf280",
-            "ImplementationTime" -> Quantity[7.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 1,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[7.5, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 14,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "CodeLengthComment" -> "Also includes in-progress work for 25d487eb.",
             "ExampleImplemented" -> "referenceable-components",
             "ImplementationTime" -> Quantity[6, "Hours"],
-            "NewGeneralizedSuccesses" -> {"5521c0d9", "6c434453", "6e82a1ae", "aabf363d"},
-            "TotalGeneralizedSuccesses" -> 5,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "NewGeneralizedSuccesses" -> {"5521c0d9", "6c434453", "6e82a1ae", "aabf363d"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 15,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "5521c0d9",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 5,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 16,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "6c434453",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 5,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 17,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "6e82a1ae",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 5,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 18,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 8874,
             "ExampleImplemented" -> "aabf363d",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 5,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 19,
             "Runtime" -> Quantity[6.1, "Minutes"],
             "CodeLength" -> 9489,
             "ExampleImplemented" -> "25d8a9c8",
             "ImplementationTime" -> Quantity[5, "Hours"],
-            "NewGeneralizedSuccesses" -> {"b1948b0a"},
-            "TotalGeneralizedSuccesses" -> 6,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "NewGeneralizedSuccesses" -> {"b1948b0a"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 20,
             "Runtime" -> Quantity[6.1, "Minutes"],
             "CodeLength" -> 9489,
             "ExampleImplemented" -> "b1948b0a",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 6,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 21,
             "Runtime" -> Quantity[6.4, "Minutes"],
             "CodeLength" -> 9598,
             "ExampleImplemented" -> "c8f0f002",
             "ImplementationTime" -> Quantity[0.3, "Hours"],
-            "NewGeneralizedSuccesses" -> {"d511f180"},
-            "TotalGeneralizedSuccesses" -> 7,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "NewGeneralizedSuccesses" -> {"d511f180"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 19}],
-            "SuccessCount" -> 22,
             "Runtime" -> Quantity[6.4, "Minutes"],
             "CodeLength" -> 9598,
             "ExampleImplemented" -> "d511f180",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 7,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 1
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 20}],
-            "SuccessCount" -> 23,
             "Runtime" -> Quantity[4.8, "Minutes"],
             "CodeLength" -> 9972,
             "ExampleImplemented" -> "31aa019c",
             "ImplementationTime" -> Quantity[4, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 7,
-            "NewEvaluationSuccesses" -> {"66e6c45b"},
-            "TotalEvaluationSuccesses" -> 2
+            "NewEvaluationSuccesses" -> {"66e6c45b"}
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 21}],
-            "SuccessCount" -> 24,
             "Runtime" -> Quantity[5.6, "Minutes"],
             "CodeLength" -> 10281,
             "ExampleImplemented" -> "363442ee",
             "ImplementationTime" -> Quantity[4, "Hours"],
             "NewGeneralizedSuccesses" -> {"88a10436"},
-            "TotalGeneralizedSuccesses" -> 8,
-            "NewEvaluationSuccesses" -> {"f45f5ca7"},
-            "TotalEvaluationSuccesses" -> 3
+            "NewEvaluationSuccesses" -> {"f45f5ca7"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 21}],
-            "SuccessCount" -> 25,
             "Runtime" -> Quantity[5.6, "Minutes"],
             "CodeLength" -> 10281,
             "ExampleImplemented" -> "88a10436",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 8,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 2
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SuccessCount" -> 26,
             "Runtime" -> Quantity[4.3, "Minutes"],
             "CodeLength" -> 10850,
             "ExampleImplemented" -> "25d487eb",
-            "ImplementationTime" -> Quantity[6.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 8,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 2
+            "ImplementationTime" -> Quantity[6.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SuccessCount" -> 27,
             "Runtime" -> Quantity[4.3, "Minutes"],
             "CodeLength" -> 10929,
             "ExampleImplemented" -> "0962bcdd",
-            "ImplementationTime" -> Quantity[20, "Minutes"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 8,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 2
+            "ImplementationTime" -> Quantity[20, "Minutes"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SuccessCount" -> 28,
             "Runtime" -> Quantity[5.2, "Minutes"],
             "CodeLength" -> 11003,
             "ExampleImplemented" -> "0d3d703e",
             "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> {"d037b0a7"},
-            "TotalGeneralizedSuccesses" -> 9,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 3
+            "NewGeneralizedSuccesses" -> {"d037b0a7"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 22}],
-            "SuccessCount" -> 29,
             "Runtime" -> Quantity[5.2, "Minutes"],
             "CodeLength" -> 11003,
             "ExampleImplemented" -> "d037b0a7",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 9,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 3
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 23}],
-            "SuccessCount" -> 30,
             "Runtime" -> Quantity[5.4, "Minutes"],
             "CodeLength" -> 11069,
             "ExampleImplemented" -> "1bfc4729",
-            "ImplementationTime" -> Quantity[40, "Minutes"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 9,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 3
+            "ImplementationTime" -> Quantity[40, "Minutes"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SuccessCount" -> 30,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "RuntimeComment" -> "We no longer take the first minimal property set that we find but rather compute all of them and choose the best, and we now have a list of minimal property sets for the case that a named transform isn't found.",
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "178fcbfb-easier",
             "ImplementationTime" -> Quantity[12, "Hours"],
             "NewGeneralizedSuccesses" -> {"4347f46a", "67385a82"},
-            "TotalGeneralizedSuccesses" -> 11,
-            "NewEvaluationSuccesses" -> {"fc754716"},
-            "TotalEvaluationSuccesses" -> 4
+            "NewEvaluationSuccesses" -> {"fc754716"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SuccessCount" -> 31,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "4347f46a",
-            "ImplementationTime" -> Quantity[12, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 11,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 4
+            "ImplementationTime" -> Quantity[12, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 26}],
-            "SuccessCount" -> 32,
             "Runtime" -> Quantity[6.7, "Minutes"],
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "67385a82",
-            "ImplementationTime" -> Quantity[12, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 11,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 4
+            "ImplementationTime" -> Quantity[12, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SuccessCount" -> 33,
             "Runtime" -> Quantity[7.4, "Minutes"],
             "CodeLength" -> 12346,
             "ExampleImplemented" -> "178fcbfb",
-            "ImplementationTime" -> Quantity[5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 11,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 4
+            "ImplementationTime" -> Quantity[5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SuccessCount" -> 34,
             "Runtime" -> Quantity[9.3, "Minutes"],
             "RuntimeComment" -> "I'm surprised to see the runtime slow down from 7.4 minutes to 9.3 minutes here -- that probably deserves debugging to understand why. I even fixed an issue whereby it was trying all alternatives of a minimal property set item after finding one that didn't need to add anything to the output rule due to being able to use input values directly.",
             "CodeLength" -> 12898,
             "ExampleImplemented" -> "1f876c06",
             "ImplementationTime" -> Quantity[6.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"56ff96f3"},
-            "TotalGeneralizedSuccesses" -> 12,
-            "NewEvaluationSuccesses" -> {"e21a174a"},
-            "TotalEvaluationSuccesses" -> 5
+            "NewEvaluationSuccesses" -> {"e21a174a"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SuccessCount" -> 35,
             "Runtime" -> Quantity[9.3, "Minutes"],
             "CodeLength" -> 12898,
             "ExampleImplemented" -> "56ff96f3",
-            "ImplementationTime" -> Quantity[6.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 12,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[6.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 27}],
-            "SuccessCount" -> 36,
             "Runtime" -> Quantity[11, "Minutes"],
             "RuntimeComment" -> "Yikes! What is leading to these consistent and significant increases in runtime?"
             "CodeLength" -> 13040,
             "ExampleImplemented" -> "22eb0ac0",
-            "ImplementationTime" -> Quantity[0.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 12,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 37,
             "Runtime" -> Quantity[17, "Minutes"],
             "RuntimeComment" -> "We've removed the fail-fast that was skipping any example where the input and output images weren't the same size, so we are legitimately doing a lot more work now."
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "746b3537",
             "ImplementationTime" -> Quantity[2.5, "Hours"],
-            "NewGeneralizedSuccesses" -> {"4be741c5", "90c28cc7", "a87f7484", "e9afcf9a", "f8ff0b80"},
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "NewGeneralizedSuccesses" -> {"4be741c5", "90c28cc7", "a87f7484", "e9afcf9a", "f8ff0b80"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 38,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "4be741c5",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 39,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "90c28cc7",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 40,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "a87f7484",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 41,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "e9afcf9a",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 42,
             "Runtime" -> Quantity[17, "Minutes"],
             "CodeLength" -> 13294,
             "ExampleImplemented" -> "f8ff0b80",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 43,
-            "Runtime" -> Quantity[TODO, "Minutes"],
             "CodeLength" -> 13429,
             "ExampleImplemented" -> "6F8CD79B",
-            "ImplementationTime" -> Quantity[0.75, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0.75, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 44,
-            "Runtime" -> Quantity[TODO, "Minutes"],
             "CodeLength" -> 13492,
             "ExampleImplemented" -> "72CA375D",
-            "ImplementationTime" -> Quantity[0.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 17,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 45,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "A79310A0",
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             (* Note that I didn't re-run all of the training examples for the above two examples, so it's not known which of the 3 caused these. *)
-            "NewGeneralizedSuccesses" -> {"1cf80156", "23b5c85d"},
-            "TotalGeneralizedSuccesses" -> 19,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "NewGeneralizedSuccesses" -> {"1cf80156", "23b5c85d"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 46,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "1cf80156",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 19,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 28}],
-            "SuccessCount" -> 47,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13532,
             "ExampleImplemented" -> "23b5c85d",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 19,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 5
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SuccessCount" -> 48,
             "Runtime" -> Quantity[16, "Minutes"],
             "CodeLength" -> 13581,
             "ExampleImplemented" -> "40853293",
             "ImplementationTime" -> Quantity[0.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 19,
-            "NewEvaluationSuccesses" -> {"070dd51e"},
-            "TotalEvaluationSuccesses" -> 6
+            "NewEvaluationSuccesses" -> {"070dd51e"}
         |>,
         <|
             (* Implemented by accident *)
             "EvaluationTask" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SuccessCount" -> 48,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "1A2E2828",
             "ImplementationTime" -> Quantity[3.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"445eab21"},
-            "TotalGeneralizedSuccesses" -> 20,
-            "NewEvaluationSuccesses" -> {"1A2E2828"},
-            "TotalEvaluationSuccesses" -> 7
+            "NewEvaluationSuccesses" -> {"1A2E2828"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 29}],
-            "SuccessCount" -> 49,
             "Runtime" -> Quantity[15, "Minutes"],
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "445eab21",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 20,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SuccessCount" -> 50,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "95990924",
             "ImplementationTime" -> Quantity[4.5, "Hours"],
-            "NewGeneralizedSuccesses" -> {"4258a5f9", "913fb3ed", "a61ba2ce"},
-            "TotalGeneralizedSuccesses" -> 23,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "NewGeneralizedSuccesses" -> {"4258a5f9", "913fb3ed", "a61ba2ce"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SuccessCount" -> 51,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "4258a5f9",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 23,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SuccessCount" -> 52,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "913fb3ed",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 23,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 8, 30}],
-            "SuccessCount" -> 53,
             "CodeLength" -> 13805,
             "ExampleImplemented" -> "a61ba2ce",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 23,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SuccessCount" -> 54,
             "CodeLength" -> 14359,
             "ExampleImplemented" -> "BE94B721",
-            "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 23,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[1, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SuccessCount" -> 55,
             "CodeLength" -> 14359,
             "ExampleImplemented" -> "810b9b61",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 24,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 7
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SuccessCount" -> 56,
             "CodeLength" -> 14571,
             "ExampleImplemented" -> "ed36ccf7",
             "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 24,
-            "NewEvaluationSuccesses" -> {"64a7c07e", "ae58858e"},
-            "TotalEvaluationSuccesses" -> 9
+            "NewEvaluationSuccesses" -> {"64a7c07e", "ae58858e"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 2}],
-            "SuccessCount" -> 57,
             "CodeLength" -> 14571,
             "ExampleImplemented" -> "27a28665",
-            "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> 1,
-            "TotalGeneralizedSuccesses" -> 25,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "ImplementationTime" -> Quantity[1, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 58,
             "Runtime" -> Quantity[20, "Minutes"],
             "CodeLength" -> 14763,
             "ExampleImplemented" -> "a740d043",
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             (* I think? *)
-            "NewGeneralizedSuccesses" -> {"6e02f1e3"},
-            "TotalGeneralizedSuccesses" -> 26,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "NewGeneralizedSuccesses" -> {"6e02f1e3"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 59,
             "Runtime" -> Quantity[20, "Minutes"],
             "CodeLength" -> 14763,
             "ExampleImplemented" -> "6e02f1e3",
-            "ImplementationTime" -> Quantity[2.5, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 26,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 9
+            "ImplementationTime" -> Quantity[2.5, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 60,
             "Runtime" -> Quantity[1.3, "Hours"],
             "RuntimeComment" -> "What?! Well that's not good. Why such a dramatic slowdown?",
             "CodeLength" -> 14897,
             "ExampleImplemented" -> "b9b7f026",
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"b2862040", "de1cd16c"},
-            "TotalGeneralizedSuccesses" -> 28,
-            "NewEvaluationSuccesses" -> {"37d3e8b2", "4364c1c4"},
-            "TotalEvaluationSuccesses" -> 11
+            "NewEvaluationSuccesses" -> {"37d3e8b2", "4364c1c4"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 61,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 14897,
             "ExampleImplemented" -> "b2862040",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 28,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 62,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 14897,
             "ExampleImplemented" -> "de1cd16c",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 28,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 63,
             "Runtime" -> Quantity[1.2, "Hours"],
             "CodeLength" -> 15160,
             "ExampleImplemented" -> "c59eb873",
             "ImplementationTime" -> Quantity[1, "Hours"],
-            "NewGeneralizedSuccesses" -> {"9172f3a0", "d4469b4b"},
-            "TotalGeneralizedSuccesses" -> 30,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "NewGeneralizedSuccesses" -> {"9172f3a0", "d4469b4b"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 64,
             "Runtime" -> Quantity[1.2, "Hours"],
             "CodeLength" -> 15160,
             "ExampleImplemented" -> "9172f3a0",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 30,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 65,
             "Runtime" -> Quantity[1.2, "Hours"],
             "CodeLength" -> 15160,
             "ExampleImplemented" -> "d4469b4b",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 30,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 66,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "d631b094",
             "ImplementationTime" -> Quantity[1.5, "Hours"],
-            "NewGeneralizedSuccesses" -> {"9af7a82c", "d9fac9be"},
-            "TotalGeneralizedSuccesses" -> 32,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "NewGeneralizedSuccesses" -> {"9af7a82c", "d9fac9be"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 67,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "9af7a82c",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 32,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
-        <|
+        (* Was only working by accident, and stopped working Sept 6 2022. *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 3}],
-            "SuccessCount" -> 67,
             "Runtime" -> Quantity[1.3, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "d9fac9be",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 32,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 11
-        |>,
+            "ImplementationTime" -> Quantity[0, "Hours"]
+        |>,*)
         <|
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 68,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "5614dbcf",
             "ImplementationTime" -> Quantity[2, "Hours"],
             "NewGeneralizedSuccesses" -> {"42a50994", "6150a2bd"},
-            "TotalGeneralizedSuccesses" -> 34,
-            "NewEvaluationSuccesses" -> {"60c09cac"},
-            "TotalEvaluationSuccesses" -> 12
+            "NewEvaluationSuccesses" -> {"60c09cac"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 69,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "42a50994",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 34,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 70,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 15434,
             "ExampleImplemented" -> "6150a2bd",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 34,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 71,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "694f12f3",
             "ImplementationTime" -> Quantity[4, "Hours"],
-            "NewGeneralizedSuccesses" -> {"50cb2852", "b230c067", "bb43febb", "bdad9b1f"},
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "NewGeneralizedSuccesses" -> {"50cb2852", "b230c067", "bb43febb", "bdad9b1f"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 72,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "50cb2852",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 73,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "b230c067",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 74,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "bb43febb",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 75,
             "Runtime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "bdad9b1f",
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>,
         <|
             "PersonalExample" -> True,
             "Timestamp" -> DateObject[{2022, 9, 4}],
-            "SuccessCount" -> 75,
             "CodeLength" -> 16325,
             "ExampleImplemented" -> "middle",
-            "ImplementationTime" -> Quantity[10, "Minutes"],
-            "NewGeneralizedSuccesses" -> 0,
-            "TotalGeneralizedSuccesses" -> 38,
-            "NewEvaluationSuccesses" -> 0,
-            "TotalEvaluationSuccesses" -> 12
+            "ImplementationTime" -> Quantity[10, "Minutes"]
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 5}],
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "CodeLength" -> 16803,
+            "ExampleImplemented" -> "surface-pixel-count",
+            "ImplementationTime" -> Quantity[6, "Hours"],
+            "NewGeneralizedSuccesses" -> {"794b24be", "85c4e7cd", "ba97ae07", "ff28f65a"},
+            "NewEvaluationSuccesses" -> {"85b81ff1", "e41c6fd3"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 5}],
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "CodeLength" -> 16803,
+            "ExampleImplemented" -> "794b24be",
+            "ImplementationTime" -> Quantity[0, "Hours"]
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 5}],
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "CodeLength" -> 16803,
+            "ExampleImplemented" -> "85c4e7cd",
+            "ImplementationTime" -> Quantity[0, "Hours"]
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 5}],
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "CodeLength" -> 16803,
+            "ExampleImplemented" -> "ba97ae07",
+            "ImplementationTime" -> Quantity[0, "Hours"]
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 5}],
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "CodeLength" -> 16803,
+            "ExampleImplemented" -> "ff28f65a",
+            "ImplementationTime" -> Quantity[0, "Hours"]
         |>
     }
 
@@ -10855,7 +10726,9 @@ ARCCleanRules[rulesIn_List, objects_List] :=
                        a minimal property set, which can result in Move transforms containing
                        both a Position and Offset key. For now we'll deal with that here whereby
                        we favor the Offset. e.g. 66e6c45b *)
-                    KeyDrop[assoc, "Position"]
+                    KeyDrop[assoc, "Position"],
+                (* Simplify missing expressions to not have any arguments. *)
+                _Missing :> Missing[]
             },
             {0, Infinity},
             Heads -> True
@@ -10880,6 +10753,16 @@ ARCCleanRules[rulesIn_List, objects_List] :=
         
         rules = ARCFormExceptRules[rules, objects];
         
+        rules
+    ]
+
+ARCCleanRules[rules_Association, objects_List] :=
+    If [ListQ[rules["Rules"]],
+        Sett[
+            rules,
+            "Rules" -> ARCCleanRules[rules["Rules"], objects]
+        ]
+        ,
         rules
     ]
 
@@ -11798,7 +11681,9 @@ ApplyToImage[image_List, function_] :=
     \function ARCReplaceRulePatternsWithGroupPatternsIfAppropriate
     
     \calltable
-        ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules, inputObjects] '' Given a list of rules, checks whether any of the rule LHS correspond with object groups, and if so, makes those patterns 'group patterns' which can be used for forming groups when applying the rule.
+        ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules, inputObjects] '' Given a list of rules, checks whether any of the rule LHS correspond with object groups, and if so, includes the 'group patterns' in the result for forming groups when applying rules.
+    
+    TODO: Rename this function appropriately.
     
     Examples:
     
@@ -11812,24 +11697,32 @@ ApplyToImage[image_List, function_] :=
 *)
 Clear[ARCReplaceRulePatternsWithGroupPatternsIfAppropriate];
 ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_List] :=
-    Module[{matchingObjects},
+    Module[{matchingObjects, gropuPattern},
         (* Check if any of the input objects are groups. *)
         If [!FreeQ[inputObjects, KeyValuePattern["Type" -> "Group"]],
+            
             (* There are groups. *)
-            Function[{rule},
-                
-                matchingObjects = Select[
-                    inputObjects,
-                    MatchQ[#, ARCRuleToPattern[rule]] &
-                ];
-                
-                If [AllTrue[matchingObjects, #["Type"] === "Group" &],
-                    (* All of these objects are groups, so we want to replace this rule pattern
-                       with a group specification. *)
-                    ReplacePart[
-                        rule,
-                        1 -> Replace[
-                            ARCObjectCommonalities[matchingObjects],
+            DeleteDuplicates[
+                Function[{rule},
+                    
+                    matchingObjects = Select[
+                        inputObjects,
+                        MatchQ[#, ARCRuleToPattern[rule]] &
+                    ];
+                    
+                    group =
+                    If [AnyTrue[matchingObjects, #["Type"] === "Group" &],
+                        (* All of these objects are groups, so we want to replace this rule pattern
+                           with a group specification. *)
+                        Replace[
+                            ReturnIfFailure@
+                            ARCPrunePattern@
+                            ARCObjectCommonalities[
+                                KeyDrop[
+                                    Select[matchingObjects, #["Type"] === "Group" &],
+                                    "Type"
+                                ]
+                            ],
                             <||> :> (
                                 If [Length[rules] =!= 1,
                                     (* If we couldn't find any commonalities between the group
@@ -11844,14 +11737,19 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
                                 ]
                             )
                         ]
-                    ]
-                    ,
-                    rule
-                ]
-            ] /@ rules
+                        ,
+                        Nothing
+                    ];
+                    
+                    (*ARCEcho2[rule -> group -> matchingObjects];*)
+                    
+                    group
+                    
+                ] /@ rules
+            ]
             ,
             (* There aren't any groups. *)
-            rules
+            {}
         ]
     ]
 
@@ -11876,26 +11774,45 @@ ARCRuleToPattern[pattern_ -> _] :=
     ARCRuleToPattern[pattern]
 
 ARCRuleToPattern[pattern_] :=
-    Module[{},
-        KeyValuePattern@
+    Module[{pattern2},
         Replace[
-            Replace[
+            pattern2 = Replace[
                 Normal[pattern],
                 {
                     HoldPattern[Rule]["Shapes", shape_] :> (
                         (* We want the object to have this shape as one of its shapes. *)
-                        "Shapes" -> {___, KeyValuePattern[Normal[shape]], ___}
+                        "Shapes" -> {___, ARCRuleToPattern[shape], ___}
                     )
                 },
                 {1}
+            ];
+            propertiesWithMissingValues = Cases[pattern2, HoldPattern[Rule][_, _Missing]][[All, 1]];
+            If [propertiesWithMissingValues =!= {},
+                pattern2 = Normal[KeyDrop[pattern2, propertiesWithMissingValues]];
+                Clear[assoc];
+                missingCondition =
+                    And @@ (
+                        Function[{property},
+                            TemporaryHold[MissingQ][assoc[property]]
+                        ] /@ propertiesWithMissingValues
+                    );
+                With[{missingCondition = missingCondition},
+                    pattern2 = assoc: KeyValuePattern[pattern2];
+                    pattern2 =
+                        Utility`ReleaseTemporaryHolds@
+                        Condition[pattern2, missingCondition];
+                ];
+                pattern2
+                ,
+                KeyValuePattern[pattern2]
             ],
             {
-                assoc_Association :> KeyValuePattern[Normal[assoc]],
+                assoc_Association :> ARCRuleToPattern[assoc],
                 "Same" :> With[{symbol = Unique[patternSymbol]},
                     Pattern[symbol, Blank[]]
                 ]
             },
-            {1, Infinity}
+            {2, Infinity}
         ]
     ]
 
@@ -12019,7 +11936,7 @@ ARCObjectCommonalities[objects_List, opts:OptionsPattern[]] :=
     \function ARCFormGroupsWhenApplyingRules
     
     \calltable
-        ARCFormGroupsWhenApplyingRules[objects, rules, sceneWidth, sceneHeight] '' Given the objects in a scene, and the rules we are going to apply, if any of the rule patterns specify groups, tries to form matching groups.
+        ARCFormGroupsWhenApplyingRules[objects, groups, sceneWidth, sceneHeight] '' Given the objects in a scene, and the group definitions, tries to form matching groups.
     
     Examples:
     
@@ -12032,17 +11949,17 @@ ARCObjectCommonalities[objects_List, opts:OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCFormGroupsWhenApplyingRules];
-ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List, sceneWidth_Integer, sceneHeight_Integer] :=
+ARCFormGroupsWhenApplyingRules[objectsIn_List, groups_List, sceneWidth_Integer, sceneHeight_Integer] :=
     Module[
         {
             objects = objectsIn,
             possibleGroups,
-            groups,
+            objectGroups,
             inputObjectUUIDsThatFormedGroups
         },
         
         (* Do any rules involve groups? *)
-        If [!FreeQ[rules, KeyValuePattern["Type" -> "Group"]],
+        If [groups =!= {},
             
             (* Some rules involve groups, so we'll try forming groups. *)
             
@@ -12057,27 +11974,22 @@ ARCFormGroupsWhenApplyingRules[objectsIn_List, rules_List, sceneWidth_Integer, s
             
             (* For now, we'll just try forming groups of two. *)
             (*ARCEcho[possibleGroups[[23]]];*)
-            groups = Flatten[
-                Function[{rule},
-                    With[{pattern = ARCRuleToPattern[rule]},
+            objectGroups = Flatten[
+                Function[{group},
+                    With[{pattern = ARCRuleToPattern[group]},
                         Select[
                             possibleGroups,
                             MatchQ[#, pattern] &
                         ]
                     ]
-                ] /@
-                    (* Rules that involve grouping. *)
-                    Cases[
-                        rules,
-                        HoldPattern[Rule][KeyValuePattern["Type" -> "Group"], _]
-                    ]
+                ] /@ groups
             ];
             
             inputObjectUUIDsThatFormedGroups =
-                Flatten[groups[[All, "Components", All, "UUID"]]];
+                Flatten[objectGroups[[All, "Components", All, "UUID"]]];
             
             Join[
-                groups,
+                objectGroups,
                 (* Remove the objects that are now parts of groups. *)
                 DeleteCases[
                     objects,
@@ -13493,7 +13405,7 @@ ARCFindRulesUsingRotationalNormalization[currentConclusion_, currentUnhandled_, 
 Clear[ARCDebug];
 Attributes[ARCDebug] = {HoldFirst};
 ARCDebug[expr_] :=
-    Block[{$debug = True},
+    Block[{$arcDebug = True},
         expr
     ]
 
@@ -13507,7 +13419,7 @@ ARCDebug[expr_] :=
 *)
 Clear[ARCEcho3];
 ARCEcho3[expr_] :=
-    If [TrueQ[$debug],
+    If [TrueQ[$arcDebug],
         ARCEcho2[expr]
         ,
         expr
@@ -13524,7 +13436,7 @@ ARCEcho3[expr_] :=
 Clear[ARCEchoTag];
 ARCEchoTag[tag_] :=
     Function[{expr},
-        If [TrueQ[$debug],
+        If [TrueQ[$arcDebug],
             EchoTag[tag][expr]
             ,
             expr
@@ -13686,28 +13598,47 @@ ARCConstructObject[object_, OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCMappingToObjectWithOverlappingFilledInPixels];
-ARCMappingToObjectWithOverlappingFilledInPixels[object_Association, outputObjects_List] :=
+Options[ARCMappingToObjectWithOverlappingFilledInPixels] =
+{
+    "OverlapRequired" -> "Subset",      (*< "Subset" means that one object's filled-in pixels need to be fully contained in the other's. "Overlap" means that we just need an overlap of pixels. *)
+    "Colors" -> "Same"                  (*< "Same" means that the colors present need to be the same set. "Overlap" means that there must be an overlap in colors. *)
+};
+ARCMappingToObjectWithOverlappingFilledInPixels[object_Association, outputObjects_List, OptionsPattern[]] :=
     Module[{},
         Replace[
             Select[
                 outputObjects,
                 And[
-                    Or[
-                        (* The output object is a superset of the pixels of the input object. *)
-                        SubsetQ[#["PixelPositions"], object["PixelPositions"]],
-                        (* The output object is a subset of the pixels of the input object. *)
-                        SubsetQ[object["PixelPositions"], #["PixelPositions"]]
+                    Which[
+                        OptionValue["OverlapRequired"] === "Subset",
+                            Or[
+                                (* The output object is a superset of the pixels of the input object. *)
+                                SubsetQ[#["PixelPositions"], object["PixelPositions"]],
+                                (* The output object is a subset of the pixels of the input object. *)
+                                SubsetQ[object["PixelPositions"], #["PixelPositions"]]
+                            ],
+                        OptionValue["OverlapRequired"] === "Overlap",
+                            Intersection[#["PixelPositions"], object["PixelPositions"]] =!= {}
                     ],
                     (* We also currently require the colors to be the same, to avoid false
                        positives, such as in 31aa019c, where we don't want random pixels
                        in the output to get mapped to the boxes in the output. *)
-                    object["Colors"] === #["Colors"]
+                    Or[
+                        And[
+                            OptionValue["Colors"] === "Same",
+                            object["Colors"] === #["Colors"]
+                        ],
+                        And[
+                            OptionValue["Colors"] === "Overlap",
+                            Intersection[object["Colors"], #["Colors"]] =!= {}
+                        ]
+                    ]
                 ] &
             ],
             {
                 {mappedToObject_} :> (
                     (* Since there was only 1 corresponding output object, we'll create
-                        a mapping. *)
+                       a mapping. *)
                     Return[
                         object -> Sett[
                             mappedToObject,
@@ -13996,6 +13927,10 @@ ARCRuleSetScore[ruleSet_List] :=
             ] /@ ruleSet
         ]
     ]
+
+ARCRuleSetScore[rules_Association] :=
+    (* TODO: We're just scoring the rule list here, not the "Groups" key/value, etc. *)
+    ARCRuleSetScore[rules["Rules"]]
 
 (*!
     \function ARCConditionsScore
@@ -14675,6 +14610,10 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
         
         pattern = patternIn;
         
+        If [AssociationQ[pattern["Group"]],
+            pattern["Group"] = ARCPrunePattern[pattern["Group"]]
+        ];
+        
         If [!MissingQ[pattern["Image"]] || MatchQ[pattern["Shape"], _ARCScene],
             pattern = KeyDrop[
                 pattern,
@@ -14753,7 +14692,10 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "FilledArea.Rank",
                     "FilledArea.InverseRank",
                     "FilledProportion.Rank",
-                    "FilledProportion.InverseRank"
+                    "FilledProportion.InverseRank",
+                    "SurfacePixelCount",
+                    "SurfacePixelCount.Rank",
+                    "SurfacePixelCount.InverseRank"
                 }
             ]
         ];
@@ -15674,7 +15616,7 @@ ARCObjectFromAllPixels[scene_ARCScene, background_Integer] :=
             <|
                 "UUID" -> CreateUUID[],
                 "Image" -> ARCScene[image],
-                "PixelPositions" -> {},
+                "PixelPositions" -> Position[image, Except[$nonImageColor], {2}, Heads -> False],
                 ARCInferShapeAndShapes[image, colors],
                 "Colors" -> colors,
                 InferColor["Color" -> <|"Colors" -> colors|>],
@@ -16362,8 +16304,140 @@ ARCRulesForOutput[rules_Association] :=
             "Width",
             "Height",
             "Rules",
+            "Groups",
             "PartialRules"
         }
+    ]
+
+(*!
+    \function ARCSurfacePixelCount
+    
+    \calltable
+        ARCSurfacePixelCount[image] '' Given an image, returns the number of pixels that make up its outer boundary.
+    
+    Examples:
+    
+    ARCSurfacePixelCount[{{-1, 1, -1}, {1, -1, 1}, {-1, 1, -1}}] === 4
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSurfacePixelCount]
+    
+    \maintainer danielb
+*)
+Clear[ARCSurfacePixelCount];
+ARCSurfacePixelCount[image_List] :=
+    Module[{width = ImageWidth[image], height = ImageHeight[image]},
+        
+        Length@
+        DeleteDuplicates@
+        Flatten[
+            Join[
+                (* Scan vertically. *)
+                Function[{x},
+                    Function[{direction},
+                        Block[{},
+                            Function[{y},
+                                If [image[[y, x]] =!= $nonImageColor,
+                                    Return[{y, x}, Block]
+                                ]
+                            ] /@
+                                If [direction === 1,
+                                    Range[height, 1, -1]
+                                    ,
+                                    Range[1, height]
+                                ];
+                            Nothing
+                        ]
+                    ] /@ {1, -1}
+                ] /@ Range[1, width]
+                ,
+                (* Scan horizontally. *)
+                Function[{y},
+                    Function[{direction},
+                        Block[{},
+                            Function[{x},
+                                If [image[[y, x]] =!= $nonImageColor,
+                                    Return[{y, x}, Block]
+                                ]
+                            ] /@
+                                If [direction === 1,
+                                    Range[width, 1, -1]
+                                    ,
+                                    Range[1, width]
+                                ];
+                            Nothing
+                        ]
+                    ] /@ {1, -1}
+                ] /@ Range[1, height]
+            ],
+            1
+        ]
+    ]
+
+(*!
+    \function ARCMXPut
+    
+    \calltable
+        ARCMXPut[] '' Writes an MX file to disk that can be used to initialize ARC.
+    
+    \maintainer danielb
+*)
+Clear[ARCMXPut];
+ARCMXPut[] :=
+    Module[{contexts},
+        
+        contexts = {
+            "Daniel`ARC`",
+            "Daniel`",
+            "Utility`",
+            "DevTools`",
+            "EntityLink`"
+        };
+        
+        $mxContextPath = $ContextPath;
+        
+        With[{contexts = contexts},
+            DumpSave[
+                ARCMXFile[],
+                contexts
+            ]
+        ]
+    ]
+
+(*!
+    \function ARCMXFile
+    
+    \calltable
+        ARCMXFile[] '' The ARC MX file path.
+    
+    \maintainer danielb
+*)
+Clear[ARCMXFile];
+ARCMXFile[] :=
+    FileNameJoin[
+        {
+            $TemporaryDirectory,
+            "ARC.mx"
+        }
+    ]
+
+(*!
+    \function ARCMXGet
+    
+    \calltable
+        ARCMXGet[] '' Loads the ARC MX file.
+    
+    \maintainer danielb
+*)
+Clear[ARCMXGet];
+ARCMXGet[] :=
+    Module[{},
+        
+        ReturnIfFailure@
+        Get[ARCMXFile[]];
+        
+        $ContextPath = $mxContextPath;
     ]
 
 End[]

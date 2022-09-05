@@ -55,7 +55,7 @@ Test[
         ToString[Daniel`ARC`ARCClassifyRectange[{{2, 1}, {2, 2}}]]
     ]
     ,
-    "Nothing"
+    "<|Name -> Rectangle, Filled -> True|>"
     ,
     TestID -> "ARCClassifyRectange-20220718-5DUZW9"
 ]
@@ -91,7 +91,7 @@ Test[
         ]
     ]
     ,
-    "Nothing"
+    "<|Name -> Rectangle, Filled -> False|>"
     ,
     TestID -> "ARCClassifyRectange-20220806-FY5BH4"
 ]

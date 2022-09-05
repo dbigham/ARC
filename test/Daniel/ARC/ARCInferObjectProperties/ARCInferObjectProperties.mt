@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCInferObjectProperties[
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}],
+                "Image" -> Daniel`ARC`ARCScene[{{1, -1, -1}, {-1, 1, -1}, {-1, -1, 1}}],
                 "Position" -> {1, 1},
                 "Colors" -> {1}
             |>,
@@ -24,7 +24,7 @@ Test[
     ]
     ,
     <|
-        "Image" -> Daniel`ARC`ARCScene[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}],
+        "Image" -> Daniel`ARC`ARCScene[{{1, -1, -1}, {-1, 1, -1}, {-1, -1, 1}}],
         "Position" -> {1, 1},
         "Colors" -> {1},
         "Color" -> 1,
@@ -47,6 +47,7 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 2,
         "FilledProportion" -> 0.2222222222222222,
+        "SurfacePixelCount" -> 3,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
@@ -91,6 +92,7 @@ Test[
         "Area" -> 4,
         "FilledArea" -> 2,
         "FilledProportion" -> 0.5,
+        "SurfacePixelCount" -> 4,
         "VerticalLineSymmetry" -> True,
         "HorizontalLineSymmetry" -> True,
         "VerticalAndHorizontalLineSymmetry" -> True,

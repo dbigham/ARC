@@ -152,3 +152,28 @@ Test[
     ,
     TestID -> "ARCCleanRules-20220902-RPQOPE"
 ]
+
+Test[
+    Daniel`ARC`ARCCleanRules[
+        <|
+            "Rules" -> {
+                <|"FilledArea.Rank" -> 1|> -> <|
+                    "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+                |>,
+                <|"FilledArea.Rank" -> 3 | 2|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+            }
+        |>,
+        {<|"FilledArea.Rank" -> 1|>, <|"FilledArea.Rank" -> 2|>, <|"FilledArea.Rank" -> 3|>}
+    ]
+    ,
+    <|
+        "Rules" -> {
+            <|"FilledArea.Rank" -> 1|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|"FilledArea.Rank" -> Except[1]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCCleanRules-20220905-JKLAZ4"
+]

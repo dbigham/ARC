@@ -1376,7 +1376,6 @@ Test[
     ,
     {
         <|
-            "Type" -> "Group",
             "Colors" -> {8},
             "Height" -> 1,
             "Components" -> {
@@ -1387,28 +1386,8 @@ Test[
             },
             "PrimarySizeDimension" -> "X",
             "FilledArea" -> 2
-        |> -> <|
-            "Transform" -> <|
-                "Type" -> "AddComponents",
-                "Components" -> {
-                    <|
-                        "Shapes" -> {
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> Inactive[Plus][
-                            Daniel`ARC`ObjectValue["InputObject", "Width"],
-                            -2
-                        ],
-                        "Height" -> 1,
-                        "Color" -> 3,
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 1|>|>
-                    |>
-                }
-            |>
         |>,
         <|
-            "Type" -> "Group",
             "Colors" -> {8},
             "Width" -> 1,
             "Components" -> {
@@ -1419,27 +1398,7 @@ Test[
             },
             "PrimarySizeDimension" -> "Y",
             "FilledArea" -> 2
-        |> -> <|
-            "Transform" -> <|
-                "Type" -> "AddComponents",
-                "Components" -> {
-                    <|
-                        "Shapes" -> {
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> Inactive[Plus][
-                            Daniel`ARC`ObjectValue["InputObject", "Height"],
-                            -2
-                        ],
-                        "Color" -> 3,
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 0|>|>
-                    |>
-                }
-            |>
-        |>,
-        <|"PrimarySizeDimension" -> "None"|> -> <|"Same" -> True|>
+        |>
     }
     ,
     TestID -> "ARCReplaceRulePatternsWithGroupPatternsIfAppropriate-20220812-OPIWNI"
@@ -1474,10 +1433,8 @@ Test[
     ,
     {
         <|
-            "Type" -> "Group",
             "FilledArea" -> 2,
             "Components" -> {Repeated[<|"FilledArea" -> 1, "Color" -> "Same"|>, {2}]}
-        |> -> <|
         |>
     }
     ,

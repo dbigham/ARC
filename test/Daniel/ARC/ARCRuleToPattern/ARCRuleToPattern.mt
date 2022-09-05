@@ -76,3 +76,28 @@ Test[
     ,
     TestID -> "ARCRuleToPattern-20220827-VQWZFF"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`ERP`NormalizeOutput[
+            With[
+                {
+                    pattern = Daniel`ARC`ARCRuleToPattern[
+                        <|"Width" -> 1, "Shape" -> Missing["NotFound"]|>
+                    ]
+                },
+                <|"Pattern" -> pattern, "Matches" -> MatchQ[<|"Width" -> 1|>, pattern]|>
+            ]
+        ]
+    ]
+    ,
+    <|
+        "Pattern" -> Condition[
+            Daniel`ARC`Private`assoc:KeyValuePattern[{"Width" -> 1}],
+            MissingQ[Daniel`ARC`Private`assoc["Shape"]]
+        ],
+        "Matches" -> True
+    |>
+    ,
+    TestID -> "ARCRuleToPattern-20220905-8BG23J"
+]

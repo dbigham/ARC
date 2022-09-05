@@ -25,7 +25,7 @@ Test[
     <|
         "UUID" -> 0,
         "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {-1, -1, -1}, {6, 6, -1}}],
-        "PixelPositions" -> {},
+        "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {3, 1}, {3, 2}},
         "Shape" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, -1}, {10, 10, -1}}],
         "Shapes" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, -1}, {10, 10, -1}}]|>,
@@ -40,6 +40,35 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, 10}, {10, -1, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10},
+                        {-1, -1, -1, -1, -1, -1},
+                        {-1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, 10, -1, -1},
+                        {10, 10, 10, 10, -1, -1}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                        {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                        {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, -1, -1, -1}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
             |>
         },
         "Colors" -> {6},
@@ -54,14 +83,17 @@ Test[
         "Y2Inverse" -> 1,
         "X2Inverse" -> 1,
         "ZOrder" -> 0,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
         "PrimarySizeDimension" -> "None",
         "AspectRatio" -> 1,
         "Area" -> 9,
-        "FilledArea" -> 0,
-        "FilledProportion" -> 0.,
+        "FilledArea" -> 5,
+        "FilledProportion" -> 0.5555555555555556,
+        "SurfacePixelCount" -> 5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
