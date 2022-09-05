@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCInferObjectProperties[
             <|
-                "Image" -> Daniel`ARC`ARCScene[{{1, 0}, {0, 1}}],
+                "Image" -> Daniel`ARC`ARCScene[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}],
                 "Position" -> {1, 1},
                 "Colors" -> {1}
             |>,
@@ -24,7 +24,7 @@ Test[
     ]
     ,
     <|
-        "Image" -> Daniel`ARC`ARCScene[{{1, 0}, {0, 1}}],
+        "Image" -> Daniel`ARC`ARCScene[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}],
         "Position" -> {1, 1},
         "Colors" -> {1},
         "Color" -> 1,
@@ -32,19 +32,21 @@ Test[
         "X" -> 1,
         "YInverse" -> 10,
         "XInverse" -> 10,
-        "Y2" -> 2,
-        "X2" -> 2,
-        "Y2Inverse" -> 9,
-        "X2Inverse" -> 9,
+        "Y2" -> 3,
+        "X2" -> 3,
+        "Y2Inverse" -> 8,
+        "X2Inverse" -> 8,
         "ZOrder" -> 0,
-        "Width" -> 2,
-        "Height" -> 2,
-        "Length" -> 2,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
+        "Width" -> 3,
+        "Height" -> 3,
+        "Length" -> 3,
         "PrimarySizeDimension" -> "None",
         "AspectRatio" -> 1,
-        "Area" -> 4,
+        "Area" -> 9,
         "FilledArea" -> 2,
-        "FilledProportion" -> 0.5,
+        "FilledProportion" -> 0.2222222222222222,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,

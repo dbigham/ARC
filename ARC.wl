@@ -1683,6 +1683,26 @@ $properties = <|
         "Type2" -> "PositionDimensionValue",
         "RuleConditionQuality" -> 0.5
     |>,
+    "YMiddle" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "XMiddle" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "XRelative" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "YRelative" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
     "ZOrder" -> <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue"
@@ -4052,7 +4072,9 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         "PixelPositions",
                         (* Since we already have "Colors", and "Color" duplicates that in this
                            context. (I think) *)
-                        "Color"
+                        "Color",
+                        "XRelative",
+                        "YRelative"
                     ]
                 ]
             ];
@@ -7070,7 +7092,7 @@ Options[ARCGeneralizeConclusionValueUsingReferenceableObjects] =
 ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjectsIn_Association, examples_List, opts:OptionsPattern[]] :=
     Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
-        $debugProperty = "Y";
+        $debugProperty = "X";
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
@@ -7175,7 +7197,12 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
         
         If [MatchQ[referenceableValues, {__}],
             (*If [Last[propertyPath] === $debugProperty,
-                ARCEcho["referenceableValues" -> referenceableValues]
+                ARCEcho["referenceableValues" -> referenceableValues];
+                ARCDebug@
+                ARCEcho2@
+                ARCChooseBestTransform[
+                    Association[Last[propertyPath] -> #] & /@ referenceableValues
+                ]
             ];*)
             
             best = Normal[
@@ -7878,6 +7905,16 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                 (* Default the ZOrder to 0 if not specifies. *)
                 If [MissingQ[object["ZOrder"]],
                     "ZOrder" -> 0
+                    ,
+                    Nothing
+                ],
+                If [Mod[height, 2] === 1,
+                    "YMiddle" -> y + (height - 1) / 2
+                    ,
+                    Nothing
+                ],
+                If [Mod[width, 2] === 1,
+                    "XMiddle" -> x + (width - 1) / 2
                     ,
                     Nothing
                 ],
@@ -8842,6 +8879,7 @@ ARCTransformScore[transformIn_] :=
                             {0, Infinity},
                             Heads -> True
                         ];
+                        
                         score += Which[
                             key === objectValueProperty,
                                 0,
@@ -10593,6 +10631,18 @@ ARCTaskLog[] :=
             "CodeLength" -> 16242,
             "ExampleImplemented" -> "bdad9b1f",
             "ImplementationTime" -> Quantity[0, "Hours"],
+            "NewGeneralizedSuccesses" -> 0,
+            "TotalGeneralizedSuccesses" -> 38,
+            "NewEvaluationSuccesses" -> 0,
+            "TotalEvaluationSuccesses" -> 12
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 4}],
+            "SuccessCount" -> 75,
+            "CodeLength" -> 16325,
+            "ExampleImplemented" -> "middle",
+            "ImplementationTime" -> Quantity[10, "Minutes"],
             "NewGeneralizedSuccesses" -> 0,
             "TotalGeneralizedSuccesses" -> 38,
             "NewEvaluationSuccesses" -> 0,
@@ -14642,7 +14692,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                         "X2.Rank",
                                         "X2Inverse",
                                         "X2Inverse.InverseRank",
-                                        "X2Inverse.Rank"
+                                        "X2Inverse.Rank",
+                                        "XMiddle"
                                     }
                                     ,
                                     Nothing
@@ -14654,7 +14705,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                         "Y2.Rank",
                                         "Y2Inverse",
                                         "Y2Inverse.InverseRank",
-                                        "Y2Inverse.Rank"
+                                        "Y2Inverse.Rank",
+                                        "YMiddle"
                                     }
                                     ,
                                     Nothing
@@ -14778,6 +14830,12 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             If [!MissingQ[patternIn["Y"]],
                 pattern = KeyDrop[pattern, "Y2"]
             ];
+            If [!MissingQ[patternIn["YMiddle"]],
+                pattern = KeyDrop[pattern, "YMiddle"]
+            ];
+            If [!MissingQ[patternIn["XMiddle"]],
+                pattern = KeyDrop[pattern, "XMiddle"]
+            ];
         ];
         
         If [MatchQ[patternIn["Shape"], KeyValuePattern["Name" -> "Pixel" | "Square" | "Rectangle" | "Line"]],
@@ -14846,7 +14904,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern = KeyDrop[
                     pattern,
                     {
-                        "Y2"
+                        "Y2",
+                        "YMiddle"
                     }
                 ]
             ];
@@ -14861,6 +14920,16 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "Y2Inverse",
                     "Y2Inverse.InverseRank",
                     "Y2Inverse.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[patternIn["YMiddle"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "YMiddle.InverseRank",
+                    "YMiddle.Rank"
                 }
             ]
         ];
@@ -14880,7 +14949,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern = KeyDrop[
                     pattern,
                     {
-                        "X2"
+                        "X2",
+                        "XMiddle"
                     }
                 ]
             ];
@@ -14895,6 +14965,16 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "X2Inverse",
                     "X2Inverse.InverseRank",
                     "X2Inverse.Rank"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[patternIn["XMiddle"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "XMiddle.InverseRank",
+                    "XMiddle.Rank"
                 }
             ]
         ];

@@ -1644,3 +1644,104 @@ Test[
     ,
     TestID -> "ARCFindRules-20220904-WFSK8X"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "50cb2852"]["Train"]]
+    ]
+    ,
+    {
+        <|"Colors" -> {2}|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 8|>,
+                "Border" -> <|"Color" -> 2|>
+            |>
+        |>,
+        <|"Colors" -> {1}|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 8|>,
+                "Border" -> <|"Color" -> 1|>
+            |>
+        |>,
+        <|"Colors" -> {3}|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 8|>,
+                "Border" -> <|"Color" -> 3|>
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220905-34UMX6"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b230c067"]["Train"]]
+    ]
+    ,
+    {<||> -> <|"Color" -> Daniel`ARC`ObjectValue["InputObject", "Width.Rank"]|>}
+    ,
+    TestID -> "ARCFindRules-20220905-Q65LO6"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "bb43febb"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 2|>,
+                "Border" -> <|"Color" -> 5|>
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220905-G4PUG3"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "bdad9b1f"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Colors" -> {2}|> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                "X" -> 1,
+                "X2" -> 6,
+                "ZOrder" -> 1
+            |>,
+            <|"Colors" -> {8}|> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                "Y2" -> 6,
+                "ZOrder" -> 1
+            |>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{4}}],
+                            "Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {2}|>, "Y"],
+                            "X" -> Daniel`ARC`ObjectValue[<|"Colors" -> {8}|>, "X"]
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220905-LLXOPN"
+]

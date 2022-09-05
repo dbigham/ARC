@@ -130,3 +130,39 @@ Test[
     ,
     TestID -> "ARCTransformScore-20220825-CWTDTY"
 ]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|
+            "X" -> Inactive[Plus][
+                Daniel`ARC`ObjectValue[
+                    <|"Colors" -> {1}, "Context" -> "Component"|>,
+                    "XRelative"
+                ],
+                1
+            ]
+        |>
+    ]
+    ,
+    -0.6300000000000001
+    ,
+    TestID -> "ARCTransformScore-20220905-TREZ4Z"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|
+            "X" -> Inactive[Plus][
+                Daniel`ARC`ObjectValue[
+                    <|"XMiddle" -> 3, "Context" -> "Component"|>,
+                    "Width"
+                ],
+                1
+            ]
+        |>
+    ]
+    ,
+    -1.1
+    ,
+    TestID -> "ARCTransformScore-20220905-3095OU"
+]
