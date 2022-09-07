@@ -673,3 +673,59 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220906-E9F8X5"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["8be77c9e"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-YW50QI"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["67a3c6ac"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-I2HF19"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["68b16354"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-6B6J06"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["a8c38be5"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-U0MRPU"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["62c24649"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-39IIV0"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["67e8384a"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-XAHII6"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["6d0aefbc"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220907-QNWC3E"
+]

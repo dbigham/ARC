@@ -412,6 +412,18 @@ ARCSortRules::usage = "ARCSortRules  "
 
 ARCSortRuleScore::usage = "ARCSortRuleScore  "
 
+ARCSubdivideImage::usage = "ARCSubdivideImage  "
+
+ARCImageFlips::usage = "ARCImageFlips  "
+
+ARCFlipImage::usage = "ARCFlipImage  "
+
+ARCCombineGridOfImages::usage = "ARCCombineGridOfImages  "
+
+ARCCombineRowOfImages::usage = "ARCCombineRowOfImages  "
+
+ARCFindRulesForSubdividedOutput::usage = "ARCFindRulesForSubdividedOutput  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1820,6 +1832,7 @@ ARCClassifyShape[image_List, OptionsPattern[]] :=
                 With[{monochrome = ARCToMonochrome[image, $nonImageColor]},
                     Join[
                         ARCImageRotations[monochrome],
+                        ARCImageFlips[monochrome],
                         ARCImageScalings[monochrome]
                     ]
                 ]
@@ -2184,34 +2197,23 @@ ARCClassifyRotatedImage[imageIn_List, classifyFunction_] :=
 Clear[ARCClassifyFlippedImage];
 ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
     Module[{image = imageIn, classification},
-        Function[{transform},
+        Function[{direction},
             (* Rotate by 90 degrees. *)
-            image = transform["Function"][imageIn];
+            image = ARCFlipImage[imageIn, direction];
             If [(classification = classifyFunction[image]) =!= Nothing,
                 Join[
                     classification,
                     <|
                         "Transform" -> <|
-                            "Type" -> transform["Transform"],
-                            "Direction" -> transform["Direction"]
+                            "Type" -> "Flip",
+                            "Direction" -> direction
                         |>
                     |>
                 ]
                 ,
                 Nothing
             ]
-        ] /@ {
-            <|
-                "Transform" -> "Flip",
-                "Direction" -> "Vertical",
-                "Function" -> Reverse
-            |>,
-            <|
-                "Transform" -> "Flip",
-                "Direction" -> "Horizontal",
-                "Function" -> Function[Map[Reverse, #]]
-            |>
-        }
+        ] /@ {"Vertical", "Horizontal"}
     ]
 
 (*!
@@ -2954,9 +2956,21 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         ];
         
         (* Look for an image transformation. (e.g. rotation) *)
-        imageShapes = Cases[
-            object["Shapes"],
-            KeyValuePattern[{"Image" -> _, "Transform" -> _}]][[All, "Image"]
+        imageShapes = With[{objectImageShape = ARCObjectImageShape[object]},
+            Select[
+                Cases[
+                    object["Shapes"],
+                    KeyValuePattern[{"Image" -> _, "Transform" -> _}]][[All, "Image"]
+                ],
+                (* Discard cases where the "transformed" image-shape is actually the same as our
+                   object's image-shape. For example, if a vertical or horizontal flip of our
+                   image is exactly the same as the image itself due to our object being
+                   symmetrical, then for now we'll avoid assuming that the object has been
+                   flipped, as that would be extremely presumptuous. That said, there may
+                   be cases where it _was_ flipped, so we'll need to put some more thought
+                   into how to support those cases. *)
+                # =!= objectImageShape &
+            ]
         ];
         SelectFirst[
             objectsToMapTo,
@@ -3568,6 +3582,25 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         res = res2
                     ]
                 ];
+            ];
+            
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+            
+            (* Consider whether the output width is always a multiple of the input width and the
+               output height is always a mutliple of the input height. If so, try sub-dividing the
+               problem. *)
+            If [!TrueQ[workingRulesQ],
+                res2 = ARCFindRulesForSubdividedOutput[examples];
+                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = res2
+                ]
             ]
         ];
         
@@ -3847,6 +3880,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     ]
             ]
         ] /@ examples;
+        
+        (* HEREF *)
         
         (*ARCEcho2[examples[[All, "ObjectMapping"]]];
         Throw["HERE"];*)
@@ -4705,7 +4740,10 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             addObjects,
             outputScene,
             renderedScene,
-            colors
+            colors,
+            rows,
+            columns,
+            subOutputs
         },
         
         If [!ListQ[ruleList],
@@ -4719,6 +4757,28 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         If [TrueQ[rules["Denoise"]],
             scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
+        ];
+        
+        If [MatchQ[rules["Rules"], {Repeated[_List]}],
+            (* There is a grid of rule sets to be applied to subdivisions of the image. *)
+            rows = Length[rules["Rules"]];
+            columns = Length[rules["Rules"][[1]]];
+            subOutputs = Function[{row},
+                Function[{column},
+                    ReturnIfFailure@
+                    ARCApplyRules[
+                        scene,
+                        rules["Rules"][[row, column]]
+                    ]
+                ] /@ Range[columns]
+            ] /@ Range[rows];
+            Return[
+                ARCScene@
+                ARCCombineGridOfImages[
+                    subOutputs
+                ],
+                Module
+            ]
         ];
         
         parsedScene =
@@ -5309,6 +5369,13 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Scaled"], o
         objectOut,
         "Image" -> ARCScaleImage[objectIn["Image"], value["Factor"]]
     ]
+
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Flip"], objectIn_Association, objectOut_Association, scene_Association] :=
+    Sett[
+        objectOut,
+        "Image" -> ARCFlipImage[objectIn["Image"], value["Direction"]]
+    ]
+
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Position" -> _}], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
@@ -10536,6 +10603,50 @@ ARCTaskLog[] :=
             "CodeLength" -> 16803,
             "ExampleImplemented" -> "ff28f65a",
             "ImplementationTime" -> Quantity[0, "Hours"]
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "8be77c9e",
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "NewGeneralizedSuccesses" -> {"67a3c6ac", "68b16354", "a8c38be5", "62c24649", "67e8384a", "6d0aefbc"},
+            "NewEvaluationSuccesses" -> {"3194b014", "7953d61e", "833dafe3", "b1fc8b8e", "bc4146bd"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "67a3c6ac"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "68b16354"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "a8c38be5"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "62c24649"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "67e8384a"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 7}],
+            "CodeLength" -> 16914,
+            "ExampleImplemented" -> "6d0aefbc"
         |>
     }
 
@@ -10909,7 +11020,7 @@ tasksToMarkdown[tasks_List] :=
         StringJoin[
             "* ",
             If [FileExistsQ[FileNameJoin[{$arcDirectory, ARCTaskNotesFile[task]}]],
-                "[" <> task <> "](" <> ARCTaskNotesFile[task] <> ")"
+                "[" <> ToLowerCase[task] <> "](" <> ARCTaskNotesFile[task] <> ")"
                 ,
                 task
             ]
@@ -12604,6 +12715,12 @@ ARCInferShapeAndShapes[image_List, colors_List] :=
             ],
             "Shapes" -> Join[
                 ARCImageRotations@
+                If [Length[colors] === 1,
+                    monochrome
+                    ,
+                    image
+                ],
+                ARCImageFlips@
                 If [Length[colors] === 1,
                     monochrome
                     ,
@@ -16525,6 +16642,305 @@ ARCSortRuleScore[rule_] :=
                 Sequence @@ {-1, -1}
             ]
         }
+    ]
+
+(*!
+    \function ARCSubdivideImage
+    
+    \calltable
+        ARCSubdivideImage[image, rows, columns] '' Subdivides an image into a grid of sub-images.
+    
+    Examples:
+    
+    ARCSubdivideImage[
+        ARCParseFile["8be77c9e"][[1, "Train", 1, "Output"]],
+        2,
+        1
+    ]
+    
+    ===
+    
+    {
+        {ARCScene[{{1, 1, 0}, {1, 1, 1}, {0, 0, 0}}]},
+        {ARCScene[{{0, 0, 0}, {1, 1, 1}, {1, 1, 0}}]}
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSubdivideImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCSubdivideImage];
+ARCSubdivideImage[ARCScene[image_], rows_Integer, columns_Integer] :=
+    Module[{},
+        subImageWidth = ImageWidth[image] / columns;
+        subImageHeight = ImageHeight[image] / rows;
+        Function[{row},
+            Function[{column},
+                ARCScene[
+                    image[[
+                        Span[
+                            (row - 1) * subImageWidth + 1,
+                            row * subImageWidth
+                        ],
+                        Span[
+                            (column - 1) * subImageHeight + 1,
+                            column * subImageHeight
+                        ]
+                    ]]
+                ]
+            ] /@ Range[columns]
+        ] /@ Range[rows]
+    ]
+
+(*!
+    \function ARCImageFlips
+    
+    \calltable
+        ARCImageFlips[image] '' Given an image, produces a list of flipped versions.
+    
+    Examples:
+    
+    ARCImageFlips[{{1, -1, 1}, {-1, 1, -1}, {-1, -1, 1}}]
+    
+    ===
+    
+    {
+        <|
+            "Image" -> ARCScene[{{-1, -1, 1}, {-1, 1, -1}, {1, -1, 1}}],
+            "Direction" -> "Vertical"
+        |>,
+        <|
+            "Image" -> ARCScene[{{1, -1, 1}, {-1, 1, -1}, {1, -1, -1}}],
+            "Direction" -> "Horizontal"
+        |>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCImageFlips]
+    
+    \maintainer danielb
+*)
+Clear[ARCImageFlips];
+ARCImageFlips[imageIn_List] :=
+    Module[{image},
+        Function[{direction},
+            image = ARCFlipImage[imageIn, direction];
+            <|
+                "Image" -> ARCScene[image],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> direction|>
+            |>
+        ] /@ {"Vertical", "Horizontal"}
+    ]
+
+(*!
+    \function ARCFlipImage
+    
+    \calltable
+        ARCFlipImage[image, direction] '' Flips an image in the given direction.
+    
+    Examples:
+    
+    ARCFlipImage[{{1, 0}, {0, 1}}, "Vertical"] === {{0, 1}, {1, 0}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFlipImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCFlipImage];
+ARCFlipImage[image_List, "Vertical"] :=
+    Reverse[image]
+
+ARCFlipImage[image_List, "Horizontal"] :=
+    Map[Reverse, image]
+
+ARCFlipImage[ARCScene[image_List], direction_] :=
+    ARCScene[ARCFlipImage[image, direction]]
+
+(*!
+    \function ARCCombineGridOfImages
+    
+    \calltable
+        ARCCombineGridOfImages[gridOfImages] '' Given a grid of images, combines them into a single image.
+    
+    Examples:
+    
+    ARCCombineGridOfImages[
+        {{{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}}, {{{9, 10}, {11, 12}}, {{13, 14}, {15, 16}}}}
+    ]
+    
+    ===
+    
+    {{1, 2, 5, 6}, {3, 4, 7, 8}, {9, 10, 13, 14}, {11, 12, 15, 16}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCombineGridOfImages]
+    
+    \maintainer danielb
+*)
+Clear[ARCCombineGridOfImages];
+ARCCombineGridOfImages[gridOfImages_List] :=
+    Module[{},
+        Flatten[
+            Function[{row},
+                ARCCombineRowOfImages[
+                    gridOfImages[[row]]
+                ]
+            ] /@ Range[Length[gridOfImages]],
+            1
+        ]
+    ]
+
+(*!
+    \function ARCCombineRowOfImages
+    
+    \calltable
+        ARCCombineRowOfImages[images] '' Given a list of images, produces a new image with them side-by-side.
+    
+    Examples:
+    
+    ARCCombineRowOfImages[{{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}}] === {{1, 2, 5, 6}, {3, 4, 7, 8}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCombineRowOfImages]
+    
+    \maintainer danielb
+*)
+Clear[ARCCombineRowOfImages];
+ARCCombineRowOfImages[images: {Repeated[_List]}] :=
+    Module[{rows},
+        rows = Length[images[[1]]];
+        Function[{row},
+            Join @@ (
+                images[[All, row]]
+            )
+        ] /@ Range[rows]
+    ]
+
+ARCCombineRowOfImages[images: {Repeated[_ARCScene]}] :=
+    ARCCombineRowOfImages[
+        images[[All, 1]]
+    ]
+
+(*!
+    \function ARCFindRulesForSubdividedOutput
+    
+    \calltable
+        ARCFindRulesForSubdividedOutput[examples] '' If possible, tries to find rules by subdividing the output into a grid of sub-outputs. Returns the found rules, or Missing if not applicable.
+    
+    Examples:
+    
+    ARCFindRulesForSubdividedOutput[examples] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCFindRulesForSubdividedOutput];
+ARCFindRulesForSubdividedOutput[examples_List] :=
+    Module[
+        {
+            outputWidthExpression,
+            outputHeightExpression,
+            withAndHeightMultiples,
+            foundRulesQ = False,
+            subdividedRules,
+            examples2,
+            subRules,
+            res
+        },
+        
+        outputWidthExpression = ARCGeneralizeValue[
+            ImageWidth /@ examples[[All, "Input"]],
+            ImageWidth /@ examples[[All, "Output"]],
+            ObjectValue["InputScene", "Width"]
+        ];
+        
+        outputHeightExpression = ARCGeneralizeValue[
+            ImageHeight /@ examples[[All, "Input"]],
+            ImageHeight /@ examples[[All, "Output"]],
+            ObjectValue["InputScene", "Height"]
+        ];
+        
+        (*Echo["outputWidthExpression" -> outputWidthExpression];
+        Echo["outputHeightExpression" -> outputHeightExpression];*)
+        
+        If [SpecifiedQ[outputWidthExpression] || SpecifiedQ[outputHeightExpression],
+            withAndHeightMultiples = Replace[
+                {outputWidthExpression, outputHeightExpression},
+                {
+                    Inactive[Times[ObjectValue["InputScene", _], multiple_]] :> multiple,
+                    _Missing :> 1
+                },
+                {1}
+            ];
+            If [And[
+                    MatchQ[withAndHeightMultiples, {_Integer, _Integer}],
+                    withAndHeightMultiples =!= {1, 1}
+                ],
+                subdividedOutputs = Function[{exampleIndex},
+                    ReturnIfFailure@
+                    ARCSubdivideImage[
+                        examples[[exampleIndex, "Output"]],
+                        withAndHeightMultiples[[2]],
+                        withAndHeightMultiples[[1]]
+                    ]
+                ] /@ Range[Length[examples]];
+                
+                (*ARCEcho[subdividedOutputs];*)
+                
+                Block[{},
+                    
+                    foundRulesQ = False;
+                    
+                    subdividedRules = Function[{row},
+                        Function[{column},
+                            examples2 = examples;
+                            examples2[[All, "Output"]] = subdividedOutputs[[All, row, column]];
+                            (*ARCEcho2[examples2[[All, "Input"]] -> examples2[[All, "Output"]]];*)
+                            (*Global`examples = examples2;*)
+                            subRules = ARCFindRules[
+                                examples2,
+                                "SingleObject" -> True,
+                                "SettleForOneExamplePerRule" -> OptionValue["SettleForOneExamplePerRule"]
+                            ];
+                            (*ARCEcho[subRules];*)
+                            If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
+                                Return[Missing["NotFound"], Block]
+                            ];
+                            subRules
+                        ] /@ Range[withAndHeightMultiples[[1]]]
+                    ] /@ Range[withAndHeightMultiples[[2]]];
+                    
+                    res = <|
+                        "SceneAsSingleObject" -> True,
+                        If [SpecifiedQ[outputWidthExpression],
+                            "Width" -> outputWidthExpression
+                            ,
+                            Nothing
+                        ],
+                        If [SpecifiedQ[outputHeightExpression],
+                            "Height" -> outputHeightExpression
+                            ,
+                            Nothing
+                        ],
+                        "Rules" -> subdividedRules
+                    |>;
+                    
+                    foundRulesQ = True
+                ]
+            ]
+        ];
+        
+        If [foundRulesQ,
+            res
+            ,
+            Missing["NotFound"]
+        ]
     ]
 
 End[]

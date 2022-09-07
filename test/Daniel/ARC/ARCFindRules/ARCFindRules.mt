@@ -1932,3 +1932,254 @@ Test[
     ,
     TestID -> "ARCFindRules-20220906-I8KEGT"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "8be77c9e"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> {
+            {<|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>},
+            {
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        |>
+                    }
+                |>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-4K1SKO"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67a3c6ac"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-9K7CJL"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "68b16354"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-J2QT3W"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a8c38be5"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "RemoveEmptySpace" -> True,
+        "Background" -> 5,
+        "Rules" -> {
+            <|"Shape" -> <|"Name" -> "L"|>|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 8, "X" -> 1|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 8|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "L",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 8, "X" -> 8|>|>
+            |>,
+            <|"Shape" -> <|"Name" -> "Triangle"|>|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 8, "X" -> 4|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "Triangle",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 4, "X" -> 1|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "Triangle",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 4|>|>
+            |>,
+            <|
+                "Shape" -> <|
+                    "Name" -> "Triangle",
+                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+                |>
+            |> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 4, "X" -> 8|>|>
+            |>,
+            <|
+                "Shape" -> Alternatives[
+                    Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, 10, 10}, {-1, -1, 10}}],
+                    Daniel`ARC`ARCScene[{{10, 10}, {-1, 10}, {10, 10}}],
+                    Daniel`ARC`ARCScene[{{10, -1, 10}, {10, 10, 10}}],
+                    <|"Name" -> "Square", "Filled" -> True|>,
+                    Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, 10}}],
+                    Daniel`ARC`ARCScene[{{10, -1, -1}, {10, 10, -1}, {10, 10, 10}}],
+                    Daniel`ARC`ARCScene[{{10, 10}, {10, -1}, {10, 10}}],
+                    Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, -1}, {10, -1, -1}}],
+                    Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, 10, 10}, {10, 10, 10}}]
+                ]
+            |> -> <|
+                "Transform" -> <|"Type" -> "Delete"|>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-7UAUD5"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "62c24649"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> {
+            {
+                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                        |>
+                    }
+                |>
+            },
+            {
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        |>
+                    }
+                |>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
+                    }
+                |>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-E1JST8"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67e8384a"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> {
+            {
+                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                        |>
+                    }
+                |>
+            },
+            {
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        |>
+                    }
+                |>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
+                    }
+                |>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-7NJSQX"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6d0aefbc"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Rules" -> {
+            {
+                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|
+                            "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                        |>
+                    }
+                |>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220907-0OWD6Y"
+]
