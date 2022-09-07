@@ -92,6 +92,17 @@ Test[
     ]
     ,
     {
+        <|"Colors" -> {1}|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>,
         <|"Colors" -> {2}|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -111,17 +122,6 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
                         "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>
-                    |>
-                }
-            |>
-        |>,
-        <|"Colors" -> {1}|> -> <|
-            "Transform" -> <|
-                "Type" -> "AddComponents",
-                "Components" -> {
-                    <|
-                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
                     |>
                 }
             |>

@@ -24,6 +24,17 @@ Test[
     ]
     ,
     {
+        <|"Colors" -> {1}|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
+                    |>
+                }
+            |>
+        |>,
         <|"Colors" -> {2}|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -43,17 +54,6 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
                         "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>
-                    |>
-                }
-            |>
-        |>,
-        <|"Colors" -> {1}|> -> <|
-            "Transform" -> <|
-                "Type" -> "AddComponents",
-                "Components" -> {
-                    <|
-                        "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}],
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
                     |>
                 }
             |>
@@ -192,6 +192,7 @@ Test[
     ]
     ,
     {
+        <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
         <|"Shape" -> <|"Name" -> "Square", "Filled" -> False|>|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -211,8 +212,7 @@ Test[
                     |>
                 }
             |>
-        |>,
-        <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        |>
     }
     ,
     TestID -> "ARCFindRules-20220809-GFDCR1"
@@ -358,6 +358,7 @@ Test[
     ]
     ,
     {
+        <|"Colors" -> {1}|> -> <|"Same" -> True|>,
         <|"Colors" -> {1, 5}|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
@@ -382,8 +383,7 @@ Test[
                     |>
                 }
             |>
-        |>,
-        <|"Colors" -> {1}|> -> <|"Same" -> True|>
+        |>
     }
     ,
     TestID -> "ARCFindRules-20220817-V92ONB"
@@ -651,19 +651,6 @@ Test[
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Area.Rank" -> 2|> -> <|
-                "Shape" -> Daniel`ARC`ARCScene[
-                    {
-                        {10, -1, -1, -1, 10},
-                        {-1, 10, -1, 10, -1},
-                        {-1, -1, 10, -1, -1},
-                        {-1, 10, -1, 10, -1},
-                        {10, -1, -1, -1, 10}
-                    }
-                ],
-                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -2],
-                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -2]
-            |>,
             <|"Area.Rank" -> 1|> -> <|
                 "Shape" -> Daniel`ARC`ARCScene[
                     {
@@ -676,6 +663,19 @@ Test[
                 ],
                 "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -1],
                 "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -1]
+            |>,
+            <|"Area.Rank" -> 2|> -> <|
+                "Shape" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, -1, -1, -1, 10},
+                        {-1, 10, -1, 10, -1},
+                        {-1, -1, 10, -1, -1},
+                        {-1, 10, -1, 10, -1},
+                        {10, -1, -1, -1, 10}
+                    }
+                ],
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], -2],
+                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], -2]
             |>
         }
     |>
@@ -698,12 +698,12 @@ Test[
     ,
     {
         <|"Colors" -> {1}|> -> <|"Color" -> 5|>,
-        <|"Colors" -> {3}|> -> <|"Color" -> 4|>,
         <|"Colors" -> {2}|> -> <|"Color" -> 6|>,
-        <|"Colors" -> {8}|> -> <|"Color" -> 9|>,
+        <|"Colors" -> {3}|> -> <|"Color" -> 4|>,
+        <|"Colors" -> {4}|> -> <|"Color" -> 3|>,
         <|"Colors" -> {5}|> -> <|"Color" -> 1|>,
         <|"Colors" -> {6}|> -> <|"Color" -> 2|>,
-        <|"Colors" -> {4}|> -> <|"Color" -> 3|>,
+        <|"Colors" -> {8}|> -> <|"Color" -> 9|>,
         <|"Colors" -> {9}|> -> <|"Color" -> 8|>
     }
     ,
@@ -834,16 +834,16 @@ Test[
     ]
     ,
     {
+        <|"Colors" -> {3} | {1}|> -> <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+            "X" -> 1,
+            "X2Inverse" -> 1
+        |>,
         <|"Colors" -> {2}|> -> <|
             "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
             "Y" -> 1,
             "Y2Inverse" -> 1,
             "ZOrder" -> 1
-        |>,
-        <|"Colors" -> {3} | {1}|> -> <|
-            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
-            "X" -> 1,
-            "X2Inverse" -> 1
         |>
     }
     ,
@@ -1215,8 +1215,8 @@ Test[
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Angle" -> 90|> -> <|"Shape" -> <|"Name" -> "Line", "Angle" -> 90|>|>,
-            <|"Angle" -> 0|> -> <|"Shape" -> <|"Name" -> "Line", "Angle" -> 0|>, "ZOrder" -> 1|>
+            <|"Angle" -> 0|> -> <|"Shape" -> <|"Name" -> "Line", "Angle" -> 0|>, "ZOrder" -> 1|>,
+            <|"Angle" -> 90|> -> <|"Shape" -> <|"Name" -> "Line", "Angle" -> 90|>|>
         },
         "Groups" -> {
             <|
@@ -1367,17 +1367,21 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "913fb3ed"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "913fb3ed"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
-        <|"Image" -> Daniel`ARC`ARCScene[{{8}}]|> -> <|
+        <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, -1, 4}, {4, 4, 4}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
                         "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
                     |>
                 }
@@ -1394,12 +1398,12 @@ Test[
                 }
             |>
         |>,
-        <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|> -> <|
+        <|"Image" -> Daniel`ARC`ARCScene[{{8}}]|> -> <|
             "Transform" -> <|
                 "Type" -> "AddComponents",
                 "Components" -> {
                     <|
-                        "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, -1, 1}, {1, 1, 1}}],
+                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 4}, {4, -1, 4}, {4, 4, 4}}],
                         "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> -1|>|>
                     |>
                 }
@@ -1411,13 +1415,20 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a61ba2ce"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a61ba2ce"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
         "RemoveEmptySpace" -> True,
         "Rules" -> {
+            <|"Shape" -> <|"Name" -> "L"|>|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 1|>|>
+            |>,
             <|
                 "Shape" -> <|
                     "Name" -> "L",
@@ -1441,9 +1452,6 @@ Test[
                 |>
             |> -> <|
                 "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 3|>|>
-            |>,
-            <|"Shape" -> <|"Name" -> "L"|>|> -> <|
-                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 1|>|>
             |>
         }
     |>
@@ -1571,11 +1579,11 @@ Test[
         "SceneAsSingleObject" -> True,
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <|"Colors" -> {2}|> -> <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {-1, 5, -1}, {-1, 5, -1}}]
-            |>,
             <|"Colors" -> {1}|> -> <|
                 "Image" -> Daniel`ARC`ARCScene[{{-1, 5, -1}, {5, 5, 5}, {-1, 5, -1}}]
+            |>,
+            <|"Colors" -> {2}|> -> <|
+                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {-1, 5, -1}, {-1, 5, -1}}]
             |>,
             <|"Colors" -> {3}|> -> <|
                 "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 5}, {-1, -1, 5}, {5, 5, 5}}]
@@ -1633,24 +1641,28 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "694f12f3"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "694f12f3"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
-        <|"Area.Rank" -> 2|> -> <|
-            "Shape" -> <|
-                "Name" -> "Rectangle",
-                "Filled" -> True,
-                "Interior" -> <|"Color" -> 1|>,
-                "Border" -> <|"Color" -> 4|>
-            |>
-        |>,
         <|"Area.Rank" -> 1|> -> <|
             "Shape" -> <|
                 "Name" -> "Rectangle",
                 "Filled" -> True,
                 "Interior" -> <|"Color" -> 2|>,
+                "Border" -> <|"Color" -> 4|>
+            |>
+        |>,
+        <|"Area.Rank" -> 2|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 1|>,
                 "Border" -> <|"Color" -> 4|>
             |>
         |>
@@ -1660,25 +1672,29 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "50cb2852"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "50cb2852"]["Train"]]
+            ]
+        ]
     ]
     ,
     {
-        <|"Colors" -> {2}|> -> <|
-            "Shape" -> <|
-                "Name" -> "Rectangle",
-                "Filled" -> True,
-                "Interior" -> <|"Color" -> 8|>,
-                "Border" -> <|"Color" -> 2|>
-            |>
-        |>,
         <|"Colors" -> {1}|> -> <|
             "Shape" -> <|
                 "Name" -> "Rectangle",
                 "Filled" -> True,
                 "Interior" -> <|"Color" -> 8|>,
                 "Border" -> <|"Color" -> 1|>
+            |>
+        |>,
+        <|"Colors" -> {2}|> -> <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> <|"Color" -> 8|>,
+                "Border" -> <|"Color" -> 2|>
             |>
         |>,
         <|"Colors" -> {3}|> -> <|
@@ -1818,24 +1834,25 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "85c4e7cd"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "85c4e7cd"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Width.Rank" -> 3|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 6|>, "Color"]
+            <|"Width.InverseRank" -> 1|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {1, 1}|>, "Color"]
             |>,
-            <|"Width.Rank" -> 2|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 4|>, "Color"]
+            <|"Width.InverseRank" -> 2|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {2, 2}|>, "Color"]
             |>,
-            <|"Width.Rank" -> 1|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[
-                    <|"Shape" -> <|"Name" -> "Square", "Filled" -> True|>|>,
-                    "Color"
-                ]
+            <|"Width.InverseRank" -> 3|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
             |>,
             <|"Width.InverseRank" -> 5|> -> <|
                 "Color" -> Inactive[Plus][
@@ -1843,14 +1860,17 @@ Test[
                     -6
                 ]
             |>,
-            <|"Width.InverseRank" -> 3|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
+            <|"Width.Rank" -> 1|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[
+                    <|"Shape" -> <|"Name" -> "Square", "Filled" -> True|>|>,
+                    "Color"
+                ]
             |>,
-            <|"Width.InverseRank" -> 2|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {2, 2}|>, "Color"]
+            <|"Width.Rank" -> 2|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 4|>, "Color"]
             |>,
-            <|"Width.InverseRank" -> 1|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {1, 1}|>, "Color"]
+            <|"Width.Rank" -> 3|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 6|>, "Color"]
             |>
         }
     |>
@@ -1870,8 +1890,8 @@ Test[
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Area.Rank" -> Missing[]|> -> <|"ZOrder" -> 0|>,
-            <|"Area.Rank" -> 1|> -> <|"ZOrder" -> 1|>
+            <|"ZOrder" -> 0|> -> <|"ZOrder" -> 1|>,
+            <|"ZOrder" -> 1|> -> <|"ZOrder" -> 0|>
         }
     |>
     ,

@@ -408,6 +408,10 @@ ARCMXFile::usage = "ARCMXFile  "
 
 ARCMXGet::usage = "ARCMXGet  "
 
+ARCSortRules::usage = "ARCSortRules  "
+
+ARCSortRuleScore::usage = "ARCSortRuleScore  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -834,6 +838,10 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             ]
         ];
         
+        If [TrueQ[OptionValue["InferPropertiesThatRequireFullObjectList"]],
+            objects = ARCInferPropertiesThatRequireFullObjectList[objects]
+        ];
+        
         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
         
         (* If [TrueQ[OptionValue["FormMultiColorCompositeObjects"]] =!= False,
@@ -967,10 +975,6 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
         objects = Join[gridsAndDividers, objects];
         
         objects = ARCInferColorCountPropertyValues[objects, scene];
-        
-        If [TrueQ[OptionValue["InferPropertiesThatRequireFullObjectList"]],
-            objects = ARCInferPropertiesThatRequireFullObjectList[objects]
-        ];
         
         (*ARCEcho[SimplifyObjects[objects]];*)
         
@@ -4885,19 +4889,37 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
     ]
 
 ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
-    Module[{object = objectIn},
-        Function[{rule},
-            object = Replace[
-                ReturnIfFailure[ARCApplyRules[object, rule, scene]],
-                Nothing :> Return[Nothing, Module]
-            ];
-            If [object =!= objectIn,
+    Module[{object = objectIn, matchingRules},
+        
+        matchingRules = Select[
+            rules,
+            And[
+                MatchQ[#, _Rule],
+                MatchQ[
+                    object,
+                    ARCRuleToPattern[#[[1]]]
+                ]
+            ] &
+        ];
+        
+        If [MatchQ[matchingRules, {_, __}],
+            (* If there are multiple matching rules, we want to apply the most specific
+               one. e.g. ARCApplyRules-20220906-3546LC (a61ba2ce) *)
+            matchingRules =
+                Reverse@
+                SortBy[
+                    matchingRules,
+                    ARCExpressionComplexity
+                ]
+        ];
+        
+        If [MatchQ[matchingRules, {__}],
+            object =
                 (* For now, we will only allow one rule to be applied to an object. A case where
                    this is needed is d511f180, otherwise one rule changes an object's color,
-                   and the next rule changes it back. *)
-                Return[object, Module]
-            ]
-        ] /@ rules;
+                   and the next rule changes it back. ARCApplyRules-20220906-3546LC *)
+                ReturnIfFailure[ARCApplyRules[object, matchingRules[[1]], scene]]
+        ];
         
         object
     ]
@@ -4906,14 +4928,10 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
     Module[{object = objectIn, pattern = rule[[1]], conclusion = rule[[2]]},
         
         If [And[
-                Or[
-                    (* Does this pattern apply to all objects? *)
-                    pattern === <||>,
-                    (* Does this pattern match our object? *)
-                    MatchQ[
-                        objectIn,
-                        ARCRuleToPattern[pattern]
-                    ]
+                (* Does this pattern match our object? *)
+                MatchQ[
+                    objectIn,
+                    ARCRuleToPattern[pattern]
                 ],
                 !MatchQ[conclusion, KeyValuePattern["Same" -> True]]
             ],
@@ -10753,7 +10771,7 @@ ARCCleanRules[rulesIn_List, objects_List] :=
         
         rules = ARCFormExceptRules[rules, objects];
         
-        rules
+        ARCSortRules[rules]
     ]
 
 ARCCleanRules[rules_Association, objects_List] :=
@@ -11772,6 +11790,8 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
 Clear[ARCRuleToPattern];
 ARCRuleToPattern[pattern_ -> _] :=
     ARCRuleToPattern[pattern]
+
+ARCRuleToPattern[<||>] := _
 
 ARCRuleToPattern[pattern_] :=
     Module[{pattern2},
@@ -16438,6 +16458,73 @@ ARCMXGet[] :=
         Get[ARCMXFile[]];
         
         $ContextPath = $mxContextPath;
+    ]
+
+(*!
+    \function ARCSortRules
+    
+    \calltable
+        ARCSortRules[rules] '' Given a list of rules, tries to sort them in a nice way.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSortRules]
+    
+    \maintainer danielb
+*)
+Clear[ARCSortRules];
+ARCSortRules[rules_List] :=
+    Module[{pattern},
+        SortBy[
+            rules,
+            ARCSortRuleScore
+        ]
+    ]
+
+(*!
+    \function ARCSortRuleScore
+    
+    \calltable
+        ARCSortRuleScore[rule] '' Given a rule, returns a list of integers used to sort rules.
+    
+    Examples:
+    
+    ARCSortRuleScore[rule] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCSortRuleScore];
+ARCSortRuleScore[rule_] :=
+    Module[{firstCondition},
+        {
+            Replace[rule, {_Rule -> 0, _ :> 1}],
+            If [MatchQ[rule, _Rule],
+                pattern = Normal[rule][[1]];
+                If [pattern === {},
+                    Sequence @@ {1, -1}
+                    ,
+                    firstCondition = pattern[[1]];
+                    Sequence @@ {
+                        2,
+                        firstCondition[[1]],
+                        Replace[
+                            firstCondition[[2]],
+                            {
+                                _Except -> {999},
+                                True -> 1,
+                                False -> 2
+                            }
+                        ]
+                    }
+                ]
+                ,
+                Sequence @@ {-1, -1}
+            ]
+        }
     ]
 
 End[]

@@ -101,3 +101,11 @@ Test[
     ,
     TestID -> "ARCRuleToPattern-20220905-8BG23J"
 ]
+
+Test[
+    Daniel`ARC`ARCRuleToPattern[<||>]
+    ,
+    _
+    ,
+    TestID -> "ARCRuleToPattern-20220906-YCJSGP"
+]

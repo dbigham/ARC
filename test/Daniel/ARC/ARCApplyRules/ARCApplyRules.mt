@@ -163,3 +163,17 @@ Test[
     ,
     TestID -> "ARCApplyRules-20220819-AU0PQC"
 ]
+
+Test[
+    With[
+        {parsedFile = Daniel`ARC`ARCParseFile[file = "a61ba2ce"]},
+        Daniel`ARC`ARCApplyRules[
+            parsedFile["Train", 1, "Input"],
+            Utility`ReturnIfFailure[Daniel`ARC`ARCFindRules[parsedFile["Train"]]]
+        ]
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{8, 8, 2, 2}, {8, 0, 0, 2}, {3, 0, 0, 1}, {3, 3, 1, 1}}]
+    ,
+    TestID -> "ARCApplyRules-20220906-3546LC"
+]
