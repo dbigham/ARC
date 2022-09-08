@@ -18,7 +18,9 @@
 * We parse the input and output scenes into objects.
 * In the output scenes, the multi-color objects are parsed into a form that specifies their colored components:
 
+
 ![image 1](image1.png?raw=true)
+
 
 #### Mapping Input Objects to Output Objects
 
@@ -27,7 +29,9 @@ In cases where an output object contains a component which was an object in the 
 e.g.
 
 
+
 ![image 2](image2.png?raw=true)
+
 
 #### Finding Rules from Object Mappings
 

@@ -90,3 +90,24 @@ Test[
     ,
     TestID -> "ARCImageScalings-20220904-OV6BCS"
 ]
+
+Test[
+    Daniel`ARC`ARCImageScalings[{{1}}, "IncludeNoopTransforms" -> True]
+    ,
+    {
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1}}],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 1.|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}}],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>
+    }
+    ,
+    TestID -> "ARCImageScalings-20220908-41566E"
+]

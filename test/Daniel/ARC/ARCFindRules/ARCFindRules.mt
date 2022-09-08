@@ -2183,3 +2183,42 @@ Test[
     ,
     TestID -> "ARCFindRules-20220907-0OWD6Y"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "46442a0e"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> {
+            {
+                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
+                    }
+                |>
+            },
+            {
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>|>
+                    }
+                |>,
+                <|
+                    "SceneAsSingleObject" -> True,
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
+                    }
+                |>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220908-R8EBWK"
+]

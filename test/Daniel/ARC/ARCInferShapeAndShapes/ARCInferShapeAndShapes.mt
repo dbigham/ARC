@@ -32,6 +32,14 @@ Test[
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
             <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
                 "Image" -> Daniel`ARC`ARCScene[
                     {
                         {10, 10, 10, 10, 10, 10},
@@ -95,6 +103,14 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{1, -1, -1}, {1, -1, -1}, {1, 2, 2}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{2, -1, -1}, {2, -1, -1}, {1, 1, 1}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {-1, -1, 2}, {-1, -1, 2}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
             |>,
             <|
                 "Image" -> Daniel`ARC`ARCScene[

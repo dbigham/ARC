@@ -424,6 +424,14 @@ ARCCombineRowOfImages::usage = "ARCCombineRowOfImages  "
 
 ARCFindRulesForSubdividedOutput::usage = "ARCFindRulesForSubdividedOutput  "
 
+ARCChooseTransform::usage = "ARCChooseTransform  "
+
+ARCImageShapes::usage = "ARCImageShapes  "
+
+ARCCommunityRiddlePage::usage = "ARCCommunityRiddlePage  "
+
+ARCTaskNotesMarkdownURL::usage = "ARCTaskNotesMarkdownURL  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -454,6 +462,7 @@ EntityName = EntityLink`EntityName;
 EntityMatchQ = EntityLink`EntityMatchQ;
 SectionCellObject = DevTools`NotebookTools`SectionCellObject;
 MoveNotebook = DevTools`NotebookTools`MoveNotebook;
+FilterOptions = Utility`FilterOptions;
 
 With[{contexts = ERP`MX`MXContexts[]},
     With[{contexts2 = DeleteDuplicates[Append[contexts, "Daniel`"]]},
@@ -1829,13 +1838,7 @@ ARCClassifyShape[image_List, OptionsPattern[]] :=
     Module[{},
         {
             If [TrueQ[OptionValue["IncludeImageShapes"]],
-                With[{monochrome = ARCToMonochrome[image, $nonImageColor]},
-                    Join[
-                        ARCImageRotations[monochrome],
-                        ARCImageFlips[monochrome],
-                        ARCImageScalings[monochrome]
-                    ]
-                ]
+                ARCImageShapes[image]
                 ,
                 Nothing
             ],
@@ -2956,67 +2959,71 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         ];
         
         (* Look for an image transformation. (e.g. rotation) *)
-        imageShapes = With[{objectImageShape = ARCObjectImageShape[object]},
-            Select[
-                Cases[
+        
+        outputObjectAtPosition =
+            With[{objectShapeImage = ARCObjectImageShape[object]},
+                SelectFirst[
+                    objectsToMapTo,
+                    And[
+                        #["Position"] == object["Position"],
+                        (* Discard cases where the "transformed" image-shape is actually
+                           the same as our object's image-shape. For example, if a vertical
+                           or horizontal flip of our image is exactly the same as the image
+                           itself due to our object being symmetrical, then for now we'll
+                           avoid assuming that the object has been flipped, as that would be
+                           extremely presumptuous. That said, there may be cases where it
+                           _was_ flipped, so we'll need to put some more thought into how
+                           to support those cases.
+                           NOTE: Now that ARCImageFlips (etc) by default doesn't include
+                                 no-op transforms, this condition is perhaps no longer
+                                 needed here. *)
+                        ARCObjectImageShape[#] =!= objectShapeImage
+                    ] &
+                ]
+            ];
+        
+        If [!MissingQ[outputObjectAtPosition],
+            
+            imageShapes = With[
+                {
+                    outputObjectShapeImage = ARCObjectImageShape[outputObjectAtPosition]
+                },
+                Select[
                     object["Shapes"],
-                    KeyValuePattern[{"Image" -> _, "Transform" -> _}]][[All, "Image"]
-                ],
-                (* Discard cases where the "transformed" image-shape is actually the same as our
-                   object's image-shape. For example, if a vertical or horizontal flip of our
-                   image is exactly the same as the image itself due to our object being
-                   symmetrical, then for now we'll avoid assuming that the object has been
-                   flipped, as that would be extremely presumptuous. That said, there may
-                   be cases where it _was_ flipped, so we'll need to put some more thought
-                   into how to support those cases. *)
-                # =!= objectImageShape &
-            ]
-        ];
-        SelectFirst[
-            objectsToMapTo,
-            Function[{outputObject},
-                With[{outputObjectShapeImage = ARCObjectImageShape[outputObject]},
-                    If [And[
-                            outputObject["Position"] == object["Position"],
-                            !MissingQ[
-                                matchingTransformImage = FirstCase[
-                                    imageShapes,
-                                    outputObjectShapeImage
-                                ]
-                            ]
-                        ],
-                        (* We've found that this image in the output is a transformation of an object
-                           in the input. *)
-                        Return[
-                            object -> Append[
-                                outputObject,
-                                "Transform" -> Replace[
-                                    FirstCase[
-                                        object["Shapes"],
-                                        KeyValuePattern[
-                                            {
-                                                "Image" -> outputObjectShapeImage,
-                                                "Transform" -> _
-                                            }
-                                        ]
-                                    ]["Transform"],
-                                    {
-                                        assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
-                                            (* The angle specified in Shapes is the angle needed to
-                                               transform the image in Shapes to the image of the
-                                               object in the training example. We want the inverse
-                                               angle for transforming an input to an output. *)
-                                            Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
-                                        ),
-                                        assoc:KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}] :> (
-                                            Sett[assoc, "Factor" -> N[1 / assoc["Factor"]]]
-                                        )
-                                    }
-                                ]
-                            ],
-                            Module
+                    MatchQ[
+                        #,
+                        KeyValuePattern[
+                            {
+                                "Image" -> outputObjectShapeImage,
+                                "Transform" -> _
+                            }
                         ]
-                    ]
+                    ] &
+                ]
+            ];
+            
+            If [imageShapes =!= {},
+                Return[
+                    object -> Append[
+                        outputObjectAtPosition,
+                        "Transforms" -> Replace[
+                            imageShapes[[All, "Transform"]],
+                            {
+                                assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
+                                    (* The angle specified in Shapes is the angle needed to
+                                       transform the image in Shapes to the image of the
+                                       object in the training example. We want the inverse
+                                       angle for transforming an input to an output. *)
+                                    Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
+                                ),
+                                assoc:KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}] :> (
+                                    Sett[assoc, "Factor" -> N[1 / assoc["Factor"]]]
+                                )
+                            },
+                            {1}
+                        ]
+                    ],
+                    Module
                 ]
             ]
         ];
@@ -3048,16 +3055,18 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 (* There's a single object in the output with this color + shape, so we'll treat
                    this as a moved object. *)
                 mappedToObject = possibleMatches[[1]];
-                mappedToObject["Transform"] = <|
-                    "Type" -> "Move",
-                    "Position" -> ToXY @ mappedToObject["Position"],
-                    "Offset" -> ToXY[mappedToObject["Position"] - object["Position"], "RemoveZeroes" -> True],
-                    If [TrueQ[removeEmptySpaceQ],
-                        "RemoveEmptySpace" -> True
-                        ,
-                        Nothing
-                    ]
-                |>;
+                mappedToObject["Transforms"] = {
+                    <|
+                        "Type" -> "Move",
+                        "Position" -> ToXY @ mappedToObject["Position"],
+                        "Offset" -> ToXY[mappedToObject["Position"] - object["Position"], "RemoveZeroes" -> True],
+                        If [TrueQ[removeEmptySpaceQ],
+                            "RemoveEmptySpace" -> True
+                            ,
+                            Nothing
+                        ]
+                    |>
+                };
                 Return[object -> mappedToObject, Module],
             MatchQ[possibleMatches, {_, __}],
                 (* There are multiple objects in the output with this color + shape, so it's
@@ -3085,11 +3094,13 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                                         possibleMatches,
                                         #["Position"] === inputObject["Position"] + offset &
                                     ];
-                                mappedToObject["Transform"] = <|
-                                    "Type" -> "Move",
-                                    "Position" -> ToXY @ mappedToObject["Position"],
-                                    "Offset" -> ToXY[offset, "RemoveZeroes" -> True]
-                                |>;
+                                mappedToObject["Transforms"] = {
+                                    <|
+                                        "Type" -> "Move",
+                                        "Position" -> ToXY @ mappedToObject["Position"],
+                                        "Offset" -> ToXY[offset, "RemoveZeroes" -> True]
+                                    |>
+                                };
                                 inputObject -> mappedToObject
                             ] /@ inputsObjectsOfType,
                             Module
@@ -3266,7 +3277,7 @@ SimplifyObjects["Expression" -> expr_, OptionsPattern[]] :=
                 temporaryAssociationSymbol[___, "UUID" -> _, ___],
                 temporaryAssociationSymbol[___, "Image" -> _ARCScene, ___]
              ] :>
-                KeyTake[Association @@ object, {"Image", "Position", "Transform", Sequence @@ OptionValue["ExtraKeys"]}],
+                KeyTake[Association @@ object, {"Image", "Position", "Transform", "Transforms", Sequence @@ OptionValue["ExtraKeys"]}],
             {0, Infinity}
         ]
     ]
@@ -3375,7 +3386,8 @@ ARCPruneOutputsForRuleFinding[objectMappings_Association, exampleIndex_Integer] 
                                     "Width",
                                     "Height",
                                     "ZOrder",
-                                    "Transform"
+                                    "Transform",
+                                    "Transforms"
                                 }
                             ],
                             <|
@@ -3883,8 +3895,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* HEREF *)
         
-        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
-        Throw["HERE"];*)
+        (*ARCEcho2[examples[[All, "ObjectMapping"]]];*)
+        (*Throw["HERE"];*)
         
         (*ARCEcho[examples[[1, "ObjectMapping"]]];
         Throw["HERE"];*)
@@ -4057,7 +4069,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
         
         (*Echo[Length[inputObjectsNeedingMapping]];*)
         
-        (*EchoIndented[Counts[preRules[[All, 2, "Transform"]]]];*)
+        (*EchoIndented[Counts[preRules[[All, 2, "Transforms"]]]];*)
         
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
@@ -4096,10 +4108,10 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
         If [And[
                 MatchQ[
                     preRules[[All, 2]],
-                    {KeyValuePattern["Transform" -> _]..}
+                    {KeyValuePattern["Transforms" -> {_}]..}
                 ],
                 MatchQ[
-                    transform = DeleteDuplicates[preRules[[All, 2, "Transform"]]],
+                    transform = DeleteDuplicates[preRules[[All, 2, "Transforms", 1]]],
                     {_}
                 ]
             ],
@@ -4191,7 +4203,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"FilledArea"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -4421,9 +4433,12 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         If [And[
                 Length[unhandled] > 0 &&
                 property =!= None &&
-                (* All of the leftover mappings have been transformed by the same
-                   type of operation. *)
-                Length[DeleteDuplicates[unhandled[[All, "Transform", "Type"]]]] === 1
+                (
+                    unhandled = ReturnIfFailure[ARCChooseTransform[unhandled]];
+                    (* All of the leftover mappings have been transformed by the same
+                       type of operation. *)
+                    Length[DeleteDuplicates[unhandled[[All, "Transform", "Type"]]]] === 1
+                )
             ],
             
             (* We have mappings/conclusions that we weren't able to create rules for using
@@ -4524,6 +4539,15 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
         (* HERE0 *)
         
         (*ARCEcho2[conclusionGroup];*)
+        
+        (* Resolve "Transforms" lists to single "Transform" choices, trying to select transforms
+           that are common to all conclusions. *)
+        conclusionGroup =
+            ReturnIfFailure@
+            ARCChooseTransform[conclusionGroup];
+        
+        (*ARCEcho2[conclusionGroup];*)
+        
         (*ARCEcho[Values[conclusionGroup][[All, "Shape"]]];*)
         (*ARCEcho[conclusionGroup];*)
         
@@ -5810,22 +5834,24 @@ ARCTest[file_String, opts:OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCImageRotations];
-ARCImageRotations[imageIn_List] :=
+Options[ARCImageRotations] =
+{
+    "IncludeNoopTransforms" -> False        (*< Should we include image transforms that result in the image not changing? e.g. A horizontal flip for an image that has vertical line symmetry. *)
+};
+ARCImageRotations[imageIn_List, OptionsPattern[]] :=
     Module[{image = imageIn},
-        Join[
-            {
-                <|"Image" -> ARCScene[image]|>
-            },
-            Function[{angle},
-                (* Rotate by 90 degrees. *)
-                image = RotateImage[image, 90];
-                If [image =!= imageIn,
-                    <|"Image" -> ARCScene[image], "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>|>
-                    ,
-                    Nothing
-                ]
-            ] /@ {270, 180, 90}
-        ]
+        Function[{angle},
+            (* Rotate by 90 degrees. *)
+            image = RotateImage[image, 90];
+            If [Or[
+                    TrueQ[OptionValue["IncludeNoopTransforms"]],
+                    image =!= imageIn
+                ],
+                <|"Image" -> ARCScene[image], "Transform" -> <|"Type" -> "Rotation", "Angle" -> angle|>|>
+                ,
+                Nothing
+            ]
+        ] /@ {270, 180, 90}
     ]
 
 (*!
@@ -6551,6 +6577,21 @@ $transformTypes = <|
                 }
             |>,
             "BlockedBy" -> <||>
+        }
+    |>,
+    "Rotation" -> <|
+        "MinimalPropertySets" -> {
+            {"Angle"}
+        }
+    |>,
+    "Flip" -> <|
+        "MinimalPropertySets" -> {
+            {"Direction"}
+        }
+    |>,
+    "Scaled" -> <|
+        "MinimalPropertySets" -> {
+            {"Factor"}
         }
     |>,
     "AddComponents" -> <|
@@ -8578,20 +8619,31 @@ ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
         examples = Function[{example},
             Replace[
                 example,
-                objectMapping:KeyValuePattern[inputObject_ -> outputObject:KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "Move"]]] :> (
+                objectMapping:KeyValuePattern[inputObject_ -> outputObject:KeyValuePattern["Transforms" -> {___, KeyValuePattern["Type" -> "Move"], ___}]] :> (
                     If [!MatchQ[outputObject, KeyValuePattern["Transform" -> KeyValuePattern[{"Offset" -> <||>, "RemoveEmptySpace" -> True}]]],
                         Sett[
                             objectMapping,
                             inputObject -> Sett[
                                 outputObject,
-                                "Transform" -> ARCAddMoveAttributes[
-                                    inputObject,
-                                    outputObject,
-                                    example["Output", "Objects"],
-                                    example["Output", "Scene"],
-                                    ARCColorToInteger[example["Output", "Background"]],
-                                    referenceableOutputObjects
-                                ]
+                                "Transforms" ->
+                                    Function[{transform},
+                                        If [And[
+                                                MatchQ[transform, KeyValuePattern["Type" -> "Move"]],
+                                                !MatchQ[transform, KeyValuePattern[{"Offset" -> <||>, "RemoveEmptySpace" -> True}]]
+                                            ],
+                                            ARCAddMoveAttributes[
+                                                transform,
+                                                inputObject,
+                                                outputObject,
+                                                example["Output", "Objects"],
+                                                example["Output", "Scene"],
+                                                ARCColorToInteger[example["Output", "Background"]],
+                                                referenceableOutputObjects
+                                            ]
+                                            ,
+                                            transform
+                                        ]
+                                    ] /@ outputObject["Transforms"]
                             ]
                         ]
                         ,
@@ -8605,7 +8657,7 @@ ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
         examples
     ]
 
-ARCAddMoveAttributes[inputObject_Association, outputObject_Association, outputObjects_List, scene_ARCScene, backgroundColor_Integer, referenceableOutputObjects_Association] :=
+ARCAddMoveAttributes[transform_Association, inputObject_Association, outputObject_Association, outputObjects_List, scene_ARCScene, backgroundColor_Integer, referenceableOutputObjects_Association] :=
     Module[
         {
             dx,
@@ -8669,7 +8721,7 @@ ARCAddMoveAttributes[inputObject_Association, outputObject_Association, outputOb
                         (* For now we'll take the first matching reference. *)
                         Return[
                             Append[
-                                outputObject["Transform"],
+                                transform,
                                 "BlockedBy" -> reference
                             ],
                             Module
@@ -8680,7 +8732,7 @@ ARCAddMoveAttributes[inputObject_Association, outputObject_Association, outputOb
         ];
         
         (* Fallthrough. No metdata added. *)
-        outputObject["Transform"]
+        transform
     ]
 
 (*!
@@ -9383,6 +9435,9 @@ ARCNotebook[fileIn_String] :=
                         "PersonalTrainingExample" -> Text["Personal example"],
                         _ :> Nothing
                     }
+                ],
+                With[{luiString = "arc riddle '" <> file <> "'"},
+                    InputCell[HoldComplete[Lui`UI`Lui[luiString]]]
                 ],
                 Section["Example"],
                 InputCell[HoldComplete[ARCParseFile[DevTools`NotebookTools`NotebookTitle[]]]],
@@ -10647,6 +10702,33 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 7}],
             "CodeLength" -> 16914,
             "ExampleImplemented" -> "6d0aefbc"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 8}],
+            "RuntimeParallel" -> Quantity[11, "Minutes"],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 17245,
+            "ExampleImplemented" -> "46442a0e",
+            "NewGeneralizedSuccesses" -> {"6fa7a44f", "7fe24cdd", "c9e6f938"},
+            "NewEvaluationSuccesses" -> {"00576224", "59341089", "c48954c1"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 8}],
+            "CodeLength" -> 17245,
+            "ExampleImplemented" -> "6fa7a44f"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 8}],
+            "CodeLength" -> 17245,
+            "ExampleImplemented" -> "7fe24cdd"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 8}],
+            "CodeLength" -> 17245,
+            "ExampleImplemented" -> "c9e6f938"
         |>
     }
 
@@ -12693,7 +12775,11 @@ ARCRotateShapeAssociations[shapes_, angle_, image_] :=
     \maintainer danielb
 *)
 Clear[ARCInferShapeAndShapes];
-ARCInferShapeAndShapes[image_List, colors_List] :=
+Options[ARCInferShapeAndShapes] =
+{
+    "IncludeNoopTransforms" -> False        (*< Should we include image transforms that result in the image not changing? e.g. A horizontal flip for an image that has vertical line symmetry. *)
+};
+ARCInferShapeAndShapes[image_List, colors_List, OptionsPattern[]] :=
     Module[
         {
             monochrome = ARCToMonochrome[image, $nonImageColor],
@@ -12713,27 +12799,11 @@ ARCInferShapeAndShapes[image_List, colors_List] :=
                     list_List :> First[ARCPruneAlternatives[list, "Shapes", "Most" -> "Specific"]]
                 }
             ],
-            "Shapes" -> Join[
-                ARCImageRotations@
-                If [Length[colors] === 1,
-                    monochrome
-                    ,
-                    image
-                ],
-                ARCImageFlips@
-                If [Length[colors] === 1,
-                    monochrome
-                    ,
-                    image
-                ],
-                ARCImageScalings@
-                If [Length[colors] === 1,
-                    monochrome
-                    ,
-                    image
-                ],
-                shapes
-            ]
+            "Shapes" ->
+                Join[
+                    ARCImageShapes[image, "Monochrome" -> monochrome, "Colors" -> colors],
+                    shapes
+                ]
         |>
     ]
 
@@ -15907,12 +15977,16 @@ ARCUpdateReadme[] :=
     \maintainer danielb
 *)
 Clear[ARCImageScalings];
-ARCImageScalings[image_List] :=
+Options[ARCImageScalings] =
+{
+    "IncludeNoopTransforms" -> False        (*< Should we include image transforms that result in the image not changing? e.g. A horizontal flip for an image that has vertical line symmetry. *)
+};
+ARCImageScalings[image_List, OptionsPattern[]] :=
     Module[{scaledImage, width = ImageWidth[image], height = ImageHeight[image]},
         Function[{factor},
             scaledImage = Null;
             If [Or[
-                    factor > 1,
+                    factor >= 1,
                     And[
                         factor < 1,
                         width * factor >= 1,
@@ -15937,7 +16011,18 @@ ARCImageScalings[image_List] :=
                 ,
                 Nothing
             ]
-        ] /@ {0.25, 0.33333333333333333333333, 0.5, 2, 3}
+        ] /@ {
+            0.25,
+            0.33333333333333333333333,
+            0.5,
+            If [TrueQ[OptionValue["IncludeNoopTransforms"]],
+                1
+                ,
+                Nothing
+            ],
+            2,
+            3
+        }
     ]
 
 (*!
@@ -16724,14 +16809,25 @@ ARCSubdivideImage[ARCScene[image_], rows_Integer, columns_Integer] :=
     \maintainer danielb
 *)
 Clear[ARCImageFlips];
-ARCImageFlips[imageIn_List] :=
+Options[ARCImageFlips] =
+{
+    "IncludeNoopTransforms" -> False        (*< Should we include image transforms that result in the image not changing? e.g. A horizontal flip for an image that has vertical line symmetry. *)
+};
+ARCImageFlips[imageIn_List, OptionsPattern[]] :=
     Module[{image},
         Function[{direction},
             image = ARCFlipImage[imageIn, direction];
-            <|
-                "Image" -> ARCScene[image],
-                "Transform" -> <|"Type" -> "Flip", "Direction" -> direction|>
-            |>
+            If [Or[
+                    TrueQ[OptionValue["IncludeNoopTransforms"]],
+                    image =!= imageIn
+                ],
+                <|
+                    "Image" -> ARCScene[image],
+                    "Transform" -> <|"Type" -> "Flip", "Direction" -> direction|>
+                |>
+                ,
+                Nothing
+            ]
         ] /@ {"Vertical", "Horizontal"}
     ]
 
@@ -16942,6 +17038,274 @@ ARCFindRulesForSubdividedOutput[examples_List] :=
             Missing["NotFound"]
         ]
     ]
+
+(*!
+    \function ARCChooseTransform
+    
+    \calltable
+        ARCChooseTransform[conclusions] '' Given a group of conclusions, if they each specify a Transforms list, try to resolve that down to a specific single Transform for each.
+    
+    Examples:
+    
+    ARCChooseTransform[
+        {
+            <|"Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 90|>}|>,
+            <|"Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 90|>}|>,
+            <|"Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 90|>}|>
+        }
+    ]
+    
+    ===
+    
+    {
+        <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
+        <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
+        <|"Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCChooseTransform]
+    
+    \maintainer danielb
+*)
+Clear[ARCChooseTransform];
+Options[ARCChooseTransform] =
+{
+    "FallbackToPruning" -> True,                (*< If we can't find a common transform, should we fall back to just pruning each Transforms list to a single transform? If False and we can't find a common transform, we return Missing. *)
+    "NoopTransformsAlreadyPresent" -> False     (*< Should we assume that images already have their "Transforms" list populated with "no-op" transforms that resulted in the same image? *)
+};
+ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
+    Module[
+        {
+            conclusions = conclusionsIn,
+            intersection,
+            commonType,
+            conclusionsWithNoopTransforms
+        },
+        
+        (* No transforms? *)
+        If [MatchQ[DeleteDuplicates[conclusionsIn[[All, "Transforms"]]], {_Missing}],
+            Return[conclusionsIn, Module]
+        ];
+        
+        (* One transform each. Use that transform.*)
+        If [MatchQ[conclusions, {Repeated[KeyValuePattern["Transforms" -> {_}]]}],
+            Return[
+                Replace[
+                    conclusions,
+                    conclusion_Association :> KeyDrop[
+                        Append[conclusion, "Transform" -> conclusion[["Transforms", 1]]],
+                        "Transforms"
+                    ],
+                    {1}
+                ],
+                Module
+            ]
+        ];
+        
+        (* Some have multiple possible transformations. Try to find a common transformation. *)
+        If [MatchQ[conclusions, {Repeated[KeyValuePattern["Transforms" -> {__}]]}],
+            
+            (* Is there a transform common to all? *)
+            intersection = Intersection @@ conclusions[[All, "Transforms"]];
+            If [intersection =!= {},
+                (* Arbitrarily use the first common transform we find. *)
+                conclusions[[All, "Transform"]] = First[intersection];
+                Return[
+                    KeyDrop[conclusions, "Transforms"],
+                    Module
+                ]
+            ];
+            
+            (* Is there a transform type to all? *)
+            intersection = Intersection @@ conclusions[[All, "Transforms", All, "Type"]];
+            If [intersection =!= {},
+                (* Arbitrarily use the first transform of the given type for each. *)
+                commonType = intersection[[1]];
+                conclusions =
+                    Function[{conclusion},
+                        Sett[
+                            conclusion,
+                            "Transform" -> SelectFirst[conclusion["Transforms"], #["Type"] === commonType &]
+                        ]
+                    ] /@ conclusions;
+                Return[
+                    KeyDrop[conclusions, "Transforms"],
+                    Module
+                ]
+            ];
+        ];
+        
+        (*Global`djb = conclusionsIn;
+        ARCEcho2[conclusionsIn];*)
+        
+        (* For each conclusion, add in "no-op" transforms incase that allows us to find a
+           common transform. *)
+        If [!TrueQ[OptionValue["NoopTransformsAlreadyPresent"]],
+            
+            conclusionsWithNoopTransforms =
+                Function[{conclusion},
+                    If [MissingQ[conclusion["Transforms"]] && !MissingQ[conclusion["Image"]],
+                        Append[
+                            conclusion,
+                            "Transforms" -> Select[
+                                ARCImageShapes[
+                                    conclusion["Image"],
+                                    "IncludeBaseShape" -> False,
+                                    "IncludeNoopTransforms" -> True
+                                ],
+                                #["Image"] == conclusion["Image"] &
+                            ][[All, "Transform"]]
+                        ]
+                        ,
+                        conclusion
+                    ]
+                ] /@ conclusions;
+            
+            ReturnIfNotMissing[
+                ARCChooseTransform[
+                    conclusionsWithNoopTransforms,
+                    "NoopTransformsAlreadyPresent" -> True,
+                    "FallbackToPruning" -> False
+                ]
+            ]
+        ];
+        
+        If [TrueQ[OptionValue["FallbackToPruning"]],
+            (* Our last approach is to choose the first transform from each list. *)
+            conclusions =
+                Function[{conclusion},
+                    If [MatchQ[conclusion, KeyValuePattern["Transforms" -> {__}]],
+                        Sett[
+                            conclusion,
+                            "Transform" -> First[conclusion["Transforms"]]
+                        ]
+                        ,
+                        conclusion
+                    ]
+                ] /@ conclusions;
+            
+            KeyDrop[conclusions, "Transforms"]
+            ,
+            Missing["NoCommonTransformFound"]
+        ]
+    ]
+
+(*!
+    \function ARCImageShapes
+    
+    \calltable
+        ARCImageShapes[image] '' Given an object image, returns the associated 'image shapes', including transforms from other image shapes.
+    
+    Examples:
+    
+    ARCImageShapes[{{1}}]
+    
+    ===
+    
+    {
+        <|"Image" -> ARCScene[{{10}}]|>,
+        <|
+            "Image" -> ARCScene[{{10, 10}, {10, 10}}],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+        |>,
+        <|
+            "Image" -> ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCImageShapes]
+    
+    \maintainer danielb
+*)
+Clear[ARCImageShapes];
+Options[ARCImageShapes] =
+{
+    "IncludeBaseShape" -> True,             (*< Should we include the base image shape that hasn't had any transforms applied? *)
+    "IncludeNoopTransforms" -> False,       (*< Should we include image transforms that result in the image not changing? e.g. A horizontal flip for an image that has vertical line symmetry. *)
+    "Monochrome" -> Automatic,              (*< The monochrome image if known. *)
+    "Colors" -> Automatic                   (*< The colors used by the image. *)
+};
+ARCImageShapes[image_List, opts:OptionsPattern[]] :=
+    Module[{colors, imageShape},
+        
+        colors = Replace[
+            OptionValue["Colors"],
+            Automatic -> ARCImageColors[image]
+        ];
+        
+        imageShape =
+            If [Length[colors] === 1,
+                Replace[
+                    OptionValue["Monochrome"],
+                    Automatic -> ARCToMonochrome[image, $nonImageColor]
+                ]
+                ,
+                image
+            ];
+        
+        Join[
+            If [TrueQ[OptionValue["IncludeBaseShape"]],
+                {
+                    <|
+                        "Image" -> ARCScene[imageShape]
+                    |>
+                }
+                ,
+                {}
+            ],
+            ARCImageRotations[imageShape, FilterOptions[opts, ARCImageRotations]],
+            ARCImageFlips[imageShape,FilterOptions[opts, ARCImageFlips]],
+            ARCImageScalings[imageShape,FilterOptions[opts, ARCImageScalings]]
+        ]
+    ]
+
+ARCImageShapes[ARCScene[image_List], opts:OptionsPattern[]] :=
+    ARCImageShapes[image, opts]
+
+(*!
+    \function ARCCommunityRiddlePage
+    
+    \calltable
+        ARCCommunityRiddlePage[file] '' Given an ARC training file name, returns the github.com/arc-community/wiki riddle page.
+    
+    Examples:
+    
+    ARCCommunityRiddlePage["0ca9ddb6"] === "https://github.com/arc-community/arc/wiki/Riddle_Training_0ca9ddb6"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCommunityRiddlePage]
+    
+    \maintainer danielb
+*)
+Clear[ARCCommunityRiddlePage];
+ARCCommunityRiddlePage[file_String] :=
+    "https://github.com/arc-community/arc/wiki/Riddle_Training_" <> file
+
+(*!
+    \function ARCTaskNotesMarkdownURL
+    
+    \calltable
+        ARCTaskNotesMarkdownURL[example] '' Given an ARC example, returns the URL to the task notes markdown file on dbigham's github.
+    
+    Examples:
+    
+    ARCTaskNotesMarkdownURL["0ca9ddb6"] === "https://github.com/dbigham/ARC/blob/main/TaskNotes/0ca9ddb6/notes.md"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTaskNotesMarkdownURL]
+    
+    \maintainer danielb
+*)
+Clear[ARCTaskNotesMarkdownURL];
+ARCTaskNotesMarkdownURL[example_String] :=
+    "https://github.com/dbigham/ARC/blob/main/TaskNotes/" <> example <> "/notes.md"
 
 End[]
 

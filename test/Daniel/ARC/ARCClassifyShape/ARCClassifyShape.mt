@@ -138,6 +138,14 @@ Test[
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
             <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
                 "Image" -> Daniel`ARC`ARCScene[
                     {
                         {10, 10, -1, -1, -1, -1},
@@ -174,14 +182,24 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifyShape[{{1, 1, 1, 1}, {1, 2, 2, 1}, {1, 2, 2, 1}, {1, 1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifyShape[
+            {{1, 1, 1, 1}, {1, 2, 2, 1}, {1, 2, 2, 1}, {1, 1, 1, 1}}
+        ]
+    ]
     ,
     {
         <|"Name" -> "Square"|>,
         <|"Name" -> "Rectangle"|>,
-        <|"Name" -> "Square", "Interior" -> <|"Color" -> 2|>, "Border" -> <|"Color" -> 1|>|>,
+        <|
+            "Name" -> "Square",
+            "Filled" -> True,
+            "Interior" -> <|"Color" -> 2|>,
+            "Border" -> <|"Color" -> 1|>
+        |>,
         <|
             "Name" -> "Rectangle",
+            "Filled" -> True,
             "Interior" -> <|"Color" -> 2|>,
             "Border" -> <|"Color" -> 1|>
         |>
