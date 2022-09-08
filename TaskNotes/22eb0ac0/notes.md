@@ -33,8 +33,9 @@ e.g.
 
 * Objects with a width of 1 stay the same.
 * Objects with a width of 10 (groups of two pixels) become a line.
-   * We mark this rule with “Type” -> “Group” and specify a pattern that can be used to detect pairs of input objects that should form a group.
-   * The two objects should both be pixels, their image should be the same as each other’s, as should be their Y and Y2 values. Together as a group, they should form an object with a width of 10, and span from X=1 to X2=10, etc.
+   * We notice that these input objects are “groups” of non-contiguous objects from the input, so we add a “Group” definition to the output to specify what groups of non-contiguous input objects should be combined as a single object.
+   * The two objects should both be pixels, their image should be the same as each other’s, as should be their Y values. Together as a group, they should form an object with a width of 10, and span from X=1 to X2=10, etc.
+* As of September 2022, my rule finding code is finding a further simplification, not requiring different rules based on the width of objects, because even single pixels can be expressed as having their shape set to line/rectangle, since a pixel is just a line/rectangle with a width of 1.
 
 
 ![image 2](image2.png?raw=true)

@@ -27,10 +27,13 @@ e.g.
 
 
 
+![image 1](image1.png?raw=true)
+
+
 #### Finding Rules from Object Mappings
 
 * The shape of output objects is always a line, but the angle of the line needs to be determined.
 * I added a new property “Angle” to input objects, which can be used to infer the angle of the output lines. Currently this is only populated in the very specific case that we have a group of two pixels in the input, so this is pretty hacky at the moment.
 
 
-![image 1](image1.png?raw=true)
+![image 2](image2.png?raw=true)

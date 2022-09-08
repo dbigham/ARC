@@ -25,6 +25,7 @@ For all but one input object, there is only one object in the output scene with 
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -36,5 +37,6 @@ e.g.
        * However, the replacement image varies by example.
        * We notice that the replacement image is always the image of the non-light-blue object.
    * All objects that aren’t light blue are deleted.
+
 
 ![image 2](image2.png?raw=true)

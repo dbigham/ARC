@@ -25,6 +25,7 @@ For each input object, there is only one object in the output scene with a match
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -33,9 +34,11 @@ e.g.
 We notice that all transforms are of type Move, and notice that the Offset values are always <|”Y” -> 1, “X” -> 0|>.
 
 
+
 ![image 2](image2.png?raw=true)
 
-We have metadata for each transform type to specify what their “minimum property sets” are. For example, given a move transform, if we can produce a rule to infer its “Position” -> <|”Y” -> ..., “X” -> ...|> values, which is sufficient to specify the move. Or, if we can produce a rule to infer its “Offset” -> <|”Y” -> ..., “X” -> ...|> values, which is sufficient to specify the move.
+We have metadata for each transform type to specify what their “minimum property sets” are. For example, given a move transform, if we can produce a rule to infer its “Position” -> <|”Y” -> ..., “X” -> ...|> values, which is sufficient to specify the move. Or, if we can produce a rule to infer its “Offset” -> <|”Y” -> ..., “X” -> ...|> values, that is als sufficient to specify the move.
+
 
 ![image 3](image3.png?raw=true)
 

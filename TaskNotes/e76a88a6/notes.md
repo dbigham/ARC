@@ -25,6 +25,7 @@ For each input object, there is only one object in the output scene with a match
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -37,4 +38,10 @@ e.g.
        * However, the replacement image varies by example.
        * We notice that the replacement image is always the image of the non-gray object.
 
+
 ![image 2](image2.png?raw=true)
+
+* As of September 2022, we have improved the rule finding code to see that in all cases the image of an output object can be determined via the same conclusion, so we don’t need a second rule that says “Same” -> True.
+
+
+![image 3](image3.png?raw=true)

@@ -18,10 +18,11 @@
 * We parse the input and output scenes into objects.
 * When parsing the output scene of example 2, we only get 1 contiguous object since the rectangles are touching.
    * However, this object does have three (colored)  components. i.e. <|..., “Components” -> {..., ..., ...}, ...|>
-   * Strategy: If there are any composite objects, do further analysis to decide whether they should be kept or any parts broken off.
-       * For each composite object, if we can map it directly to an object in the other scene, keep it.
+   * Strategy 1: If there are any composite objects, do further analysis to decide whether they should be kept or any parts broken off and promoted to top-level objects in the scene.
+       * For each composite object, if we can map it‘s entire image to an object with the same image in the other scene, keep it.
        * Otherwise, for each part of the component, check if it can uniquely map to a top-level object in the corresponding input/output scene.
        * If we can, we will remove it from the composite object and treat it as a top-level object.
+   * Strategy 2: A simpler strategy -- which works in this case -- is that upon finding that we can’t find a rule set when forming multi-color contiguous objects, we try parsing the scene again, only forming single-color objects, after which a rule set can be found.
 
 #### Mapping Input Objects to Output Objects
 
@@ -48,8 +49,12 @@ e.g.
 
 ![image 2](image2.png?raw=true)
 
-* A further improvement would be to notice that all of the color rules except for one uses the same transform, and to merge them, generalizing the pattern to be: <|”Colors” -> Except[{“Blue”}]|>
-* As of August 20 2022, we now have rule simplification code that does this:
+* As of August 20 2022, we now have rule simplification code that groups rules with the same conclusion and a condition on the same property:
 
 
 ![image 3](image3.png?raw=true)
+
+* As of September 9 2022, we’ve improved the rule finding code so that even without grouping objects by color, it notices that the Y values of the output objects are all that’s needed to form a single rule:
+
+
+![image 4](image4.png?raw=true)

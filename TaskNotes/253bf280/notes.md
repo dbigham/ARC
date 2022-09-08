@@ -32,7 +32,7 @@ e.g.
 
 * We initially group the object mappings using the Angle property, and find rules for transforming inputs to outputs.
 * However, if we try to apply those rules to a new input, they won’t apply to any inputs, because the input objects aren’t yet grouped. We need something in the rules to tell the system to try forming groups of input objects prior to applying the rules.
-* To solve this, after producing our initial ruleset, we check the input objects from the training set that apply to each rule, and if given a rule those input objects are “groups” of disconnected objects, we form group specifications with all of the common property values of objects in those groups.
+* To solve this, after producing our initial rule set, we check the input objects from the training set that apply to each rule, and if given a rule those input objects are “groups” of disconnected objects, we form group specifications with all of the common property values of objects in those groups.
 For example, here are the group specifications we use for this task:
 
 

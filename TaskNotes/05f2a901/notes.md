@@ -26,6 +26,7 @@ For each input object, there is only one object in the output scene that has the
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -36,6 +37,7 @@ e.g.
    * Making the DSL general enough that it would hopefully end up applying to more than just this task.
    * Making the DSL simple enough  that its parameters could be inferred.
 * For the time being, I’ve felt gone with a pretty simple/specific DSL, but there seems to be a high risk that it’s too specific and thus won’t generalize.
+
 
 ![image 2](image2.png?raw=true)
 

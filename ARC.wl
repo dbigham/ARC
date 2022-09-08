@@ -432,6 +432,8 @@ ARCCommunityRiddlePage::usage = "ARCCommunityRiddlePage  "
 
 ARCTaskNotesMarkdownURL::usage = "ARCTaskNotesMarkdownURL  "
 
+ARCLinkToDanielBighamsSolution::usage = "ARCLinkToDanielBighamsSolution  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -17306,6 +17308,30 @@ ARCCommunityRiddlePage[file_String] :=
 Clear[ARCTaskNotesMarkdownURL];
 ARCTaskNotesMarkdownURL[example_String] :=
     "https://github.com/dbigham/ARC/blob/main/TaskNotes/" <> example <> "/notes.md"
+
+(*!
+    \function ARCLinkToDanielBighamsSolution
+    
+    \calltable
+        ARCLinkToDanielBighamsSolution[example] '' Given an ARC training task, generates markdown to link to danielb's task notes / solution on github.
+    
+    Examples:
+    
+    ARCLinkToDanielBighamsSolution["0ca9ddb6"]
+    
+    ===
+    
+    "* [danielb's solution](https://github.com/dbigham/ARC/blob/main/TaskNotes/0ca9ddb6/notes.md)"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCLinkToDanielBighamsSolution]
+    
+    \maintainer danielb
+*)
+Clear[ARCLinkToDanielBighamsSolution];
+ARCLinkToDanielBighamsSolution[example_String] :=
+    "* [danielb's solution](https://github.com/dbigham/ARC/blob/main/TaskNotes/" <> example <> "/notes.md)"
 
 End[]
 

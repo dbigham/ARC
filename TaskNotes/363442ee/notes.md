@@ -38,6 +38,7 @@ e.g.
 * When the object mappings are grouped by color, we see that:
    * Blue objects are always replaced by the square object’s image.
    * Non-blue objects are left unmodified.
+* We can also group by Area.Rank when finding rules. (Area.Rank of 1 means “largest object”)
 
 
 ![image 2](image2.png?raw=true)

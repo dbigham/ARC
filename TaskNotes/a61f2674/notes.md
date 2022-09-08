@@ -27,6 +27,7 @@ For each input object, there are two cases:
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -36,12 +37,18 @@ e.g.
 * When the objects are grouped by HeightRank, we notice that the “Colors” property can be determined if the HeightRank is 1 (shortest object), and we notice that the 2nd and 3rd shortest objects are always deleted.
 * When the objects are grouped by HeightInverseRank, we notice that the “Colors” property can be determined if the HeightInverseRank is 1 (tallest object), and we notice that the 2nd and 3rd tallest objects are always deleted.
 
+
 ![image 2](image2.png?raw=true)
 
 * Unfortunately, the rules currently being produced for the deletion cases rely on particular HeightRank or HeightInverseRank values, which will only work if there are at most 6 input objects. Ideally we’d like a single deletion rule that is sufficiently general.
 * As of August 8th 2022, we are only accepting and returning a set of rules if the property used in rule patterns is the same for every rule. (e.g. All rules must only use HeightRank in their pattern, or only use HeightInverseRank in their pattern, but not a mixture) I know this is too restrictive, but I’m doing that for now since otherwise we can get an explosion of bad rules being discovered, and it’s not clear how to safely combine rules with patterns that use different properties without drowning in a sea of bad rulesets.
 * The above is problematic here, because we need rules where some of them use HeightRank in their pattern, and some of them use HeightInverseRank.
 * I’ve worked around this by adding a heuristic that says that using rules for both the Rank and InverseRank of the same property is OK.
+* As of September 2022, the addition of rule simplification code means that a couple pairs of rules get combined:
+
+
+![image 3](image3.png?raw=true)
+
 
 #### Possible Improvements to Rules
 

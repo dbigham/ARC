@@ -25,6 +25,7 @@ For each input object, there is only one object in the output scene with a match
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
@@ -36,7 +37,13 @@ e.g.
    * If the HeightRank of an object is 2, it means that it is the second shortest object.
    * etc.
 
+
 ![image 2](image2.png?raw=true)
+
+* As of September 2022, the rule finder is now producing a single rule because it notices that the color integer of the output object can be inferred using the HeightRank value. This is probably not desirable, but works.
+
+
+![image 3](image3.png?raw=true)
 
 
 #### Some Notes on Input Object Properties
@@ -45,4 +52,5 @@ e.g.
 * We then supplement those properties, if they are numeric, with corresponding “Rank” and “InverseRank” properties.
 * Here is an example input object with each of its properties:
 
-![image 3](image3.png?raw=true)
+
+![image 4](image4.png?raw=true)

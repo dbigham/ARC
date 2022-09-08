@@ -25,12 +25,14 @@ For each input object, there is only one object in the output scene that it is c
 e.g.
 
 
+
 ![image 1](image1.png?raw=true)
 
 
 #### Finding Rules from Object Mappings
 
 All object mappings involve replacing the input object’s shape with a common output shape, making it straightforward to produce the single required rule:
+
 
 
 ![image 2](image2.png?raw=true)
