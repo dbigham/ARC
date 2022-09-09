@@ -70,7 +70,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (50)
+### Training Tasks (51)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -124,6 +124,7 @@ The following ARC training tasks started passing after some different task was i
 * [6fa7a44f](TaskNotes/6fa7a44f/notes.md)
 * [7fe24cdd](TaskNotes/7fe24cdd/notes.md)
 * [c9e6f938](TaskNotes/c9e6f938/notes.md)
+* [88a62173](TaskNotes/88a62173/notes.md)
 
 ### Evaluation Tasks (22)
 

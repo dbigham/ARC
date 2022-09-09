@@ -434,6 +434,12 @@ ARCTaskNotesMarkdownURL::usage = "ARCTaskNotesMarkdownURL  "
 
 ARCLinkToDanielBighamsSolution::usage = "ARCLinkToDanielBighamsSolution  "
 
+ARCInferImageUseCountPropertyValues::usage = "ARCInferImageUseCountPropertyValues  "
+
+ARCInferShapeUseCountPropertyValues::usage = "ARCInferShapeUseCountPropertyValues  "
+
+ARCInferGeneralShapeUseCountPropertyValues::usage = "ARCInferGeneralShapeUseCountPropertyValues  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -998,6 +1004,12 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
         objects = Join[gridsAndDividers, objects];
         
         objects = ARCInferColorCountPropertyValues[objects, scene];
+        
+        objects = ARCInferImageUseCountPropertyValues[objects];
+        
+        objects = ARCInferShapeUseCountPropertyValues[objects];
+        
+        objects = ARCInferGeneralShapeUseCountPropertyValues[objects];
         
         (*ARCEcho[SimplifyObjects[objects]];*)
         
@@ -1783,6 +1795,27 @@ $properties = <|
        be formed from a group of non-contiguous objects in the scene. Not set on input
        objects. *)
     "Group" -> <|
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "ColorCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count",
+        (* Otherwise it will lose out to "Colors" for "6e02f1e3". *)
+        "RuleConditionQuality" -> 0.9
+    |>,
+    "ImageUseCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "ShapeUseCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "GeneralShapeUseCount" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Count",
         "RuleConditionQuality" -> 0.5
     |>
 |>;
@@ -4205,7 +4238,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"ColorCount"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -8259,6 +8292,7 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
             object,
             <|
                 InferColor["Color" -> <|"Colors" -> object["Colors"]|>],
+                "ColorCount" -> Length[object["Colors"]],
                 "Y" -> (y = object["Position"][[1]]),
                 "X" -> (x = object["Position"][[2]]),
                 "YInverse" -> (sceneHeight - y + 1),
@@ -10731,6 +10765,12 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 8}],
             "CodeLength" -> 17245,
             "ExampleImplemented" -> "c9e6f938"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17564,
+            "ExampleImplemented" -> "88a62173"
         |>
     }
 
@@ -11929,12 +11969,21 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
                            with a group specification. *)
                         Replace[
                             ReturnIfFailure@
-                            ARCPrunePattern@
-                            ARCObjectCommonalities[
-                                KeyDrop[
-                                    Select[matchingObjects, #["Type"] === "Group" &],
-                                    "Type"
-                                ]
+                            ARCPrunePattern[
+                                Replace[
+                                    ARCObjectCommonalities[
+                                        KeyDrop[
+                                            Select[matchingObjects, #["Type"] === "Group" &],
+                                            "Type"
+                                        ]
+                                    ],
+                                    HoldPattern[Repeated][pattern_, rest___] :> Repeated[
+                                        ARCPrunePattern[pattern, "GroupPattern" -> True],
+                                        rest
+                                    ],
+                                    {0, Infinity}
+                                ],
+                                "GroupPattern" -> True
                             ],
                             <||> :> (
                                 If [Length[rules] =!= 1,
@@ -14812,7 +14861,8 @@ ShapeQ[object_Association, shapeName_] :=
 Clear[ARCPrunePattern];
 Options[ARCPrunePattern] =
 {
-    "Conclusion" -> False       (*< Whether the context is actually a conclusion. *)
+    "Conclusion" -> False,      (*< Whether the context is actually a conclusion. *)
+    "GroupPattern" -> False     (*< Is this a pattern for a object "group"? *)
 };
 ARCPrunePattern[patternIn_, OptionsPattern[]] :=
     Module[{},
@@ -14820,7 +14870,10 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
         pattern = patternIn;
         
         If [AssociationQ[pattern["Group"]],
-            pattern["Group"] = ARCPrunePattern[pattern["Group"]]
+            pattern["Group"] = ARCPrunePattern[
+                pattern["Group"],
+                "GroupPattern" -> True
+            ]
         ];
         
         If [!MissingQ[pattern["Image"]] || MatchQ[pattern["Shape"], _ARCScene],
@@ -14886,6 +14939,9 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "FilledArea",
                     "FilledProportion",
                     "ColorUseCount",
+                    "ColorUseCount",
+                    "ColorUseCount",
+                    "ColorUseCount",
                     "Width.Rank",
                     "Width.InverseRank",
                     "Height.Rank",
@@ -14921,7 +14977,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                 "Shape",
                                 "Shapes",
                                 "Color",
-                                "Colors"
+                                "Colors",
+                                "ColorCount"
                             },
                         MatchQ[patternIn["Image"], "Same"],
                             Sequence @@
@@ -15026,7 +15083,17 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             pattern = KeyDrop[
                 pattern,
                 {
-                    "Colors"
+                    "Colors",
+                    "ColorCount"
+                }
+            ]
+        ];
+        
+        If [!MissingQ[patternIn["Colors"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "ColorCount"
                 }
             ]
         ];
@@ -15180,6 +15247,28 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 {
                     "ZOrder.InverseRank",
                     "ZOrder.Rank"
+                }
+            ]
+        ];
+        
+        (* I'm going to drop these spammy properties until the point in the future we deem them to
+           be useful in group patterns. *)
+        If [TrueQ[OptionValue["GroupPattern"]],
+            pattern = KeyDrop[
+                pattern,
+                {
+                    "ColorCount",
+                    "ColorCount.Rank",
+                    "ColorCount.InverseRank",
+                    "ImageUseCount",
+                    "ImageUseCount.Rank",
+                    "ImageUseCount.InverseRank",
+                    "ShapeUseCount",
+                    "ShapeUseCount.Rank",
+                    "ShapeUseCount.InverseRank",
+                    "GeneralShapeUseCount",
+                    "GeneralShapeUseCount.Rank",
+                    "GeneralShapeUseCount.InverseRank"
                 }
             ]
         ];
@@ -17332,6 +17421,141 @@ ARCTaskNotesMarkdownURL[example_String] :=
 Clear[ARCLinkToDanielBighamsSolution];
 ARCLinkToDanielBighamsSolution[example_String] :=
     "* [danielb's solution](https://github.com/dbigham/ARC/blob/main/TaskNotes/" <> example <> "/notes.md)"
+
+(*!
+    \function ARCInferImageUseCountPropertyValues
+    
+    \calltable
+        ARCInferImageUseCountPropertyValues[objects] '' Given the objects from a scene, sets their ImageUseCount property values.
+    
+    Examples:
+    
+    ARCInferImageUseCountPropertyValues[
+        {
+            <|"Image" -> "<my image>"|>,
+            <|"Image" -> "<my image>"|>,
+            <|"Image" -> "<my image 2>"|>
+        }
+    ]
+    
+    ===
+    
+    {
+        <|"Image" -> "<my image>", "ImageUseCount" -> 2|>,
+        <|"Image" -> "<my image>", "ImageUseCount" -> 2|>,
+        <|"Image" -> "<my image 2>", "ImageUseCount" -> 1|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferImageUseCountPropertyValues]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferImageUseCountPropertyValues];
+ARCInferImageUseCountPropertyValues[objects_List] :=
+    Module[{counts},
+        
+        counts = Counts[objects[[All, "Image"]]];
+        
+        Function[{object},
+            Sett[
+                object,
+                "ImageUseCount" -> counts[object["Image"]]
+            ]
+        ] /@ objects
+    ]
+
+(*!
+    \function ARCInferShapeUseCountPropertyValues
+    
+    \calltable
+        ARCInferShapeUseCountPropertyValues[objects] '' Given the objects from a scene, sets their ShapeUseCount property values. i.e. Given their shape, how many objects in the scene use that shape?
+    
+    Examples:
+    
+    ARCInferShapeUseCountPropertyValues[
+        {<|"Shape" -> "A"|>, <|"Shape" -> "A"|>, <|"Shape" -> "B"|>}
+    ]
+    
+    ===
+    
+    {
+        <|"Shape" -> "A", "ShapeUseCount" -> 2|>,
+        <|"Shape" -> "A", "ShapeUseCount" -> 2|>,
+        <|"Shape" -> "B", "ShapeUseCount" -> 1|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferShapeUseCountPropertyValues]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferShapeUseCountPropertyValues];
+ARCInferShapeUseCountPropertyValues[objects_List] :=
+    Module[{counts},
+        
+        counts = Counts[objects[[All, "Shape"]]];
+        
+        Function[{object},
+            Sett[
+                object,
+                "ShapeUseCount" -> counts[object["Shape"]]
+            ]
+        ] /@ objects
+    ]
+
+(*!
+    \function ARCInferGeneralShapeUseCountPropertyValues
+    
+    \calltable
+        ARCInferGeneralShapeUseCountPropertyValues[objects] '' Given the objects from a scene, sets their GeneralShapeUseCount property values. i.e. Given their general shape, how many objects in the scene use that shape?
+    
+    GeneralShapeUseCount differs from ShapeUseCount in that GeneralShapeUseCount treats shapes
+    as being the same invariant of rotation, flips, scaling, etc.
+    
+    Examples:
+    
+    ARCInferGeneralShapeUseCountPropertyValues[
+        {
+            <|"Shape" -> <|"Name" -> "Rectangle"|>|>,
+            <|"Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>|>,
+            <|"Shape" -> "B"|>
+        }
+    ]
+    
+    ===
+    
+    {
+        <|"Shape" -> <|"Name" -> "Rectangle"|>, "GeneralShapeUseCount" -> 2|>,
+        <|"Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>, "GeneralShapeUseCount" -> 2|>,
+        <|"Shape" -> "B", "GeneralShapeUseCount" -> 1|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferGeneralShapeUseCountPropertyValues]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferGeneralShapeUseCountPropertyValues];
+ARCInferGeneralShapeUseCountPropertyValues[objects_List] :=
+    Module[{counts, generalizeShape},
+        
+        generalizeShape[KeyValuePattern["Name" -> shape_]] := shape;
+        
+        counts = Counts[
+            generalizeShape /@ objects[[All, "Shape"]]
+        ];
+        
+        Function[{object},
+            Sett[
+                object,
+                "GeneralShapeUseCount" -> counts[generalizeShape[object["Shape"]]]
+            ]
+        ] /@ objects
+    ]
 
 End[]
 
