@@ -48,6 +48,14 @@ Test[
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
             <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
                 "Image" -> Daniel`ARC`ARCScene[
                     {
                         {10, 10, 10, 10, 10, 10},
@@ -86,6 +94,7 @@ Test[
         "Colors" -> {2},
         "Color" -> 2,
         "Position" -> {1, 1},
+        "ColorCount" -> 1,
         "Y" -> 1,
         "X" -> 1,
         "YInverse" -> 10,
@@ -95,6 +104,8 @@ Test[
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
         "ZOrder" -> 0,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -103,6 +114,7 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 5,
         "FilledProportion" -> 0.5555555555555556,
+        "SurfacePixelCount" -> 5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
@@ -198,6 +210,7 @@ Test[
         "Colors" -> {2},
         "Color" -> 2,
         "Position" -> {1, 1},
+        "ColorCount" -> 1,
         "Y" -> 1,
         "X" -> 1,
         "YInverse" -> 10,
@@ -207,6 +220,8 @@ Test[
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
         "ZOrder" -> 0,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -215,6 +230,7 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 9,
         "FilledProportion" -> 1.,
+        "SurfacePixelCount" -> 8,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
@@ -271,6 +287,7 @@ Test[
         "Colors" -> {2},
         "Color" -> 2,
         "Position" -> {1, 1},
+        "ColorCount" -> 1,
         "Y" -> 1,
         "X" -> 1,
         "YInverse" -> 10,
@@ -280,6 +297,8 @@ Test[
         "Y2Inverse" -> 10,
         "X2Inverse" -> 10,
         "ZOrder" -> 0,
+        "YMiddle" -> 1,
+        "XMiddle" -> 1,
         "Width" -> 1,
         "Height" -> 1,
         "Length" -> 1,
@@ -288,6 +307,7 @@ Test[
         "Area" -> 1,
         "FilledArea" -> 1,
         "FilledProportion" -> 1.,
+        "SurfacePixelCount" -> 1,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
@@ -355,6 +375,14 @@ Test[
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
             <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, -1}, {10, 10, 10}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {-1, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
                 "Image" -> Daniel`ARC`ARCScene[
                     {
                         {10, 10, 10, 10, 10, 10},
@@ -387,6 +415,7 @@ Test[
         "Colors" -> {2},
         "Color" -> 2,
         "Position" -> {1, 1},
+        "ColorCount" -> 1,
         "Y" -> 1,
         "X" -> 1,
         "YInverse" -> 10,
@@ -396,6 +425,8 @@ Test[
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
         "ZOrder" -> 0,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -404,6 +435,7 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 9,
         "FilledProportion" -> 1.,
+        "SurfacePixelCount" -> 7,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,

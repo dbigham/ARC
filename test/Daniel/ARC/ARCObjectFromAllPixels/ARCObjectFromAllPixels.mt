@@ -42,6 +42,14 @@ Test[
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
             <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, -1}, {-1, -1, -1}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, -1}, {-1, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
                 "Image" -> Daniel`ARC`ARCScene[
                     {
                         {10, 10, 10, 10, 10, 10},
@@ -74,6 +82,7 @@ Test[
         "Colors" -> {6},
         "Color" -> 6,
         "Position" -> {1, 1},
+        "ColorCount" -> 1,
         "Y" -> 1,
         "X" -> 1,
         "YInverse" -> 3,
@@ -101,4 +110,24 @@ Test[
     |>
     ,
     TestID -> "ARCObjectFromAllPixels-20220902-DYB839"
+]
+
+Test[
+    Daniel`ARC`SimplifyObjects["ExtraKeys" -> "PixelPositions"][
+        DevTools`ERP`NormalizeOutput[
+            Daniel`ARC`ARCObjectFromAllPixels[
+                Daniel`ARC`ARCParseFile["ed36ccf7"]["Train", 2, "Input"],
+                0,
+                "Position" -> {10, 10}
+            ]
+        ]
+    ]
+    ,
+    <|
+        "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {-1, -1, -1}, {6, 6, -1}}],
+        "Position" -> {10, 10},
+        "PixelPositions" -> {{10, 10}, {10, 11}, {10, 12}, {12, 10}, {12, 11}}
+    |>
+    ,
+    TestID -> "ARCObjectFromAllPixels-20220909-05Q6AZ"
 ]

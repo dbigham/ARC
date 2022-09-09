@@ -1076,8 +1076,10 @@ Test[
         "FormMultiColorCompositeObjects" -> False,
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <|"ShapeUseCount" -> 1|> -> <|"X" -> 1, "Y" -> 1|>,
-            <|"ShapeUseCount" -> Except[1]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+            <|"Position" -> Except[{1, 1}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|"Position" -> {1, 1}|> -> <|
+                "Image" -> Daniel`ARC`ObjectValue[<|"ShapeUseCount" -> 1|>, "Image"]
+            |>
         }
     |>
     ,
@@ -2221,4 +2223,21 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220908-R8EBWK"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "2dee498d"]["Train"]]
+    ]
+    ,
+    <|
+        "SubdivideInput" -> {1, 3},
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"Position" -> Except[{1, 1}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|"Position" -> {1, 1}|> -> <|"Same" -> True|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220909-EK29OK"
 ]
