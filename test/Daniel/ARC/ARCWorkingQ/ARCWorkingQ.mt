@@ -745,3 +745,27 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220909-ZQADBL"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["3af2c5a8"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220909-AX4L6C"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["8d5021e8"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220909-L6ADNN"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["a416b8f3"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220909-NAI4N3"
+]

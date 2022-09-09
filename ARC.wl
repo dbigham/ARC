@@ -3687,22 +3687,26 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ];
             ];
             
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-            
-            (* Consider whether the output width is always a multiple of the input width and the
-               output height is always a mutliple of the input height. If so, try sub-dividing the
-               problem. *)
-            If [!TrueQ[workingRulesQ],
-                res2 = ARCFindRulesForSubdividedOutput[examples];
-                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
-                If [foundRulesQ2,
-                    foundRulesQ = True;
-                    res = res2
+            If [!TrueQ[$findingRulesForSubdivision],
+                
+                workingRulesQ =
+                    If [!foundRulesQ,
+                        False
+                        ,
+                        TrueQ[ARCWorkingQ[examples, res]]
+                    ];
+                
+                (* Consider whether the output width is always a multiple of the input width and the
+                   output height is always a mutliple of the input height. If so, try sub-dividing the
+                   problem. *)
+                If [!TrueQ[workingRulesQ],
+                    (*Echo["ARCFindRulesForSubdividedOutput"];*)
+                    res2 = ARCFindRulesForSubdividedOutput[examples];
+                    foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                    If [foundRulesQ2,
+                        foundRulesQ = True;
+                        res = res2
+                    ]
                 ]
             ]
         ];
@@ -3991,7 +3995,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (* HEREF *)
         
         (*ARCEcho2[examples[[All, "ObjectMapping"]]];
-        Throw["HERE"];*)
+        Throw["HEREF"];*)
         
         (*ARCEcho[examples[[1, "ObjectMapping"]]];
         Throw["HERE"];*)
@@ -4298,7 +4302,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"ColorCount"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -10854,6 +10858,31 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 9}],
             "CodeLength" -> 17723,
             "ExampleImplemented" -> "5bd6f4ac"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17723,
+            "ExampleImplemented" -> "3af2c5a8",
+            "NewGeneralizedSuccesses" -> {"4c4377d9", "8d5021e8", "a416b8f3"},
+            "NewEvaluationSuccesses" -> {"0c786b71", "ed98d772"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17723,
+            "ExampleImplemented" -> "4c4377d9"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17723,
+            "ExampleImplemented" -> "8d5021e8"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17723,
+            "ExampleImplemented" -> "a416b8f3"
         |>
     }
 
@@ -16969,12 +16998,12 @@ ARCSubdivideImage[ARCScene[image_], rows_Integer, columns_Integer, OptionsPatter
                 subImage = ARCScene[
                     image[[
                         Span[
-                            (row - 1) * subImageWidth + 1,
-                            row * subImageWidth
+                            (row - 1) * subImageHeight + 1,
+                            row * subImageHeight
                         ],
                         Span[
-                            (column - 1) * subImageHeight + 1,
-                            column * subImageHeight
+                            (column - 1) * subImageWidth + 1,
+                            column * subImageWidth
                         ]
                     ]]
                 ];
@@ -17240,16 +17269,28 @@ ARCFindRulesForSubdividedOutput[examples_List] :=
                         Function[{column},
                             examples2 = examples;
                             examples2[[All, inputOrOutput]] = subdividedOutputs[[All, row, column]];
-                            (*ARCEcho2[examples2[[All, "Input"]] -> examples2[[All, "Output"]]];*)
-                            (*Global`examples = examples2;*)
-                            subRules = ARCFindRules[
-                                examples2,
-                                "SingleObject" -> True,
-                                "SettleForOneExamplePerRule" -> OptionValue["SettleForOneExamplePerRule"]
-                            ];
-                            (*If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
-                                Return[Missing["NotFound"], Block]
+                            (*If [row == 2 && column == 1,
+                                ARCEcho2[examples2[[All, "Input"]] -> examples2[[All, "Output"]]];
+                                Global`examples = examples2;
                             ];*)
+                            subRules =
+                                Block[{$findingRulesForSubdivision = True},
+                                    ARCFindRules[
+                                        examples2,
+                                        "SingleObject" -> True,
+                                        (* Higher level code in ARCFindRules will control whether it tries again
+                                           setting the global variable for allowing rules with one example. *)
+                                        "SettleForOneExamplePerRule" -> False
+                                    ]
+                                ];
+                            (*If [row == 2 && column == 1,
+                                ARCEcho2["subRules" -> subRules];
+                                Throw["HERE"]
+                            ];*)
+                            If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
+                                (*Echo["ARCFindRulesForSubdividedOutput: No rules found" -> row -> column];*)
+                                Return[Missing["NotFound"], Block]
+                            ];
                             subRules
                         ] /@ Range[withAndHeightMultiples[[1]]]
                     ] /@ Range[withAndHeightMultiples[[2]]];
@@ -17344,6 +17385,7 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
             conclusions = conclusionsIn,
             intersection,
             commonType,
+            imageShape,
             conclusionsWithNoopTransforms
         },
         
@@ -17410,6 +17452,7 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
             conclusionsWithNoopTransforms =
                 Function[{conclusion},
                     If [MissingQ[conclusion["Transforms"]] && !MissingQ[conclusion["Image"]],
+                        imageShape = ARCObjectImageShape[conclusion];
                         Append[
                             conclusion,
                             "Transforms" -> Select[
@@ -17418,13 +17461,15 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
                                     "IncludeBaseShape" -> False,
                                     "IncludeNoopTransforms" -> True
                                 ],
-                                #["Image"] == conclusion["Image"] &
+                                #["Image"] == imageShape &
                             ][[All, "Transform"]]
                         ]
                         ,
                         conclusion
                     ]
                 ] /@ conclusions;
+            
+            (*ARCEcho2["conclusionsWithNoopTransforms" -> conclusionsWithNoopTransforms];*)
             
             ReturnIfNotMissing[
                 ARCChooseTransform[
