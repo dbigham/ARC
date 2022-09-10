@@ -896,6 +896,8 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             "Background" -> background,
             "Width" -> ImageWidth[scene[[1]]],
             "Height" -> ImageHeight[scene[[1]]],
+            (* e.g. d0f5fe59 *)
+            "ObjectCount" -> Length[objects],
             "Objects" -> objects,
             "Scene" -> scene
         |>;
@@ -4002,8 +4004,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* Determine if input objects can be referenced in any particular ways in general. *)
         referenceableInputObjects =
-            ReturnIfFailure@
-            ARCMakeObjectsReferenceable[examples[[All, "Input"]]];
+            Prepend[
+                ReturnIfFailure@
+                ARCMakeObjectsReferenceable[examples[[All, "Input"]]],
+                Object["InputScene"] -> <||>
+            ];
         
         referenceableOutputObjects =
             ReturnIfFailure@
@@ -4996,6 +5001,8 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                 ReturnIfFailure@
                 ARCApplyRules[object, ruleList, parsedScene]
             ] /@ objects;
+        
+        (*ARCEcho2[objects];*)
         
         outputScene = Sett[
             outputScene,
@@ -6321,6 +6328,8 @@ GetObject[object_Object, parsedSceneOrObjectsList_, namedObjects_Association : <
 
 GetObject[object: _Association | _String, parsedScene_Association, namedObjects_Association : <||>] :=
     Which[
+        object === "InputScene",
+            parsedScene,
         (* Note that `object` can be a string, so we explicitly check first that it's an
            association prior to checking its Context value. *)
         AssociationQ[object] && object["Context"] === "Component",
@@ -7543,7 +7552,7 @@ Options[ARCGeneralizeConclusionValueUsingReferenceableObjects] =
 ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjectsIn_Association, examples_List, opts:OptionsPattern[]] :=
     Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
-        $debugProperty = "X";
+        $debugProperty = "Width";
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
@@ -7574,18 +7583,27 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                 Which[
                     reference === Object["InputObject"],
                         objects = values[[All, "Input"]],
-                    MatchQ[reference[[1, "Context"]], "Component"],
+                    And[
+                        AssociationQ[reference[[1]]],
+                        MatchQ[reference[[1, "Context"]], "Component"]
+                    ],
                         objects = Function[{components},
                             ReturnIfFailure@
                             GetObject[reference, components]
                         ] /@ theseComponents,
-                    MatchQ[reference[[1, "Context"]], "Output"],
+                    And[
+                        AssociationQ[reference[[1]]],
+                        MatchQ[reference[[1, "Context"]], "Output"]
+                    ],
                         objects = Function[{example},
                             ReturnIfFailure@
                             GetObject[reference, example["Output"]]
                         ] /@ theseExamples,
                     True,
-                        If [MissingQ[reference[[1, "Context"]]],
+                        If [Or[
+                                StringQ[reference[[1]]],
+                                MissingQ[reference[[1, "Context"]]]
+                            ],
                             objects = Function[{example},
                                 ReturnIfFailure@
                                 GetObject[reference, example["Input"]]
@@ -7598,10 +7616,10 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                         ]
                 ];
                 
-                (*If [reference === Object[<|"Colors" -> {1}, "Context" -> "Component"|>],
+                (*If [reference === Object["InputScene"],
                     Echo["valuesToInfer" -> valuesToInfer];
                     ARCEcho[
-                        KeyTake[objects, {"Colors", "YRelative"}]
+                        KeyTake[objects, {"ObjectCount"}]
                     ]
                 ];*)
                 
@@ -7644,16 +7662,20 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                 
             ] /@ referenceableObjects;
         
-        (* Echo[referenceableObjects -> referenceableValues]; *)
+        (*If [Last[propertyPath] === $debugProperty,
+            Echo[referenceableObjects -> referenceableValues]
+        ];*)
         
         If [MatchQ[referenceableValues, {__}],
             (*If [Last[propertyPath] === $debugProperty,
                 ARCEcho["referenceableValues" -> referenceableValues];
+                Global`djb = Association[Last[propertyPath] -> #] & /@ referenceableValues;
                 ARCDebug@
                 ARCEcho2@
                 ARCChooseBestTransform[
                     Association[Last[propertyPath] -> #] & /@ referenceableValues
-                ]
+                ];
+                Throw["HERE"]
             ];*)
             
             best = Normal[
@@ -9365,6 +9387,13 @@ ARCTransformScore[transformIn_] :=
                                 0,
                             $properties[key, "Type2"] === $properties[objectValueProperty, "Type2"],
                                 -0.5,
+                            StringEndsQ[objectValueProperty, "Count"],
+                                (* If the property is a count property, then although it doesn't
+                                   match the type of property we're trying to infer, a count is a
+                                   pretty generic thing, so it feels a bit more plausible that
+                                   we might want to use it to infer some random thing.
+                                   e.g. d0f5fe59 *)
+                                -0.75,
                             True,
                                 -1
                         ];
@@ -10883,6 +10912,17 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 9}],
             "CodeLength" -> 17723,
             "ExampleImplemented" -> "a416b8f3"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17816,
+            "ExampleImplemented" -> "d0f5fe59"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 9}],
+            "CodeLength" -> 17816,
+            "ExampleImplemented" -> "fcc82909"
         |>
     }
 
@@ -10897,9 +10937,10 @@ ARCTaskLog[] :=
     \maintainer danielb
 *)
 Clear[ARCTaskMarkdown];
-ARCTaskMarkdown[name_String] :=
+ARCTaskMarkdown[nameIn_String] :=
     Module[
         {
+            name = ToLowerCase[nameIn],
             parsedFile,
             relativeDirectory,
             absoluteDirectory,

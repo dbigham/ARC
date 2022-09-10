@@ -154,3 +154,16 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220827-APSTJD"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            <|"Width" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"]|>,
+            <|"Width" -> Daniel`ARC`ObjectValue[<|"Y.InverseRank" -> 1|>, "Y.Rank"]|>
+        }
+    ]
+    ,
+    <|"Width" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"]|>
+    ,
+    TestID -> "ARCChooseBestTransform-20220909-TYUQI3"
+]

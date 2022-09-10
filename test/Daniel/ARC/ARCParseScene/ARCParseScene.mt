@@ -25,6 +25,7 @@ Test[
         "Background" -> 0,
         "Width" -> 3,
         "Height" -> 3,
+        "ObjectCount" -> 1,
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -54,6 +55,14 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{2, 8, 8}, {2, 1, 8}, {2, 2, 2}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 8, 8}, {2, 1, 8}, {2, 2, 2}}],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {8, 1, 2}, {8, 8, 2}}],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
@@ -91,6 +100,7 @@ Test[
                 },
                 "Colors" -> {1, 2, 8},
                 "Position" -> {1, 1},
+                "ColorCount" -> 3,
                 "Y" -> 1,
                 "X" -> 1,
                 "YInverse" -> 3,
@@ -150,6 +160,18 @@ Test[
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}
+                                ],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
                                     {
                                         {10, 10, 10, 10, 10, 10},
                                         {10, 10, 10, 10, 10, 10},
@@ -193,6 +215,7 @@ Test[
                         "Colors" -> {2},
                         "Color" -> 2,
                         "Position" -> {1, 1},
+                        "ColorCount" -> 1,
                         "Y" -> 1,
                         "X" -> 1,
                         "YInverse" -> 3,
@@ -254,6 +277,7 @@ Test[
                         "Colors" -> {1},
                         "Color" -> 1,
                         "Position" -> {2, 2},
+                        "ColorCount" -> 1,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 2,
@@ -304,6 +328,14 @@ Test[
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                             |>,
                             <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {-1, 10}}],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, -1}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                            |>,
+                            <|
                                 "Image" -> Daniel`ARC`ARCScene[
                                     {
                                         {-1, -1, 10, 10},
@@ -343,6 +375,7 @@ Test[
                         "Colors" -> {8},
                         "Color" -> 8,
                         "Position" -> {2, 2},
+                        "ColorCount" -> 1,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 2,
@@ -369,6 +402,9 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -410,7 +446,15 @@ Test[
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
                 "SurfacePixelCount.Rank" -> 1,
-                "SurfacePixelCount.InverseRank" -> 1
+                "SurfacePixelCount.InverseRank" -> 1,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]
@@ -434,6 +478,7 @@ Test[
         "Background" -> 0,
         "Width" -> 9,
         "Height" -> 9,
+        "ObjectCount" -> 2,
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -476,6 +521,7 @@ Test[
                 },
                 "Colors" -> {2, 4},
                 "Position" -> {3, 2},
+                "ColorCount" -> 2,
                 "Y" -> 3,
                 "X" -> 2,
                 "YInverse" -> 7,
@@ -535,6 +581,7 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {3, 2},
+                        "ColorCount" -> 1,
                         "Y" -> 3,
                         "X" -> 2,
                         "YInverse" -> 7,
@@ -596,6 +643,7 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {3, 4},
+                        "ColorCount" -> 1,
                         "Y" -> 3,
                         "X" -> 4,
                         "YInverse" -> 7,
@@ -657,6 +705,7 @@ Test[
                         "Colors" -> {2},
                         "Color" -> 2,
                         "Position" -> {4, 3},
+                        "ColorCount" -> 1,
                         "Y" -> 4,
                         "X" -> 3,
                         "YInverse" -> 6,
@@ -718,6 +767,7 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {5, 2},
+                        "ColorCount" -> 1,
                         "Y" -> 5,
                         "X" -> 2,
                         "YInverse" -> 5,
@@ -779,6 +829,7 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {5, 4},
+                        "ColorCount" -> 1,
                         "Y" -> 5,
                         "X" -> 4,
                         "YInverse" -> 5,
@@ -807,6 +858,9 @@ Test[
                         "XRelative" -> 2
                     |>
                 },
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -848,7 +902,15 @@ Test[
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
                 "SurfacePixelCount.Rank" -> 1,
-                "SurfacePixelCount.InverseRank" -> 2
+                "SurfacePixelCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -891,6 +953,7 @@ Test[
                 },
                 "Colors" -> {1, 7},
                 "Position" -> {6, 6},
+                "ColorCount" -> 2,
                 "Y" -> 6,
                 "X" -> 6,
                 "YInverse" -> 4,
@@ -965,6 +1028,7 @@ Test[
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {6, 6},
+                        "ColorCount" -> 1,
                         "Y" -> 6,
                         "X" -> 6,
                         "YInverse" -> 4,
@@ -1026,6 +1090,7 @@ Test[
                         "Colors" -> {1},
                         "Color" -> 1,
                         "Position" -> {7, 7},
+                        "ColorCount" -> 1,
                         "Y" -> 7,
                         "X" -> 7,
                         "YInverse" -> 3,
@@ -1054,6 +1119,9 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -1095,7 +1163,15 @@ Test[
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
                 "SurfacePixelCount.Rank" -> 2,
-                "SurfacePixelCount.InverseRank" -> 1
+                "SurfacePixelCount.InverseRank" -> 1,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[
@@ -1131,6 +1207,7 @@ Test[
         "Background" -> 0,
         "Width" -> 10,
         "Height" -> 10,
+        "ObjectCount" -> 6,
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -1229,6 +1306,32 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, 5, 5, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, -1, -1, 5, 5},
+                                {-1, 5, 5, 5, 5, 5},
+                                {7, -1, -1, -1, -1, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, -1, -1, -1, -1, 7},
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, -1, -1, 5, -1},
+                                {5, 5, 5, 5, 5, -1},
+                                {5, 5, 5, 5, 5, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
@@ -1448,6 +1551,7 @@ Test[
                 },
                 "Colors" -> {5, 7},
                 "Position" -> {1, 1},
+                "ColorCount" -> 2,
                 "Y" -> 1,
                 "X" -> 1,
                 "YInverse" -> 10,
@@ -1505,6 +1609,7 @@ Test[
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {1, 1},
+                        "ColorCount" -> 1,
                         "Y" -> 1,
                         "X" -> 1,
                         "YInverse" -> 10,
@@ -1614,6 +1719,30 @@ Test[
                                     }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, -1, -1, 10, 10},
+                                        {10, -1, -1, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, -1, -1, 10},
+                                        {10, 10, -1, -1, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -1903,6 +2032,7 @@ Test[
                         "Colors" -> {5},
                         "Color" -> 5,
                         "Position" -> {2, 2},
+                        "ColorCount" -> 1,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 9,
@@ -1931,6 +2061,9 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 3,
                 "Height.Rank" -> 1,
@@ -1968,7 +2101,15 @@ Test[
                 "FilledProportion.Rank" -> 3,
                 "FilledProportion.InverseRank" -> 1,
                 "SurfacePixelCount.Rank" -> 1,
-                "SurfacePixelCount.InverseRank" -> 5
+                "SurfacePixelCount.InverseRank" -> 5,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 2,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 2,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 2,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -2007,6 +2148,7 @@ Test[
                 "Colors" -> {7},
                 "Color" -> 7,
                 "Position" -> {1, 9},
+                "ColorCount" -> 1,
                 "Y" -> 1,
                 "X" -> 9,
                 "YInverse" -> 10,
@@ -2031,6 +2173,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 2,
+                "GeneralShapeUseCount" -> 2,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
                 "Height.Rank" -> 4,
@@ -2072,7 +2217,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 4,
                 "SurfacePixelCount.InverseRank" -> 2,
                 "ColorUseCount.Rank" -> 1,
-                "ColorUseCount.InverseRank" -> 3
+                "ColorUseCount.InverseRank" -> 3,
+                "ColorCount.Rank" -> 2,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 2,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -2111,6 +2264,7 @@ Test[
                 "Colors" -> {6},
                 "Color" -> 6,
                 "Position" -> {3, 8},
+                "ColorCount" -> 1,
                 "Y" -> 3,
                 "X" -> 8,
                 "YInverse" -> 8,
@@ -2135,6 +2289,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 2,
+                "GeneralShapeUseCount" -> 2,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
                 "Height.Rank" -> 4,
@@ -2176,7 +2333,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 4,
                 "SurfacePixelCount.InverseRank" -> 2,
                 "ColorUseCount.Rank" -> 3,
-                "ColorUseCount.InverseRank" -> 1
+                "ColorUseCount.InverseRank" -> 1,
+                "ColorCount.Rank" -> 2,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 2,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -2209,6 +2374,7 @@ Test[
                 "Colors" -> {7},
                 "Color" -> 7,
                 "Position" -> {6, 9},
+                "ColorCount" -> 1,
                 "Y" -> 6,
                 "X" -> 9,
                 "YInverse" -> 5,
@@ -2234,6 +2400,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 3,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 4,
@@ -2277,7 +2446,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 5,
                 "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 1,
-                "ColorUseCount.InverseRank" -> 3
+                "ColorUseCount.InverseRank" -> 3,
+                "ColorCount.Rank" -> 2,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 2,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 2,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -2340,6 +2517,18 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{-1, 5, 5, 5, 5, 5}, {-1, 5, 5, -1, -1, 5}, {7, 5, 5, 5, 5, 5}}
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{5, 5, 5, 5, 5, 7}, {5, -1, -1, 5, 5, -1}, {5, 5, 5, 5, 5, -1}}
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
@@ -2430,6 +2619,7 @@ Test[
                 },
                 "Colors" -> {5, 7},
                 "Position" -> {8, 5},
+                "ColorCount" -> 2,
                 "Y" -> 8,
                 "X" -> 5,
                 "YInverse" -> 3,
@@ -2488,6 +2678,7 @@ Test[
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {8, 5},
+                        "ColorCount" -> 1,
                         "Y" -> 8,
                         "X" -> 5,
                         "YInverse" -> 3,
@@ -2579,6 +2770,16 @@ Test[
                                     }
                                 ],
                                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, -1, -1, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                             |>,
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -2761,6 +2962,7 @@ Test[
                         "Colors" -> {5},
                         "Color" -> 5,
                         "Position" -> {8, 6},
+                        "ColorCount" -> 1,
                         "Y" -> 8,
                         "X" -> 6,
                         "YInverse" -> 3,
@@ -2789,6 +2991,9 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 3,
                 "Height.Rank" -> 2,
@@ -2828,7 +3033,15 @@ Test[
                 "FilledProportion.Rank" -> 2,
                 "FilledProportion.InverseRank" -> 2,
                 "SurfacePixelCount.Rank" -> 2,
-                "SurfacePixelCount.InverseRank" -> 4
+                "SurfacePixelCount.InverseRank" -> 4,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 2,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 2,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 2,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -2873,6 +3086,7 @@ Test[
                 "Colors" -> {8},
                 "Color" -> 8,
                 "Position" -> {9, 2},
+                "ColorCount" -> 1,
                 "Y" -> 9,
                 "X" -> 2,
                 "YInverse" -> 2,
@@ -2896,6 +3110,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 4,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
                 "Height.Rank" -> 3,
@@ -2935,7 +3152,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 3,
                 "SurfacePixelCount.InverseRank" -> 3,
                 "ColorUseCount.Rank" -> 2,
-                "ColorUseCount.InverseRank" -> 2
+                "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 2,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 2,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 2,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[

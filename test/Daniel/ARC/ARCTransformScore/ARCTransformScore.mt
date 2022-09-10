@@ -166,3 +166,13 @@ Test[
     ,
     TestID -> "ARCTransformScore-20220905-3095OU"
 ]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"Width" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"]|>
+    ]
+    ,
+    -1.2
+    ,
+    TestID -> "ARCTransformScore-20220909-WAIQU4"
+]

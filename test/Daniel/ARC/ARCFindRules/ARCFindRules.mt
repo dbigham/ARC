@@ -993,9 +993,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Utility`BlockUUID[
-            Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "746b3537"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Utility`BlockUUID[
+                    Daniel`ARC`ARCFindRules[
+                        Daniel`ARC`ARCParseFile[file = "746b3537"]["Train"]
+                    ]
+                ]
+            ]
         ]
     ]
     ,
@@ -1003,10 +1009,15 @@ Test[
         "FormMultiColorCompositeObjects" -> False,
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <||> -> <|
+            <|"PrimarySizeDimension.Rank" -> 1|> -> <|
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
                 "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"]
+            |>,
+            <|"PrimarySizeDimension.Rank" -> 2|> -> <|
+                "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
             |>
         }
     |>
@@ -1857,10 +1868,7 @@ Test[
                 "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
             |>,
             <|"Width.InverseRank" -> 5|> -> <|
-                "Color" -> Inactive[Plus][
-                    Daniel`ARC`ObjectValue[<|"Colors" -> {2}|>, "YInverse"],
-                    -6
-                ]
+                "Color" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputScene", "Width"], -7]
             |>,
             <|"Width.Rank" -> 1|> -> <|
                 "Color" -> Daniel`ARC`ObjectValue[
@@ -2387,4 +2395,34 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220909-RONLH4"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d0f5fe59"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Line", "Angle" -> 135|>,
+                            "Color" -> 8,
+                            "X" -> 1,
+                            "Y" -> 1,
+                            "Width" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"],
+                            "Height" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"]
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220909-GY54SK"
 ]
