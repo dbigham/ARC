@@ -442,6 +442,14 @@ ARCInferGeneralShapeUseCountPropertyValues::usage = "ARCInferGeneralShapeUseCoun
 
 ARCFindRulesForSubdividedInput::usage = "ARCFindRulesForSubdividedInput  "
 
+ARCParseGrid::usage = "ARCParseGrid  "
+
+ARCAllExamplesUseGridInInputAndOutput::usage = "ARCAllExamplesUseGridInInputAndOutput  "
+
+ARCSubdivideImageUsingGrid::usage = "ARCSubdivideImageUsingGrid  "
+
+ARCFindRulesForGridSubdivision::usage = "ARCFindRulesForGridSubdivision  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -898,6 +906,14 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             "Height" -> ImageHeight[scene[[1]]],
             (* e.g. d0f5fe59 *)
             "ObjectCount" -> Length[objects],
+            With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Grid"]]] &]},
+                If [MatchQ[grids, {_}],
+                    (* There is a single grid in the scene. *)
+                    "Grid" -> KeyDrop[grids[[1, "GridOrDivider"]], "Type"]
+                    ,
+                    Nothing
+                ]
+            ],
             "Objects" -> objects,
             "Scene" -> scene
         |>;
@@ -942,8 +958,8 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
         
         (* Remove any grids/dividers from the main object list, since we don't want them
            to get combined with other objects into composite objects. *)
-        gridsAndDividers = Select[objects, TrueQ[#["GridOrDivider"]] &];
-        objects = Select[objects, !TrueQ[#["GridOrDivider"]] &];
+        gridsAndDividers = Select[objects, AssociationQ[#["GridOrDivider"]] &];
+        objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
         
         (*ARCEcho[SimplifyObjects[gridsAndDividers]];*)
         
@@ -3582,7 +3598,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             foundRules2Q,
             workingRulesQ,
             existingRulesScore,
-            denoiseResult
+            denoiseResult,
+            (* The parsed examples using the standard parsing approach, if computed. *)
+            parsedExamples
         },
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
@@ -3595,7 +3613,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                  rules, such as in Aug 2022 how we don't yet have support for dealing with
                  AddObjects where multiple objects need to be added, and a Failure is returned. *)
         If [!TrueQ[OptionValue["SingleObject"]],
-            res = arcFindRulesHelper[examples, opts]
+            res = arcFindRulesHelper[examples, opts];
+            parsedExamples = $parsedExamples
         ];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
@@ -3713,6 +3732,17 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If both inputs and outputs have a shared grid structure, we can try subdividing
+           the input/output scenes into their individual grid cells. *)
+        If [ListQ[parsedExamples] && ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
+            res2 = ARCFindRulesForGridSubdivision[parsedExamples];
+            foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+            If [foundRulesQ2,
+                foundRulesQ = True;
+                res = res2
+            ]
+        ];
+        
         If [MatchQ[OptionValue["Denoise"], Automatic | True],
             
             workingRulesQ =
@@ -3802,6 +3832,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ruleFindings2,
             additionalRules2
         },
+        
+        $parsedExamples = Missing["NotComputedYet"];
         
         (* Helper function for producing the final return value. *)
         returnRules[rules_Association] :=
@@ -3907,6 +3939,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
                 "SubdivideInput" -> OptionValue["SubdivideInput"]
             ];
+        
+        (* If the caller is interested in capturing this we'll pass it this way. *)
+        $parsedExamples = examples;
         
         widthExpression = ARCGeneralizeValue[
             examples[[All, "Input", "Width"]],
@@ -4307,7 +4342,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"ColorCount"}
+                        {None}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -4871,7 +4906,8 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             colors,
             rows,
             columns,
-            subOutputs
+            subOutputs,
+            sceneForRowColumn
         },
         
         If [!ListQ[ruleList],
@@ -4885,28 +4921,6 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         If [TrueQ[rules["Denoise"]],
             scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
-        ];
-        
-        If [MatchQ[rules["Rules"], {Repeated[_List]}],
-            (* There is a grid of rule sets to be applied to subdivisions of the image. *)
-            rows = Length[rules["Rules"]];
-            columns = Length[rules["Rules"][[1]]];
-            subOutputs = Function[{row},
-                Function[{column},
-                    ReturnIfFailure@
-                    ARCApplyRules[
-                        scene,
-                        rules["Rules"][[row, column]]
-                    ]
-                ] /@ Range[columns]
-            ] /@ Range[rows];
-            Return[
-                ARCScene@
-                ARCCombineGridOfImages[
-                    subOutputs
-                ],
-                Module
-            ]
         ];
         
         parsedScene =
@@ -4936,6 +4950,54 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ];
         
         objects = parsedScene["Objects"];
+        
+        If [MatchQ[rules["Rules"], {Repeated[_List]}],
+            
+            (* There is a grid of rule sets to be applied to subdivisions of the image. *)
+            
+            rows = Length[rules["Rules"]];
+            columns = Length[rules["Rules"][[1]]];
+            
+            sceneForRowColumn =
+                Which[
+                    rules["Subdivision"] === "Grid",
+                        Function[{row, column},
+                            gridCell = parsedScene[["Grid", "Cells", row, column]];
+                            ARCScene[
+                                scene[[
+                                    1,
+                                    gridCell["Y"] ;; gridCell["Y"] + gridCell["Height"] - 1,
+                                    gridCell["X"] ;; gridCell["X"] + gridCell["Width"] - 1
+                                ]]
+                            ]
+                        ],
+                    True,
+                        Function[scene]
+                ];
+            
+            subOutputs = Function[{row},
+                Function[{column},
+                    ReturnIfFailure@
+                    ARCApplyRules[
+                        sceneForRowColumn[row, column],
+                        rules["Rules"][[row, column]]
+                    ]
+                ] /@ Range[columns]
+            ] /@ Range[rows];
+            
+            Return[
+                ARCScene@
+                ARCCombineGridOfImages[
+                    subOutputs,
+                    If [rules["Subdivision"] === "Grid",
+                        "GridColor" -> parsedScene["Grid", "Color"]
+                        ,
+                        Sequence @@ {}
+                    ]
+                ],
+                Module
+            ]
+        ];
         
         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
         
@@ -7258,7 +7320,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                 Replace[
                     Cases[rules, Except[_Missing]],
                     possibleRules:{__} :> (
-                        (*Echo[propertyPath -> possibleRules];*)
+                        (*Echo["possibleRules" -> propertyPath -> possibleRules];*)
                         Return[
                             property -> ARCChooseBestTransform[possibleRules],
                             Module
@@ -7539,6 +7601,7 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                         subPropertyResults === {}
                     ],
                     With[{thisTransform = ARCChooseBestTransform[DeleteMissing[subPropertyResults]]},
+                        (*Echo["Choose best alternative" -> DeleteMissing[subPropertyResults] -> thisTransform];*)
                         conclusionsSoFar = Append[conclusionsSoFar, thisTransform]
                     ];
                     conclusionsSoFar
@@ -9449,6 +9512,22 @@ ARCTransformScore[transformIn_] :=
             {0, Infinity}
         ];
         
+        (* Conclusion property value adjustments. *)
+        Replace[
+            transform,
+            {
+                (* We want to favor specifying the right side of an object using things like
+                   X2Inverse -> 1 rather than something like X2 -> 6, as the former will typically
+                   generalize better. e.g. 272f95fa *)
+                HoldPattern[Rule][
+                    "X2Inverse" | "Y2Inverse",
+                    1
+                ] :> (
+                    score += 0.05
+                )
+            }
+        ];
+        
         If [score === 0,
             Which[
                 MatchQ[transform, KeyValuePattern[{"Type" -> "Move", "Offset" -> _}]],
@@ -9583,6 +9662,10 @@ ProcessExamples[files_List] :=
     
     \calltable
         ARCNotebook[file] '' Creates or opens a notebook for an ARC example.
+    
+    Working section template:
+    
+    08ed6ac7
     
     \maintainer danielb
 *)
@@ -10963,6 +11046,12 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[10, "Minutes"],
             "CodeLength" -> 17859,
             "ExampleImplemented" -> "beb8660c"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 19}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 18288,
+            "ExampleImplemented" -> "272f95fa"
         |>
     }
 
@@ -13632,40 +13721,46 @@ ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
                    width or entire height, or both. *)
                 False,
             spansWidth && spansHeight,
+                (* Check for grid. *)
                 If [Length[colors] =!= 2 || colors[[1]] =!= -1,
                     Return[False, Module]
                 ];
+                (* The first color will be the background color (-1) and the second color
+                   will be the grid color. Todo: Multi-color grids. *)
                 color = colors[[2]];
                 firstRow = image[[1]];
                 dividerRow = Table[color, {Length[firstRow]}];
-                And[
-                    ImageWidth[image] === sceneWidth,
-                    ImageHeight[image] === sceneHeight,
-                    MatchQ[
-                        firstRow,
-                        {
-                            Repeated@
-                            PatternSequence[
-                                Repeated[-1],
-                                (* For now only allow grids where the dividers have a width of 1. *)
-                                color
-                            ],
-                            Repeated[-1]
-                        }
-                    ]
-                    ,
-                    MatchQ[
-                        image,
-                        {
-                            Repeated[firstRow],
-                            Repeated@
-                            PatternSequence[
+                Replace[
+                    And[
+                        ImageWidth[image] === sceneWidth,
+                        ImageHeight[image] === sceneHeight,
+                        MatchQ[
+                            firstRow,
+                            {
+                                Repeated@
+                                PatternSequence[
+                                    Repeated[-1],
+                                    (* For now only allow grids where the dividers have a width of 1. *)
+                                    color
+                                ],
+                                Repeated[-1]
+                            }
+                        ]
+                        ,
+                        MatchQ[
+                            image,
+                            {
                                 Repeated[firstRow],
-                                dividerRow
-                            ],
-                            Repeated[firstRow]
-                        }
-                    ]
+                                Repeated@
+                                PatternSequence[
+                                    Repeated[firstRow],
+                                    dividerRow
+                                ],
+                                Repeated[firstRow]
+                            }
+                        ]
+                    ],
+                    True -> <|"Type" -> "Grid"|>
                 ],
             spansWidth && !spansHeight,
                 (* Check for horizontal divider. *)
@@ -13673,15 +13768,18 @@ ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
                     Return[False, Module]
                 ];
                 color = colors[[1]];
-                And[
-                    y =!= 1,
-                    y =!= sceneHeight,
-                    MatchQ[
-                        image,
-                        {
-                            {Repeated[color]}
-                        }
-                    ]
+                Replace[
+                    And[
+                        y =!= 1,
+                        y =!= sceneHeight,
+                        MatchQ[
+                            image,
+                            {
+                                {Repeated[color]}
+                            }
+                        ]
+                    ],
+                    True -> <|"Type" -> "Divider", "Orientation" -> "Horizontal"|>
                 ],
             spansHeight && !spansWidth,
                 (* Check for vertical divider. *)
@@ -13689,24 +13787,27 @@ ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
                     Return[False, Module]
                 ];
                 color = colors[[1]];
-                And[
-                    x =!= 1,
-                    x =!= sceneWidth,
-                    MatchQ[
-                        image,
-                        {
-                            Repeated[{color}]
-                        }
-                    ]
+                Replace[
+                    And[
+                        x =!= 1,
+                        x =!= sceneWidth,
+                        MatchQ[
+                            image,
+                            {
+                                Repeated[{color}]
+                            }
+                        ]
+                    ],
+                    True -> <|"Type" -> "Divider", "Orientation" -> "Vertical"|>
                 ]
         ]
     ]
 
 ARCGridOrDividerQ["Objects" -> objects_List, sceneWidth_, sceneHeight_] :=
-    Module[{},
+    Module[{gridOrDivider},
         Function[{object},
-            If [TrueQ[
-                    ARCGridOrDividerQ[
+            If [AssociationQ[
+                    gridOrDivider = ARCGridOrDividerQ[
                         object["Image"][[1]],
                         object["Y"],
                         object["X"],
@@ -13714,9 +13815,18 @@ ARCGridOrDividerQ["Objects" -> objects_List, sceneWidth_, sceneHeight_] :=
                         sceneHeight
                     ]
                 ],
-                Append[
+                Join[
                     object,
-                    "GridOrDivider" -> True
+                    <|
+                        "GridOrDivider" -> Join[
+                            gridOrDivider,
+                            If [gridOrDivider["Type"] === "Grid",
+                                ARCParseGrid[object["Image"][[1]]]
+                                ,
+                                <||>
+                            ]
+                        ]
+                    |>
                 ]
                 ,
                 object
@@ -14453,7 +14563,7 @@ ARCConditionsScore[<||>] := 1.4
 Clear[ARCExpressionComplexity];
 $penaltyPointsPerExpressionCharacter = 0.5 / 50;
 ARCExpressionComplexity[exprIn_] :=
-    Module[{expr = exprIn},
+    Module[{expr = exprIn, scoreAdjustments = 0},
         
         (* Replace associations with lists so that it's easier to pick out individual
            key/values and modify them. *)
@@ -14478,6 +14588,28 @@ ARCExpressionComplexity[exprIn_] :=
             {0, Infinity}
         ];
         
+        Cases[
+            (* Before we give a bonus for numbers like 1 being present, remove images, since
+               the have lots of numbers in them, and we don't want to accidentally start
+               favoring things with images in them. *)
+            Replace[expr, _ARCScene :> "REMOVED", Infinity],
+            integer_Integer :> (
+                scoreAdjustments +=
+                    Switch[
+                        integer,
+                        0 | 1 | -1,
+                            (* If a value is 1 or 0, that tends to be favorable.
+                               I made this -0.05 originally, but then d0f5fe59 broke
+                               because it was favoring a constant expression over
+                               using InputScene.ObjectCount. *)
+                            -0.03,
+                        _,
+                            0
+                    ]
+            ),
+            Infinity
+        ];
+        
         (* Consider the complexity of the expressions. We want to be consistant
            with Occam's Razor, whereby simpler explanations are preferred.
            e.g. 05f2a901 (when implementing referenceable-components) *)
@@ -14493,12 +14625,17 @@ ARCExpressionComplexity[exprIn_] :=
                     {
                         (* We don't want rank properties to be penalized too much. *)
                         ".Rank" -> ".R",
-                        ".InverseRank" -> ".InvR"
+                        ".InverseRank" -> ".InvR",
+                        (* e.g. 272f95fa *)
+                        "XInverse" -> "XInv",
+                        "X2Inverse" -> "X2Inv",
+                        "YInverse" -> "YInv",
+                        "Y2Inverse" -> "YInv"
                     }
                 ]
             ],
             $penaltyPointsPerExpressionCharacter
-        ]
+        ] + scoreAdjustments
     ]
 
 (*!
@@ -16823,6 +16960,7 @@ ARCRulesForOutput[rules_Association] :=
         rules,
         {
             "SubdivideInput",
+            "Subdivision",
             "Denoise",
             "SceneAsSingleObject",
             "FormMultiColorCompositeObjects",
@@ -17213,14 +17351,57 @@ ARCFlipImage[ARCScene[image_List], direction_] :=
     \maintainer danielb
 *)
 Clear[ARCCombineGridOfImages];
-ARCCombineGridOfImages[gridOfImages_List] :=
-    Module[{},
-        Flatten[
-            Function[{row},
-                ARCCombineRowOfImages[
-                    gridOfImages[[row]]
+Options[ARCCombineGridOfImages] =
+{
+    "GridColor" -> None     (*< The color of the grid. *)
+};
+ARCCombineGridOfImages[gridOfImages_List, OptionsPattern[]] :=
+    Module[
+        {
+            rowCount = Length[gridOfImages],
+            columnCount = Length[gridOfImages[[1]]],
+            columnDivider = Nothing,
+            rowDivider = Nothing,
+            gridColor = OptionValue["GridColor"],
+            imageWrapper =
+                If [MatchQ[gridOfImages[[1, 1]], _ARCScene],
+                    ARCScene
+                    ,
+                    Identity
                 ]
-            ] /@ Range[Length[gridOfImages]],
+        },
+        
+        If [gridColor =!= None,
+            rowDivider = {
+                Table[
+                    gridColor,
+                    {Total[ImageWidth /@ gridOfImages[[1]]] + columnCount - 1}
+                ]
+            }
+        ];
+        
+        Flatten[
+            Activate@
+            Riffle[
+                Function[{row},
+                    If [gridColor =!= None,
+                        columnDivider =
+                            imageWrapper@
+                            Table[
+                                {gridColor},
+                                {ImageHeight[gridOfImages[[row, 1]]]}
+                            ]
+                    ];
+                    ARCCombineRowOfImages[
+                        Activate@
+                        Riffle[
+                            gridOfImages[[row]],
+                            Inactive[columnDivider]
+                        ]
+                    ]
+                ] /@ Range[rowCount],
+                Inactive[rowDivider]
+            ],
             1
         ]
     ]
@@ -17853,6 +18034,267 @@ ARCInferGeneralShapeUseCountPropertyValues[objects_List] :=
                 "GeneralShapeUseCount" -> counts[generalizeShape[object["Shape"]]]
             ]
         ] /@ objects
+    ]
+
+(*!
+    \function ARCParseGrid
+    
+    \calltable
+        ARCParseGrid[image] '' Given an image of a grid, parses it to understand the number of rows, columns, and the locations of the cells.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCParseGrid]
+    
+    \maintainer danielb
+*)
+Clear[ARCParseGrid];
+ARCParseGrid[image_List] :=
+    Module[
+        {
+            imageWidth = ImageWidth[image],
+            imageHeight = ImageHeight[image],
+            colors,
+            color,
+            rowDividerPositions,
+            columnDividerPositions,
+            x,
+            y,
+            rowCount,
+            columnCount,
+            cell,
+            cellWidth,
+            cellHeight,
+            borderThickness = 1,
+            rowResult
+        },
+        
+        colors = Sort[DeleteDuplicates[Flatten[image]]];
+        
+        (* The first color will be the background color (-1) and the second color
+           will be the grid color. Todo: Multi-color grids. *)
+        color = colors[[2]];
+        
+        rowDividerPositions = Position[
+            image[[All, 1]],
+            Except[$nonImageColor],
+            {1},
+            Heads -> False
+        ][[All, 1]];
+        
+        columnDividerPositions = Position[
+            image[[1]],
+            Except[$nonImageColor],
+            {1},
+            Heads -> False
+        ][[All, 1]];
+        
+        x = 1;
+        y = 1;
+        
+        <|
+            "RowCount" -> (rowCount = Length[rowDividerPositions] + 1),
+            "ColumnCount" -> (columnCount = Length[columnDividerPositions] + 1),
+            "Color" -> color,
+            "Cells" -> Function[{rowIndex},
+                x = 1;
+                rowResult = Function[{columnIndex},
+                    cell = <|
+                        "Y" -> y,
+                        "X" -> x,
+                        "Width" -> (
+                            cellWidth =
+                                If [columnIndex === columnCount,
+                                    imageWidth - x + 1
+                                    ,
+                                    columnDividerPositions[[columnIndex]] - x
+                                ]
+                        ),
+                        "Height" -> (
+                            cellHeight =
+                                If [rowIndex === rowCount,
+                                    imageHeight - y + 1
+                                    ,
+                                    rowDividerPositions[[rowIndex]] - y
+                                ]
+                        )
+                    |>;
+                    x += cellWidth + borderThickness;
+                    cell
+                ] /@ Range[columnCount];
+                y += cellHeight + borderThickness;
+                rowResult
+            ] /@ Range[rowCount]
+        |>
+    ]
+
+(*!
+    \function ARCAllExamplesUseGridInInputAndOutput
+    
+    \calltable
+        ARCAllExamplesUseGridInInputAndOutput[examples] '' Given some parsed examples, returns True if, for each example pair, there is the same grid present in the input and output.
+    
+    Examples:
+    
+    ARCAllExamplesUseGridInInputAndOutput[
+        ARCParseInputAndOutputScenes[ARCParseFile["272f95fa"]["Train"]]
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCAllExamplesUseGridInInputAndOutput]
+    
+    \maintainer danielb
+*)
+Clear[ARCAllExamplesUseGridInInputAndOutput];
+ARCAllExamplesUseGridInInputAndOutput[examples_List] :=
+    Module[{},
+        And[
+            AllTrue[
+                examples,
+                Function[{example},
+                    And[
+                        AssociationQ[example["Input", "Grid"]],
+                        example["Input", "Grid"] === example["Output", "Grid"]
+                    ]
+                ]
+            ],
+            examples[[All, "Input", "Grid", "RowCount"]] === examples[[All, "Output", "Grid", "RowCount"]],
+            examples[[All, "Input", "Grid", "ColumnCount"]] === examples[[All, "Output", "Grid", "ColumnCount"]]
+        ]
+    ]
+
+(*!
+    \function ARCSubdivideImageUsingGrid
+    
+    \calltable
+        ARCSubdivideImageUsingGrid[image, grid] '' Subdivides the image into a grid of sub-images, with one sub-image per grid cell.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSubdivideImageUsingGrid]
+    
+    \maintainer danielb
+*)
+Clear[ARCSubdivideImageUsingGrid];
+ARCSubdivideImageUsingGrid[ARCScene[image_], grid_Association] :=
+    Module[{subImageWidth, subImageHeight, res},
+        
+        subImageWidth = ImageWidth[image] / columns;
+        subImageHeight = ImageHeight[image] / rows;
+        
+        res = Function[{row},
+            Function[{column},
+                cell = grid[["Cells", row, column]];
+                ARCScene[
+                    image[[
+                        Span[
+                            y = cell["Y"],
+                            y + cell["Height"] - 1
+                        ],
+                        Span[
+                            x = cell["X"],
+                            x + cell["Width"] - 1
+                        ]
+                    ]]
+                ]
+            ] /@ Range[grid["ColumnCount"]]
+        ] /@ Range[grid["RowCount"]];
+        
+        res
+    ]
+
+(*!
+    \function ARCFindRulesForGridSubdivision
+    
+    \calltable
+        ARCFindRulesForGridSubdivision[examples] '' Tries to find rules by subdividing the input and output scenes into a grid of sub-images according to the grid in the scenes. Returns the found rules, or Missing if suitable rules are not found.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindRulesForGridSubdivision]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindRulesForGridSubdivision];
+ARCFindRulesForGridSubdivision[examples_List] :=
+    Module[
+        {
+            grid,
+            sceneMappings,
+            subRules,
+            subdividedRules
+        },
+        
+        sceneMappings = Function[{exampleIndex},
+            grid = examples[[exampleIndex, "Input", "Grid"]];
+            inputSubdivisions =
+                ReturnIfFailure@
+                ARCSubdivideImageUsingGrid[
+                    examples[[exampleIndex, "Input", "Scene"]],
+                    grid
+                ];
+            outputSubdivisions =
+                ReturnIfFailure@
+                ARCSubdivideImageUsingGrid[
+                    examples[[exampleIndex, "Output", "Scene"]],
+                    grid
+                ];
+            Function[{row},
+                Function[{column},
+                    {row, column} -> <|
+                        "Input" -> inputSubdivisions[[row, column]],
+                        "Output" -> outputSubdivisions[[row, column]]
+                    |>
+                ] /@ Range[grid["ColumnCount"]]
+            ] /@ Range[grid["RowCount"]]
+        ] /@ Range[Length[examples]];
+        
+        sceneMappings = GroupBy[Flatten[sceneMappings], First -> Last];
+        
+        subdividedRules = Function[{row},
+            Function[{column},
+                subRules =
+                    Block[{$findingRulesForSubdivision = True},
+                        If [row === 1 && column === 2,
+                            Global`examples = sceneMappings[{row, column}]
+                        ];
+                        ARCFindRules[
+                            sceneMappings[{row, column}],
+                            (* Higher level code in ARCFindRules will control whether it tries again
+                               setting the global variable for allowing rules with one example. *)
+                            "SettleForOneExamplePerRule" -> False
+                        ]
+                    ];
+                (*ARCEcho2[{row, column} -> subRules];*)
+                If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
+                    (*Echo["ARCFindRulesForGridSubdivision: No rules found" -> {row, column}];*)
+                    Return[Missing["NotFound"], Block]
+                ];
+                subRules
+            ] /@ Range[grid["ColumnCount"]]
+        ] /@ Range[grid["RowCount"]];
+        
+        res = <|
+            "Subdivision" -> "Grid",
+            "Rules" -> subdividedRules
+        |>
     ]
 
 End[]

@@ -167,3 +167,11 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220909-TYUQI3"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[{"Width" -> 6, "X2" -> 6, "X2Inverse" -> 1}]
+    ,
+    "X2Inverse" -> 1
+    ,
+    TestID -> "ARCChooseBestTransform-20220910-Q2YR41"
+]

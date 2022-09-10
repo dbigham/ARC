@@ -30,7 +30,7 @@ Test[
         ]
     ]
     ,
-    True
+    <|"Type" -> "Grid"|>
     ,
     TestID -> "ARCGridOrDividerQ-20220820-RQ5QYR"
 ]
@@ -40,7 +40,7 @@ Test[
         Daniel`ARC`ARCGridOrDividerQ[{{5}, {5}, {5}, {5}}, 1, 3, 5, 4]
     ]
     ,
-    True
+    <|"Type" -> "Divider", "Orientation" -> "Vertical"|>
     ,
     TestID -> "ARCGridOrDividerQ-20220820-ORUTJS"
 ]
@@ -50,7 +50,7 @@ Test[
         Daniel`ARC`ARCGridOrDividerQ[{{5, 5, 5, 5, 5}}, 3, 1, 5, 4]
     ]
     ,
-    True
+    <|"Type" -> "Divider", "Orientation" -> "Horizontal"|>
     ,
     TestID -> "ARCGridOrDividerQ-20220820-BZLAT3"
 ]
@@ -100,7 +100,10 @@ Test[
         ]
     ]
     ,
-    <|Missing["KeyAbsent", "GridOrDivider"] -> 7, True -> 1|>
+    <|
+        Missing["KeyAbsent", "GridOrDivider"] -> 7,
+        <|"Type" -> "Divider", "Orientation" -> "Vertical"|> -> 1
+    |>
     ,
     TestID -> "ARCGridOrDividerQ-20220820-82AR2Q"
 ]
@@ -121,4 +124,55 @@ Test[
     False
     ,
     TestID -> "ARCGridOrDividerQ-20220821-RHMMV3"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCGridOrDividerQ[
+                "Objects" -> Daniel`ARC`ARCImageRegionToObject[
+                    Utility`ReturnIfFailure[
+                        Daniel`ARC`ARCContiguousImageRegions[
+                            Daniel`ARC`ARCParseFile["272f95fa"][[1, "Train", 1, "Input"]],
+                            "Background" -> 0
+                        ]
+                    ],
+                    13,
+                    9
+                ],
+                19,
+                18
+            ][[
+                All,
+                "GridOrDivider"
+            ]]
+        ]
+    ]
+    ,
+    {
+        <|
+            "Type" -> "Grid",
+            "RowCount" -> 3,
+            "ColumnCount" -> 3,
+            "Cells" -> {
+                {
+                    <|"Y" -> 1, "X" -> 1, "Width" -> 4, "Height" -> 2|>,
+                    <|"Y" -> 1, "X" -> 6, "Width" -> 6, "Height" -> 2|>,
+                    <|"Y" -> 1, "X" -> 13, "Width" -> 7, "Height" -> 2|>
+                },
+                {
+                    <|"Y" -> 4, "X" -> 1, "Width" -> 4, "Height" -> 4|>,
+                    <|"Y" -> 4, "X" -> 6, "Width" -> 6, "Height" -> 4|>,
+                    <|"Y" -> 4, "X" -> 13, "Width" -> 7, "Height" -> 4|>
+                },
+                {
+                    <|"Y" -> 9, "X" -> 1, "Width" -> 4, "Height" -> 10|>,
+                    <|"Y" -> 9, "X" -> 6, "Width" -> 6, "Height" -> 10|>,
+                    <|"Y" -> 9, "X" -> 13, "Width" -> 7, "Height" -> 10|>
+                }
+            }
+        |>
+    }
+    ,
+    TestID -> "ARCGridOrDividerQ-20220910-8PMBAH"
 ]

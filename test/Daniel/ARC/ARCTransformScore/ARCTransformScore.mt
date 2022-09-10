@@ -23,7 +23,7 @@ Test[
         ]
     ]
     ,
-    -0.7000000000000001
+    -0.65
     ,
     TestID -> "ARCTransformScore-20220804-R5DIE5"
 ]
@@ -41,7 +41,7 @@ Test[
         ]
     ]
     ,
-    -1.1800000000000002
+    -1.13
     ,
     TestID -> "ARCTransformScore-20220804-P26PZ7"
 ]
@@ -59,7 +59,7 @@ Test[
         ]
     ]
     ,
-    -1.72
+    -1.67
     ,
     TestID -> "ARCTransformScore-20220804-XKHR3Z"
 ]
@@ -71,7 +71,7 @@ Test[
         ]
     ]
     ,
-    -0.31999999999999995
+    -0.21999999999999995
     ,
     TestID -> "ARCTransformScore-20220805-0X48JF"
 ]
@@ -132,37 +132,41 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|
-            "X" -> Inactive[Plus][
-                Daniel`ARC`ObjectValue[
-                    <|"Colors" -> {1}, "Context" -> "Component"|>,
-                    "XRelative"
-                ],
-                1
-            ]
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "X" -> Inactive[Plus][
+                    Daniel`ARC`ObjectValue[
+                        <|"Colors" -> {1}, "Context" -> "Component"|>,
+                        "XRelative"
+                    ],
+                    1
+                ]
+            |>
+        ]
     ]
     ,
-    -0.6300000000000001
+    -0.5300000000000001
     ,
     TestID -> "ARCTransformScore-20220905-TREZ4Z"
 ]
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|
-            "X" -> Inactive[Plus][
-                Daniel`ARC`ObjectValue[
-                    <|"XMiddle" -> 3, "Context" -> "Component"|>,
-                    "Width"
-                ],
-                1
-            ]
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "X" -> Inactive[Plus][
+                    Daniel`ARC`ObjectValue[
+                        <|"XMiddle" -> 3, "Context" -> "Component"|>,
+                        "Width"
+                    ],
+                    1
+                ]
+            |>
+        ]
     ]
     ,
-    -1.1
+    -1.05
     ,
     TestID -> "ARCTransformScore-20220905-3095OU"
 ]
@@ -175,4 +179,22 @@ Test[
     -1.2
     ,
     TestID -> "ARCTransformScore-20220909-WAIQU4"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore["X2" -> 6]
+    ,
+    -0.07
+    ,
+    TestID -> "ARCTransformScore-20220910-SLVDL3"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore["X2Inverse" -> 1]
+    ]
+    ,
+    0.
+    ,
+    TestID -> "ARCTransformScore-20220910-WIS6O9"
 ]

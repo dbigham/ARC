@@ -177,3 +177,199 @@ Test[
     ,
     TestID -> "ARCApplyRules-20220906-3546LC"
 ]
+
+Test[
+    With[
+        {parsedFile = Daniel`ARC`ARCParseFile[file = "272f95fa"]},
+        Daniel`ARC`ARCApplyRules[
+            parsedFile["Test", 1, "Input"],
+            <|
+                "Subdivision" -> "Grid",
+                "Rules" -> {
+                    {
+                        <|"Rules" -> {}|>,
+                        <|
+                            "Rules" -> {
+                                <|
+                                    "Transform" -> <|
+                                        "Type" -> "AddObjects",
+                                        "Objects" -> {
+                                            <|
+                                                "Shape" -> <|
+                                                    "Name" -> "Rectangle",
+                                                    "Filled" -> True
+                                                |>,
+                                                "Color" -> 2,
+                                                "X" -> 1,
+                                                "Y" -> 1,
+                                                "X2Inverse" -> 1,
+                                                "Y2Inverse" -> 1
+                                            |>
+                                        }
+                                    |>
+                                |>
+                            }
+                        |>,
+                        <|"Rules" -> {}|>
+                    },
+                    {
+                        <|
+                            "Rules" -> {
+                                <|
+                                    "Transform" -> <|
+                                        "Type" -> "AddObjects",
+                                        "Objects" -> {
+                                            <|
+                                                "Shape" -> <|
+                                                    "Name" -> "Square",
+                                                    "Filled" -> True
+                                                |>,
+                                                "Color" -> 4,
+                                                "X" -> 1,
+                                                "Y" -> 1,
+                                                "X2Inverse" -> 1,
+                                                "Y2Inverse" -> 1
+                                            |>
+                                        }
+                                    |>
+                                |>
+                            }
+                        |>,
+                        <|
+                            "Rules" -> {
+                                <|
+                                    "Transform" -> <|
+                                        "Type" -> "AddObjects",
+                                        "Objects" -> {
+                                            <|
+                                                "Shape" -> <|
+                                                    "Name" -> "Rectangle",
+                                                    "Filled" -> True
+                                                |>,
+                                                "Color" -> 6,
+                                                "X" -> 1,
+                                                "Y" -> 1,
+                                                "X2Inverse" -> 1,
+                                                "Y2Inverse" -> 1
+                                            |>
+                                        }
+                                    |>
+                                |>
+                            }
+                        |>,
+                        <|
+                            "Rules" -> {
+                                <|
+                                    "Transform" -> <|
+                                        "Type" -> "AddObjects",
+                                        "Objects" -> {
+                                            <|
+                                                "Shape" -> <|
+                                                    "Name" -> "Rectangle",
+                                                    "Filled" -> True
+                                                |>,
+                                                "Color" -> 3,
+                                                "X" -> 1,
+                                                "Y" -> 1,
+                                                "X2Inverse" -> 1,
+                                                "Y2Inverse" -> 1
+                                            |>
+                                        }
+                                    |>
+                                |>
+                            }
+                        |>
+                    },
+                    {
+                        <|"Rules" -> {}|>,
+                        <|
+                            "Rules" -> {
+                                <|
+                                    "Transform" -> <|
+                                        "Type" -> "AddObjects",
+                                        "Objects" -> {
+                                            <|
+                                                "Shape" -> <|
+                                                    "Name" -> "Rectangle",
+                                                    "Filled" -> True
+                                                |>,
+                                                "Color" -> 1,
+                                                "X" -> 1,
+                                                "Y" -> 1,
+                                                "X2Inverse" -> 1,
+                                                "Y2Inverse" -> 1
+                                            |>
+                                        }
+                                    |>
+                                |>
+                            }
+                        |>,
+                        <|"Rules" -> {}|>
+                    }
+                }
+            |>
+        ]
+    ]
+    ,
+    Daniel`ARC`ARCScene[
+        {
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0},
+            {8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 8, 6, 6, 6, 6, 8, 3, 3, 3, 3, 3, 3},
+            {8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+            {0, 0, 0, 8, 1, 1, 1, 1, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 1, 1, 1, 1, 8, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 8, 1, 1, 1, 1, 8, 0, 0, 0, 0, 0, 0}
+        }
+    ]
+    ,
+    TestID -> "ARCApplyRules-20220910-4EHF2R"
+]
+
+Test[
+    With[
+        {parsedFile = Daniel`ARC`ARCParseFile[file = "8be77c9e"]},
+        Daniel`ARC`ARCApplyRules[
+            parsedFile["Test", 1, "Input"],
+            <|
+                "SceneAsSingleObject" -> True,
+                "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+                "Rules" -> {
+                    {
+                        <|
+                            "SceneAsSingleObject" -> True,
+                            "Rules" -> {<||> -> <|"Same" -> True|>}
+                        |>
+                    },
+                    {
+                        <|
+                            "SceneAsSingleObject" -> True,
+                            "Rules" -> {
+                                <||> -> <|
+                                    "Transform" -> <|
+                                        "Type" -> "Flip",
+                                        "Direction" -> "Vertical"
+                                    |>
+                                |>
+                            }
+                        |>
+                    }
+                }
+            |>
+        ]
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{0, 0, 0}, {0, 0, 1}, {1, 0, 0}, {1, 0, 0}, {0, 0, 1}, {0, 0, 0}}]
+    ,
+    TestID -> "ARCApplyRules-20220910-597ORO"
+]

@@ -3198,6 +3198,7 @@ Test[
         "Background" -> 0,
         "Width" -> 3,
         "Height" -> 3,
+        "ObjectCount" -> 3,
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -3230,6 +3231,7 @@ Test[
                 "Colors" -> {1},
                 "Color" -> 1,
                 "Position" -> {2, 2},
+                "ColorCount" -> 1,
                 "Y" -> 2,
                 "X" -> 2,
                 "YInverse" -> 2,
@@ -3255,6 +3257,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 1,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 1,
                 "Width.Rank" -> 3,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 3,
@@ -3298,7 +3303,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 3,
                 "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 3,
-                "ColorUseCount.InverseRank" -> 1
+                "ColorUseCount.InverseRank" -> 1,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 2,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>,
             <|
                 "UUID" -> 0,
@@ -3331,6 +3344,18 @@ Test[
                             {{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}
                         ],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
@@ -3374,6 +3399,7 @@ Test[
                 "Colors" -> {2},
                 "Color" -> 2,
                 "Position" -> {1, 1},
+                "ColorCount" -> 1,
                 "Y" -> 1,
                 "X" -> 1,
                 "YInverse" -> 3,
@@ -3399,6 +3425,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 2,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 3,
                 "Height.Rank" -> 1,
@@ -3442,7 +3471,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 1,
                 "SurfacePixelCount.InverseRank" -> 3,
                 "ColorUseCount.Rank" -> 1,
-                "ColorUseCount.InverseRank" -> 3
+                "ColorUseCount.InverseRank" -> 3,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 2
             |>,
             <|
                 "UUID" -> 0,
@@ -3465,6 +3502,14 @@ Test[
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {-1, 10}}],
                         "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {-1, 10}}],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, -1}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[
@@ -3503,6 +3548,7 @@ Test[
                 "Colors" -> {8},
                 "Color" -> 8,
                 "Position" -> {2, 2},
+                "ColorCount" -> 1,
                 "Y" -> 2,
                 "X" -> 2,
                 "YInverse" -> 2,
@@ -3526,6 +3572,9 @@ Test[
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 3,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 1,
+                "GeneralShapeUseCount" -> 2,
                 "Width.Rank" -> 2,
                 "Width.InverseRank" -> 2,
                 "Height.Rank" -> 2,
@@ -3565,7 +3614,15 @@ Test[
                 "SurfacePixelCount.Rank" -> 2,
                 "SurfacePixelCount.InverseRank" -> 2,
                 "ColorUseCount.Rank" -> 2,
-                "ColorUseCount.InverseRank" -> 2
+                "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 2
             |>
         },
         "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]
@@ -3591,6 +3648,7 @@ Test[
         "Background" -> 0,
         "Width" -> 9,
         "Height" -> 9,
+        "ObjectCount" -> 4,
         "Objects" -> {
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{5, 1, 5}, {1, -1, 1}, {5, 1, 5}}],
@@ -3644,6 +3702,7 @@ Test[
         "Background" -> 0,
         "Width" -> 10,
         "Height" -> 10,
+        "ObjectCount" -> 4,
         "Objects" -> {
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{8, 8, -1}, {8, 8, 8}}],
@@ -3698,6 +3757,7 @@ Test[
         "Background" -> 5,
         "Width" -> 10,
         "Height" -> 10,
+        "ObjectCount" -> 4,
         "Objects" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {2, 2}|>,
             <|"Image" -> Daniel`ARC`ARCScene[{{3}}], "Position" -> {2, 9}|>,
@@ -3740,6 +3800,7 @@ Test[
         "Background" -> 0,
         "Width" -> 9,
         "Height" -> 9,
+        "ObjectCount" -> 3,
         "Objects" -> {
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}}],
@@ -3793,6 +3854,7 @@ Test[
         "Background" -> 0,
         "Width" -> 3,
         "Height" -> 3,
+        "ObjectCount" -> 1,
         "Objects" -> {
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{6, 6, 6}, {-1, -1, -1}, {6, 6, -1}}],
@@ -3805,4 +3867,40 @@ Test[
     |>
     ,
     TestID -> "ARCParseScene-20220902-M55N6G"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            DevTools`ERP`NormalizeOutput[
+                Daniel`ARC`ARCParseScene[
+                    Daniel`ARC`ARCParseFile["272f95fa"]["Train", 1, "Input"]
+                ]["Grid"]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "RowCount" -> 3,
+        "ColumnCount" -> 3,
+        "Cells" -> {
+            {
+                <|"Y" -> 1, "X" -> 1, "Width" -> 4, "Height" -> 2|>,
+                <|"Y" -> 1, "X" -> 6, "Width" -> 6, "Height" -> 2|>,
+                <|"Y" -> 1, "X" -> 13, "Width" -> 7, "Height" -> 2|>
+            },
+            {
+                <|"Y" -> 4, "X" -> 1, "Width" -> 4, "Height" -> 4|>,
+                <|"Y" -> 4, "X" -> 6, "Width" -> 6, "Height" -> 4|>,
+                <|"Y" -> 4, "X" -> 13, "Width" -> 7, "Height" -> 4|>
+            },
+            {
+                <|"Y" -> 9, "X" -> 1, "Width" -> 4, "Height" -> 10|>,
+                <|"Y" -> 9, "X" -> 6, "Width" -> 6, "Height" -> 10|>,
+                <|"Y" -> 9, "X" -> 13, "Width" -> 7, "Height" -> 10|>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCParseScene-20220910-6XK3AR"
 ]

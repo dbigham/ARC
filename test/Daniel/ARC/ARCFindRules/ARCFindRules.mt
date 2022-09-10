@@ -430,10 +430,10 @@ Test[
     ]
     ,
     {
-        <|"Shape" -> <|"Name" -> "Square", "Filled" -> False|>|> -> <|
+        <|"HollowCount" -> 0|> -> <|"Same" -> True|>,
+        <|"HollowCount" -> 1|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 2, -1}, {2, 2, 2}, {-1, 2, -1}}]
-        |>,
-        <|"Shape" -> Except[<|"Name" -> "Square", "Filled" -> False|>]|> -> <|"Same" -> True|>
+        |>
     }
     ,
     TestID -> "ARCFindRules-20220819-F8C648"
@@ -1753,22 +1753,26 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "bdad9b1f"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "bdad9b1f"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Colors" -> {2}|> -> <|
-                "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
-                "X" -> 1,
-                "X2" -> 6,
+            <|"Width" -> 1|> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                "Y2Inverse" -> 1,
                 "ZOrder" -> 1
             |>,
-            <|"Colors" -> {8}|> -> <|
-                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
-                "Y2" -> 6,
+            <|"Width" -> 2|> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                "X" -> 1,
+                "X2Inverse" -> 1,
                 "ZOrder" -> 1
             |>,
             <|
@@ -1868,7 +1872,10 @@ Test[
                 "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
             |>,
             <|"Width.InverseRank" -> 5|> -> <|
-                "Color" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputScene", "Width"], -7]
+                "Color" -> Inactive[Plus][
+                    Daniel`ARC`ObjectValue[<|"Colors" -> {1}|>, "Width.InverseRank"],
+                    1
+                ]
             |>,
             <|"Width.Rank" -> 1|> -> <|
                 "Color" -> Daniel`ARC`ObjectValue[
@@ -2443,4 +2450,123 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220910-Q4IHSD"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "272f95fa"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> "Grid",
+        "Rules" -> {
+            {
+                <|"Rules" -> {}|>,
+                <|
+                    "Rules" -> {
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                                        "Color" -> 2,
+                                        "X" -> 1,
+                                        "Y" -> 1,
+                                        "X2Inverse" -> 1,
+                                        "Y2Inverse" -> 1
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>,
+                <|"Rules" -> {}|>
+            },
+            {
+                <|
+                    "Rules" -> {
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Square", "Filled" -> True|>,
+                                        "Color" -> 4,
+                                        "X" -> 1,
+                                        "Y" -> 1,
+                                        "X2Inverse" -> 1,
+                                        "Y2Inverse" -> 1
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>,
+                <|
+                    "Rules" -> {
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                                        "Color" -> 6,
+                                        "X" -> 1,
+                                        "Y" -> 1,
+                                        "X2Inverse" -> 1,
+                                        "Y2Inverse" -> 1
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>,
+                <|
+                    "Rules" -> {
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                                        "Color" -> 3,
+                                        "X" -> 1,
+                                        "Y" -> 1,
+                                        "X2Inverse" -> 1,
+                                        "Y2Inverse" -> 1
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>
+            },
+            {
+                <|"Rules" -> {}|>,
+                <|
+                    "Rules" -> {
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                                        "Color" -> 1,
+                                        "X" -> 1,
+                                        "Y" -> 1,
+                                        "X2Inverse" -> 1,
+                                        "Y2Inverse" -> 1
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>,
+                <|"Rules" -> {}|>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220910-PQFY4J"
 ]
