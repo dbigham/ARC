@@ -2426,3 +2426,21 @@ Test[
     ,
     TestID -> "ARCFindRules-20220909-GY54SK"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "beb8660c"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "X" -> Daniel`ARC`ObjectValue["InputObject", "Width.Rank"],
+                "YInverse" -> Daniel`ARC`ObjectValue["InputObject", "Width.Rank"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220910-Q4IHSD"
+]

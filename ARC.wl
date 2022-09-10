@@ -4307,7 +4307,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"ColorCount"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -5457,6 +5457,36 @@ ARCApplyConclusion[key:"Y2Inverse", y2Inverse_Integer, objectIn_Association, obj
         Sett[
             objectOut,
             "Height" -> (scene["Height"] - y2Inverse + 1) - y + 1
+        ]
+    ]
+
+ARCApplyConclusion[key:"YInverse", yInverse_Integer, objectIn_Association, objectOut_Association, scene_Association] :=
+    Module[{y},
+        Sett[
+            objectOut,
+            {
+                "Y" -> (y = scene["Height"] - yInverse + 1),
+                If [ListQ[objectOut["Position"]],
+                    "Position" -> ReplacePart[objectOut["Position"], 1 -> y]
+                    ,
+                    Nothing
+                ]
+            }
+        ]
+    ]
+
+ARCApplyConclusion[key:"XInverse", xInverse_Integer, objectIn_Association, objectOut_Association, scene_Association] :=
+    Module[{x},
+        Sett[
+            objectOut,
+            {
+                "X" -> (x = scene["Width"] - xInverse + 1),
+                If [ListQ[objectOut["Position"]],
+                    "Position" -> ReplacePart[objectOut["Position"], 2 -> x]
+                    ,
+                    Nothing
+                ]
+            }
         ]
     ]
 
@@ -6662,6 +6692,10 @@ $transformTypes = <|
                 "MinimalPropertySets" -> {
                     (* For 45 degree and 135 degree lines. e.g. 1f876c06 *)
                     {"Name", "Angle"}
+                    (* e.g. b548a754
+                       Since the above input isn't yet working, and this is breaking 50cb2852 for
+                       some reason, we won't enable this yet. *)
+                    (*{"Name", "Filled", "Interior", "Border"}*)
                 }
             |>
         }
@@ -7016,7 +7050,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Image",
+        (*If [property === "Shape",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -10923,6 +10957,12 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 9}],
             "CodeLength" -> 17816,
             "ExampleImplemented" -> "fcc82909"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 19}],
+            "ImplementationTime" -> Quantity[10, "Minutes"],
+            "CodeLength" -> 17859,
+            "ExampleImplemented" -> "beb8660c"
         |>
     }
 
