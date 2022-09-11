@@ -19,3 +19,15 @@ Test[
     ,
     TestID -> "AssociationTranspose-20220724-29T66F"
 ]
+
+Test[
+    Daniel`ARC`AssociationTranspose[{<|"a" -> 1, "b" -> 4|>, <|"b" -> 5|>, <|"c" -> 3|>}]
+    ,
+    <|
+        "a" -> {1, Missing["KeyAbsent", "a"], Missing["KeyAbsent", "a"]},
+        "b" -> {4, 5, Missing["KeyAbsent", "b"]},
+        "c" -> {Missing["KeyAbsent", "c"], Missing["KeyAbsent", "c"], 3}
+    |>
+    ,
+    TestID -> "AssociationTranspose-20220911-PJVJ0R"
+]

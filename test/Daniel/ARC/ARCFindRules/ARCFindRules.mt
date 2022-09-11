@@ -1764,15 +1764,15 @@ Test[
     <|
         "FormMultiColorCompositeObjects" -> False,
         "Rules" -> {
-            <|"Width" -> 1|> -> <|
-                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
-                "Y2Inverse" -> 1,
-                "ZOrder" -> 1
-            |>,
-            <|"Width" -> 2|> -> <|
+            <|"Colors" -> {2}|> -> <|
                 "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
                 "X" -> 1,
                 "X2Inverse" -> 1,
+                "ZOrder" -> 1
+            |>,
+            <|"Colors" -> {8}|> -> <|
+                "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                "Y2Inverse" -> 1,
                 "ZOrder" -> 1
             |>,
             <|
@@ -2569,4 +2569,29 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220910-PQFY4J"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6773b310"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> "Pixels"|>,
+        "Rules" -> <|
+            "SceneAsSingleObject" -> True,
+            "Width" -> Inactive[
+                Daniel`ARC`ObjectValue["InputScene", "Width"]*0.3333333333333333
+            ],
+            "Height" -> Inactive[
+                Daniel`ARC`ObjectValue["InputScene", "Height"]*0.3333333333333333
+            ],
+            "Rules" -> {
+                <|"FilledArea" -> 1|> -> <|"Image" -> Daniel`ARC`ARCScene[{{-1}}]|>,
+                <|"FilledArea" -> 2|> -> <|"Image" -> Daniel`ARC`ARCScene[{{1}}]|>
+            }
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220911-0EVEKZ"
 ]

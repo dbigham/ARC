@@ -66,3 +66,70 @@ Test[
     ,
     TestID -> "ARCFindPropertyToInferValues-20220724-U9ITMB"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCFindPropertyToInferValues[
+            {"Y"},
+            {
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}}],
+                    "PixelPositions" -> {{2, 8}, {2, 9}, {3, 8}, {3, 9}},
+                    "Colors" -> {1},
+                    "Width" -> 2,
+                    "Height" -> 2,
+                    "Position" -> {2, 8},
+                    "Y" -> 1,
+                    "X" -> 8,
+                    "AspectRatio" -> 1,
+                    "Area" -> 4,
+                    "FilledArea" -> 4
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1, 1, 1}, {1, 1, 1}}],
+                    "PixelPositions" -> {{6, 5}, {6, 6}, {6, 7}, {7, 5}, {7, 6}, {7, 7}},
+                    "Colors" -> {1},
+                    "Width" -> 3,
+                    "Height" -> 2,
+                    "Position" -> {6, 5},
+                    "Y" -> 1,
+                    "X" -> 5,
+                    "AspectRatio" -> 3/2,
+                    "Area" -> 6,
+                    "FilledArea" -> 6
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1}, {1}}],
+                    "PixelPositions" -> {{3, 2}, {4, 2}},
+                    "Colors" -> {1},
+                    "Width" -> 1,
+                    "Height" -> 2,
+                    "Position" -> {3, 2},
+                    "Y" -> 2,
+                    "X" -> 2,
+                    "AspectRatio" -> 1/2,
+                    "Area" -> 2,
+                    "FilledArea" -> 2
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{1}, {1}}],
+                    "PixelPositions" -> {{3, 2}, {4, 2}},
+                    "Colors" -> {1},
+                    "Width" -> 1,
+                    "Height" -> 2,
+                    "Position" -> {3, 2},
+                    "Y" -> 2,
+                    "X" -> 2,
+                    "AspectRatio" -> 1/2,
+                    "Area" -> 2,
+                    "FilledArea" -> 2
+                |>
+            },
+            {True, True, False, False}
+        ]
+    ]
+    ,
+    <|"Y" -> 1|>
+    ,
+    TestID -> "ARCFindPropertyToInferValues-20220911-SRFP0H"
+]

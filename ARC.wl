@@ -454,6 +454,12 @@ ARCCombineDividersIntoGrid::usage = "ARCCombineDividersIntoGrid  "
 
 ARCMemoized::usage = "ARCMemoized  "
 
+ARCFindRulesForGridSubdivisionToOutputPixels::usage = "ARCFindRulesForGridSubdivisionToOutputPixels  "
+
+ARCGridSizeMatchesOutputPixelDimensions::usage = "ARCGridSizeMatchesOutputPixelDimensions  "
+
+ARCPixelsAsScenes::usage = "ARCPixelsAsScenes  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3783,6 +3789,31 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If inputs have a grid structure, and the output width and height (in pixels) always
+           matches the number of grid rows/columns, we can try finding rules to map from grid
+           cells to output pixels. *)
+        If [And[
+                ListQ[parsedExamples],
+                ARCGridSizeMatchesOutputPixelDimensions[parsedExamples]
+            ],
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+            
+            If [!TrueQ[workingRulesQ],
+                res2 =
+                    ARCFindRulesForGridSubdivisionToOutputPixels[parsedExamples];
+                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = res2
+                ]
+            ]
+        ];
+        
         If [MatchQ[OptionValue["Denoise"], Automatic | True],
             
             workingRulesQ =
@@ -4964,10 +4995,12 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             rows,
             columns,
             subOutputs,
-            sceneForRowColumn
+            inputGridExpectedQ = False,
+            sceneForRowColumn,
+            rulesForRowColumn
         },
         
-        If [!ListQ[ruleList],
+        If [!ListQ[ruleList] && !AssociationQ[ruleList],
             ReturnFailure[
                 "ARCApplyRuleFailure",
                 "No rules were found.",
@@ -5008,16 +5041,57 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         objects = parsedScene["Objects"];
         
-        If [MatchQ[rules["Rules"], {Repeated[_List]}],
+        If [Or[
+                inputGridExpectedQ = MatchQ[rules["Subdivision"], "Grid" | KeyValuePattern["Input" -> "Grid"]],
+                MatchQ[rules["Rules"], {Repeated[_List]}]
+            ],
             
             (* There is a grid of rule sets to be applied to subdivisions of the image. *)
             
-            rows = Length[rules["Rules"]];
-            columns = Length[rules["Rules"][[1]]];
+            If [And[
+                    TrueQ[inputGridExpectedQ],
+                    !AssociationQ[parsedScene[["Grid"]]]
+                ],
+                ReturnFailure[
+                    "ExpectedGridFailure",
+                    "The rules indicate that the input should be a grid, but a grid wasn't found.",
+                    "Scene" -> scene
+                ]
+            ];
+            
+            Which[
+                MatchQ[rules["Rules"], {Repeated[_List]}],
+                    rows = Length[rules["Rules"]];
+                    columns = Length[rules["Rules"][[1]]];
+                    rulesForRowColumn = Function[{row, column},
+                        rules["Rules"][[row, column]]
+                    ],
+                TrueQ[inputGridExpectedQ],
+                    rows = parsedScene[["Grid", "RowCount"]];
+                    columns = parsedScene[["Grid", "ColumnCount"]];
+                    rulesForRowColumn = Function[{row, column},
+                        (* We were given a single set of rules that should be applied to
+                           every grid cell sub-scene. *)
+                        rules["Rules"]
+                    ],
+                True,
+                    ReturnFailure[
+                        "SubdivisionFailure",
+                        "When applying rules, it appeared that there was a subdivision, but neither the rules were a grid structure nor was the Grid attribute specified.",
+                        "Rules" -> rules
+                    ]
+            ];
             
             sceneForRowColumn =
                 Which[
-                    rules["Subdivision"] === "Grid",
+                    MatchQ[rules["Subdivision"], "Grid" | KeyValuePattern["Input" -> "Grid"]],
+                        If [!AssociationQ[parsedScene[["Grid"]]],
+                            ReturnFailure[
+                                "ExpectedGridFailure",
+                                "The rules indicate that the input should be a grid, but a grid wasn't found.",
+                                "Scene" -> scene
+                            ]
+                        ];
                         Function[{row, column},
                             gridCell = parsedScene[["Grid", "Cells", row, column]];
                             ARCScene[
@@ -5036,8 +5110,9 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                 Function[{column},
                     ReturnIfFailure@
                     ARCApplyRules[
+                        ReturnIfFailure@
                         sceneForRowColumn[row, column],
-                        rules["Rules"][[row, column]]
+                        rulesForRowColumn[row, column]
                     ]
                 ] /@ Range[columns]
             ] /@ Range[rows];
@@ -5046,7 +5121,7 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                 ARCScene@
                 ARCCombineGridOfImages[
                     subOutputs,
-                    If [rules["Subdivision"] === "Grid",
+                    If [rules["Subdivision"] === "Grid" && !rules["Subdivision", "Output"] === "Pixels",
                         "GridColor" -> parsedScene["Grid", "Color"]
                         ,
                         Sequence @@ {}
@@ -5238,6 +5313,7 @@ ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
         object
     ]
 
+ARCApplyRules::invid = "Invalid image detected.";
 ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
     Module[{object = objectIn, pattern = rule[[1]], conclusion = rule[[2]]},
         
@@ -5252,6 +5328,10 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
             (* The rule matches, so apply its conclusion. *)
             object = ARCApplyConclusion[object, conclusion, scene];
         ];
+        
+        (*If [Length[DeleteDuplicates[Length /@ object["Image"][[1]]]] > 1,
+            Message[ARCApplyRules::invid]
+        ];*)
         
         object
     ]
@@ -7738,7 +7818,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
     ]@
     Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
-        $debugProperty = "Width";
+        $debugProperty = "AddObjectQ";
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
@@ -7767,6 +7847,8 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             Function[{reference},
                 
                 Which[
+                    reference === Object["InputScene"],
+                        objects = theseExamples[[All, "Input"]],
                     reference === Object["InputObject"],
                         objects = values[[All, "Input"]],
                     And[
@@ -7905,7 +7987,14 @@ Options[ARCFindPropertyToInferValues] =
     "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
 };
 ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:OptionsPattern[]] :=
-    Module[{transposedObjects, matchingProperties, values2},
+    Module[
+        {
+            transposedObjects,
+            matchingProperties,
+            positionOfTrueValue,
+            valueThatImpliesTrue,
+            values2
+        },
         
         transposedObjects = AssociationTranspose[
             KeyDrop[
@@ -7913,11 +8002,98 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
                 {"UUID"}
             ]
         ];
-        
+        Global`djb2 = transposedObjects;
         (* What properties of these objects appear to be usable to infer these values? *)
-        matchingProperties = Select[
-            transposedObjects,
-            # === values &
+        If [MatchQ[values, {Repeated[True | False]}] && Length[DeleteDuplicates[values]] > 1,
+            
+            (* NOTE: The below code was written for 6773b310 so that when processing the
+                     AddComponents rule, which applies to some grid cells (if two pink pixels)
+                     but not others, it would be able to use InptuScene.ObjectCount to
+                     generalize a condition of when to add a blue pixel vs. when not.
+                     However, because some grid cells involve pink pixels that are
+                     touching on a diagonal, they form a single object, which means
+                     that we can't use InputScene.ObjectCount, nor can we currently
+                     use any scene property, so it is unable to generalize the
+                     condition. Thus, as of Sept 11 2022, the below code isn't
+                     being used by an examples that we're aware of, and if it were,
+                     we have yet to implement the ARCApplyRules code necessary
+                     to abide by that new "Condition" attribute of the AddObjects
+                     transform. *)
+            
+            (* For now, since we don't typically have actual True/False values for property values,
+               we'll just immediately look for non-True/False values, such as integers, that can
+               be used to imply our True/False values. In the future if we do have object property
+               values that are True/False, then we should consider them as well, although perhaps
+               they'll implicitly get considered here, so maybe we should show some preference
+               to them if they are an option. Also, for the moment we don't show any preference
+               to properties where the values that correspond to False are all the same, and
+               perhaps we should. *)
+            
+            If [Min[Counts[values]] < $MinimumExamplesPerRule,
+                (* There aren't enough examples of True and/or False. For example, it's typically
+                   too risky to form a conclusion based on only a single example. *)
+                Return[
+                    Missing["NotFound", "InsufficientValueExamples"],
+                    Module
+                ]
+            ];
+            (* What is the position of the first True value in the list? *)
+            positionOfTrueValue =
+                First[FirstPosition[values, True, {1}, Heads -> False]];
+            matchingProperties = KeyValueMap[
+                Function[{propertyName, valuesOfProperty},
+                    If [propertyName === "ObjectCount",
+                        ARCDebug
+                        ,
+                        Identity
+                    ][
+                    (* What value of this property seems to be associated with the value True that we're
+                       trying to infer? *)
+                    valueThatImpliesTrue =
+                    Part[
+                        valuesOfProperty,
+                        positionOfTrueValue
+                    ];
+                    If [MatchQ[
+                            valuesOfProperty,
+                            Replace[
+                                values,
+                                {
+                                    True -> valueThatImpliesTrue,
+                                    False -> Except[valueThatImpliesTrue]
+                                },
+                                {1}
+                            ]
+                        ],
+                        propertyName -> valueThatImpliesTrue
+                        ,
+                        Nothing
+                    ]
+                    ]
+                ],
+                transposedObjects
+            ];
+            
+            If [matchingProperties === {},
+                (* We couldn't find any referenceable property values to imply when our values
+                   are True vs False. *)
+                Return[Missing["NotFound"], Module]
+                ,
+                (* For now, choose the first property that matches. *)
+                Return[
+                    (* Here we are returning an association of the form
+                       <|propertyName -> valueThatImpliesTrue|> whereas this function
+                       usually just returns a property name. *)
+                    <|ARCChooseBestTransform[matchingProperties]|>,
+                    Module
+                ]
+            ]
+            ,
+            (* `values` doesn't consist of True/False values. *)
+            matchingProperties = Select[
+                transposedObjects,
+                # === values &
+            ]
         ];
         
         (* What properties of these objects, if we use some math, appear to be usable
@@ -8031,9 +8207,11 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
 *)
 Clear[AssociationTranspose];
 AssociationTranspose[assocs_] :=
-    GroupBy[
-        Flatten[Normal[assocs]],
-        First -> Last
+    With[{keys = DeleteDuplicates[Flatten[Keys[assocs]]]},
+        GroupBy[
+            Flatten[Normal[assocs[[All, keys]]]],
+            First -> Last
+        ]
     ]
 
 (*!
@@ -9573,6 +9751,14 @@ ARCTransformScore[transformIn_] :=
                             ),
                             {0, Infinity},
                             Heads -> True
+                        ];
+                        
+                        If [MatchQ[objectValueProperty, Association[Rule[_, _]]],
+                            (* If we're dealing with the special case where
+                               ARCFindPropertyToInferValues has returned not just a property name
+                               but a property name and value to specify a condition, then we
+                               need one more step to get the actual property name. *)
+                            objectValueProperty = Keys[objectValueProperty][[1]]
                         ];
                         
                         score += Which[
@@ -11149,7 +11335,8 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 18288,
             "ExampleImplemented" -> "272f95fa",
-            "NewGeneralizedSuccesses" -> {"963e52fc"}
+            "NewGeneralizedSuccesses" -> {"963e52fc"},
+            "NewEvaluationSuccesses" -> {"3979b1a8"}
         |>,
         (* Rule set is proper, but is now passing. *)
         <|
@@ -11159,6 +11346,14 @@ ARCTaskLog[] :=
             "Runtimecomment" -> "Added some uses of Memoized, which sped things up a bit.",
             "CodeLength" -> 18288,
             "ExampleImplemented" -> "963e52fc"
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 11}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 18960,
+            "ExampleImplemented" -> "6773b310",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -11854,10 +12049,10 @@ ARCInferObjectImage[
 ARCInferObjectImage[
         shape: KeyValuePattern["Name" -> "Line"],
         color_Integer,
-        width_,
-        height_
+        widthIn_,
+        heightIn_
     ] :=
-    Module[{},
+    Module[{width = widthIn, height = heightIn},
         ARCScene@
         Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
         Which[
@@ -13700,7 +13895,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
 *)
 Clear[ARCRuleForAddedObjects];
 ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
-    Module[{examples = examplesIn, counter = 0, addedObjectUUIDs},
+    Module[{examples = examplesIn, counter = 0, addedObjectUUIDs, generalizedCondition},
         
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
@@ -13736,6 +13931,77 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                         ]*)
                     ],
                     examples
+                ],
+            MatchQ[addedObjects, {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {_}]] | _Missing]}],
+                (* Sometimes we add a single object, sometimes we don't add an object. *)
+                
+                (* Get the positions within `addedObjects` of both cases where no object was
+                   added and where 1 object was added. *)
+                examplesWithNoObjectAdded = Extract[
+                    examples,
+                    Position[addedObjects, _Missing, {1}, Heads -> False]
+                ];
+                examplesWithObjectAdded = Extract[
+                    examples,
+                    addedObjectPositions =
+                        Position[addedObjects, Except[_Missing], {1}, Heads -> False]
+                ];
+                
+                (* Try produce a condition to be used to determine when an object should be
+                   added. *)
+                generalizedCondition = ARCGeneralizeConclusionValueNonRecursive[
+                    {"AddObjectQ"},
+                    <||>,
+                    counter = 0;
+                    Function[{item},
+                        ++counter;
+                        Append[
+                            If [MissingQ[item],
+                                <|"Value" -> False|>
+                                ,
+                                <|"Value" -> True|>
+                            ],
+                            "Example" -> counter
+                        ]
+                    ] /@ addedObjects,
+                    referenceableInputObjects,
+                    examples
+                ];
+                
+                If [MatchQ[generalizedCondition, Rule["AddObjectQ", ObjectValue[_, Association[Rule[_, _]]]]],
+                    conditionProperty = Keys[generalizedCondition[[2, 2]]][[1]];
+                    conditionValue = Values[generalizedCondition[[2, 2]]][[1]];
+                    generalizedCondition =
+                        <|ReplacePart[generalizedCondition[[2]], 2 -> conditionProperty] -> conditionValue|>
+                    ,
+                    ReturnFailure[
+                        "AddedObjectContitionFailure",
+                        "Unable to find a condition to decide when to add an object or not.",
+                        "ARCGeneralizeConclusionValueNonRecursiveResult" -> generalizedCondition
+                    ]
+                ];
+                
+                (* HERE10 *)
+                
+                (* Generalize the added object. *)
+                Replace[
+                    ReturnIfFailure@
+                    ARCGeneralizeConclusions[
+                        counter = 0;
+                        Function[{item},
+                            Append[item, "Example" -> ++counter]
+                        ] /@ Extract[addedObjects, addedObjectPositions],
+                        referenceableInputObjects,
+                        examplesWithObjectAdded
+                    ],
+                    conclusion: KeyValuePattern[
+                        "Transform" -> _Association
+                    ] :> (
+                        Sett[
+                            conclusion,
+                            {"Transform", "Condition"} -> generalizedCondition
+                        ]
+                    )
                 ],
             True,
                 (* The number of objects is inconsistent. We don't yet have support for this. *)
@@ -14236,8 +14502,18 @@ ARCConstructObject[objectIn:KeyValuePattern[{"Outward" -> True, "Shape" -> KeyVa
         ]
     ]
 
-ARCConstructObject[object_, OptionsPattern[]] :=
-    Module[{},
+ARCConstructObject[objectIn_, OptionsPattern[]] :=
+    Module[{object = objectIn},
+        
+        (* For example, if a conclusion set X2Inverse and Y2, and the line became
+           larger than the dimensions inherited from the input scene, then we end up
+           with `width` not having been updated, so we can correct it here.
+           e.g. "d13f3404" *)
+        If [EntityMatchQ[object["Shape"], <|"Name" -> "Line", "Angle" -> 45 | 135|>],
+            If [object["Width"] < object["Height"], object["Width"] = object["Height"]];
+            If [object["Height"] < object["Width"], object["Height"] = object["Width"]];
+        ];
+        
         If [MissingQ[object["Image"]],
             Prepend[
                 object,
@@ -18382,9 +18658,9 @@ ARCFindRulesForGridSubdivision[examples_List] :=
             Function[{column},
                 subRules =
                     Block[{$findingRulesForSubdivision = True},
-                        If [row === 1 && column === 2,
+                        (*If [row === 1 && column === 2,
                             Global`examples = sceneMappings[{row, column}]
-                        ];
+                        ];*)
                         ARCFindRules[
                             sceneMappings[{row, column}],
                             (* Higher level code in ARCFindRules will control whether it tries again
@@ -18497,6 +18773,199 @@ ARCMemoized[opts:OptionsPattern[]] :=
             opts
         ],
         {HoldAllComplete}
+    ]
+
+(*!
+    \function ARCFindRulesForGridSubdivisionToOutputPixels
+    
+    \calltable
+        ARCFindRulesForGridSubdivisionToOutputPixels[examples] '' Tries to find a rule set by mapping grid cells to individual pixels in the output, if the width and height of the output always corresponds to the sizes of the grid.
+    
+    Examples:
+    
+    ARCSimplifyRules[
+        ARCFindRulesForGridSubdivisionToOutputPixels[
+            ARCParseInputAndOutputScenes[ARCParseFile["6773b310"]["Train"]]
+        ]
+    ]
+    
+    ===
+    
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> "Pixels"|>,
+        "Rules" -> <|
+            "SceneAsSingleObject" -> True,
+            "Width" -> Inactive[ObjectValue["InputScene", "Width"]*0.3333333333333333],
+            "Height" -> Inactive[ObjectValue["InputScene", "Height"]*0.3333333333333333],
+            "Rules" -> {
+                <|"FilledArea" -> 1|> -> <|"Image" -> ARCScene[{{-1}}]|>,
+                <|"FilledArea" -> 2|> -> <|"Image" -> ARCScene[{{1}}]|>
+            }
+        |>
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindRulesForGridSubdivisionToOutputPixels]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindRulesForGridSubdivisionToOutputPixels];
+ARCFindRulesForGridSubdivisionToOutputPixels[examples_List] :=
+    Module[
+        {
+            grid,
+            sceneMappings,
+            subRules,
+            subdividedRules
+        },
+        
+        sceneMappings = Function[{exampleIndex},
+            grid = examples[[exampleIndex, "Input", "Grid"]];
+            inputSubdivisions =
+                ReturnIfFailure@
+                ARCSubdivideImageUsingGrid[
+                    examples[[exampleIndex, "Input", "Scene"]],
+                    grid
+                ];
+            outputSubdivisions =
+                ReturnIfFailure@
+                ARCPixelsAsScenes[
+                    examples[[exampleIndex, "Output", "Scene"]]
+                ];
+            Function[{row},
+                Function[{column},
+                    {row, column} -> <|
+                        "Input" -> inputSubdivisions[[row, column]],
+                        "Output" -> outputSubdivisions[[row, column]]
+                    |>
+                ] /@ Range[grid["ColumnCount"]]
+            ] /@ Range[grid["RowCount"]]
+        ] /@ Range[Length[examples]];
+        
+        sceneMappings = GroupBy[Flatten[sceneMappings], First -> Last];
+        
+        (*ARCEcho2[sceneMappings];
+        Throw["HERE"];*)
+        
+        (* First try to find rules for each grid cell independently. *)
+        subdividedRules = Block[{},
+            Function[{row},
+                Function[{column},
+                    subRules =
+                        Block[{$findingRulesForSubdivision = True},
+                            (*If [row === 1 && column === 2,
+                                Global`examples = sceneMappings[{row, column}]
+                            ];*)
+                            (*ARCEcho2[{row, column} -> sceneMappings[{row, column}]];*)
+                            ARCFindRules[
+                                sceneMappings[{row, column}],
+                                (* Higher level code in ARCFindRules will control whether it tries again
+                                setting the global variable for allowing rules with one example. *)
+                                "SettleForOneExamplePerRule" -> False
+                            ]
+                        ];
+                    (*ARCEcho2[{row, column} -> subRules];*)
+                    If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
+                        (*Echo["ARCFindRulesForGridSubdivisionToOutputPixels: No rules found" -> {row, column}];*)
+                        Return[Missing["NotFound"], Block]
+                    ];
+                    subRules
+                ] /@ Range[grid["ColumnCount"]]
+            ] /@ Range[grid["RowCount"]];
+        ];
+        
+        (* If we can't find rules for each grid cell independently, try to find a single set of
+           rules that can be applied to all grid cells. *)
+        If [MissingQ[subdividedRules],
+            subdividedRules =
+                Block[{$findingRulesForSubdivision = True},
+                    ARCFindRules[
+                        Flatten[Values[sceneMappings]],
+                        (* Higher level code in ARCFindRules will control whether it tries again
+                           setting the global variable for allowing rules with one example. *)
+                        "SettleForOneExamplePerRule" -> False
+                    ]
+                ];
+            If [!MatchQ[subdividedRules, KeyValuePattern["Rules" -> _List]],
+                (*Echo["ARCFindRulesForGridSubdivisionToOutputPixels: No rules found"];*)
+                Return[Missing["NotFound"], Module]
+            ]
+        ];
+        
+        <|
+            "Subdivision" -> <|"Input" -> "Grid", "Output" -> "Pixels"|>,
+            "Rules" -> subdividedRules
+        |>
+    ]
+
+(*!
+    \function ARCGridSizeMatchesOutputPixelDimensions
+    
+    \calltable
+        ARCGridSizeMatchesOutputPixelDimensions[examples] '' Returns True if the input examples are grids, and the number of rows/columns of those grids match the pixel height/width of the output images.
+    
+    Examples:
+    
+    ARCGridSizeMatchesOutputPixelDimensions[
+        ARCParseInputAndOutputScenes[ARCParseFile["6773b310"]["Train"]]
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGridSizeMatchesOutputPixelDimensions]
+    
+    \maintainer danielb
+*)
+Clear[ARCGridSizeMatchesOutputPixelDimensions];
+ARCGridSizeMatchesOutputPixelDimensions[examples_List] :=
+    Module[{},
+        AllTrue[
+            examples,
+            Function[{example},
+                And[
+                    AssociationQ[example["Input", "Grid"]],
+                    example["Input", "Grid", "RowCount"] === ImageHeight[example["Output", "Scene"]],
+                    example["Input", "Grid", "ColumnCount"] === ImageWidth[example["Output", "Scene"]]
+                ]
+            ]
+        ]
+    ]
+
+(*!
+    \function ARCPixelsAsScenes
+    
+    \calltable
+        ARCPixelsAsScenes[image] '' Given an image, turns it into a grid of individual images/scenes.
+    
+    Examples:
+    
+    ARCPixelsAsScenes[ARCScene[{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}]]
+    
+    ===
+    
+    {
+        {ARCScene[{{1}}], ARCScene[{{2}}], ARCScene[{{3}}]},
+        {ARCScene[{{4}}], ARCScene[{{5}}], ARCScene[{{6}}]},
+        {ARCScene[{{7}}], ARCScene[{{8}}], ARCScene[{{9}}]}
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPixelsAsScenes]
+    
+    \maintainer danielb
+*)
+Clear[ARCPixelsAsScenes];
+ARCPixelsAsScenes[ARCScene[image_]] :=
+    Replace[
+        image,
+        color_Integer :> ARCScene[{{color}}],
+        {2}
     ]
 
 End[]
