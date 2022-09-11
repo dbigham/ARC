@@ -35,6 +35,14 @@ Test[
             "Shape" -> <|"Name" -> "Pixel"|>,
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Pixel"|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Square"|>,
@@ -49,6 +57,7 @@ Test[
             "Colors" -> {8},
             "Color" -> 8,
             "Position" -> {1, 4},
+            "ColorCount" -> 1,
             "Y" -> 1,
             "X" -> 4,
             "YInverse" -> 9,
@@ -58,6 +67,8 @@ Test[
             "Y2Inverse" -> 9,
             "X2Inverse" -> 6,
             "ZOrder" -> 0,
+            "YMiddle" -> 1,
+            "XMiddle" -> 4,
             "Width" -> 1,
             "Height" -> 1,
             "Length" -> 1,
@@ -66,11 +77,15 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 1,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0,
             "ColorUseCount" -> 1,
+            "ImageUseCount" -> 1,
+            "ShapeUseCount" -> 5,
+            "GeneralShapeUseCount" -> 5,
             "Width.Rank" -> 1,
             "Width.InverseRank" -> 1,
             "Height.Rank" -> 1,
@@ -93,6 +108,10 @@ Test[
             "Y2Inverse.InverseRank" -> 5,
             "X2Inverse.Rank" -> 3,
             "X2Inverse.InverseRank" -> 2,
+            "YMiddle.Rank" -> 5,
+            "YMiddle.InverseRank" -> 1,
+            "XMiddle.Rank" -> 2,
+            "XMiddle.InverseRank" -> 3,
             "ZOrder.Rank" -> 1,
             "ZOrder.InverseRank" -> 1,
             "PrimarySizeDimension.Rank" -> 1,
@@ -107,10 +126,57 @@ Test[
             "FilledArea.InverseRank" -> 1,
             "FilledProportion.Rank" -> 1,
             "FilledProportion.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 2,
-            "ColorUseCount.InverseRank" -> 1
+            "ColorUseCount.InverseRank" -> 1,
+            "ColorCount.Rank" -> 1,
+            "ColorCount.InverseRank" -> 1,
+            "ImageUseCount.Rank" -> 2,
+            "ImageUseCount.InverseRank" -> 1,
+            "ShapeUseCount.Rank" -> 1,
+            "ShapeUseCount.InverseRank" -> 1,
+            "GeneralShapeUseCount.Rank" -> 1,
+            "GeneralShapeUseCount.InverseRank" -> 1
         |> -> <|
             "Same" -> True,
+            "Image" -> Daniel`ARC`ARCScene[{{8}}],
+            "Shape" -> <|"Name" -> "Pixel"|>,
+            "Shapes" -> {
+                <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
+                <|"Name" -> "Pixel"|>,
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Square"|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Line", "Angle" -> 0|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Line", "Angle" -> 135|>,
+                <|"Name" -> "Line", "Angle" -> 45|>,
+                <|"Name" -> "Square", "Filled" -> True|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "Colors" -> {8},
+            "Color" -> 8,
+            "Position" -> {1, 4},
+            "Y" -> 1,
+            "X" -> 4,
+            "YInverse" -> 9,
+            "XInverse" -> 6,
+            "X2" -> 4,
+            "Y2" -> 1,
+            "X2Inverse" -> 6,
+            "Y2Inverse" -> 9,
+            "Width" -> 1,
+            "Height" -> 1,
+            "ZOrder" -> 0,
             "Example" -> 1,
             "Input" -> <|
                 "UUID" -> 0,
@@ -119,6 +185,16 @@ Test[
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -133,6 +209,7 @@ Test[
                 "Colors" -> {8},
                 "Color" -> 8,
                 "Position" -> {1, 4},
+                "ColorCount" -> 1,
                 "Y" -> 1,
                 "X" -> 4,
                 "YInverse" -> 9,
@@ -142,6 +219,8 @@ Test[
                 "Y2Inverse" -> 9,
                 "X2Inverse" -> 6,
                 "ZOrder" -> 0,
+                "YMiddle" -> 1,
+                "XMiddle" -> 4,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -150,11 +229,15 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "SurfacePixelCount" -> 1,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 1,
+                "ImageUseCount" -> 1,
+                "ShapeUseCount" -> 5,
+                "GeneralShapeUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -177,6 +260,10 @@ Test[
                 "Y2Inverse.InverseRank" -> 5,
                 "X2Inverse.Rank" -> 3,
                 "X2Inverse.InverseRank" -> 2,
+                "YMiddle.Rank" -> 5,
+                "YMiddle.InverseRank" -> 1,
+                "XMiddle.Rank" -> 2,
+                "XMiddle.InverseRank" -> 3,
                 "ZOrder.Rank" -> 1,
                 "ZOrder.InverseRank" -> 1,
                 "PrimarySizeDimension.Rank" -> 1,
@@ -191,8 +278,18 @@ Test[
                 "FilledArea.InverseRank" -> 1,
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
+                "SurfacePixelCount.Rank" -> 1,
+                "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 2,
-                "ColorUseCount.InverseRank" -> 1
+                "ColorUseCount.InverseRank" -> 1,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 2,
+                "ImageUseCount.InverseRank" -> 1,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1
             |>
         |>,
         <|
@@ -201,6 +298,14 @@ Test[
             "Shape" -> <|"Name" -> "Pixel"|>,
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Pixel"|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Square"|>,
@@ -215,6 +320,7 @@ Test[
             "Colors" -> {2},
             "Color" -> 2,
             "Position" -> {3, 7},
+            "ColorCount" -> 1,
             "Y" -> 3,
             "X" -> 7,
             "YInverse" -> 7,
@@ -224,6 +330,8 @@ Test[
             "Y2Inverse" -> 7,
             "X2Inverse" -> 3,
             "ZOrder" -> 0,
+            "YMiddle" -> 3,
+            "XMiddle" -> 7,
             "Width" -> 1,
             "Height" -> 1,
             "Length" -> 1,
@@ -232,11 +340,15 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 1,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0,
             "ColorUseCount" -> 2,
+            "ImageUseCount" -> 2,
+            "ShapeUseCount" -> 5,
+            "GeneralShapeUseCount" -> 5,
             "Width.Rank" -> 1,
             "Width.InverseRank" -> 1,
             "Height.Rank" -> 1,
@@ -259,6 +371,10 @@ Test[
             "Y2Inverse.InverseRank" -> 4,
             "X2Inverse.Rank" -> 4,
             "X2Inverse.InverseRank" -> 1,
+            "YMiddle.Rank" -> 4,
+            "YMiddle.InverseRank" -> 2,
+            "XMiddle.Rank" -> 1,
+            "XMiddle.InverseRank" -> 4,
             "ZOrder.Rank" -> 1,
             "ZOrder.InverseRank" -> 1,
             "PrimarySizeDimension.Rank" -> 1,
@@ -273,12 +389,22 @@ Test[
             "FilledArea.InverseRank" -> 1,
             "FilledProportion.Rank" -> 1,
             "FilledProportion.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 1,
             "ColorUseCount.InverseRank" -> 2,
+            "ColorCount.Rank" -> 1,
+            "ColorCount.InverseRank" -> 1,
+            "ImageUseCount.Rank" -> 1,
+            "ImageUseCount.InverseRank" -> 2,
+            "ShapeUseCount.Rank" -> 1,
+            "ShapeUseCount.InverseRank" -> 1,
+            "GeneralShapeUseCount.Rank" -> 1,
+            "GeneralShapeUseCount.InverseRank" -> 1,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Shape" -> Daniel`ARC`ARCScene[{{10, -1, 10}, {-1, 10, -1}, {10, -1, 10}}],
+            "Shape" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
                 <|
@@ -339,6 +465,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -369,6 +508,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -399,6 +551,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -429,6 +594,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -456,6 +634,16 @@ Test[
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -470,6 +658,7 @@ Test[
                 "Colors" -> {2},
                 "Color" -> 2,
                 "Position" -> {3, 7},
+                "ColorCount" -> 1,
                 "Y" -> 3,
                 "X" -> 7,
                 "YInverse" -> 7,
@@ -479,6 +668,8 @@ Test[
                 "Y2Inverse" -> 7,
                 "X2Inverse" -> 3,
                 "ZOrder" -> 0,
+                "YMiddle" -> 3,
+                "XMiddle" -> 7,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -487,11 +678,15 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "SurfacePixelCount" -> 1,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
+                "ImageUseCount" -> 2,
+                "ShapeUseCount" -> 5,
+                "GeneralShapeUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -514,6 +709,10 @@ Test[
                 "Y2Inverse.InverseRank" -> 4,
                 "X2Inverse.Rank" -> 4,
                 "X2Inverse.InverseRank" -> 1,
+                "YMiddle.Rank" -> 4,
+                "YMiddle.InverseRank" -> 2,
+                "XMiddle.Rank" -> 1,
+                "XMiddle.InverseRank" -> 4,
                 "ZOrder.Rank" -> 1,
                 "ZOrder.InverseRank" -> 1,
                 "PrimarySizeDimension.Rank" -> 1,
@@ -528,8 +727,18 @@ Test[
                 "FilledArea.InverseRank" -> 1,
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
+                "SurfacePixelCount.Rank" -> 1,
+                "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 1,
                 "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 2,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -539,6 +748,14 @@ Test[
             "Shape" -> <|"Name" -> "Pixel"|>,
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Pixel"|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Square"|>,
@@ -553,6 +770,7 @@ Test[
             "Colors" -> {1},
             "Color" -> 1,
             "Position" -> {4, 3},
+            "ColorCount" -> 1,
             "Y" -> 4,
             "X" -> 3,
             "YInverse" -> 6,
@@ -562,6 +780,8 @@ Test[
             "Y2Inverse" -> 6,
             "X2Inverse" -> 7,
             "ZOrder" -> 0,
+            "YMiddle" -> 4,
+            "XMiddle" -> 3,
             "Width" -> 1,
             "Height" -> 1,
             "Length" -> 1,
@@ -570,11 +790,15 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 1,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0,
             "ColorUseCount" -> 2,
+            "ImageUseCount" -> 2,
+            "ShapeUseCount" -> 5,
+            "GeneralShapeUseCount" -> 5,
             "Width.Rank" -> 1,
             "Width.InverseRank" -> 1,
             "Height.Rank" -> 1,
@@ -597,6 +821,10 @@ Test[
             "Y2Inverse.InverseRank" -> 3,
             "X2Inverse.Rank" -> 2,
             "X2Inverse.InverseRank" -> 3,
+            "YMiddle.Rank" -> 3,
+            "YMiddle.InverseRank" -> 3,
+            "XMiddle.Rank" -> 3,
+            "XMiddle.InverseRank" -> 2,
             "ZOrder.Rank" -> 1,
             "ZOrder.InverseRank" -> 1,
             "PrimarySizeDimension.Rank" -> 1,
@@ -611,12 +839,22 @@ Test[
             "FilledArea.InverseRank" -> 1,
             "FilledProportion.Rank" -> 1,
             "FilledProportion.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 1,
             "ColorUseCount.InverseRank" -> 2,
+            "ColorCount.Rank" -> 1,
+            "ColorCount.InverseRank" -> 1,
+            "ImageUseCount.Rank" -> 1,
+            "ImageUseCount.InverseRank" -> 2,
+            "ShapeUseCount.Rank" -> 1,
+            "ShapeUseCount.InverseRank" -> 1,
+            "GeneralShapeUseCount.Rank" -> 1,
+            "GeneralShapeUseCount.InverseRank" -> 1,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Shape" -> Daniel`ARC`ARCScene[{{-1, 10, -1}, {10, 10, 10}, {-1, 10, -1}}],
+            "Shape" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
                 <|
@@ -682,6 +920,38 @@ Test[
                                 "Image" -> Daniel`ARC`ARCScene[
                                     {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                 ]
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {10, 10, -1, -1, 10, 10},
+                                        {10, 10, -1, -1, 10, 10},
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {-1, -1, 10, 10, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
                             |>
                         },
                         "Width" -> 3,
@@ -700,6 +970,16 @@ Test[
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -714,6 +994,7 @@ Test[
                 "Colors" -> {1},
                 "Color" -> 1,
                 "Position" -> {4, 3},
+                "ColorCount" -> 1,
                 "Y" -> 4,
                 "X" -> 3,
                 "YInverse" -> 6,
@@ -723,6 +1004,8 @@ Test[
                 "Y2Inverse" -> 6,
                 "X2Inverse" -> 7,
                 "ZOrder" -> 0,
+                "YMiddle" -> 4,
+                "XMiddle" -> 3,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -731,11 +1014,15 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "SurfacePixelCount" -> 1,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
+                "ImageUseCount" -> 2,
+                "ShapeUseCount" -> 5,
+                "GeneralShapeUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -758,6 +1045,10 @@ Test[
                 "Y2Inverse.InverseRank" -> 3,
                 "X2Inverse.Rank" -> 2,
                 "X2Inverse.InverseRank" -> 3,
+                "YMiddle.Rank" -> 3,
+                "YMiddle.InverseRank" -> 3,
+                "XMiddle.Rank" -> 3,
+                "XMiddle.InverseRank" -> 2,
                 "ZOrder.Rank" -> 1,
                 "ZOrder.InverseRank" -> 1,
                 "PrimarySizeDimension.Rank" -> 1,
@@ -772,8 +1063,18 @@ Test[
                 "FilledArea.InverseRank" -> 1,
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
+                "SurfacePixelCount.Rank" -> 1,
+                "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 1,
                 "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 2,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -783,6 +1084,14 @@ Test[
             "Shape" -> <|"Name" -> "Pixel"|>,
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Pixel"|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Square"|>,
@@ -797,6 +1106,7 @@ Test[
             "Colors" -> {1},
             "Color" -> 1,
             "Position" -> {7, 7},
+            "ColorCount" -> 1,
             "Y" -> 7,
             "X" -> 7,
             "YInverse" -> 3,
@@ -806,6 +1116,8 @@ Test[
             "Y2Inverse" -> 3,
             "X2Inverse" -> 3,
             "ZOrder" -> 0,
+            "YMiddle" -> 7,
+            "XMiddle" -> 7,
             "Width" -> 1,
             "Height" -> 1,
             "Length" -> 1,
@@ -814,11 +1126,15 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 1,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0,
             "ColorUseCount" -> 2,
+            "ImageUseCount" -> 2,
+            "ShapeUseCount" -> 5,
+            "GeneralShapeUseCount" -> 5,
             "Width.Rank" -> 1,
             "Width.InverseRank" -> 1,
             "Height.Rank" -> 1,
@@ -841,6 +1157,10 @@ Test[
             "Y2Inverse.InverseRank" -> 2,
             "X2Inverse.Rank" -> 4,
             "X2Inverse.InverseRank" -> 1,
+            "YMiddle.Rank" -> 2,
+            "YMiddle.InverseRank" -> 4,
+            "XMiddle.Rank" -> 1,
+            "XMiddle.InverseRank" -> 4,
             "ZOrder.Rank" -> 1,
             "ZOrder.InverseRank" -> 1,
             "PrimarySizeDimension.Rank" -> 1,
@@ -855,12 +1175,22 @@ Test[
             "FilledArea.InverseRank" -> 1,
             "FilledProportion.Rank" -> 1,
             "FilledProportion.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 1,
             "ColorUseCount.InverseRank" -> 2,
+            "ColorCount.Rank" -> 1,
+            "ColorCount.InverseRank" -> 1,
+            "ImageUseCount.Rank" -> 1,
+            "ImageUseCount.InverseRank" -> 2,
+            "ShapeUseCount.Rank" -> 1,
+            "ShapeUseCount.InverseRank" -> 1,
+            "GeneralShapeUseCount.Rank" -> 1,
+            "GeneralShapeUseCount.InverseRank" -> 1,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
-            "Shape" -> Daniel`ARC`ARCScene[{{-1, 10, -1}, {10, 10, 10}, {-1, 10, -1}}],
+            "Shape" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
                 <|
@@ -926,6 +1256,38 @@ Test[
                                 "Image" -> Daniel`ARC`ARCScene[
                                     {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
                                 ]
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {10, 10, -1, -1, 10, 10},
+                                        {10, 10, -1, -1, 10, 10},
+                                        {-1, -1, 10, 10, -1, -1},
+                                        {-1, -1, 10, 10, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
                             |>
                         },
                         "Width" -> 3,
@@ -944,6 +1306,16 @@ Test[
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -958,6 +1330,7 @@ Test[
                 "Colors" -> {1},
                 "Color" -> 1,
                 "Position" -> {7, 7},
+                "ColorCount" -> 1,
                 "Y" -> 7,
                 "X" -> 7,
                 "YInverse" -> 3,
@@ -967,6 +1340,8 @@ Test[
                 "Y2Inverse" -> 3,
                 "X2Inverse" -> 3,
                 "ZOrder" -> 0,
+                "YMiddle" -> 7,
+                "XMiddle" -> 7,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -975,11 +1350,15 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "SurfacePixelCount" -> 1,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
+                "ImageUseCount" -> 2,
+                "ShapeUseCount" -> 5,
+                "GeneralShapeUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -1002,6 +1381,10 @@ Test[
                 "Y2Inverse.InverseRank" -> 2,
                 "X2Inverse.Rank" -> 4,
                 "X2Inverse.InverseRank" -> 1,
+                "YMiddle.Rank" -> 2,
+                "YMiddle.InverseRank" -> 4,
+                "XMiddle.Rank" -> 1,
+                "XMiddle.InverseRank" -> 4,
                 "ZOrder.Rank" -> 1,
                 "ZOrder.InverseRank" -> 1,
                 "PrimarySizeDimension.Rank" -> 1,
@@ -1016,8 +1399,18 @@ Test[
                 "FilledArea.InverseRank" -> 1,
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
+                "SurfacePixelCount.Rank" -> 1,
+                "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 1,
                 "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 2,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1,
                 "OutputComponentUUID" -> _String
             |>
         |>,
@@ -1027,6 +1420,14 @@ Test[
             "Shape" -> <|"Name" -> "Pixel"|>,
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Pixel"|>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Square"|>,
@@ -1041,6 +1442,7 @@ Test[
             "Colors" -> {2},
             "Color" -> 2,
             "Position" -> {8, 2},
+            "ColorCount" -> 1,
             "Y" -> 8,
             "X" -> 2,
             "YInverse" -> 2,
@@ -1050,6 +1452,8 @@ Test[
             "Y2Inverse" -> 2,
             "X2Inverse" -> 8,
             "ZOrder" -> 0,
+            "YMiddle" -> 8,
+            "XMiddle" -> 2,
             "Width" -> 1,
             "Height" -> 1,
             "Length" -> 1,
@@ -1058,11 +1462,15 @@ Test[
             "Area" -> 1,
             "FilledArea" -> 1,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 1,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
             "HollowCount" -> 0,
             "ColorUseCount" -> 2,
+            "ImageUseCount" -> 2,
+            "ShapeUseCount" -> 5,
+            "GeneralShapeUseCount" -> 5,
             "Width.Rank" -> 1,
             "Width.InverseRank" -> 1,
             "Height.Rank" -> 1,
@@ -1085,6 +1493,10 @@ Test[
             "Y2Inverse.InverseRank" -> 1,
             "X2Inverse.Rank" -> 1,
             "X2Inverse.InverseRank" -> 4,
+            "YMiddle.Rank" -> 1,
+            "YMiddle.InverseRank" -> 5,
+            "XMiddle.Rank" -> 4,
+            "XMiddle.InverseRank" -> 1,
             "ZOrder.Rank" -> 1,
             "ZOrder.InverseRank" -> 1,
             "PrimarySizeDimension.Rank" -> 1,
@@ -1099,12 +1511,22 @@ Test[
             "FilledArea.InverseRank" -> 1,
             "FilledProportion.Rank" -> 1,
             "FilledProportion.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 1,
             "ColorUseCount.Rank" -> 1,
             "ColorUseCount.InverseRank" -> 2,
+            "ColorCount.Rank" -> 1,
+            "ColorCount.InverseRank" -> 1,
+            "ImageUseCount.Rank" -> 1,
+            "ImageUseCount.InverseRank" -> 2,
+            "ShapeUseCount.Rank" -> 1,
+            "ShapeUseCount.InverseRank" -> 1,
+            "GeneralShapeUseCount.Rank" -> 1,
+            "GeneralShapeUseCount.InverseRank" -> 1,
             "OutputComponentUUID" -> _String
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
-            "Shape" -> Daniel`ARC`ARCScene[{{10, -1, 10}, {-1, 10, -1}, {10, -1, 10}}],
+            "Shape" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
                 <|
@@ -1165,6 +1587,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1195,6 +1630,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1225,6 +1673,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1255,6 +1716,19 @@ Test[
                         "Shape" -> <|"Name" -> "Pixel"|>,
                         "Shapes" -> {
                             <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                                ],
+                                "Transform" -> <|
+                                    "Type" -> "Scaled",
+                                    "Factor" -> 0.3333333333333333
+                                |>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1282,6 +1756,16 @@ Test[
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -1296,6 +1780,7 @@ Test[
                 "Colors" -> {2},
                 "Color" -> 2,
                 "Position" -> {8, 2},
+                "ColorCount" -> 1,
                 "Y" -> 8,
                 "X" -> 2,
                 "YInverse" -> 2,
@@ -1305,6 +1790,8 @@ Test[
                 "Y2Inverse" -> 2,
                 "X2Inverse" -> 8,
                 "ZOrder" -> 0,
+                "YMiddle" -> 8,
+                "XMiddle" -> 2,
                 "Width" -> 1,
                 "Height" -> 1,
                 "Length" -> 1,
@@ -1313,11 +1800,15 @@ Test[
                 "Area" -> 1,
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
+                "SurfacePixelCount" -> 1,
                 "VerticalLineSymmetry" -> False,
                 "HorizontalLineSymmetry" -> False,
                 "VerticalAndHorizontalLineSymmetry" -> False,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
+                "ImageUseCount" -> 2,
+                "ShapeUseCount" -> 5,
+                "GeneralShapeUseCount" -> 5,
                 "Width.Rank" -> 1,
                 "Width.InverseRank" -> 1,
                 "Height.Rank" -> 1,
@@ -1340,6 +1831,10 @@ Test[
                 "Y2Inverse.InverseRank" -> 1,
                 "X2Inverse.Rank" -> 1,
                 "X2Inverse.InverseRank" -> 4,
+                "YMiddle.Rank" -> 1,
+                "YMiddle.InverseRank" -> 5,
+                "XMiddle.Rank" -> 4,
+                "XMiddle.InverseRank" -> 1,
                 "ZOrder.Rank" -> 1,
                 "ZOrder.InverseRank" -> 1,
                 "PrimarySizeDimension.Rank" -> 1,
@@ -1354,8 +1849,18 @@ Test[
                 "FilledArea.InverseRank" -> 1,
                 "FilledProportion.Rank" -> 1,
                 "FilledProportion.InverseRank" -> 1,
+                "SurfacePixelCount.Rank" -> 1,
+                "SurfacePixelCount.InverseRank" -> 1,
                 "ColorUseCount.Rank" -> 1,
                 "ColorUseCount.InverseRank" -> 2,
+                "ColorCount.Rank" -> 1,
+                "ColorCount.InverseRank" -> 1,
+                "ImageUseCount.Rank" -> 1,
+                "ImageUseCount.InverseRank" -> 2,
+                "ShapeUseCount.Rank" -> 1,
+                "ShapeUseCount.InverseRank" -> 1,
+                "GeneralShapeUseCount.Rank" -> 1,
+                "GeneralShapeUseCount.InverseRank" -> 1,
                 "OutputComponentUUID" -> _String
             |>
         |>

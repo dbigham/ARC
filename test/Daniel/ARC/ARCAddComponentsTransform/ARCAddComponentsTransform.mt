@@ -56,27 +56,6 @@ Test[
     <|
         "Image" -> Daniel`ARC`ARCScene[{{2, -1, -1}, {5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
         "Position" -> {1, 2},
-        "Components" -> {
-            <|
-                "Image" -> Daniel`ARC`ARCScene[{{2}}],
-                "Position" -> {1, 2},
-                "Shape" -> "SHAPE",
-                "Shapes" -> "SHAPES",
-                "Colors" -> {"COLOR"},
-                "Y2" -> 1,
-                "X2" -> 2,
-                "Width" -> 3,
-                "Height" -> 3
-            |>,
-            <|
-                "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
-                "Position" -> {2, 2},
-                "Y2" -> 4,
-                "X2" -> 4,
-                "Width" -> 3,
-                "Height" -> 3
-            |>
-        },
         "Transform" -> <|
             "Type" -> "AddComponents",
             "Components" -> {
@@ -89,14 +68,7 @@ Test[
                             "YInverse" -> -3,
                             "XInverse" -> -2
                         |>
-                    |>,
-                    "Shape" -> "SHAPE",
-                    "Shapes" -> "SHAPES",
-                    "Width" -> 3,
-                    "Height" -> 3,
-                    "Y" -> 1,
-                    "X" -> 2,
-                    "Color" -> "COLOR"
+                    |>
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}, {5, -1, 5}, {5, 5, 5}}],
@@ -107,11 +79,7 @@ Test[
                             "YInverse" -> -2,
                             "XInverse" -> -2
                         |>
-                    |>,
-                    "Width" -> 3,
-                    "Height" -> 3,
-                    "Y" -> 2,
-                    "X" -> 2
+                    |>
                 |>
             }
         |>

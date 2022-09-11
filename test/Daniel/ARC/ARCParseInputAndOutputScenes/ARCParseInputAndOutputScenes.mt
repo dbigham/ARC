@@ -56,6 +56,7 @@ Test[
         "Background" -> 0,
         "Width" -> 3,
         "Height" -> 3,
+        "ObjectCount" -> 2,
         "Objects" -> {
             <|"Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}}], "Position" -> {2, 1}|>,
             <|"Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}}], "Position" -> {3, 1}|>

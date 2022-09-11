@@ -79,6 +79,22 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {{10, 10, 10, 10, 10, 10}, {10, 10, 10, 10, 10, 10}}
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Line", "Angle" -> 0|>,
@@ -87,6 +103,7 @@ Test[
             "Colors" -> {5},
             "Color" -> 5,
             "Position" -> {2, 1},
+            "ColorCount" -> 1,
             "Y" -> 2,
             "X" -> 1,
             "YInverse" -> 9,
@@ -96,6 +113,8 @@ Test[
             "Y2Inverse" -> 9,
             "X2Inverse" -> 8,
             "ZOrder" -> 0,
+            "YMiddle" -> 2,
+            "XMiddle" -> 2,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -104,6 +123,7 @@ Test[
             "Area" -> 3,
             "FilledArea" -> 3,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 3,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
@@ -124,6 +144,22 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {{10, 10, 10, 10, 10, 10}, {10, 10, 10, 10, 10, 10}}
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Rectangle"|>,
                 <|"Name" -> "Line", "Angle" -> 0|>,
@@ -132,6 +168,7 @@ Test[
             "Colors" -> {5},
             "Color" -> 5,
             "Position" -> {3, 1},
+            "ColorCount" -> 1,
             "Y" -> 3,
             "X" -> 1,
             "YInverse" -> 8,
@@ -141,6 +178,8 @@ Test[
             "Y2Inverse" -> 8,
             "X2Inverse" -> 8,
             "ZOrder" -> 0,
+            "YMiddle" -> 3,
+            "XMiddle" -> 2,
             "Width" -> 3,
             "Height" -> 1,
             "Length" -> 3,
@@ -149,6 +188,7 @@ Test[
             "Area" -> 3,
             "FilledArea" -> 3,
             "FilledProportion" -> 1.,
+            "SurfacePixelCount" -> 3,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,

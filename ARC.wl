@@ -5193,7 +5193,7 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         objects =
             Function[{object},
                 ReturnIfFailure@
-                ARCApplyRules[object, ruleList, parsedScene]
+                ARCApplyRules[object, ruleList, parsedScene, outputScene]
             ] /@ objects;
         
         (*ARCEcho2[objects];*)
@@ -5277,7 +5277,7 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         renderedScene
     ]
 
-ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
+ARCApplyRules[objectIn_Association, rules_List, inputScene_Association, outputScene_Association] :=
     Module[{object = objectIn, matchingRules},
         
         matchingRules = Select[
@@ -5307,14 +5307,15 @@ ARCApplyRules[objectIn_Association, rules_List, scene_Association] :=
                 (* For now, we will only allow one rule to be applied to an object. A case where
                    this is needed is d511f180, otherwise one rule changes an object's color,
                    and the next rule changes it back. ARCApplyRules-20220906-3546LC *)
-                ReturnIfFailure[ARCApplyRules[object, matchingRules[[1]], scene]]
+                ReturnIfFailure@
+                ARCApplyRules[object, matchingRules[[1]], inputScene, outputScene]
         ];
         
         object
     ]
 
 ARCApplyRules::invid = "Invalid image detected.";
-ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
+ARCApplyRules[objectIn_Association, rule_Rule, inputScene_Association, outputScene_Association] :=
     Module[{object = objectIn, pattern = rule[[1]], conclusion = rule[[2]]},
         
         If [And[
@@ -5326,7 +5327,7 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
                 !MatchQ[conclusion, KeyValuePattern["Same" -> True]]
             ],
             (* The rule matches, so apply its conclusion. *)
-            object = ARCApplyConclusion[object, conclusion, scene];
+            object = ARCApplyConclusion[object, conclusion, inputScene, outputScene];
         ];
         
         (*If [Length[DeleteDuplicates[Length /@ object["Image"][[1]]]] > 1,
@@ -5362,7 +5363,7 @@ ARCApplyRules[objectIn_Association, rule_Rule, scene_Association] :=
     \maintainer danielb
 *)
 Clear[ARCApplyConclusion];
-ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Association] :=
+ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Association, outputScene_Association] :=
     Module[{object = objectIn, key, value, objectOut = <||>},
         
         If [TrueQ[conclusion["RotationNormalization"]],
@@ -5370,8 +5371,9 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                 Sett[
                     object,
                     {
-                        "ParentWidth" -> scene["Width"],
-                        "ParentHeight" -> scene["Height"]
+                        (* Should we be using the input or the output scene here? *)
+                        "ParentWidth" -> outputScene["Width"],
+                        "ParentHeight" -> outputScene["Height"]
                     }
                 ]
             ];
@@ -5395,10 +5397,12 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
                         ARCApplyConclusion[
                             key,
                             ReturnIfFailure@
-                            ResolveValues[value, object, scene, "Activate" -> True],
+                            ResolveValues[value, object, inputScene, "Activate" -> True],
                             object,
                             objectOut,
-                            scene
+                            (* Do we only need to pass the output scene here, or is the input
+                               scene sometimes needed as well? *)
+                            outputScene
                         ],
                         Nothing :> Return[Nothing, Module]
                     ];
@@ -5456,24 +5460,24 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
             objectOut =
                 ReturnIfFailure@
                 ARCRotateObjectFrame[
-                    ARCInferObjectProperties[objectOut, scene["Width"], scene["Height"]],
+                    ARCInferObjectProperties[objectOut, outputScene["Width"], outputScene["Height"]],
                     objectIn["Shape", "Transform", "Angle"],
                     Sequence @@
                     Switch[
                         objectIn["Shape", "Transform", "Angle"],
                         90 | 270,
                             {
-                                scene["Height"],
-                                scene["Width"],
-                                scene["Height"],
-                                scene["Width"]
+                                outputScene["Height"],
+                                outputScene["Width"],
+                                outputScene["Height"],
+                                outputScene["Width"]
                             },
                         _,
                             {
-                                scene["Width"],
-                                scene["Height"],
-                                scene["Width"],
-                                scene["Height"]
+                                outputScene["Width"],
+                                outputScene["Height"],
+                                outputScene["Width"],
+                                outputScene["Height"]
                             }
                     ]
                 ]
@@ -5485,7 +5489,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, scene_Associati
         
         (* e.g. Infer the Image if necessary. *)
         objectOut = Replace[
-            ARCConstructObject[objectOut, "Scene" -> scene],
+            ARCConstructObject[objectOut, "Scene" -> outputScene],
             _Failure :> (
                 If [And[
                         MissingQ[objectOut["Image"]],

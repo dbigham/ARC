@@ -46,6 +46,28 @@ Test[
                 "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {{10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}}
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+            |>,
             <|"Name" -> "Line"|>,
             <|"Name" -> "Rectangle"|>,
             <|"Name" -> "Line", "Angle" -> 90|>,
@@ -97,6 +119,22 @@ Test[
                 "Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {{10, 10, 10, 10, 10, 10}, {10, 10, 10, 10, 10, 10}}
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+            |>,
             <|"Name" -> "Line"|>,
             <|"Name" -> "Rectangle"|>,
             <|"Name" -> "Line", "Angle" -> 0|>,
@@ -147,6 +185,28 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {{10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}}
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10},
+                        {10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
             |>,
             <|"Name" -> "Line"|>,
             <|"Name" -> "Rectangle"|>,

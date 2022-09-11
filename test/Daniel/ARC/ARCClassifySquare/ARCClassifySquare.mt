@@ -21,7 +21,9 @@ Test[
 ]
 
 Test[
-    ToString[Daniel`ARC`ARCClassifySquare[{{1, 1}, {1, 0}}]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        ToString[Daniel`ARC`ARCClassifySquare[{{1, 1}, {1, -1}}]]
+    ]
     ,
     "Nothing"
     ,
@@ -47,9 +49,16 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCClassifySquare[{{1, 1, 1}, {1, 2, 1}, {1, 1, 1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCClassifySquare[{{1, 1, 1}, {1, 2, 1}, {1, 1, 1}}]
+    ]
     ,
-    <|"Name" -> "Square"|>
+    <|
+        "Name" -> "Square",
+        "Filled" -> True,
+        "Interior" -> <|"Color" -> 2|>,
+        "Border" -> <|"Color" -> 1|>
+    |>
     ,
     TestID -> "ARCClassifySquare-20220810-NKIOTJ"
 ]

@@ -52,11 +52,49 @@ Test[
                 "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
             |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+            |>,
             <|"Name" -> "L"|>
         },
         "Colors" -> {2},
         "Color" -> 2,
         "Position" -> {8, 1},
+        "ColorCount" -> 1,
         "Y" -> 8,
         "X" -> 1,
         "YInverse" -> 10,
@@ -66,6 +104,8 @@ Test[
         "Y2Inverse" -> 8,
         "X2Inverse" -> 8,
         "ZOrder" -> 0,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
         "Width" -> 3,
         "Height" -> 3,
         "Length" -> 3,
@@ -74,6 +114,7 @@ Test[
         "Area" -> 9,
         "FilledArea" -> 5,
         "FilledProportion" -> 0.5555555555555556,
+        "SurfacePixelCount" -> 5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
@@ -151,6 +192,31 @@ Test[
                         <|
                             "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}}],
                             "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[
+                                {{10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}}
+                            ],
+                            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[
+                                {
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10},
+                                    {10, 10, 10}
+                                }
+                            ],
+                            "Transform" -> <|
+                                "Type" -> "Scaled",
+                                "Factor" -> 0.3333333333333333
+                            |>
                         |>,
                         <|"Name" -> "Line"|>,
                         <|"Name" -> "Rectangle"|>,

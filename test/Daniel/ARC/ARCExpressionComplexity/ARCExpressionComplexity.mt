@@ -25,7 +25,7 @@ Test[
         Daniel`ARC`ARCExpressionComplexity[{1, 2, 3}]
     ]
     ,
-    0.09
+    0.06
     ,
     TestID -> "ARCExpressionComplexity-20220825-0A6DDL"
 ]
@@ -35,7 +35,7 @@ Test[
         Daniel`ARC`ARCExpressionComplexity[<|"a" -> 1|> -> <|"b" -> 2|>]
     ]
     ,
-    0.18
+    0.15
     ,
     TestID -> "ARCExpressionComplexity-20220825-GVP5VR"
 ]

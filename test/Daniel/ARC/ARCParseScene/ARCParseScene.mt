@@ -3883,6 +3883,7 @@ Test[
     <|
         "RowCount" -> 3,
         "ColumnCount" -> 3,
+        "Color" -> 8,
         "Cells" -> {
             {
                 <|"Y" -> 1, "X" -> 1, "Width" -> 4, "Height" -> 2|>,

@@ -34,7 +34,21 @@ Test[
                 "MonochromeImage" -> <||>,
                 "Shapes" -> <|"ClassList" -> True|>
             ],
-            "Color" -> <||>,
+            Alternatives[
+                "Color" -> <||>,
+                Condition[
+                    Missing["Color"],
+                    MatchQ[
+                        #1["Shape"],
+                        KeyValuePattern[
+                            {
+                                "Border" -> KeyValuePattern["Color" -> _],
+                                "Interior" -> KeyValuePattern["Color" -> _]
+                            }
+                        ]
+                    ]
+                ]
+            ],
             ("X" -> <||>) | ("XInverse" -> <||>),
             ("Y" -> <||>) | ("YInverse" -> <||>),
             ("Width" -> <||>) | ("X2" -> <||>) | ("X2Inverse" -> <||>),

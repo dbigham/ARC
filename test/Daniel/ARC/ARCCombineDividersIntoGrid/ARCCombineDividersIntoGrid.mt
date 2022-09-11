@@ -11,29 +11,41 @@
 *)
 
 Test[
-    Daniel`ARC`SimplifyObjects["ExtraKeys" -> {"Components", "GridOrDivider"}][
-        Daniel`ARC`ARCCombineDividersIntoGrid[
-            Daniel`ARC`ARCParseFile["8e5a5113"]["Train", 1]["Input"],
-            {
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{5}, {5}, {5}}],
-                    "Y" -> 1,
-                    "X" -> 4,
-                    "GridOrDivider" -> <|"Type" -> "Divider", "Orientation" -> "Vertical"|>,
-                    "PixelPositions" -> {{1, 4}, {2, 4}, {3, 4}},
-                    "Width" -> 1,
-                    "Height" -> 3
-                |>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{5}, {5}, {5}}],
-                    "Y" -> 1,
-                    "X" -> 8,
-                    "GridOrDivider" -> <|"Type" -> "Divider", "Orientation" -> "Vertical"|>,
-                    "PixelPositions" -> {{1, 8}, {2, 8}, {3, 8}},
-                    "Width" -> 1,
-                    "Height" -> 3
-                |>
-            }
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects["ExtraKeys" -> {"Components", "GridOrDivider"}][
+                Daniel`ARC`ARCCombineDividersIntoGrid[
+                    Daniel`ARC`ARCParseFile["8e5a5113"]["Train", 1]["Input"],
+                    {
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{5}, {5}, {5}}],
+                            "Color" -> 5,
+                            "Y" -> 1,
+                            "X" -> 4,
+                            "GridOrDivider" -> <|
+                                "Type" -> "Divider",
+                                "Orientation" -> "Vertical"
+                            |>,
+                            "PixelPositions" -> {{1, 4}, {2, 4}, {3, 4}},
+                            "Width" -> 1,
+                            "Height" -> 3
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{5}, {5}, {5}}],
+                            "Color" -> 5,
+                            "Y" -> 1,
+                            "X" -> 8,
+                            "GridOrDivider" -> <|
+                                "Type" -> "Divider",
+                                "Orientation" -> "Vertical"
+                            |>,
+                            "PixelPositions" -> {{1, 8}, {2, 8}, {3, 8}},
+                            "Width" -> 1,
+                            "Height" -> 3
+                        |>
+                    }
+                ]
+            ]
         ]
     ]
     ,

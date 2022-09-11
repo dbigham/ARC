@@ -27,6 +27,7 @@ Test[
                 "Background" -> 0,
                 "Width" -> 9,
                 "Height" -> 9,
+                "ObjectCount" -> 2,
                 "Objects" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {4, 3}|>,
                     <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {7, 7}|>
@@ -49,6 +50,7 @@ Test[
                 "Background" -> 0,
                 "Width" -> 9,
                 "Height" -> 9,
+                "ObjectCount" -> 2,
                 "Objects" -> {
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],

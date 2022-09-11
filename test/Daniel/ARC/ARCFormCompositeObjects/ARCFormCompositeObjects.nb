@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    105296,       2174]
-NotebookOptionsPosition[     98604,       2014]
-NotebookOutlinePosition[    104264,       2155]
-CellTagsIndexPosition[    104221,       2152]
+NotebookDataLength[    108390,       2239]
+NotebookOptionsPosition[    101695,       2079]
+NotebookOutlinePosition[    107355,       2220]
+CellTagsIndexPosition[    107312,       2217]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -533,7 +533,7 @@ Cell[BoxData[{
    3.8671615350197396`*^9}, 3.867162090118838*^9, {3.8687946241115103`*^9, 
    3.868794630567066*^9}, {3.8687947909289055`*^9, 3.8687948238549557`*^9}, {
    3.8697728504446907`*^9, 3.8697729030501204`*^9}},
- CellLabel->"In[228]:=",
+ CellLabel->"In[812]:=",
  CellID->94346783,
  "TestId" -> 
  "ARCFormCompositeObjects-20220718-XRHLHS",ExpressionUUID->"d9460f11-794d-\
@@ -679,6 +679,35 @@ Cell[BoxData[
     {"\<\"        \\\"X\\\" -> 2,\"\>"},
     {"\<\"        \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"        \\\"Area\\\" -> 9,\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Shape\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[1., 0.8627450980392157, 0.], {1, 2} -> 
+                 GrayLevel[0.2], {1, 3} -> 
+                 RGBColor[1., 0.8627450980392157, 0.], {2, 1} -> 
+                 GrayLevel[0.2], {2, 2} -> 
+                 RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 
+                  3} -> GrayLevel[0.2], {3, 1} -> 
+                 RGBColor[1., 0.8627450980392157, 0.], {3, 2} -> 
+                 GrayLevel[0.2], {3, 3} -> 
+                 RGBColor[1., 0.8627450980392157, 0.]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
     {"\<\"        \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
@@ -866,8 +895,7 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                \\\"Transform\\\" -> <|\\\"Type\\\" -> \\\"Scaled\\\
 \", \\\"Factor\\\" -> 0.3333333333333333|>\"\>"},
-    {"\<\"            |>,\"\>"},
-    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
+    {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
     {"\<\"        \\\"Components\\\" -> {\"\>"},
     {"\<\"            <|\"\>"},
@@ -1379,6 +1407,7 @@ Cell[BoxData[
     {"\<\"                \\\"XRelative\\\" -> 2\"\>"},
     {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
+    {"\<\"        \\\"ColorCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"YInverse\\\" -> 7,\"\>"},
     {"\<\"        \\\"XInverse\\\" -> 8,\"\>"},
     {"\<\"        \\\"Y2\\\" -> 5,\"\>"},
@@ -1386,10 +1415,13 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 5,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 6,\"\>"},
     {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
+    {"\<\"        \\\"YMiddle\\\" -> 4,\"\>"},
+    {"\<\"        \\\"XMiddle\\\" -> 3,\"\>"},
     {"\<\"        \\\"Length\\\" -> 3,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension\\\" -> \\\"None\\\",\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 5,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 0.5555555555555556,\"\>"},
+    {"\<\"        \\\"SurfacePixelCount\\\" -> 5,\"\>"},
     {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
@@ -1412,8 +1444,8 @@ Cell[BoxData[
                  RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {1, 
                   3} -> GrayLevel[0.2], {2, 1} -> 
                  RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {2, 
-                  2} -> RGBColor[
-                  0., 0.4549019607843137, 0.8509803921568627], {2, 3} -> 
+                  2} -> 
+                 RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 3} -> 
                  RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {3, 
                   1} -> GrayLevel[0.2], {3, 2} -> 
                  RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {3, 
@@ -1534,6 +1566,35 @@ Cell[BoxData[
     {"\<\"        \\\"X\\\" -> 6,\"\>"},
     {"\<\"        \\\"AspectRatio\\\" -> 1,\"\>"},
     {"\<\"        \\\"Area\\\" -> 9,\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \"", 
+         TemplateBox[{"\"\\\"Shape\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> GrayLevel[0.2], {1, 2} -> 
+                 RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {1, 
+                  3} -> GrayLevel[0.2], {2, 1} -> 
+                 RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {2, 
+                  2} -> RGBColor[
+                  0., 0.4549019607843137, 0.8509803921568627], {2, 3} -> 
+                 RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {3, 
+                  1} -> GrayLevel[0.2], {3, 2} -> 
+                 RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {3, 
+                  3} -> GrayLevel[0.2]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
     {"\<\"        \\\"Shapes\\\" -> {\"\>"},
     {
      TemplateBox[{
@@ -1718,8 +1779,7 @@ Cell[BoxData[
       "RowDefault"]},
     {"\<\"                \\\"Transform\\\" -> <|\\\"Type\\\" -> \\\"Scaled\\\
 \", \\\"Factor\\\" -> 0.3333333333333333|>\"\>"},
-    {"\<\"            |>,\"\>"},
-    {"\<\"            Missing[\\\"KeyAbsent\\\", \\\"Shapes\\\"]\"\>"},
+    {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
     {"\<\"        \\\"Components\\\" -> {\"\>"},
     {"\<\"            <|\"\>"},
@@ -1948,6 +2008,7 @@ Cell[BoxData[
     {"\<\"                \\\"XRelative\\\" -> 1\"\>"},
     {"\<\"            |>\"\>"},
     {"\<\"        },\"\>"},
+    {"\<\"        \\\"ColorCount\\\" -> 2,\"\>"},
     {"\<\"        \\\"YInverse\\\" -> 4,\"\>"},
     {"\<\"        \\\"XInverse\\\" -> 4,\"\>"},
     {"\<\"        \\\"Y2\\\" -> 8,\"\>"},
@@ -1955,10 +2016,13 @@ Cell[BoxData[
     {"\<\"        \\\"Y2Inverse\\\" -> 2,\"\>"},
     {"\<\"        \\\"X2Inverse\\\" -> 2,\"\>"},
     {"\<\"        \\\"ZOrder\\\" -> 0,\"\>"},
+    {"\<\"        \\\"YMiddle\\\" -> 7,\"\>"},
+    {"\<\"        \\\"XMiddle\\\" -> 7,\"\>"},
     {"\<\"        \\\"Length\\\" -> 3,\"\>"},
     {"\<\"        \\\"PrimarySizeDimension\\\" -> \\\"None\\\",\"\>"},
     {"\<\"        \\\"FilledArea\\\" -> 5,\"\>"},
     {"\<\"        \\\"FilledProportion\\\" -> 0.5555555555555556,\"\>"},
+    {"\<\"        \\\"SurfacePixelCount\\\" -> 4,\"\>"},
     {"\<\"        \\\"VerticalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"HorizontalLineSymmetry\\\" -> False,\"\>"},
     {"\<\"        \\\"VerticalAndHorizontalLineSymmetry\\\" -> False,\"\>"},
@@ -1986,9 +2050,10 @@ Cell[BoxData[
    3.8705557499676375`*^9, 3.8705570431664*^9, 3.8705570780526037`*^9, {
    3.8705571098018785`*^9, 3.870557154977973*^9}, {3.8705572063950167`*^9, 
    3.870557234068703*^9}, 3.8705573736601095`*^9, {3.87060036515825*^9, 
-   3.8706003751391783`*^9}, 3.8709039254579*^9, 3.8712896934134083`*^9},
+   3.8706003751391783`*^9}, 3.8709039254579*^9, 3.8712896934134083`*^9, 
+   3.8719290388895226`*^9},
  CellLabel->
-  "Out[229]=",ExpressionUUID->"4bf8cc3b-cdb7-4e1a-b464-47e80fdbc1eb"],
+  "Out[813]=",ExpressionUUID->"cffb35c0-696a-48be-af33-67ddf918f14f"],
 
 Cell[CellGroupData[{
 
@@ -2168,11 +2233,11 @@ Cell[4694, 124, 19134, 415, 2592, "Code",ExpressionUUID->"d9460f11-794d-4111-9b8
  InitializationCell->False,
  CellID->94346783]
 }, Open  ]],
-Cell[23843, 542, 74099, 1448, 4533, "Output",ExpressionUUID->"4bf8cc3b-cdb7-4e1a-b464-47e80fdbc1eb"],
+Cell[23843, 542, 77190, 1513, 4797, "Output",ExpressionUUID->"cffb35c0-696a-48be-af33-67ddf918f14f"],
 Cell[CellGroupData[{
-Cell[97967, 1994, 167, 3, 54, "Subsection",ExpressionUUID->"a30323af-9fd6-4291-904f-b9bb819da0dc"],
-Cell[98137, 1999, 188, 3, 35, "Text",ExpressionUUID->"b871aa70-6527-4191-8e53-02d8e2ba58a0"],
-Cell[98328, 2004, 236, 5, 29, "Input",ExpressionUUID->"20aa739b-28bd-4471-91fb-1a851df75cf7"]
+Cell[101058, 2059, 167, 3, 54, "Subsection",ExpressionUUID->"a30323af-9fd6-4291-904f-b9bb819da0dc"],
+Cell[101228, 2064, 188, 3, 35, "Text",ExpressionUUID->"b871aa70-6527-4191-8e53-02d8e2ba58a0"],
+Cell[101419, 2069, 236, 5, 29, "Input",ExpressionUUID->"20aa739b-28bd-4471-91fb-1a851df75cf7"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

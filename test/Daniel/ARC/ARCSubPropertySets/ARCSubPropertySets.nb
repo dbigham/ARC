@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     38631,        914]
-NotebookOptionsPosition[     30187,        720]
-NotebookOutlinePosition[     35757,        858]
-CellTagsIndexPosition[     35714,        855]
+NotebookDataLength[     39195,        921]
+NotebookOptionsPosition[     30752,        727]
+NotebookOutlinePosition[     36321,        865]
+CellTagsIndexPosition[     36278,        862]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -132,7 +132,7 @@ Cell[BoxData[{
  InitializationCell->False,
  CellChangeTimes->{{3.870365066059939*^9, 3.870365101399065*^9}, {
   3.8703776941638703`*^9, 3.870377694914891*^9}},
- CellLabel->"In[858]:=",
+ CellLabel->"In[691]:=",
  CellID->12245694,
  "TestId" -> 
  "ARCSubPropertySets-20220824-T9149Q",ExpressionUUID->"ea14aff9-2b20-4c7d-\
@@ -149,17 +149,24 @@ Cell[BoxData["\<\"{\\n    {\\n        \\\"Image\\\" -> <||>,\\n        \
  Alternatives[\\n            \\\"Shape\\\" -> <|\\\"MinimalPropertySets\\\" \
 -> {{\\\"Name\\\", \\\"Angle\\\"}}|>,\\n            \\\"MonochromeImage\\\" \
 -> <||>,\\n            \\\"Shapes\\\" -> <|\\\"ClassList\\\" -> True|>\\n     \
-   ],\\n        \\\"Color\\\" -> <||>,\\n        (\\\"X\\\" -> <||>) | \
-(\\\"XInverse\\\" -> <||>),\\n        (\\\"Y\\\" -> <||>) | (\\\"YInverse\\\" \
--> <||>),\\n        (\\\"Width\\\" -> <||>) | (\\\"X2\\\" -> <||>) | \
-(\\\"X2Inverse\\\" -> <||>),\\n        (\\\"Height\\\" -> <||>) | (\\\"Y2\\\" \
--> <||>) | (\\\"Y2Inverse\\\" -> <||>),\\n        \\\"ZOrder\\\" -> <||>\\n   \
- }\\n}\"\>"], "Output",
+   ],\\n        Alternatives[\\n            \\\"Color\\\" -> <||>,\\n         \
+   Condition[\\n                Missing[\\\"Color\\\"],\\n                \
+MatchQ[\\n                    #1[\\\"Shape\\\"],\\n                    \
+KeyValuePattern[\\n                        {\\n                            \\\
+\"Border\\\" -> KeyValuePattern[\\\"Color\\\" -> _],\\n                       \
+     \\\"Interior\\\" -> KeyValuePattern[\\\"Color\\\" -> _]\\n               \
+         }\\n                    ]\\n                ]\\n            ]\\n     \
+   ],\\n        (\\\"X\\\" -> <||>) | (\\\"XInverse\\\" -> <||>),\\n        (\
+\\\"Y\\\" -> <||>) | (\\\"YInverse\\\" -> <||>),\\n        (\\\"Width\\\" -> \
+<||>) | (\\\"X2\\\" -> <||>) | (\\\"X2Inverse\\\" -> <||>),\\n        \
+(\\\"Height\\\" -> <||>) | (\\\"Y2\\\" -> <||>) | (\\\"Y2Inverse\\\" -> \
+<||>),\\n        \\\"ZOrder\\\" -> <||>\\n    }\\n}\"\>"], "Output",
  CellChangeTimes->{{3.8703650763719826`*^9, 3.870365098588652*^9}, 
    3.87036542810477*^9, {3.8703776856983604`*^9, 3.870377695165243*^9}, 
-   3.870516095746493*^9, 3.870629850062851*^9, 3.870903250728191*^9},
+   3.870516095746493*^9, 3.870629850062851*^9, 3.870903250728191*^9, 
+   3.8719281284898777`*^9},
  CellLabel->
-  "Out[859]=",ExpressionUUID->"9358cc5c-2651-4315-b0e0-1f8822317339"],
+  "Out[692]=",ExpressionUUID->"395bb62b-554a-41ca-9704-481c640ecfb3"],
 
 Cell[CellGroupData[{
 
@@ -267,7 +274,7 @@ Cell[BoxData[{
  CellChangeTimes->{{3.870365066059939*^9, 3.870365101399065*^9}, {
   3.8703776941638703`*^9, 3.870377694914891*^9}, {3.8705161023067055`*^9, 
   3.870516135139411*^9}, {3.870516363423563*^9, 3.8705163674941278`*^9}},
- CellLabel->"In[860]:=",
+ CellLabel->"In[693]:=",
  CellID->39241815,
  "TestId" -> 
  "ARCSubPropertySets-20220826-XZS2EB",ExpressionUUID->"f1c69589-b424-4e32-\
@@ -278,9 +285,9 @@ Cell[BoxData["\<\"{{\\\"Y\\\" | Missing[\\\"Y\\\"], \\\"X\\\" | Missing[\\\"Y\
 \\\"]}}\"\>"], "Output",
  CellChangeTimes->{3.8705161032403917`*^9, 3.8705161358255057`*^9, 
   3.8705161778821297`*^9, 3.8705163683311863`*^9, 3.870629855119084*^9, 
-  3.8709032542266903`*^9},
+  3.8709032542266903`*^9, 3.8719281330715313`*^9},
  CellLabel->
-  "Out[861]=",ExpressionUUID->"9a0820cc-b2da-4146-8b7a-741a984abb86"],
+  "Out[694]=",ExpressionUUID->"9b444310-42fb-43ae-a4b5-7bd4d7f3ce8c"],
 
 Cell[CellGroupData[{
 
@@ -720,7 +727,7 @@ True|>,\\n        \\\"Width\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Width\\\"] \
 },
 Evaluator->"Local",
 WindowSize->{958, 980},
-WindowMargins->{{-7., Automatic}, {Automatic, 0}},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
 Visible->True,
 DockedCells->{
   Cell[
@@ -871,48 +878,48 @@ Cell[4623, 123, 617, 15, 90, "Code",ExpressionUUID->"ea14aff9-2b20-4c7d-be5a-b46
  InitializationCell->False,
  CellID->12245694]
 }, Open  ]],
-Cell[5255, 141, 1477, 20, 554, "Output",ExpressionUUID->"9358cc5c-2651-4315-b0e0-1f8822317339"],
+Cell[5255, 141, 2018, 27, 834, "Output",ExpressionUUID->"395bb62b-554a-41ca-9704-481c640ecfb3"],
 Cell[CellGroupData[{
-Cell[6757, 165, 3577, 83, 52, "TestUI",ExpressionUUID->"5311cfda-4b22-4254-906a-6ecbdb38bac6",
+Cell[7298, 172, 3577, 83, 52, "TestUI",ExpressionUUID->"5311cfda-4b22-4254-906a-6ecbdb38bac6",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[10337, 250, 974, 23, 91, "Code",ExpressionUUID->"f1c69589-b424-4e32-b5f0-8559db9af260",
+Cell[10878, 257, 974, 23, 91, "Code",ExpressionUUID->"f1c69589-b424-4e32-b5f0-8559db9af260",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->39241815]
 }, Open  ]],
-Cell[11326, 276, 354, 6, 33, "Output",ExpressionUUID->"9a0820cc-b2da-4146-8b7a-741a984abb86"],
+Cell[11867, 283, 378, 6, 33, "Output",ExpressionUUID->"9b444310-42fb-43ae-a4b5-7bd4d7f3ce8c"],
 Cell[CellGroupData[{
-Cell[11705, 286, 235, 5, 54, "Subsection",ExpressionUUID->"4d97f14b-1cb4-4d7a-9a35-dd3cc0478656"],
+Cell[12270, 293, 235, 5, 54, "Subsection",ExpressionUUID->"4d97f14b-1cb4-4d7a-9a35-dd3cc0478656"],
 Cell[CellGroupData[{
-Cell[11965, 295, 3557, 83, 52, "TestUI",ExpressionUUID->"44f6d114-91f1-43e2-acc7-f156076ec602",
+Cell[12530, 302, 3557, 83, 52, "TestUI",ExpressionUUID->"44f6d114-91f1-43e2-acc7-f156076ec602",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[15525, 380, 1251, 29, 180, "Code",ExpressionUUID->"fa19b5d2-0779-46fe-a10f-d639a2501ead",
+Cell[16090, 387, 1251, 29, 180, "Code",ExpressionUUID->"fa19b5d2-0779-46fe-a10f-d639a2501ead",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->13594983]
 }, Open  ]],
-Cell[16791, 412, 582, 9, 94, "Output",ExpressionUUID->"f12f8503-aeff-4fa7-8a1a-eb6e2acbe31d"],
+Cell[17356, 419, 582, 9, 94, "Output",ExpressionUUID->"f12f8503-aeff-4fa7-8a1a-eb6e2acbe31d"],
 Cell[CellGroupData[{
-Cell[17398, 425, 3555, 83, 52, "TestUI",ExpressionUUID->"deb411dc-4d4a-47e3-b0aa-6af8b5f695cb",
+Cell[17963, 432, 3555, 83, 52, "TestUI",ExpressionUUID->"deb411dc-4d4a-47e3-b0aa-6af8b5f695cb",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[20956, 510, 2193, 49, 342, "Code",ExpressionUUID->"aa53af34-9dc5-4035-98e8-b59f009f94d7",
+Cell[21521, 517, 2193, 49, 342, "Code",ExpressionUUID->"aa53af34-9dc5-4035-98e8-b59f009f94d7",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->99595874]
 }, Open  ]],
-Cell[23164, 562, 378, 6, 94, "Output",ExpressionUUID->"c14d0fe2-f734-42df-a016-c3e0e068475f"]
+Cell[23729, 569, 378, 6, 94, "Output",ExpressionUUID->"c14d0fe2-f734-42df-a016-c3e0e068475f"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[23579, 573, 208, 4, 38, "Subsection",ExpressionUUID->"5ca1cdfc-5d13-47e6-bc59-05559204413c"],
+Cell[24144, 580, 208, 4, 38, "Subsection",ExpressionUUID->"5ca1cdfc-5d13-47e6-bc59-05559204413c"],
 Cell[CellGroupData[{
-Cell[23812, 581, 3565, 83, 52, "TestUI",ExpressionUUID->"3a8fb629-d696-4c03-a93c-3bc5d041a072",
+Cell[24377, 588, 3565, 83, 52, "TestUI",ExpressionUUID->"3a8fb629-d696-4c03-a93c-3bc5d041a072",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[27380, 666, 819, 20, 90, "Code",ExpressionUUID->"09c14b1c-096e-4785-ba4a-038a18fdacd4",
+Cell[27945, 673, 819, 20, 90, "Code",ExpressionUUID->"09c14b1c-096e-4785-ba4a-038a18fdacd4",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->64774638]
 }, Open  ]],
-Cell[28214, 689, 1933, 26, 794, "Output",ExpressionUUID->"27121e59-f86e-4c59-b4b3-230cc16c1566"]
+Cell[28779, 696, 1933, 26, 794, "Output",ExpressionUUID->"27121e59-f86e-4c59-b4b3-230cc16c1566"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]

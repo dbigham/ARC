@@ -192,6 +192,28 @@ Test[
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
                 |>,
                 <|"Image" -> Daniel`ARC`ARCScene[{{10}, {10}, {10}}]|>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {{10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}, {10, 10}}
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10},
+                            {10, 10, 10}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "Line"|>,
                 <|"Name" -> "Line", "Angle" -> 90|>,
                 <|"Name" -> "Rectangle"|>,
@@ -204,6 +226,7 @@ Test[
             "AspectRatio" -> 1/3,
             "Area" -> 3,
             "FilledArea" -> 3,
+            "SurfacePixelCount" -> 3,
             "Height.Rank" -> 4,
             "Height.InverseRank" -> 1,
             "Length.Rank" -> 4,
@@ -212,12 +235,15 @@ Test[
             "Y.InverseRank" -> 4,
             "YInverse.Rank" -> 4,
             "YInverse.InverseRank" -> 1,
+            "YMiddle.Rank" -> 1,
             "AspectRatio.Rank" -> 1,
             "AspectRatio.InverseRank" -> 4,
             "Area.Rank" -> 4,
             "Area.InverseRank" -> 1,
             "FilledArea.Rank" -> 4,
             "FilledArea.InverseRank" -> 1,
+            "SurfacePixelCount.Rank" -> 4,
+            "SurfacePixelCount.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dr",
@@ -245,6 +271,8 @@ Test[
             "Area.InverseRank" -> 4,
             "FilledArea.Rank" -> 1,
             "FilledArea.InverseRank" -> 4,
+            "SurfacePixelCount.Rank" -> 1,
+            "SurfacePixelCount.InverseRank" -> 4,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742do",
@@ -272,6 +300,8 @@ Test[
             "Area.InverseRank" -> 3,
             "FilledArea.Rank" -> 2,
             "FilledArea.InverseRank" -> 3,
+            "SurfacePixelCount.Rank" -> 2,
+            "SurfacePixelCount.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dp",
@@ -288,6 +318,7 @@ Test[
             "XInverse" -> 8,
             "X2" -> 2,
             "X2Inverse" -> 8,
+            "XMiddle" -> 2,
             "X.Rank" -> 4,
             "X.InverseRank" -> 1,
             "XInverse.Rank" -> 1,
@@ -296,6 +327,8 @@ Test[
             "X2.InverseRank" -> 1,
             "X2Inverse.Rank" -> 1,
             "X2Inverse.InverseRank" -> 4,
+            "XMiddle.Rank" -> 4,
+            "XMiddle.InverseRank" -> 1,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d4",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742do",
@@ -313,6 +346,7 @@ Test[
             "XInverse" -> 6,
             "X2" -> 4,
             "X2Inverse" -> 6,
+            "XMiddle" -> 4,
             "X.Rank" -> 3,
             "X.InverseRank" -> 2,
             "XInverse.Rank" -> 2,
@@ -321,6 +355,8 @@ Test[
             "X2.InverseRank" -> 2,
             "X2Inverse.Rank" -> 2,
             "X2Inverse.InverseRank" -> 3,
+            "XMiddle.Rank" -> 3,
+            "XMiddle.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
@@ -337,6 +373,7 @@ Test[
             "XInverse" -> 4,
             "X2" -> 6,
             "X2Inverse" -> 4,
+            "XMiddle" -> 6,
             "X.Rank" -> 2,
             "X.InverseRank" -> 3,
             "XInverse.Rank" -> 3,
@@ -345,6 +382,8 @@ Test[
             "X2.InverseRank" -> 3,
             "X2Inverse.Rank" -> 3,
             "X2Inverse.InverseRank" -> 2,
+            "XMiddle.Rank" -> 2,
+            "XMiddle.InverseRank" -> 3,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dr",
@@ -361,6 +400,7 @@ Test[
             "XInverse" -> 2,
             "X2" -> 8,
             "X2Inverse" -> 2,
+            "XMiddle" -> 8,
             "X.Rank" -> 1,
             "X.InverseRank" -> 4,
             "XInverse.Rank" -> 4,
@@ -369,10 +409,26 @@ Test[
             "X2.InverseRank" -> 4,
             "X2Inverse.Rank" -> 4,
             "X2Inverse.InverseRank" -> 1,
+            "XMiddle.Rank" -> 1,
+            "XMiddle.InverseRank" -> 4,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dp",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742e8"
+            }
+        |>,
+        Daniel`ARC`Object[<|"YMiddle" -> 6|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HorizontalLineSymmetry" -> False,
+            "Objects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e9"
             }
         |>,
         Daniel`ARC`Object[<|"Height.Rank" -> 3|>] -> <|
@@ -395,10 +451,54 @@ Test[
             "Area.InverseRank" -> 2,
             "FilledArea.Rank" -> 3,
             "FilledArea.InverseRank" -> 2,
+            "SurfacePixelCount.Rank" -> 3,
+            "SurfacePixelCount.InverseRank" -> 2,
             "Objects" -> {
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742d6",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
                 "e7a71aa3-1a87-4e68-a1ce-009fa20742ea"
+            }
+        |>,
+        Daniel`ARC`Object[<|"YMiddle.Rank" -> 2|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HorizontalLineSymmetry" -> False,
+            "Objects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e9"
+            }
+        |>,
+        Daniel`ARC`Object[<|"YMiddle.InverseRank" -> 1|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HorizontalLineSymmetry" -> False,
+            "Objects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d5",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742do",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742e9"
+            }
+        |>,
+        Daniel`ARC`Object[<|"YMiddle.InverseRank" -> 2|>] -> <|
+            "Shapes" -> {
+                <|"Name" -> "Line"|>,
+                <|"Name" -> "Line", "Angle" -> 90|>,
+                <|"Name" -> "Rectangle"|>,
+                <|"Name" -> "Rectangle", "Filled" -> True|>
+            },
+            "HorizontalLineSymmetry" -> False,
+            "Objects" -> {
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742d7",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742dq",
+                "e7a71aa3-1a87-4e68-a1ce-009fa20742eb"
             }
         |>
     |>

@@ -15,7 +15,7 @@ Test[
         Daniel`ARC`ARCConditionsScore[<|"Color" -> 1|>]
     ]
     ,
-    -0.10423555968629031
+    -0.07303442871535162
     ,
     TestID -> "ARCConditionsScore-20220825-IHY3H7"
 ]
@@ -35,7 +35,7 @@ Test[
         Daniel`ARC`ARCConditionsScore[<|"X" -> 1|>]
     ]
     ,
-    -0.5035871324805669
+    -0.5008991914547277
     ,
     TestID -> "ARCConditionsScore-20220825-GWXD0K"
 ]

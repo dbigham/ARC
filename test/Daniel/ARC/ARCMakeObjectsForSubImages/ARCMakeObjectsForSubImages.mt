@@ -98,7 +98,7 @@ Test[
                                         "FilledArea" -> 8,
                                         "Components" -> {
                                             <|
-                                                "Image" -> {{1}},
+                                                "Image" -> Daniel`ARC`ARCScene[{{1}}],
                                                 "Position" -> {7, 2},
                                                 "PixelPositions" -> {{7, 2}}
                                             |>

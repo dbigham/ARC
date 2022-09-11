@@ -12,28 +12,30 @@
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Module[
-            {},
-            object = Daniel`ARC`ARCImageRegionToObject[
+        DevTools`TestingTools`SlowTest[
+            Module[
+                {},
+                object = Daniel`ARC`ARCImageRegionToObject[
+                    <|
+                        "Color" -> 2,
+                        "Position" -> {1, 1},
+                        "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
+                        "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
+                    |>,
+                    10,
+                    10
+                ];
                 <|
-                    "Color" -> 2,
-                    "Position" -> {1, 1},
-                    "Image" -> {{2, 2, 2}, {2, -1, -1}, {2, -1, -1}},
-                    "PixelPositions" -> {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {3, 1}}
-                |>,
-                10,
-                10
-            ];
-            <|
-                "Image" -> object["Image"],
-                "Shapes" -> object["Shapes"],
-                "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
-                "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
-                    object["Shapes"],
-                    90,
-                    object["Image"]
-                ]
-            |>
+                    "Image" -> object["Image"],
+                    "Shapes" -> object["Shapes"],
+                    "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
+                    "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
+                        object["Shapes"],
+                        90,
+                        object["Image"]
+                    ]
+                |>
+            ]
         ]
     ]
     ,
@@ -52,6 +54,43 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, -1, -1}, {10, -1, -1}, {10, 10, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, -1, 10}, {-1, -1, 10}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1},
+                        {10, 10, -1, -1, -1, -1}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1},
+                        {10, 10, 10, -1, -1, -1, -1, -1, -1}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
             |>,
             <|"Name" -> "L"|>,
             <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>,
@@ -82,6 +121,43 @@ Test[
                     "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
                 |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{-1, -1, 10}, {-1, -1, 10}, {10, 10, 10}}],
+                    "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}],
+                    "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10},
+                            {-1, -1, -1, -1, 10, 10},
+                            {-1, -1, -1, -1, 10, 10},
+                            {-1, -1, -1, -1, 10, 10},
+                            {-1, -1, -1, -1, 10, 10}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10},
+                            {-1, -1, -1, -1, -1, -1, 10, 10, 10}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                |>,
                 <|"Name" -> "L"|>,
                 <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>|>
             }
@@ -93,28 +169,30 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        Module[
-            {},
-            object = Daniel`ARC`ARCImageRegionToObject[
+        DevTools`TestingTools`SlowTest[
+            Module[
+                {},
+                object = Daniel`ARC`ARCImageRegionToObject[
+                    <|
+                        "Color" -> 2,
+                        "Position" -> {1, 1},
+                        "Image" -> {{-1, 1, -1}, {1, 1, 1}},
+                        "PixelPositions" -> {{1, 2}, {2, 1}, {2, 2}, {2, 3}}
+                    |>,
+                    10,
+                    10
+                ];
                 <|
-                    "Color" -> 2,
-                    "Position" -> {1, 1},
-                    "Image" -> {{-1, 1, -1}, {1, 1, 1}},
-                    "PixelPositions" -> {{1, 2}, {2, 1}, {2, 2}, {2, 3}}
-                |>,
-                10,
-                10
-            ];
-            <|
-                "Image" -> object["Image"],
-                "Shapes" -> object["Shapes"],
-                "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
-                "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
-                    object["Shapes"],
-                    90,
-                    object["Image"]
-                ]
-            |>
+                    "Image" -> object["Image"],
+                    "Shapes" -> object["Shapes"],
+                    "ImageRotatedBy90" -> Daniel`ARC`RotateImage[object["Image"], 90],
+                    "ShapesRotatedBy90" -> Daniel`ARC`ARCRotateShapeAssociations[
+                        object["Shapes"],
+                        90,
+                        object["Image"]
+                    ]
+                |>
+            ]
         ]
     ]
     ,
@@ -133,6 +211,34 @@ Test[
             <|
                 "Image" -> Daniel`ARC`ARCScene[{{-1, 10}, {10, 10}, {-1, 10}}],
                 "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {-1, 10, -1}}],
+                "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {-1, -1, 10, 10, -1, -1},
+                        {-1, -1, 10, 10, -1, -1},
+                        {10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+            |>,
+            <|
+                "Image" -> Daniel`ARC`ARCScene[
+                    {
+                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10, 10}
+                    }
+                ],
+                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
             |>,
             <|"Name" -> "Triangle"|>
         },
@@ -155,6 +261,39 @@ Test[
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{-1, 10, -1}, {10, 10, 10}}],
                     "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[{{-1, 10}, {10, 10}, {-1, 10}}],
+                    "Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, -1, -1},
+                            {10, 10, -1, -1},
+                            {10, 10, 10, 10},
+                            {10, 10, 10, 10},
+                            {10, 10, -1, -1},
+                            {10, 10, -1, -1}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
+                |>,
+                <|
+                    "Image" -> Daniel`ARC`ARCScene[
+                        {
+                            {10, 10, 10, -1, -1, -1},
+                            {10, 10, 10, -1, -1, -1},
+                            {10, 10, 10, -1, -1, -1},
+                            {10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, 10, 10, 10},
+                            {10, 10, 10, -1, -1, -1},
+                            {10, 10, 10, -1, -1, -1},
+                            {10, 10, 10, -1, -1, -1}
+                        }
+                    ],
+                    "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                 |>,
                 <|"Name" -> "Triangle"|>,
                 <|

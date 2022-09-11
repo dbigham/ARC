@@ -39,39 +39,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 3,
-                        "X" -> 2,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -82,39 +50,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 3,
-                        "X" -> 4,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -125,39 +61,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 5,
-                        "X" -> 2,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -168,39 +72,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 5,
-                        "X" -> 4,
-                        "Color" -> 4
+                        |>
                     |>
                 }
             |>
@@ -220,54 +92,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> Daniel`ARC`ARCScene[
-                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                        ],
-                        "Shapes" -> {
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                                ]
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>
-                        },
-                        "Width" -> 3,
-                        "Height" -> 3,
-                        "Y" -> 6,
-                        "X" -> 6,
-                        "Color" -> 7
+                        |>
                     |>
                 }
             |>
@@ -345,39 +170,7 @@ Test[
                             "YInverse" -> -1,
                             "XInverse" -> -1
                         |>
-                    |>,
-                    "Shape" -> <|"Name" -> "Pixel"|>,
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                        |>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                            ],
-                            "Transform" -> <|
-                                "Type" -> "Scaled",
-                                "Factor" -> 0.3333333333333333
-                            |>
-                        |>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Line"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>,
-                        <|"Name" -> "Line", "Angle" -> 0|>,
-                        <|"Name" -> "Line", "Angle" -> 90|>,
-                        <|"Name" -> "Line", "Angle" -> 135|>,
-                        <|"Name" -> "Line", "Angle" -> 45|>,
-                        <|"Name" -> "Square", "Filled" -> True|>,
-                        <|"Name" -> "Rectangle", "Filled" -> True|>
-                    },
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 3,
-                    "X" -> 2,
-                    "Color" -> 4
+                    |>
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -388,39 +181,7 @@ Test[
                             "YInverse" -> -1,
                             "XInverse" -> 1
                         |>
-                    |>,
-                    "Shape" -> <|"Name" -> "Pixel"|>,
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                        |>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                            ],
-                            "Transform" -> <|
-                                "Type" -> "Scaled",
-                                "Factor" -> 0.3333333333333333
-                            |>
-                        |>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Line"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>,
-                        <|"Name" -> "Line", "Angle" -> 0|>,
-                        <|"Name" -> "Line", "Angle" -> 90|>,
-                        <|"Name" -> "Line", "Angle" -> 135|>,
-                        <|"Name" -> "Line", "Angle" -> 45|>,
-                        <|"Name" -> "Square", "Filled" -> True|>,
-                        <|"Name" -> "Rectangle", "Filled" -> True|>
-                    },
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 3,
-                    "X" -> 4,
-                    "Color" -> 4
+                    |>
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -431,39 +192,7 @@ Test[
                             "YInverse" -> 1,
                             "XInverse" -> -1
                         |>
-                    |>,
-                    "Shape" -> <|"Name" -> "Pixel"|>,
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                        |>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                            ],
-                            "Transform" -> <|
-                                "Type" -> "Scaled",
-                                "Factor" -> 0.3333333333333333
-                            |>
-                        |>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Line"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>,
-                        <|"Name" -> "Line", "Angle" -> 0|>,
-                        <|"Name" -> "Line", "Angle" -> 90|>,
-                        <|"Name" -> "Line", "Angle" -> 135|>,
-                        <|"Name" -> "Line", "Angle" -> 45|>,
-                        <|"Name" -> "Square", "Filled" -> True|>,
-                        <|"Name" -> "Rectangle", "Filled" -> True|>
-                    },
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 5,
-                    "X" -> 2,
-                    "Color" -> 4
+                    |>
                 |>,
                 <|
                     "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -474,39 +203,7 @@ Test[
                             "YInverse" -> 1,
                             "XInverse" -> 1
                         |>
-                    |>,
-                    "Shape" -> <|"Name" -> "Pixel"|>,
-                    "Shapes" -> {
-                        <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                        |>,
-                        <|
-                            "Image" -> Daniel`ARC`ARCScene[
-                                {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                            ],
-                            "Transform" -> <|
-                                "Type" -> "Scaled",
-                                "Factor" -> 0.3333333333333333
-                            |>
-                        |>,
-                        <|"Name" -> "Pixel"|>,
-                        <|"Name" -> "Line"|>,
-                        <|"Name" -> "Square"|>,
-                        <|"Name" -> "Rectangle"|>,
-                        <|"Name" -> "Line", "Angle" -> 0|>,
-                        <|"Name" -> "Line", "Angle" -> 90|>,
-                        <|"Name" -> "Line", "Angle" -> 135|>,
-                        <|"Name" -> "Line", "Angle" -> 45|>,
-                        <|"Name" -> "Square", "Filled" -> True|>,
-                        <|"Name" -> "Rectangle", "Filled" -> True|>
-                    },
-                    "Width" -> 1,
-                    "Height" -> 1,
-                    "Y" -> 5,
-                    "X" -> 4,
-                    "Color" -> 4
+                    |>
                 |>
             }
         |>
@@ -548,39 +245,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 2,
-                        "X" -> 6,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -591,39 +256,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 2,
-                        "X" -> 8,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -634,39 +267,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 4,
-                        "X" -> 6,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -677,39 +278,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 4,
-                        "X" -> 8,
-                        "Color" -> 4
+                        |>
                     |>
                 }
             |>
@@ -729,54 +298,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> Daniel`ARC`ARCScene[
-                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                        ],
-                        "Shapes" -> {
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                                ]
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>
-                        },
-                        "Width" -> 3,
-                        "Height" -> 3,
-                        "Y" -> 3,
-                        "X" -> 2,
-                        "Color" -> 7
+                        |>
                     |>
                 }
             |>
@@ -796,54 +318,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> Daniel`ARC`ARCScene[
-                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                        ],
-                        "Shapes" -> {
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
-                                ]
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {10, 10, -1, -1, 10, 10},
-                                        {-1, -1, 10, 10, -1, -1},
-                                        {-1, -1, 10, 10, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {10, 10, 10, -1, -1, -1, 10, 10, 10},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1},
-                                        {-1, -1, -1, 10, 10, 10, -1, -1, -1}
-                                    }
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>
-                        },
-                        "Width" -> 3,
-                        "Height" -> 3,
-                        "Y" -> 6,
-                        "X" -> 6,
-                        "Color" -> 7
+                        |>
                     |>
                 }
             |>
@@ -863,39 +338,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 7,
-                        "X" -> 1,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -906,39 +349,7 @@ Test[
                                 "YInverse" -> -1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 7,
-                        "X" -> 3,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -949,39 +360,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> -1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 9,
-                        "X" -> 1,
-                        "Color" -> 4
+                        |>
                     |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{4}}],
@@ -992,39 +371,7 @@ Test[
                                 "YInverse" -> 1,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Pixel"|>,
-                        "Shapes" -> {
-                            <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Pixel"|>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Square"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Line", "Angle" -> 90|>,
-                            <|"Name" -> "Line", "Angle" -> 135|>,
-                            <|"Name" -> "Line", "Angle" -> 45|>,
-                            <|"Name" -> "Square", "Filled" -> True|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 1,
-                        "Height" -> 1,
-                        "Y" -> 9,
-                        "X" -> 3,
-                        "Color" -> 4
+                        |>
                     |>
                 }
             |>
@@ -1054,7 +401,7 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{1, 8, 2}, {2, 1, 2}, {1, 2, 2}}],
             "Position" -> {1, 1},
-            "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
+            "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}
         |>
     |>
     ,
@@ -1078,11 +425,13 @@ Test[
         <|"Image" -> Daniel`ARC`ARCScene[{{2, 2}, {2, 2}}], "Position" -> {1, 2}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2, 2}, {2, 2}}],
             "Position" -> {2, 2},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 2, "X" -> 2|>,
-                "Offset" -> <|"Y" -> 1|>
-            |>
+            "Transforms" -> {
+                <|
+                    "Type" -> "Move",
+                    "Position" -> <|"Y" -> 2, "X" -> 2|>,
+                    "Offset" -> <|"Y" -> 1|>
+                |>
+            }
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}}], "Position" -> {2, 8}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{1, 1}, {1, 1}}],
@@ -1091,11 +440,13 @@ Test[
         <|"Image" -> Daniel`ARC`ARCScene[{{4, 4}, {4, 4}}], "Position" -> {3, 5}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{4, 4}, {4, 4}}],
             "Position" -> {2, 5},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 2, "X" -> 5|>,
-                "Offset" -> <|"Y" -> -1|>
-            |>
+            "Transforms" -> {
+                <|
+                    "Type" -> "Move",
+                    "Position" -> <|"Y" -> 2, "X" -> 5|>,
+                    "Offset" -> <|"Y" -> -1|>
+                |>
+            }
         |>
     |>
     ,
@@ -1155,29 +506,35 @@ Test[
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {3, 3}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{1}}],
             "Position" -> {4, 3},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 4, "X" -> 3|>,
-                "Offset" -> <|"Y" -> 1|>
-            |>
+            "Transforms" -> {
+                <|
+                    "Type" -> "Move",
+                    "Position" -> <|"Y" -> 4, "X" -> 3|>,
+                    "Offset" -> <|"Y" -> 1|>
+                |>
+            }
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {4, 5}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{1}}],
             "Position" -> {5, 5},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 5, "X" -> 5|>,
-                "Offset" -> <|"Y" -> 1|>
-            |>
+            "Transforms" -> {
+                <|
+                    "Type" -> "Move",
+                    "Position" -> <|"Y" -> 5, "X" -> 5|>,
+                    "Offset" -> <|"Y" -> 1|>
+                |>
+            }
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{2}}], "Position" -> {7, 9}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{2}}],
             "Position" -> {6, 9},
-            "Transform" -> <|
-                "Type" -> "Move",
-                "Position" -> <|"Y" -> 6, "X" -> 9|>,
-                "Offset" -> <|"Y" -> -1|>
-            |>
+            "Transforms" -> {
+                <|
+                    "Type" -> "Move",
+                    "Position" -> <|"Y" -> 6, "X" -> 9|>,
+                    "Offset" -> <|"Y" -> -1|>
+                |>
+            }
         |>
     |>
     ,
@@ -1226,182 +583,7 @@ Test[
                                 "YInverse" -> -2,
                                 "XInverse" -> 1
                             |>
-                        |>,
-                        "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
-                        "Shapes" -> {
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10, 10, 10, 10, 10, 10, 10, 10, 10}}
-                                ]
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}}
-                                ],
-                                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {{10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}}
-                                ],
-                                "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10
-                                        },
-                                        {
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10
-                                        }
-                                    }
-                                ],
-                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
-                            |>,
-                            <|
-                                "Image" -> Daniel`ARC`ARCScene[
-                                    {
-                                        {
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10
-                                        },
-                                        {
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10
-                                        },
-                                        {
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10,
-                                            10
-                                        }
-                                    }
-                                ],
-                                "Transform" -> <|
-                                    "Type" -> "Scaled",
-                                    "Factor" -> 0.3333333333333333
-                                |>
-                            |>,
-                            <|"Name" -> "Line"|>,
-                            <|"Name" -> "Rectangle"|>,
-                            <|"Name" -> "Line", "Angle" -> 0|>,
-                            <|"Name" -> "Rectangle", "Filled" -> True|>
-                        },
-                        "Width" -> 9,
-                        "Height" -> 1,
-                        "Y" -> 5,
-                        "X" -> 7,
-                        "Color" -> 1,
-                        "Outward" -> True,
-                        "Direction" -> {0, 1}
+                        |>
                     |>
                 }
             |>
@@ -1524,11 +706,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCFindObjectMapping[
-                Daniel`ARC`ARCParseFile[file = "ed36ccf7"]["Train", 2],
-                "SingleObject" -> True
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCFindObjectMapping[
+                        Daniel`ARC`ARCParseFile[file = "ed36ccf7"]["Train", 2],
+                        "SingleObject" -> True
+                    ]
+                ]
             ]
         ]
     ]
@@ -1540,7 +726,7 @@ Test[
         |> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{6, -1, -1}, {6, -1, 6}, {6, -1, 6}}],
             "Position" -> {1, 1},
-            "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
+            "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 270|>}
         |>
     |>
     ,
@@ -1548,10 +734,14 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
-            Daniel`ARC`ARCFindObjectMapping[
-                Daniel`ARC`ARCParseFile[file = "c59eb873"]["Train", 1]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`SimplifyObjects[
+                DevTools`ERP`NormalizeOutput[
+                    Daniel`ARC`ARCFindObjectMapping[
+                        Daniel`ARC`ARCParseFile[file = "c59eb873"]["Train", 1]
+                    ]
+                ]
             ]
         ]
     ]
@@ -1572,7 +762,7 @@ Test[
                 }
             ],
             "Position" -> {1, 1},
-            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 2.|>
+            "Transforms" -> {<|"Type" -> "Scaled", "Factor" -> 2.|>}
         |>
     |>
     ,
@@ -1600,7 +790,10 @@ Test[
         <|"Image" -> Daniel`ARC`ARCScene[{{5}, {5}, {5}}], "Position" -> {5, 2}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{5, 5, 5}}],
             "Position" -> {5, 2},
-            "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
+            "Transforms" -> {
+                <|"Type" -> "Rotation", "Angle" -> 90|>,
+                <|"Type" -> "Rotation", "Angle" -> 270|>
+            }
         |>,
         <|"Image" -> Daniel`ARC`ARCScene[{{5}}], "Position" -> {9, 2}|> -> <|
             "Image" -> Daniel`ARC`ARCScene[{{5}}],

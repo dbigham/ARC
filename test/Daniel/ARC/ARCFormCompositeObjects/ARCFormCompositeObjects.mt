@@ -179,6 +179,7 @@ Test[
             "X" -> 2,
             "AspectRatio" -> 1,
             "Area" -> 9,
+            "Shape" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{4, -1, 4}, {-1, 2, -1}, {4, -1, 4}}]|>,
                 <|
@@ -209,8 +210,7 @@ Test[
                         }
                     ],
                     "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
-                |>,
-                Missing["KeyAbsent", "Shapes"]
+                |>
             },
             "Components" -> {
                 <|
@@ -294,6 +294,7 @@ Test[
                     "XRelative" -> 2
                 |>
             },
+            "ColorCount" -> 2,
             "YInverse" -> 7,
             "XInverse" -> 8,
             "Y2" -> 5,
@@ -301,10 +302,13 @@ Test[
             "Y2Inverse" -> 5,
             "X2Inverse" -> 6,
             "ZOrder" -> 0,
+            "YMiddle" -> 4,
+            "XMiddle" -> 3,
             "Length" -> 3,
             "PrimarySizeDimension" -> "None",
             "FilledArea" -> 5,
             "FilledProportion" -> 0.5555555555555556,
+            "SurfacePixelCount" -> 5,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,
@@ -322,6 +326,7 @@ Test[
             "X" -> 6,
             "AspectRatio" -> 1,
             "Area" -> 9,
+            "Shape" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}],
             "Shapes" -> {
                 <|"Image" -> Daniel`ARC`ARCScene[{{-1, 7, -1}, {7, 1, 7}, {-1, 7, -1}}]|>,
                 <|
@@ -352,8 +357,7 @@ Test[
                         }
                     ],
                     "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
-                |>,
-                Missing["KeyAbsent", "Shapes"]
+                |>
             },
             "Components" -> {
                 <|
@@ -392,6 +396,7 @@ Test[
                     "XRelative" -> 1
                 |>
             },
+            "ColorCount" -> 2,
             "YInverse" -> 4,
             "XInverse" -> 4,
             "Y2" -> 8,
@@ -399,10 +404,13 @@ Test[
             "Y2Inverse" -> 2,
             "X2Inverse" -> 2,
             "ZOrder" -> 0,
+            "YMiddle" -> 7,
+            "XMiddle" -> 7,
             "Length" -> 3,
             "PrimarySizeDimension" -> "None",
             "FilledArea" -> 5,
             "FilledProportion" -> 0.5555555555555556,
+            "SurfacePixelCount" -> 4,
             "VerticalLineSymmetry" -> False,
             "HorizontalLineSymmetry" -> False,
             "VerticalAndHorizontalLineSymmetry" -> False,

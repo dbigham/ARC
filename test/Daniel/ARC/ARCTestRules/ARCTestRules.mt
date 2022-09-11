@@ -77,6 +77,30 @@ Test[
                     |>["Input"],
                     <|
                         "Rules" -> {
+                            <|"Colors" -> {1}|> -> <|
+                                "Transform" -> <|
+                                    "Type" -> "AddComponents",
+                                    "Components" -> {
+                                        <|
+                                            "Image" -> Daniel`ARC`ARCScene[
+                                                {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
+                                            ],
+                                            "Position" -> <|
+                                                "RelativePosition" -> <|"Y" -> -1, "X" -> -1|>
+                                            |>
+                                        |>
+                                    }
+                                |>,
+                                "Examples" -> {1, 2, 3},
+                                "ExampleCount" -> 3,
+                                "UseCount" -> 4,
+                                "InputObjects" -> {
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742es",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fs",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fr",
+                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742hz"
+                                }
+                            |>,
                             <|"Colors" -> {2}|> -> <|
                                 "Transform" -> <|
                                     "Type" -> "AddComponents",
@@ -115,30 +139,6 @@ Test[
                                     "e7a71aa3-1a87-4e68-a1ce-009fa20742ft",
                                     "e7a71aa3-1a87-4e68-a1ce-009fa20742fu",
                                     "e7a71aa3-1a87-4e68-a1ce-009fa20742i0"
-                                }
-                            |>,
-                            <|"Colors" -> {1}|> -> <|
-                                "Transform" -> <|
-                                    "Type" -> "AddComponents",
-                                    "Components" -> {
-                                        <|
-                                            "Image" -> Daniel`ARC`ARCScene[
-                                                {{-1, 7, -1}, {7, -1, 7}, {-1, 7, -1}}
-                                            ],
-                                            "Position" -> <|
-                                                "RelativePosition" -> <|"Y" -> -1, "X" -> -1|>
-                                            |>
-                                        |>
-                                    }
-                                |>,
-                                "Examples" -> {1, 2, 3},
-                                "ExampleCount" -> 3,
-                                "UseCount" -> 4,
-                                "InputObjects" -> {
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742es",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fs",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742fr",
-                                    "e7a71aa3-1a87-4e68-a1ce-009fa20742hz"
                                 }
                             |>,
                             <|"Colors" -> Except[{1} | {2}]|> -> <|

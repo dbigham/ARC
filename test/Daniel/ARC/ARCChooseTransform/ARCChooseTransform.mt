@@ -121,19 +121,21 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`SimplifyObjects[
-        Daniel`ARC`ARCChooseTransform[
-            {
-                <|"Image" -> Daniel`ARC`ARCScene[{{8, 6}, {6, 8}}]|>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{8, 8, 8}, {8, 7, 7}, {8, 7, 7}}],
-                    "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}
-                |>,
-                <|
-                    "Image" -> Daniel`ARC`ARCScene[{{4, 4, 6}, {4, 4, 6}, {9, 9, 6}}],
-                    "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}
-                |>
-            }
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`SimplifyObjects[
+            Daniel`ARC`ARCChooseTransform[
+                {
+                    <|"Image" -> Daniel`ARC`ARCScene[{{8, 6}, {6, 8}}], "Colors" -> {6, 8}|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{8, 8, 8}, {8, 7, 7}, {8, 7, 7}}],
+                        "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{4, 4, 6}, {4, 4, 6}, {9, 9, 6}}],
+                        "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}
+                    |>
+                }
+            ]
         ]
     ]
     ,

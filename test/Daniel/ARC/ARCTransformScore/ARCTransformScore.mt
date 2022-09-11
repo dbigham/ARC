@@ -23,7 +23,7 @@ Test[
         ]
     ]
     ,
-    -0.65
+    -0.67
     ,
     TestID -> "ARCTransformScore-20220804-R5DIE5"
 ]
@@ -41,7 +41,7 @@ Test[
         ]
     ]
     ,
-    -1.13
+    -1.15
     ,
     TestID -> "ARCTransformScore-20220804-P26PZ7"
 ]
@@ -59,7 +59,7 @@ Test[
         ]
     ]
     ,
-    -1.67
+    -1.69
     ,
     TestID -> "ARCTransformScore-20220804-XKHR3Z"
 ]
@@ -71,7 +71,7 @@ Test[
         ]
     ]
     ,
-    -0.21999999999999995
+    -0.26
     ,
     TestID -> "ARCTransformScore-20220805-0X48JF"
 ]
@@ -118,7 +118,7 @@ Test[
         ]
     ]
     ,
-    -1.58
+    -1.5499999999999998
     ,
     TestID -> "ARCTransformScore-20220825-4RBNEY"
 ]
@@ -146,7 +146,7 @@ Test[
         ]
     ]
     ,
-    -0.5300000000000001
+    -0.5700000000000001
     ,
     TestID -> "ARCTransformScore-20220905-TREZ4Z"
 ]
@@ -166,7 +166,7 @@ Test[
         ]
     ]
     ,
-    -1.05
+    -1.07
     ,
     TestID -> "ARCTransformScore-20220905-3095OU"
 ]
@@ -194,7 +194,7 @@ Test[
         Daniel`ARC`ARCTransformScore["X2Inverse" -> 1]
     ]
     ,
-    0.
+    -0.020000000000000004
     ,
     TestID -> "ARCTransformScore-20220910-WIS6O9"
 ]

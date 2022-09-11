@@ -243,6 +243,7 @@ Test[
                 "XRelative" -> 2
             |>
         },
+        "ColorCount" -> 2,
         "YInverse" -> 7,
         "XInverse" -> 8,
         "Y2" -> 5,
@@ -250,10 +251,13 @@ Test[
         "Y2Inverse" -> 5,
         "X2Inverse" -> 6,
         "ZOrder" -> 0,
+        "YMiddle" -> 4,
+        "XMiddle" -> 3,
         "Length" -> 3,
         "PrimarySizeDimension" -> "None",
         "FilledArea" -> 5,
         "FilledProportion" -> 0.5555555555555556,
+        "SurfacePixelCount" -> 5,
         "VerticalLineSymmetry" -> False,
         "HorizontalLineSymmetry" -> False,
         "VerticalAndHorizontalLineSymmetry" -> False,
