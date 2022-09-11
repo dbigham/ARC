@@ -11,9 +11,13 @@
 *)
 
 Test[
-    Daniel`ARC`ARCFindRulesForGridSubdivision[
-        Daniel`ARC`ARCParseInputAndOutputScenes[
-            Daniel`ARC`ARCParseFile["272f95fa"]["Train"]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCFindRulesForGridSubdivision[
+                Daniel`ARC`ARCParseInputAndOutputScenes[
+                    Daniel`ARC`ARCParseFile["272f95fa"]["Train"]
+                ]
+            ]
         ]
     ]
     ,
@@ -33,7 +37,7 @@ Test[
                                         "Color" -> 2,
                                         "X" -> 1,
                                         "Y" -> 1,
-                                        "X2" -> 6,
+                                        "X2Inverse" -> 1,
                                         "Y2Inverse" -> 1
                                     |>
                                 }
@@ -74,7 +78,7 @@ Test[
                                         "Color" -> 6,
                                         "X" -> 1,
                                         "Y" -> 1,
-                                        "X2" -> 6,
+                                        "X2Inverse" -> 1,
                                         "Y2Inverse" -> 1
                                     |>
                                 }
@@ -115,7 +119,7 @@ Test[
                                         "Color" -> 1,
                                         "X" -> 1,
                                         "Y" -> 1,
-                                        "X2" -> 6,
+                                        "X2Inverse" -> 1,
                                         "Y2Inverse" -> 1
                                     |>
                                 }

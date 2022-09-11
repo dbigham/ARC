@@ -135,7 +135,7 @@ The following ARC training tasks started passing after some different task was i
 * [4c4377d9](TaskNotes/4c4377d9/notes.md)
 * [8d5021e8](TaskNotes/8d5021e8/notes.md)
 * [a416b8f3](TaskNotes/a416b8f3/notes.md)
-* fcc82909
+* 963e52fc
 
 ### Evaluation Tasks (24)
 

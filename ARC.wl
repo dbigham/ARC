@@ -450,11 +450,17 @@ ARCSubdivideImageUsingGrid::usage = "ARCSubdivideImageUsingGrid  "
 
 ARCFindRulesForGridSubdivision::usage = "ARCFindRulesForGridSubdivision  "
 
+ARCCombineDividersIntoGrid::usage = "ARCCombineDividersIntoGrid  "
+
+ARCMemoized::usage = "ARCMemoized  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
 
 $MinimumExamplesPerRule = 2;
+
+$memoization = None;
 
 (* These make use of utility code from an internal Wolfram git repository (wyatterp), so these
    functions would need to be provided if this code were used by people outside of Wolfram. *)
@@ -481,6 +487,8 @@ EntityMatchQ = EntityLink`EntityMatchQ;
 SectionCellObject = DevTools`NotebookTools`SectionCellObject;
 MoveNotebook = DevTools`NotebookTools`MoveNotebook;
 FilterOptions = Utility`FilterOptions;
+Memoized = Utility`Memoized;
+CreateMemoizationFunction = Utility`CreateMemoizationFunction;
 
 With[{contexts = ERP`MX`MXContexts[]},
     With[{contexts2 = DeleteDuplicates[Append[contexts, "Daniel`"]]},
@@ -572,6 +580,9 @@ $colorNameToInteger = AssociationInverse[$integerToColorName];
 *)
 Clear[ARCParseFile];
 ARCParseFile[file_String] :=
+    ARCMemoized[
+        "MemoizationKey" -> file
+    ]@
     Module[{exampleDetails},
         
         exampleDetails = ReturnIfFailure[ARCResolveExample[file]];
@@ -831,6 +842,7 @@ Options[ARCParseScene] =
     "SubdivideInput" -> False                               (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
+    ARCMemoized["MemoizationKey" -> {scene, opts}]@
     Module[{background, objects, res},
         
         (*Echo["ARCParseScene" -> scene -> OptionValue["InputOrOutput"] -> OptionValue["ExampleIndex"]];*)
@@ -926,7 +938,8 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         res
     ]
 
-ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
+ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
+    ARCMemoized["MemoizationKey" -> {scene, backgroundColor, opts}]@
     Module[
         {
             sceneImage = scene[[1]],
@@ -960,6 +973,10 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
            to get combined with other objects into composite objects. *)
         gridsAndDividers = Select[objects, AssociationQ[#["GridOrDivider"]] &];
         objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
+        
+        gridsAndDividers =
+            ReturnIfFailure@
+            ARCCombineDividersIntoGrid[scene, gridsAndDividers];
         
         (*ARCEcho[SimplifyObjects[gridsAndDividers]];*)
         
@@ -1107,6 +1124,12 @@ Options[ARCParseInputAndOutputScenes] =
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            examples,
+            opts
+        }
+    ]@
     Module[{},
         
         (* Detect the list of notable sub-images across all input and output scenes. *)
@@ -3590,6 +3613,7 @@ Options[ARCFindRules] =
     "SubdivideInput" -> False                           (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
+    Internal`InheritedBlock[{$memoization},
     Module[
         {
             examples = examplesIn,
@@ -3602,6 +3626,10 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             (* The parsed examples using the standard parsing approach, if computed. *)
             parsedExamples
         },
+        
+        If [$memoization === None,
+            $memoization = CreateMemoizationFunction[]
+        ];
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
@@ -3734,12 +3762,24 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* If both inputs and outputs have a shared grid structure, we can try subdividing
            the input/output scenes into their individual grid cells. *)
-        If [ListQ[parsedExamples] && ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
-            res2 = ARCFindRulesForGridSubdivision[parsedExamples];
-            foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
-            If [foundRulesQ2,
-                foundRulesQ = True;
-                res = res2
+        If [And[
+                ListQ[parsedExamples],
+                ARCAllExamplesUseGridInInputAndOutput[parsedExamples]
+            ],
+            workingRulesQ =
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ];
+                
+            If [!TrueQ[workingRulesQ],
+                res2 = ARCFindRulesForGridSubdivision[parsedExamples];
+                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = res2
+                ]
             ]
         ];
         
@@ -3804,6 +3844,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         ARCRulesForOutput[res]
     ]
+    ]
 
 (*!
     \function arcFindRulesHelper
@@ -3816,6 +3857,12 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
 Clear[arcFindRulesHelper];
 Options[arcFindRulesHelper] = Options[ARCFindRules];
 arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            examplesIn,
+            opts
+        }
+    ]@
     Module[
         {
             examples = examplesIn,
@@ -4661,7 +4708,17 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
 
 (* `conclusionGroup` is a group of conclusion RHSs that might share the fact that the
    corresponding input objects had the same value for some property, etc. *)
-ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, examples_List, unhandledIn_List, mutuallyExclusiveRules: True | False, OptionsPattern[]] :=
+ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, examples_List, unhandledIn_List, mutuallyExclusiveRules: True | False, opts:OptionsPattern[]] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            conclusionGroupIn,
+            referenceableInputObjects,
+            examples,
+            unhandledIn,
+            mutuallyExclusiveRules,
+            opts
+        }
+    ]@
     Module[
         {
             conclusionGroup = conclusionGroupIn,
@@ -6125,6 +6182,7 @@ ARCWorkingQ[file_String, opts:OptionsPattern[]] :=
     ]
 
 ARCWorkingQ[examples_List, rules_Association] :=
+    ARCMemoized@
     Module[{},
         MatchQ[
             ARCTestRules[examples, rules],
@@ -6235,6 +6293,12 @@ ARCMakeObjectsReferenceable[parsedScenes_List, opts:OptionsPattern[]] :=
     ]
 
 ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:OptionsPattern[]] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            objectsForAllExamples,
+            opts
+        }
+    ]@
     Module[
         {
             usablePropertiesAndValues,
@@ -6874,6 +6938,13 @@ $transformTypes = <|
 |>;
 Clear[ARCGeneralizeConclusions];
 ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Association, examples_List] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            conclusionsIn,
+            referenceableInputObjects,
+            examples
+        }
+    ]@
     Module[
         {
             conclusions = conclusionsIn,
@@ -7094,6 +7165,15 @@ Clear[ARCGeneralizeConclusionValue];
 ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
     (* HERE2 *)
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
+    ARCMemoized[
+        "MemoizationKey" -> {
+            propertyPath,
+            propertyAttributes,
+            conclusions,
+            referenceableObjects,
+            examples
+        }
+    ]@
     Module[
         {
             property =
@@ -7647,6 +7727,15 @@ Options[ARCGeneralizeConclusionValueUsingReferenceableObjects] =
     "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
 };
 ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_List, referenceableObjectsIn_Association, examples_List, opts:OptionsPattern[]] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            propertyPath,
+            values,
+            referenceableObjectsIn,
+            examples,
+            opts
+        }
+    ]@
     Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
         $debugProperty = "Width";
@@ -8117,6 +8206,13 @@ ARCTry[file_String, trainOrTest_String, exampleIndex_Integer, OptionsPattern[]] 
 *)
 Clear[ARCNotableSubImages];
 ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
+    ARCMemoized[
+        "MemoizationKey" -> {
+            objects,
+            sceneWidth,
+            sceneHeight
+        }
+    ]@
     Module[{res, colorCount},
         
         colorCount =
@@ -11035,23 +11131,34 @@ ARCTaskLog[] :=
             "CodeLength" -> 17816,
             "ExampleImplemented" -> "d0f5fe59"
         |>,
-        <|
+        (* Broke Sept 10 2022, but that's OK because it wasn't really working properly. *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 9}],
             "CodeLength" -> 17816,
             "ExampleImplemented" -> "fcc82909"
-        |>,
+        |>,*)
         <|
-            "Timestamp" -> DateObject[{2022, 9, 19}],
+            "Timestamp" -> DateObject[{2022, 9, 10}],
             "ImplementationTime" -> Quantity[10, "Minutes"],
             "CodeLength" -> 17859,
             "ExampleImplemented" -> "beb8660c"
         |>,
         <|
-            "Timestamp" -> DateObject[{2022, 9, 19}],
+            "Timestamp" -> DateObject[{2022, 9, 10}],
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 18288,
-            "ExampleImplemented" -> "272f95fa"
+            "ExampleImplemented" -> "272f95fa",
+            "NewGeneralizedSuccesses" -> {"963e52fc"}
+        |>,
+        (* Rule set is proper, but is now passing. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 10}],
+            "RuntimeParallel" -> Quantity[8.8, "Minutes"],
+            "Runtimecomment" -> "Added some uses of Memoized, which sped things up a bit.",
+            "CodeLength" -> 18288,
+            "ExampleImplemented" -> "963e52fc"
         |>
     }
 
@@ -13751,12 +13858,15 @@ ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
                             image,
                             {
                                 Repeated[firstRow],
-                                Repeated@
-                                PatternSequence[
-                                    Repeated[firstRow],
-                                    dividerRow
-                                ],
-                                Repeated[firstRow]
+                                RepeatedNull[
+                                    PatternSequence[
+                                        PatternSequence[
+                                            Repeated[firstRow],
+                                            dividerRow
+                                        ],
+                                        Repeated[firstRow]
+                                    ]
+                                ]
                             }
                         ]
                     ],
@@ -18285,7 +18395,7 @@ ARCFindRulesForGridSubdivision[examples_List] :=
                 (*ARCEcho2[{row, column} -> subRules];*)
                 If [!MatchQ[subRules, KeyValuePattern["Rules" -> _List]],
                     (*Echo["ARCFindRulesForGridSubdivision: No rules found" -> {row, column}];*)
-                    Return[Missing["NotFound"], Block]
+                    Return[Missing["NotFound"], Module]
                 ];
                 subRules
             ] /@ Range[grid["ColumnCount"]]
@@ -18295,6 +18405,98 @@ ARCFindRulesForGridSubdivision[examples_List] :=
             "Subdivision" -> "Grid",
             "Rules" -> subdividedRules
         |>
+    ]
+
+(*!
+    \function ARCCombineDividersIntoGrid
+    
+    \calltable
+        ARCCombineDividersIntoGrid[dividersAndGrids] '' Given a list of divider (and potentially grid) objects, decides whether a set of dividers can be re-interpreted as a grid.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCombineDividersIntoGrid]
+    
+    \maintainer danielb
+*)
+Clear[ARCCombineDividersIntoGrid];
+ARCCombineDividersIntoGrid[scene_ARCScene, dividersAndGrids_List] :=
+    Module[{},
+        (* If the entire set of dividers and grids are just dividers, and those dividers all
+           have the same orientation (all vertical or all horizontal), then proceed with
+           merging them into a grid object. *)
+        If [MatchQ[
+                dividersAndGrids,
+                {
+                    Repeated[
+                        KeyValuePattern[
+                            {
+                                "Color" -> c_,
+                                "GridOrDivider" -> <|"Type" -> "Divider", "Orientation" -> o_|>
+                            }
+                        ]
+                    ]
+                }
+            ],
+            ARCGridOrDividerQ[
+                "Objects" -> {
+                    ARCFormCompositeObject[
+                        scene,
+                        <|
+                            "Position" -> {1, 1},
+                            "Width" -> ImageWidth[scene],
+                            "Height" -> ImageHeight[scene]
+                        |>,
+                        dividersAndGrids
+                    ]
+                },
+                ImageWidth[scene],
+                ImageHeight[scene]
+            ]
+            ,
+            dividersAndGrids
+        ]
+    ]
+
+(*!
+    \function ARCMemoized
+    
+    \calltable
+        ARCMemoized[expr] '' Memoization for ARC functions.
+    
+    If $memoization has been initialized, then memoization will be used.
+    
+    \maintainer danielb
+*)
+Clear[ARCMemoized];
+Options[ARCMemoized] = Options[Memoized];
+Attributes[ARCMemoized] = {HoldAllComplete};
+ARCMemoized[expr: Except[_Rule]] :=
+    Memoized[expr, $memoization]
+
+ARCMemoized[opts:OptionsPattern[]] :=
+    Function[{expr},
+        Memoized[
+            expr,
+            $memoization,
+            "MemoizationKey" -> Replace[
+                OptionValue["MemoizationKey"],
+                list_List :> Join[
+                    list,
+                    {
+                        $MinimumExamplesPerRule,
+                        $denoised,
+                        $findingRulesForSubdivision
+                    }
+                ]
+            ],
+            opts
+        ],
+        {HoldAllComplete}
     ]
 
 End[]
