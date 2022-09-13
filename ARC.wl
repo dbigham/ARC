@@ -855,11 +855,12 @@ Options[ARCParseScene] =
     "OtherScene" -> Null,                                   (*< A parse of the scene this scene corresponds to. For example, if `scene` is an input scene, then OtherScene would be the output scene, and vice versa. If provided, we can use OtherScene to resolve some ambiguities about whether to chunk objects into composite objects. An association of the form <|"WithoutMultiColorCompositeObjects" -> ..., "WithMultiColorCompositeObjects" -> ...|> should be passed. *)
     "SingleColorObjects" -> Automatic,                      (*< If the single color objects have already been determined, they can be passed in to save time. *)
     "InferPropertiesThatRequireFullObjectList" -> True,     (*< Rank and RankInverse properties require that we have the full object list. If False, we won't infer those properties. *)
-    "FindOcclusions" -> True,                               (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
+    "FindOcclusions" -> True,                               (*< Whether we should consider possible occlusions when interpreting the scene. *)
     "NotableSubImages" -> Automatic,                        (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
     "ExampleIndex" -> Missing["NotSpecified"],              (*< Given a list of example inputs/outputs, what example number is this scene? *)
     "InputOrOutput" -> Missing["NotSpecified"],             (*< Is this an input scene or an output scene? *)
-    "SubdivideInput" -> False                               (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "SubdivideInput" -> False,                              (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "Background" -> Automatic                               (*< The background color of scenes. *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ARCMemoized["MemoizationKey" -> {scene, opts}]@
@@ -869,12 +870,15 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         
         (*Echo["ARCParseScene" -> scene -> OptionValue["InputOrOutput"] -> OptionValue["ExampleIndex"]];*)
         
-        background = ARCInferBackgroundColor[
-            scene,
-            "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"],
-            "SingleObject" -> Or[
-                OptionValue["SingleObject"],
-                ListQ[OptionValue["SubdivideInput"]]
+        background = Replace[
+            OptionValue["Background"],
+            Automatic :> ARCInferBackgroundColor[
+                scene,
+                "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"],
+                "SingleObject" -> Or[
+                    OptionValue["SingleObject"],
+                    ListQ[OptionValue["SubdivideInput"]]
+                ]
             ]
         ];
         
@@ -1165,7 +1169,8 @@ Options[ARCParseInputAndOutputScenes] =
     "NotableSubImages" -> Automatic,                (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
     "SingleObject" -> False,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "SubdivideInput" -> False,                      (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
-    "FindOcclusions" -> True                        (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
+    "FindOcclusions" -> True,                       (*< Whether we should consider possible occlusions when interpreting the scene. *)
+    "Background" -> Automatic                       (*< The background color of scenes. *)
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
@@ -1205,6 +1210,7 @@ ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
                                                 "ExampleIndex" -> First[exampleIndex],
                                                 "InputOrOutput" -> inputOrOutput,
                                                 "FindOcclusions" -> False,
+                                                "Background" -> OptionValue["Background"],
                                                 "InferPropertiesThatRequireFullObjectList" -> False,
                                                 opts
                                             ]
@@ -1259,8 +1265,13 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
             inputSceneParsed,
             outputSceneParseWithoutMultiColorCompositeObjects,
             outputSceneParseWithMultiColorCompositeObjects,
-            outputSceneParsed
+            commonParseSceneOptions
         },
+        
+        commonParseSceneOptions = Sequence @@ {
+            "FindOcclusions" -> OptionValue["FindOcclusions"],
+            "Background" -> OptionValue["Background"]
+        };
         
         If [TrueQ[OptionValue["SingleObject"]] || ListQ[OptionValue["SubdivideInput"]],
             Return[
@@ -1271,7 +1282,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                             inputScene,
                             "SingleObject" -> OptionValue["SingleObject"],
                             "SubdivideInput" -> OptionValue["SubdivideInput"],
-                            "FindOcclusions" -> OptionValue["FindOcclusions"],
+                            commonParseSceneOptions,
                             "ExampleIndex" -> exampleIndex,
                             "InputOrOutput" -> "Input"
                         ],
@@ -1283,7 +1294,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                                 TrueQ[OptionValue["SingleObject"]],
                                 ListQ[OptionValue["SubdivideInput"]]
                             ],
-                            "FindOcclusions" -> OptionValue["FindOcclusions"],
+                            commonParseSceneOptions,
                             "ExampleIndex" -> exampleIndex,
                             "InputOrOutput" -> "Output"
                         ]
@@ -1299,7 +1310,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                 "FormMultiColorCompositeObjects" -> False,
                 "InferPropertiesThatRequireFullObjectList" -> False,
                 "NotableSubImages" -> OptionValue["NotableSubImages"],
-                "FindOcclusions" -> OptionValue["FindOcclusions"],
+                commonParseSceneOptions,
                 "ExampleIndex" -> exampleIndex,
                 "InputOrOutput" -> "Input"
             ];
@@ -1311,7 +1322,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                 "FormMultiColorCompositeObjects" -> False,
                 "InferPropertiesThatRequireFullObjectList" -> False,
                 "NotableSubImages" -> OptionValue["NotableSubImages"],
-                "FindOcclusions" -> OptionValue["FindOcclusions"],
+                commonParseSceneOptions,
                 "ExampleIndex" -> exampleIndex,
                 "InputOrOutput" -> "Output"
             ];
@@ -1326,7 +1337,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                     "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                     "InferPropertiesThatRequireFullObjectList" -> False,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1339,7 +1350,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                     "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                     "InferPropertiesThatRequireFullObjectList" -> False,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -1359,7 +1370,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithMultiColorCompositeObjects" -> outputSceneParseWithMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1377,7 +1388,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithMultiColorCompositeObjects" -> inputSceneParseWithMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -1400,7 +1411,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1416,7 +1427,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
-                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    commonParseSceneOptions,
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -3639,7 +3650,8 @@ Options[ARCFindRules] =
     "Denoise" -> Automatic,                             (*< Should we consider removing noise from the image? *)
     "SubdivideInput" -> False,                          (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
     "AllowSubdividing" -> True,                         (*< Should we consider subdividing the input and/or output scenes? *)
-    "FindOcclusions" -> True                            (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
+    "FindOcclusions" -> True,                           (*< Whether we should consider possible occlusions when interpreting the scene. *)
+    "Background" -> Automatic                           (*< The background color of scenes. *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     Internal`InheritedBlock[{$memoization},
@@ -3835,6 +3847,35 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If we can't find a rule set, and only some examples make use of non-black background,
+           then try parsing the scenes again assuming a black background. e.g. 7468f01a *)
+        If [And[
+                !TrueQ[workingRulesFound[]],
+                With[
+                    {
+                        backgroundColors = Join[
+                            parsedExamples[[All, "Output", "Background"]],
+                            parsedExamples[[All, "Input", "Background"]]
+                        ]
+                    },
+                    And[
+                        !FreeQ[backgroundColors, 0],
+                        !FreeQ[backgroundColors, Except[0]]
+                    ]
+                ]
+            ],
+            res2 = arcFindRulesHelper[
+                    examples,
+                    "Background" -> 0,
+                    opts
+                ];
+            foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+            If [foundRulesQ2,
+                foundRulesQ = True;
+                res = res2
+            ]
+        ];
+        
         If [MatchQ[OptionValue["Denoise"], Automatic | True],
             If [!TrueQ[workingRulesFound[]],
                 
@@ -4021,7 +4062,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"] =!= False,
                 "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
                 "SubdivideInput" -> OptionValue["SubdivideInput"],
-                "FindOcclusions" -> OptionValue["FindOcclusions"]
+                "FindOcclusions" -> OptionValue["FindOcclusions"],
+                "Background" -> OptionValue["Background"]
             ];
         
         (* If the caller is interested in capturing this we'll pass it this way. *)
@@ -11538,6 +11580,14 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "9dfd6313",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "CodeLength" -> 19454,
+            "ExampleImplemented" -> "7468f01a",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {"be03b35f", "d4b1c2b1"}
         |>
     }
 

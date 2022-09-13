@@ -2702,3 +2702,24 @@ Test[
     ,
     TestID -> "ARCFindRules-20220913-WE3712"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "7468f01a"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Image" -> Inactive[Daniel`ARC`Transform][
+                    Daniel`ARC`ObjectValue["InputObject", "Image"],
+                    <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                ],
+                "Position" -> {1, 1}
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220913-BGBOXR"
+]
