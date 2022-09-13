@@ -470,6 +470,10 @@ ARCFindPropertyToInferImageValues::usage = "ARCFindPropertyToInferImageValues  "
 
 Transform::usage = "Transform  "
 
+ARCImageFlipPlusRotations::usage = "ARCImageFlipPlusRotations  "
+
+ARCHandlerForListConclusions::usage = "ARCHandlerForListConclusions  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -859,6 +863,8 @@ Options[ARCParseScene] =
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ARCMemoized["MemoizationKey" -> {scene, opts}]@
+    (* Used in ARCImageShapes. *)
+    Block[{$singleObject = OptionValue["SingleObject"]},
     Module[{background, objects, res},
         
         (*Echo["ARCParseScene" -> scene -> OptionValue["InputOrOutput"] -> OptionValue["ExampleIndex"]];*)
@@ -973,6 +979,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         ];*)
         
         res
+    ]
     ]
 
 ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
@@ -5392,16 +5399,23 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 
                 objectOut =
                     Replace[
-                        ReturnIfFailure@
-                        ARCApplyConclusion[
+                        ARCHandlerForListConclusions[
                             key,
-                            ReturnIfFailure@
-                            ResolveValues[value, object, inputScene, "Activate" -> True],
-                            object,
-                            objectOut,
-                            (* Do we only need to pass the output scene here, or is the input
-                               scene sometimes needed as well? *)
-                            outputScene
+                            value,
+                            Function[{object2, key2, value2},
+                                ReturnIfFailure@
+                                ARCApplyConclusion[
+                                    key2,
+                                    ReturnIfFailure@
+                                    ResolveValues[value2, object2, inputScene, "Activate" -> True],
+                                    object2,
+                                    objectOut,
+                                    (* Do we only need to pass the output scene here, or is the input
+                                    scene sometimes needed as well? *)
+                                    outputScene
+                                ]
+                            ],
+                            object
                         ],
                         Nothing :> Return[Nothing, Module]
                     ];
@@ -11505,6 +11519,23 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "CodeLength" -> 19266,
             "ExampleImplemented" -> "b91ae062",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "ImplementationTime" -> Quantity[0.9, "Hours"],
+            "CodeLength" -> 19383,
+            "ExampleImplemented" -> "74dd1130",
+            "NewGeneralizedSuccesses" -> {"9dfd6313"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 19383,
+            "ExampleImplemented" -> "9dfd6313",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -18271,23 +18302,31 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
                 ]
             ];
             
-            (* Is there a transform type to all? *)
-            intersection = Intersection @@ conclusions[[All, "Transforms", All, "Type"]];
-            If [intersection =!= {},
-                (* Arbitrarily use the first transform of the given type for each. *)
-                commonType = intersection[[1]];
-                conclusions =
-                    Function[{conclusion},
-                        Sett[
-                            conclusion,
-                            "Transform" -> SelectFirst[conclusion["Transforms"], #["Type"] === commonType &]
-                        ]
-                    ] /@ conclusions;
-                Return[
-                    KeyDrop[conclusions, "Transforms"],
-                    Module
+            (* Only check this if we don't have multi-transform instances.
+               For example, in 007bbfb7, some of the Transforms values are actually
+               lists of flip+rotation transforms, and those aren't compatible here. *)
+            If [MatchQ[
+                    Flatten[conclusions[[All, "Transforms"]], 1],
+                    {Repeated[_Association]}
+                ],
+                (* Is there a transform type to all? *)
+                intersection = Intersection @@ conclusions[[All, "Transforms", All, "Type"]];
+                If [intersection =!= {},
+                    (* Arbitrarily use the first transform of the given type for each. *)
+                    commonType = intersection[[1]];
+                    conclusions =
+                        Function[{conclusion},
+                            Sett[
+                                conclusion,
+                                "Transform" -> SelectFirst[conclusion["Transforms"], #["Type"] === commonType &]
+                            ]
+                        ] /@ conclusions;
+                    Return[
+                        KeyDrop[conclusions, "Transforms"],
+                        Module
+                    ]
                 ]
-            ];
+            ]
         ];
         
         (*Global`djb = conclusionsIn;
@@ -18415,8 +18454,14 @@ ARCImageShapes[image_List, opts:OptionsPattern[]] :=
                 {}
             ],
             ARCImageRotations[imageShape, FilterOptions[opts, ARCImageRotations]],
-            ARCImageFlips[imageShape,FilterOptions[opts, ARCImageFlips]],
-            ARCImageScalings[imageShape,FilterOptions[opts, ARCImageScalings]]
+            ARCImageFlips[imageShape, FilterOptions[opts, ARCImageFlips]],
+            ARCImageScalings[imageShape, FilterOptions[opts, ARCImageScalings]],
+            If [TrueQ[$singleObject],
+                (* e.g. 74dd1130 *)
+                ARCImageFlipPlusRotations[imageShape]
+                ,
+                {}
+            ]
         ]
     ]
 
@@ -19262,6 +19307,95 @@ Transform[value_, transform_] :=
             "Value" -> value
         ]
     ]
+
+(*!
+    \function ARCImageFlipPlusRotations
+    
+    \calltable
+        ARCImageFlipPlusRotations[image] '' Given an image, produces a list of versions that have been both flipped AND rotated.
+    
+    e.g. 74dd1130
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCImageFlipPlusRotations]
+    
+    \maintainer danielb
+*)
+Clear[ARCImageFlipPlusRotations];
+ARCImageFlipPlusRotations[imageIn_List] :=
+    Module[{image},
+        Function[{args},
+            image =
+                ARCFlipImage[RotateImage[imageIn, args["Rotation"]], args["Flip"]];
+            If [image =!= imageIn,
+                <|
+                    "Image" -> ARCScene[image],
+                    "Transform" -> {
+                        <|"Type" -> "Rotation", "Angle" -> args["Rotation"]|>,
+                        <|"Type" -> "Flip", "Direction" -> args["Flip"]|>
+                    }
+                |>
+                ,
+                Nothing
+            ]
+        ] /@ {
+            <|"Rotation" -> 90, "Flip" -> "Vertical"|>,
+            (* Same result as the above. *)
+            (*<|"Rotation" -> 270, "Flip" -> "Vertical"|>,*)
+            <|"Rotation" -> 180, "Flip" -> "Vertical"|>,
+            <|"Rotation" -> 270, "Flip" -> "Vertical"|>,
+            (* Same result as the above. *)
+            (*<|"Rotation" -> 90, "Flip" -> "Vertical"|>,*)
+            <|"Rotation" -> 180, "Flip" -> "Vertical"|>
+        }
+    ]
+
+(*!
+    \function ARCHandlerForListConclusions
+    
+    \calltable
+        ARCHandlerForListConclusions[key, valueOrValues, applyConclusionFunc] '' Given a conclusion key and value, and a function for applying a single conclusion, handles the case where we might have a list of conclusions to be applied.
+    
+    Examples:
+    
+    ARCHandlerForListConclusions[
+        "Transform",
+        {
+            <|"Type" -> "Rotation", "Angle" -> 90|>,
+            <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+        },
+        Function[{object2, key2, value2}, ARCApplyConclusion[key2, value2, object2, <||>, <||>]],
+        <|"Image" -> ARCScene[{{1, 2}, {0, 1}}]|>
+    ]
+    
+    ===
+    
+    <|"Image" -> ARCScene[{{1, 2}, {0, 1}}]|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCHandlerForListConclusions]
+    
+    \maintainer danielb
+*)
+Clear[ARCHandlerForListConclusions];
+ARCHandlerForListConclusions[key:"Transform", values_List, applyConclusionFunc_, objectIn_Association] :=
+    Module[{object = objectIn},
+        Function[{value},
+            object =
+                ReturnIfFailure@
+                applyConclusionFunc[object, key, value]
+        ] /@ values;
+        object
+    ]
+
+ARCHandlerForListConclusions[key_, value_, applyConclusionFunc_, object_Association] :=
+    applyConclusionFunc[object, key, value]
 
 End[]
 
