@@ -2723,3 +2723,40 @@ Test[
     ,
     TestID -> "ARCFindRules-20220913-BGBOXR"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "5117e062"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> Daniel`ARC`ObjectValue[
+                                <|"ColorCount" -> 2|>,
+                                "MonochromeImage"
+                            ],
+                            "Color" -> Daniel`ARC`ObjectValue[
+                                <|"ColorCount" -> 2|>,
+                                "MostUsedColor"
+                            ],
+                            "X" -> 1,
+                            "Y" -> 1,
+                            "X2" -> 3,
+                            "Y2" -> 3,
+                            "ZOrder" -> 0
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220913-KU8N1T"
+]

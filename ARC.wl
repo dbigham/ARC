@@ -960,6 +960,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     "Colors",
                     "Color",
                     "ColorCount",
+                    "MostUsedColor",
                     "YMiddle",
                     "XMiddle",
                     "Length",
@@ -1774,6 +1775,13 @@ $properties = <|
            of values for this property tend to penalize these conditions too much. *)
         "RuleConditionQuality" -> 1.2
     |>,
+    "MonochromeImage" -> <|
+        "Type" -> "MonochromeImage",
+        "Type2" -> "Image",
+        (* We'll fudge this higher than we otherwise would since the ARCExpressionComplexity
+           of values for this property tend to penalize these conditions too much. *)
+        "RuleConditionQuality" -> 1.2
+    |>,
     (* Will exclude for now. *)
     (*"PixelPositions"*)
     "Shape" -> <|
@@ -1938,6 +1946,12 @@ $properties = <|
         "Type" -> "Integer",
         "Type2" -> "Count",
         (* Otherwise it will lose out to "Colors" for "6e02f1e3". *)
+        "RuleConditionQuality" -> 0.9
+    |>,
+    "MostUsedColor" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Color",
+        (* Adopting this from "ColorCount", not sure if it's needing to be high like this. *)
         "RuleConditionQuality" -> 0.9
     |>,
     "ImageUseCount" -> <|
@@ -3850,6 +3864,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         (* If we can't find a rule set, and only some examples make use of non-black background,
            then try parsing the scenes again assuming a black background. e.g. 7468f01a *)
         If [And[
+                ListQ[parsedExamples],
                 !TrueQ[workingRulesFound[]],
                 With[
                     {
@@ -7371,7 +7386,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Image",
+        (*If [property === "Shape",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -7917,7 +7932,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
     ]@
     Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
         
-        $debugProperty = "AddObjectQ";
+        (*$debugProperty = "Color";*)
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
@@ -8000,11 +8015,11 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                 
                 (*If [And[
                         Last[propertyPath] === $debugProperty,
-                        reference === Object[<|"Colors" -> {1}|>]
+                        reference === Object[<|"ColorCount" -> 2|>]
                     ],
                     ARCEcho[
                         {
-                            "Objects" -> SimplifyObjects[objects],
+                            "Objects" -> SimplifyObjects["ExtraKeys" -> "Shape"][objects],
                             "ValuesToInfer" -> valuesToInfer
                         }
                     ]
@@ -8929,16 +8944,58 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
 *)
 Clear[ARCInferObjectProperties];
 ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
-    Module[{width, height, y, x, y2, x2, area, filledArea, verticalLineSymmetry, horizontalLineSymmetry},
+    Module[
+        {
+            width,
+            height,
+            y,
+            x,
+            y2,
+            x2,
+            area,
+            filledArea,
+            verticalLineSymmetry,
+            horizontalLineSymmetry,
+            pixelColorCounts
+        },
         
         width = ImageWidth[object["Image"]];
         height = ImageHeight[object["Image"]];
         
+        pixelColorCounts =
+            Normal@
+            Reverse@
+            KeySort@
+            GroupBy[
+                Normal@
+                Counts[
+                    DeleteCases[
+                        Flatten[object["Image"][[1]]],
+                        $nonImageColor
+                    ]
+                ],
+                Last -> First
+            ];
+        
         Join[
             object,
             <|
+                "MonochromeImage" -> ARCToMonochrome[object["Image"], $nonImageColor],
                 InferColor["Color" -> <|"Colors" -> object["Colors"]|>],
                 "ColorCount" -> Length[object["Colors"]],
+                If [Length[pixelColorCounts] === 0,
+                    Nothing
+                    ,
+                    With[{mostUsedColors = pixelColorCounts[[1, 2]]},
+                        Replace[
+                            mostUsedColors,
+                            {
+                                {c_} :> "MostUsedColor" -> c,
+                                _ :> Nothing
+                            }
+                        ]
+                    ]
+                ],
                 "Y" -> (y = object["Position"][[1]]),
                 "X" -> (x = object["Position"][[2]]),
                 "YInverse" -> (sceneHeight - y + 1),
@@ -10166,7 +10223,7 @@ ARCNotebook[fileIn_String] :=
                 (*Item["Design: X min"],
                 Subitem["Start: "],
                 Subitem["Stop: "],*)
-                Item["Implementation: X min"],
+                Item["Implementation: X hours"],
                 Subitem["Start: "],
                 Subitem["Stop: "]
                 (*Section["Working"]*)
@@ -11588,6 +11645,14 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "7468f01a",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {"be03b35f", "d4b1c2b1"}
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "CodeLength" -> 19521,
+            "ExampleImplemented" -> "5117e062",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -15908,6 +15973,7 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                specifier if it's known. e.g. 1f876c06 *)
                             Nothing
                     ],
+                    "MonochromeImage",
                     "Length",
                     "PrimarySizeDimension",
                     "AspectRatio",
@@ -15954,7 +16020,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                 "Shapes",
                                 "Color",
                                 "Colors",
-                                "ColorCount"
+                                "ColorCount",
+                                "MostUsedColor"
                             },
                         MatchQ[patternIn["Image"], "Same"],
                             Sequence @@
@@ -16060,7 +16127,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern,
                 {
                     "Colors",
-                    "ColorCount"
+                    "ColorCount",
+                    "MostUsedColor"
                 }
             ]
         ];
@@ -16233,9 +16301,13 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
             pattern = KeyDrop[
                 pattern,
                 {
+                    "MonochromeImage",
                     "ColorCount",
                     "ColorCount.Rank",
                     "ColorCount.InverseRank",
+                    "MostUsedColor",
+                    "MostUsedColor.Rank",
+                    "MostUsedColor.InverseRank",
                     "ImageUseCount",
                     "ImageUseCount.Rank",
                     "ImageUseCount.InverseRank",

@@ -8,7 +8,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (50)
+### Core ARC Training Tasks (51)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -60,6 +60,7 @@ https://github.com/fchollet/ARC
 * [b91ae062](TaskNotes/b91ae062/notes.md)
 * [74dd1130](TaskNotes/74dd1130/notes.md)
 * [7468f01a](TaskNotes/7468f01a/notes.md)
+* [5117e062](TaskNotes/5117e062/notes.md)
 
 ### Personally Created Training Tasks (14)
 
