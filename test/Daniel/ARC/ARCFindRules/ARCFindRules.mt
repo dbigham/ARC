@@ -2659,3 +2659,26 @@ Test[
     ,
     TestID -> "ARCFindRules-20220912-V40529"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b91ae062"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "Scaled",
+                    "Factor" -> Inactive[Plus][
+                        Daniel`ARC`ObjectValue[<|"Width" -> 3|>, "ColorCount"],
+                        0.
+                    ]
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220912-06HYGG"
+]

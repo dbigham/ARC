@@ -932,8 +932,6 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             "Background" -> background,
             "Width" -> ImageWidth[scene[[1]]],
             "Height" -> ImageHeight[scene[[1]]],
-            (* e.g. d0f5fe59 *)
-            "ObjectCount" -> Length[objects],
             With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Grid"]]] &]},
                 If [MatchQ[grids, {_}],
                     (* There is a single grid in the scene. *)
@@ -943,7 +941,30 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                 ]
             ],
             "Objects" -> objects,
-            "Scene" -> scene
+            "Scene" -> scene,
+            (* e.g. d0f5fe59 *)
+            "ObjectCount" -> Length[objects],
+            KeyTake[
+                ARCObjectFromAllPixels[scene, background],
+                {
+                    "Colors",
+                    "Color",
+                    "ColorCount",
+                    "YMiddle",
+                    "XMiddle",
+                    "Length",
+                    "PrimarySizeDimension",
+                    "AspectRatio",
+                    "Area",
+                    "FilledArea",
+                    "FilledProportion",
+                    "SurfacePixelCount",
+                    "VerticalLineSymmetry",
+                    "HorizontalLineSymmetry",
+                    "VerticalAndHorizontalLineSymmentry",
+                    "HollowCount"
+                }
+            ]
         |>;
         
         (*If [ListQ[OptionValue["SubdivideInput"]],
@@ -1136,7 +1157,8 @@ Options[ARCParseInputAndOutputScenes] =
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. *)
     "NotableSubImages" -> Automatic,                (*< The list of images which are considered notable sub-images. If we find objects that contain these as sub-images, we should consider splitting that object up so that the sub-image is its own object. *)
     "SingleObject" -> False,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
-    "SubdivideInput" -> False                       (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "SubdivideInput" -> False,                      (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "FindOcclusions" -> True                        (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
@@ -1242,6 +1264,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                             inputScene,
                             "SingleObject" -> OptionValue["SingleObject"],
                             "SubdivideInput" -> OptionValue["SubdivideInput"],
+                            "FindOcclusions" -> OptionValue["FindOcclusions"],
                             "ExampleIndex" -> exampleIndex,
                             "InputOrOutput" -> "Input"
                         ],
@@ -1253,6 +1276,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                                 TrueQ[OptionValue["SingleObject"]],
                                 ListQ[OptionValue["SubdivideInput"]]
                             ],
+                            "FindOcclusions" -> OptionValue["FindOcclusions"],
                             "ExampleIndex" -> exampleIndex,
                             "InputOrOutput" -> "Output"
                         ]
@@ -1268,6 +1292,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                 "FormMultiColorCompositeObjects" -> False,
                 "InferPropertiesThatRequireFullObjectList" -> False,
                 "NotableSubImages" -> OptionValue["NotableSubImages"],
+                "FindOcclusions" -> OptionValue["FindOcclusions"],
                 "ExampleIndex" -> exampleIndex,
                 "InputOrOutput" -> "Input"
             ];
@@ -1279,6 +1304,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                 "FormMultiColorCompositeObjects" -> False,
                 "InferPropertiesThatRequireFullObjectList" -> False,
                 "NotableSubImages" -> OptionValue["NotableSubImages"],
+                "FindOcclusions" -> OptionValue["FindOcclusions"],
                 "ExampleIndex" -> exampleIndex,
                 "InputOrOutput" -> "Output"
             ];
@@ -1293,6 +1319,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                     "SingleColorObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                     "InferPropertiesThatRequireFullObjectList" -> False,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1305,6 +1332,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                     "SingleColorObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"],
                     "InferPropertiesThatRequireFullObjectList" -> False,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -1324,6 +1352,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithMultiColorCompositeObjects" -> outputSceneParseWithMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1341,6 +1370,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithMultiColorCompositeObjects" -> inputSceneParseWithMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -1363,6 +1393,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithoutMultiColorCompositeObjects" -> outputSceneParseWithoutMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Input"
                 ];
@@ -1378,6 +1409,7 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
                         "WithoutMultiColorCompositeObjects" -> inputSceneParseWithoutMultiColorCompositeObjects["Objects"]
                     |>,
                     "NotableSubImages" -> OptionValue["NotableSubImages"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
                     "ExampleIndex" -> exampleIndex,
                     "InputOrOutput" -> "Output"
                 ];
@@ -3292,18 +3324,21 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 Length[inputObjects] === 1,
                 Length[objectsToMapTo] === 1,
                 (* For the moment we'll be conservative and require them to have the
-                   same shape. *)
-                And[
-                    Or[
-                        object["Shape"] === objectsToMapTo[[1, "Shape"]],
-                        And[
-                            MatchQ[object["Shape"], KeyValuePattern["Name" -> _]],
-                            MatchQ[objectsToMapTo[[1, "Shape"]], KeyValuePattern["Name" -> _]],
-                            object["Shape", "Name"] === objectsToMapTo[[1, "Shape", "Name"]]
-                        ]
+                   same shape, or the same colors. *)
+                Or[
+                    And[
+                        Or[
+                            object["Shape"] === objectsToMapTo[[1, "Shape"]],
+                            And[
+                                MatchQ[object["Shape"], KeyValuePattern["Name" -> _]],
+                                MatchQ[objectsToMapTo[[1, "Shape"]], KeyValuePattern["Name" -> _]],
+                                object["Shape", "Name"] === objectsToMapTo[[1, "Shape", "Name"]]
+                            ]
+                        ],
+                        object["Width"] === objectsToMapTo[[1, "Width"]],
+                        object["Height"] === objectsToMapTo[[1, "Height"]]
                     ],
-                    object["Width"] === objectsToMapTo[[1, "Width"]],
-                    object["Height"] === objectsToMapTo[[1, "Height"]]
+                    object["Colors"] === objectsToMapTo[[1, "Colors"]]
                 ]
             ],
             Return[
@@ -3596,13 +3631,15 @@ Options[ARCFindRules] =
     "SingleObject" -> Automatic,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "Denoise" -> Automatic,                             (*< Should we consider removing noise from the image? *)
     "SubdivideInput" -> False,                          (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
-    "AllowSubdividing" -> True                          (*< Should we consider subdividing the input and/or output scenes? *)
+    "AllowSubdividing" -> True,                         (*< Should we consider subdividing the input and/or output scenes? *)
+    "FindOcclusions" -> True                            (*< Whether we should cnsider possible occlusions when interpreting the scene. *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     Internal`InheritedBlock[{$memoization},
     Module[
         {
             examples = examplesIn,
+            workingRulesFound,
             res,
             foundRulesQ,
             foundRules2Q,
@@ -3616,6 +3653,16 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         If [$memoization === None,
             $memoization = CreateMemoizationFunction[]
         ];
+        
+        workingRulesFound[] := (
+            TrueQ[
+                If [!foundRulesQ,
+                    False
+                    ,
+                    TrueQ[ARCWorkingQ[examples, res]]
+                ]
+            ]
+        );
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
@@ -3654,14 +3701,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                we check whether those rules appear to actually work on the training examples,
                and if not, we try finding rules again where we don't form top-level
                composite objects. *)
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-            
-            If [!TrueQ[workingRulesQ],
+            If [!TrueQ[workingRulesFound[]],
                 (* Try finding rules without forming composite objects. *)
                 res2 = arcFindRulesHelper[
                     examples,
@@ -3679,16 +3719,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         ];
         
         If [OptionValue["SingleObject"] =!= False,
-            
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-            
             If [Or[
-                    !TrueQ[workingRulesQ],
+                    !TrueQ[workingRulesFound[]],
                     (* Even if we have a working rule set, if it's score is sufficiently low,
                        let's take that as evidence that we should consider whether interpreting
                        the scene as a single object yields a better rule set.
@@ -3723,18 +3755,10 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ];
             
             If [!TrueQ[$findingRulesForSubdivision] && TrueQ[OptionValue["AllowSubdividing"]],
-                
-                workingRulesQ =
-                    If [!foundRulesQ,
-                        False
-                        ,
-                        TrueQ[ARCWorkingQ[examples, res]]
-                    ];
-                
                 (* Consider whether the output width is always a multiple of the input width and the
                    output height is always a mutliple of the input height. If so, try sub-dividing the
                    problem. *)
-                If [!TrueQ[workingRulesQ],
+                If [!workingRulesFound[],
                     (*Echo["ARCFindRulesForSubdividedOutput"];*)
                     res2 = ARCFindRulesForSubdividedOutput[examples];
                     foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -3753,14 +3777,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
                  TrueQ[OptionValue["AllowSubdividing"]]
             ],
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-                
-            If [!TrueQ[workingRulesQ],
+            If [!TrueQ[workingRulesFound[]],
                 res2 = ARCFindRulesForGridSubdivision[parsedExamples];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 If [foundRulesQ2,
@@ -3778,16 +3795,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ARCGridSizeMatchesOutputPixelDimensions[parsedExamples],
                 TrueQ[OptionValue["AllowSubdividing"]]
             ],
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-            
-            If [!TrueQ[workingRulesQ],
-                res2 =
-                    ARCFindRulesForGridSubdivisionToOutputPixels[parsedExamples];
+            If [!TrueQ[workingRulesFound[]],
+                res2 = ARCFindRulesForGridSubdivisionToOutputPixels[parsedExamples];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
                 If [foundRulesQ2,
                     foundRulesQ = True;
@@ -3796,16 +3805,31 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
-        If [MatchQ[OptionValue["Denoise"], Automatic | True],
-            
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
+        (* If we can't find a rule set, and only some examples make use of non-zero Z order,
+           then try parsing the scene again without Z order. e.g. b91ae062 *)
+        If [And[
+                !TrueQ[workingRulesFound[]],
+                With[{whetherEachExampleUsesZOrder = !FreeQ[#, KeyValuePattern["ZOrder" -> 1]] & /@ parsedExamples},
+                    And[
+                        !FreeQ[whetherEachExampleUsesZOrder, True],
+                        !FreeQ[whetherEachExampleUsesZOrder, False]
+                    ]
+                ]
+            ],
+            res2 = arcFindRulesHelper[
+                    examples,
+                    "FindOcclusions" -> False,
+                    opts
                 ];
-            
-            If [!TrueQ[workingRulesQ],
+            foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+            If [foundRulesQ2,
+                foundRulesQ = True;
+                res = res2
+            ]
+        ];
+        
+        If [MatchQ[OptionValue["Denoise"], Automatic | True],
+            If [!TrueQ[workingRulesFound[]],
                 
                 denoiseResult =
                     ReturnIfFailure[ARCDenoise[examples]];
@@ -3830,15 +3854,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         ];
         
         If [TrueQ[OptionValue["SettleForOneExamplePerRule"]],
-            
-            workingRulesQ =
-                If [!foundRulesQ,
-                    False
-                    ,
-                    TrueQ[ARCWorkingQ[examples, res]]
-                ];
-            
-            If [!TrueQ[workingRulesQ] && $MinimumExamplesPerRule > 1,
+            If [!TrueQ[workingRulesFound[]] && $MinimumExamplesPerRule > 1,
                 (* Try again, this time allowing rules to be formed with only 1 example.
                    e.g. 0d3d703e *)
                 Block[{$MinimumExamplesPerRule = 1},
@@ -3997,7 +4013,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 examplesIn,
                 "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"] =!= False,
                 "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
-                "SubdivideInput" -> OptionValue["SubdivideInput"]
+                "SubdivideInput" -> OptionValue["SubdivideInput"],
+                "FindOcclusions" -> OptionValue["FindOcclusions"]
             ];
         
         (* If the caller is interested in capturing this we'll pass it this way. *)
@@ -11446,7 +11463,7 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 18288,
             "ExampleImplemented" -> "272f95fa",
-            "NewGeneralizedSuccesses" -> {"963e52fc"},
+            (*"NewGeneralizedSuccesses" -> {"963e52fc"},*)
             "NewEvaluationSuccesses" -> {"3979b1a8"}
         |>,
         (* Rule set is proper, but is now passing. *)
@@ -11480,6 +11497,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 12}],
             "CodeLength" -> 19239,
             "ExampleImplemented" -> "f25fbde4",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 12}],
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "CodeLength" -> 19266,
+            "ExampleImplemented" -> "b91ae062",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -17017,7 +17042,13 @@ ARCImageScalings[image_List, OptionsPattern[]] :=
                 Nothing
             ],
             2,
-            3
+            3,
+            If [width <= 3 && height <= 3,
+                (* b91ae062 *)
+                4
+                ,
+                Nothing
+            ]
         }
     ]
 
