@@ -25,3 +25,19 @@ Test[
     ,
     TestID -> "ARCObjectImageShape-20220902-NP00NQ"
 ]
+
+Test[
+    Daniel`ARC`ARCObjectImageShape[Daniel`ARC`ARCScene[{{1, -1, 2}, {-1, 1, -1}}]]
+    ,
+    Daniel`ARC`ARCScene[{{1, -1, 2}, {-1, 1, -1}}]
+    ,
+    TestID -> "ARCObjectImageShape-20220911-HRQDT1"
+]
+
+Test[
+    Daniel`ARC`ARCObjectImageShape[Daniel`ARC`ARCScene[{{1, -1, 1}, {-1, 1, -1}}]]
+    ,
+    Daniel`ARC`ARCScene[{{10, -1, 10}, {-1, 10, -1}}]
+    ,
+    TestID -> "ARCObjectImageShape-20220911-GW225X"
+]

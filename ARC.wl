@@ -460,6 +460,16 @@ ARCGridSizeMatchesOutputPixelDimensions::usage = "ARCGridSizeMatchesOutputPixelD
 
 ARCPixelsAsScenes::usage = "ARCPixelsAsScenes  "
 
+ARCObjectMinimalPropertySetsAndSubProperties::usage = "ARCObjectMinimalPropertySetsAndSubProperties  "
+
+ARCImageTransforms::usage = "ARCImageTransforms  "
+
+ARCFindPropertyToInferBooleanValues::usage = "ARCFindPropertyToInferBooleanValues  "
+
+ARCFindPropertyToInferImageValues::usage = "ARCFindPropertyToInferImageValues  "
+
+Transform::usage = "Transform  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3119,46 +3129,15 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 ]
             ];
         
+        (* Is the output object at this position a transform (e.g. rotation) of our object's
+           image? *)
         If [!MissingQ[outputObjectAtPosition],
-            
-            imageShapes = With[
-                {
-                    outputObjectShapeImage = ARCObjectImageShape[outputObjectAtPosition]
-                },
-                Select[
-                    object["Shapes"],
-                    MatchQ[
-                        #,
-                        KeyValuePattern[
-                            {
-                                "Image" -> outputObjectShapeImage,
-                                "Transform" -> _
-                            }
-                        ]
-                    ] &
-                ]
-            ];
-            
-            If [imageShapes =!= {},
-                Return[
+            Replace[
+                ARCImageTransforms[object, outputObjectAtPosition["Image"]],
+                transforms: {__} :> Return[
                     object -> Append[
                         outputObjectAtPosition,
-                        "Transforms" -> Replace[
-                            imageShapes[[All, "Transform"]],
-                            {
-                                assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
-                                    (* The angle specified in Shapes is the angle needed to
-                                       transform the image in Shapes to the image of the
-                                       object in the training example. We want the inverse
-                                       angle for transforming an input to an output. *)
-                                    Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
-                                ),
-                                assoc:KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}] :> (
-                                    Sett[assoc, "Factor" -> N[1 / assoc["Factor"]]]
-                                )
-                            },
-                            {1}
-                        ]
+                        "Transforms" -> transforms
                     ],
                     Module
                 ]
@@ -3616,7 +3595,8 @@ Options[ARCFindRules] =
     "SettleForOneExamplePerRule" -> True,               (*< If we can't find a workable rule set supported by 2+ examples per rule, should we try again and settle for 1+ examples per rule? *)
     "SingleObject" -> Automatic,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "Denoise" -> Automatic,                             (*< Should we consider removing noise from the image? *)
-    "SubdivideInput" -> False                           (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "SubdivideInput" -> False,                          (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
+    "AllowSubdividing" -> True                          (*< Should we consider subdividing the input and/or output scenes? *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     Internal`InheritedBlock[{$memoization},
@@ -3742,7 +3722,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ];
             ];
             
-            If [!TrueQ[$findingRulesForSubdivision],
+            If [!TrueQ[$findingRulesForSubdivision] && TrueQ[OptionValue["AllowSubdividing"]],
                 
                 workingRulesQ =
                     If [!foundRulesQ,
@@ -3770,7 +3750,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
            the input/output scenes into their individual grid cells. *)
         If [And[
                 ListQ[parsedExamples],
-                ARCAllExamplesUseGridInInputAndOutput[parsedExamples]
+                ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
+                 TrueQ[OptionValue["AllowSubdividing"]]
             ],
             workingRulesQ =
                 If [!foundRulesQ,
@@ -3794,7 +3775,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
            cells to output pixels. *)
         If [And[
                 ListQ[parsedExamples],
-                ARCGridSizeMatchesOutputPixelDimensions[parsedExamples]
+                ARCGridSizeMatchesOutputPixelDimensions[parsedExamples],
+                TrueQ[OptionValue["AllowSubdividing"]]
             ],
             workingRulesQ =
                 If [!foundRulesQ,
@@ -5729,21 +5711,20 @@ ARCApplyConclusion[key:"Color", value_, objectIn_Association, objectOut_Associat
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Rotation"], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        "Image" -> RotateImage[objectIn["Image"], value["Angle"]]
+        "Image" -> ReturnIfFailure[Transform[objectIn["Image"], value]]
     ]
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Scaled"], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        "Image" -> ARCScaleImage[objectIn["Image"], value["Factor"]]
+        "Image" -> ReturnIfFailure[Transform[objectIn["Image"], value]]
     ]
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Flip"], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        "Image" -> ARCFlipImage[objectIn["Image"], value["Direction"]]
+        "Image" -> ReturnIfFailure[Transform[objectIn["Image"], value]]
     ]
-
 
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "Move", "Position" -> _}], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
@@ -6824,91 +6805,159 @@ ARCEcho2[expr_] :=
     )
 
 (*!
-    \function ARCGeneralizeConclusions
+    \function ARCObjectMinimalPropertySetsAndSubProperties
     
     \calltable
-        ARCGeneralizeConclusions[conclusions, referenceableInputObjects, examples] '' Given a list of conclusions, attempts to produce a single general conclusion that can be used instead.
-    
-    TODO: IIRC, as of July 25 2022, we are using reference objects to try to dynamically infer
-          conclusion values, but I don't think we're yet using the _input object_'s property
-          values to try to dynamically infer conclusion values.
-    
-    Examples:
-    
-    See function notebook
-    
-    Unit tests:
-    
-    RunUnitTests[Daniel`ARC`ARCGeneralizeConclusions]
+        ARCObjectMinimalPropertySetsAndSubProperties[] '' Minimal property sets for specifing an object.
     
     \maintainer danielb
 *)
+Clear[ARCObjectMinimalPropertySetsAndSubProperties];
+Options[ARCObjectMinimalPropertySetsAndSubProperties] =
+{
+    "Component" -> False,   (*< Should be set to True in the context of AddComponents. *)
+    "AddObjects" -> False   (*< Should be set to True in the context of AddObjects. *)
+};
+ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
+    Module[{},
+        <|
+            "MinimalPropertySets" -> {
+                (* TODO: Introduce the concept of alternatives where one of the alternatives can be a
+                        list of multiple properties. That would allow us to more tightly factor
+                        these, such as "Position" | {"X", "Y"}, although perhaps we don't need to
+                        support Position and can/should replace any instances of those with X and Y
+                        here? (We should at least try that first) *)
+                {
+                    "Image",
+                    Sequence @@
+                    If [TrueQ[OptionValue["AddObjects"]],
+                        {
+                            "Y",
+                            "X"
+                        },
+                        {
+                            "Position"
+                        }
+                    ],
+                    If [And[
+                            !TrueQ[OptionValue["Component"]],
+                            (* I don't think we want this condition here, but adding it for the
+                               moment during refactoring to minimize changes. Although, I tried
+                               removing this and 31aa019c broke. *)
+                            !TrueQ[OptionValue["AddObjects"]]
+                        ],
+                        "ZOrder"
+                        ,
+                        Nothing
+                    ]
+                },
+                {
+                    "Shape" | "MonochromeImage" | "Shapes",
+                    Alternatives[
+                        "Color",
+                        Missing["Color"] /;
+                            (* We can't allow the color to be Missing in all cases, or it breaks
+                            321b1fc6 due to it thinking it's sufficient to know the Shape without
+                            knowing the color. So we only allow it to be missing if the Shape
+                            specifies the colors (e.g. bb43febb). *)
+                            MatchQ[
+                                #["Shape"],
+                                KeyValuePattern[
+                                    {
+                                        "Border" -> KeyValuePattern["Color" -> _],
+                                        "Interior" -> KeyValuePattern["Color" -> _]
+                                    }
+                                ]
+                            ]
+                    ],
+                    Sequence @@
+                    If [TrueQ[OptionValue["Component"]],
+                        {
+                            "Position",
+                            "Width",
+                            "Height"
+                        },
+                        {
+                            "X" | "XInverse",
+                            "Y" | "YInverse",
+                            "Width" | "X2" | "X2Inverse",
+                            "Height" | "Y2" | "Y2Inverse",
+                            "ZOrder"
+                        }
+                    ]
+                },
+                If [TrueQ[OptionValue["Component"]],
+                    (* TODO: We need two rules for this, one for X, and one for Y.
+                            See: 25d487eb *)
+                    {
+                        "Outward",
+                        "Shape",
+                        "Direction",
+                        "Color",
+                        "X"
+                    }
+                    ,
+                    Nothing
+                ]
+            },
+            "SubProperties" -> {
+                "Image" -> <||>,
+                "Position" -> <|
+                    "SubProperties" -> {
+                        "RelativePosition" -> <|
+                            "SubProperties" -> {
+                                "Y" | "YInverse",
+                                "X" | "XInverse"
+                            }
+                        |>,
+                        "Y" -> <|
+                            "ObjectGet" -> Function[#["Y"]]
+                        |>,
+                        "X" -> <|
+                            "ObjectGet" -> Function[#["X"]]
+                        |>
+                    },
+                    "MinimalPropertySets" -> {
+                        {"RelativePosition"},
+                        {"Y", "X"}
+                    }
+                |>,
+                "Shapes" -> <|
+                    "ClassList" -> True
+                |>,
+                "Shape" -> <|
+                    "ObjectGet" -> Function[#["Shape"]],
+                    "MinimalPropertySets" -> {
+                        (* For 45 degree and 135 degree lines. e.g. 1f876c06 *)
+                        {"Name", "Angle"}
+                        (* e.g. b548a754
+                        Since the above input isn't yet working, and this is breaking 50cb2852 for
+                        some reason, we won't enable this yet. *)
+                        (*{"Name", "Filled", "Interior", "Border"}*)
+                    }
+                |>,
+                "Color" -> <|
+                    "ObjectGet" -> Function[#["Color"]]
+                |>,
+                "Width" -> <|
+                    "ObjectGet" -> Function[#["Width"]]
+                |>,
+                "Height" -> <|
+                    "ObjectGet" -> Function[#["Height"]]
+                |>,
+                "Y" -> <|
+                    "ObjectGet" -> Function[#["Y"]]
+                |>,
+                "X" -> <|
+                    "ObjectGet" -> Function[#["X"]]
+                |>
+            }
+        |>
+    ]
+
 $transformTypes = <|
     Automatic -> <|
-        "MinimalPropertySets" -> {
-            (* TODO: Introduce the concept of alternatives where one of the alternatives can be a
-                     list of multiple properties. That would allow us to more tightly factor
-                     these, such as "Position" | {"X", "Y"}, although perhaps we don't need to
-                     support Position and can/should replace any instances of those with X and Y
-                     here? (We should at least try that first) *)
-            {"Image", "Position", "ZOrder"},
-            {
-                "Shape" | "MonochromeImage" | "Shapes",
-                Alternatives[
-                    "Color",
-                    Missing["Color"] /;
-                        (* We can't allow the color to be Missing in all cases, or it breaks
-                           321b1fc6 due to it thinking it's sufficient to know the Shape without
-                           knowing the color. So we only allow it to be missing if the Shape
-                           specifies the colors (e.g. bb43febb). *)
-                        MatchQ[
-                            #["Shape"],
-                            KeyValuePattern[
-                                {
-                                    "Border" -> KeyValuePattern["Color" -> _],
-                                    "Interior" -> KeyValuePattern["Color" -> _]
-                                }
-                            ]
-                        ]
-                ],
-                "X" | "XInverse",
-                "Y" | "YInverse",
-                "Width" | "X2" | "X2Inverse",
-                "Height" | "Y2" | "Y2Inverse",
-                "ZOrder"
-            }
-        },
-        "SubProperties" -> {
-            "Image" -> <||>,
-            "Position" -> <|
-                "SubProperties" -> {
-                    "RelativePosition" -> <||>,
-                    "Y" -> <|
-                        "ObjectGet" -> Function[#["Y"]]
-                    |>,
-                    "X" -> <|
-                        "ObjectGet" -> Function[#["X"]]
-                    |>
-                },
-                "MinimalPropertySets" -> {
-                    {"RelativePosition"},
-                    {"Y", "X"}
-                }
-            |>,
-            "Shapes" -> <|
-                "ClassList" -> True
-            |>,
-            "Shape" -> <|
-                "MinimalPropertySets" -> {
-                    (* For 45 degree and 135 degree lines. e.g. 1f876c06 *)
-                    {"Name", "Angle"}
-                    (* e.g. b548a754
-                       Since the above input isn't yet working, and this is breaking 50cb2852 for
-                       some reason, we won't enable this yet. *)
-                    (*{"Name", "Filled", "Interior", "Border"}*)
-                }
-            |>
-        }
+        ARCObjectMinimalPropertySetsAndSubProperties[]
     |>,
     "Move" -> <|
         (* MinimalPropertySets are sets of properties that can fully specify the transform
@@ -6957,47 +7006,7 @@ $transformTypes = <|
         },
         "SubProperties" -> {
             "Components" -> <|
-                "MinimalPropertySets" -> {
-                    {"Image", "Position"},
-                    {"Shapes", "Width", "Height", "Color", "Position"},
-                    {"Shape", "Width", "Height", "Color", "Position"},
-                    (* TODO: We need two rules for this, one for X, and one for Y.
-                             See: 25d487eb *)
-                    {"Outward", "Shape", "Direction", "Color", "X"}
-                },
-                "SubProperties" -> {
-                    "Position" -> <|
-                        "SubProperties" -> {
-                            "RelativePosition" -> <|
-                                "SubProperties" -> {
-                                    "Y" | "YInverse",
-                                    "X" | "XInverse"
-                                }
-                            |>
-                        }
-                    |>,
-                    "Shape" -> <|
-                        "ObjectGet" -> Function[#["Shape"]]
-                    |>,
-                    "Shapes" -> <|
-                        "ClassList" -> True
-                    |>,
-                    "Color" -> <|
-                        "ObjectGet" -> Function[InferColor[#]]
-                    |>,
-                    "Width" -> <|
-                        "ObjectGet" -> Function[#["Width"]]
-                    |>,
-                    "Height" -> <|
-                        "ObjectGet" -> Function[#["Height"]]
-                    |>,
-                    "Y" -> <|
-                        "ObjectGet" -> Function[#["Y"]]
-                    |>,
-                    "X" -> <|
-                        "ObjectGet" -> Function[#["X"]]
-                    |>
-                }
+                ARCObjectMinimalPropertySetsAndSubProperties["Component" -> True]
             |>
         }
     |>,
@@ -7007,19 +7016,32 @@ $transformTypes = <|
         },
         "SubProperties" -> {
             "Objects" -> <|
-                "MinimalPropertySets" -> {
-                    {"Image", "Y", "X"},
-                    {"Shape" | "MonochromeImage" | "Shapes", "Color", "X" | "XInverse", "Y" | "YInverse", "Width" | "X2" | "X2Inverse", "Height" | "Y2" | "Y2Inverse"}
-                },
-                "SubProperties" -> {
-                    "Shapes" -> <|
-                        "ClassList" -> True
-                    |>
-                }
+                ARCObjectMinimalPropertySetsAndSubProperties["AddObjects" -> True]
             |>
         }
     |>
 |>;
+
+(*!
+    \function ARCGeneralizeConclusions
+    
+    \calltable
+        ARCGeneralizeConclusions[conclusions, referenceableInputObjects, examples] '' Given a list of conclusions, attempts to produce a single general conclusion that can be used instead.
+    
+    TODO: IIRC, as of July 25 2022, we are using reference objects to try to dynamically infer
+          conclusion values, but I don't think we're yet using the _input object_'s property
+          values to try to dynamically infer conclusion values.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCGeneralizeConclusions]
+    
+    \maintainer danielb
+*)
 Clear[ARCGeneralizeConclusions];
 ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Association, examples_List] :=
     ARCMemoized[
@@ -7276,7 +7298,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Shape",
+        (*If [property === "Image",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -7995,8 +8017,6 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
         {
             transposedObjects,
             matchingProperties,
-            positionOfTrueValue,
-            valueThatImpliesTrue,
             values2
         },
         
@@ -8006,98 +8026,29 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
                 {"UUID"}
             ]
         ];
-        Global`djb2 = transposedObjects;
+        
+        matchingProperties = Select[
+            transposedObjects,
+            # === values &
+        ];
+        
         (* What properties of these objects appear to be usable to infer these values? *)
-        If [MatchQ[values, {Repeated[True | False]}] && Length[DeleteDuplicates[values]] > 1,
-            
-            (* NOTE: The below code was written for 6773b310 so that when processing the
-                     AddComponents rule, which applies to some grid cells (if two pink pixels)
-                     but not others, it would be able to use InptuScene.ObjectCount to
-                     generalize a condition of when to add a blue pixel vs. when not.
-                     However, because some grid cells involve pink pixels that are
-                     touching on a diagonal, they form a single object, which means
-                     that we can't use InputScene.ObjectCount, nor can we currently
-                     use any scene property, so it is unable to generalize the
-                     condition. Thus, as of Sept 11 2022, the below code isn't
-                     being used by an examples that we're aware of, and if it were,
-                     we have yet to implement the ARCApplyRules code necessary
-                     to abide by that new "Condition" attribute of the AddObjects
-                     transform. *)
-            
-            (* For now, since we don't typically have actual True/False values for property values,
-               we'll just immediately look for non-True/False values, such as integers, that can
-               be used to imply our True/False values. In the future if we do have object property
-               values that are True/False, then we should consider them as well, although perhaps
-               they'll implicitly get considered here, so maybe we should show some preference
-               to them if they are an option. Also, for the moment we don't show any preference
-               to properties where the values that correspond to False are all the same, and
-               perhaps we should. *)
-            
-            If [Min[Counts[values]] < $MinimumExamplesPerRule,
-                (* There aren't enough examples of True and/or False. For example, it's typically
-                   too risky to form a conclusion based on only a single example. *)
+        Which[
+            matchingProperties =!= <||>,
+                (* We've round a match, so no need to consider special value type matching. *)
+                Null,
+            MatchQ[values, {Repeated[True | False]}] && Length[DeleteDuplicates[values]] > 1,
+                (* Special handling for boolean values. *)
                 Return[
-                    Missing["NotFound", "InsufficientValueExamples"],
+                    ARCFindPropertyToInferBooleanValues[propertyPath, transposedObjects, values],
                     Module
-                ]
-            ];
-            (* What is the position of the first True value in the list? *)
-            positionOfTrueValue =
-                First[FirstPosition[values, True, {1}, Heads -> False]];
-            matchingProperties = KeyValueMap[
-                Function[{propertyName, valuesOfProperty},
-                    If [propertyName === "ObjectCount",
-                        ARCDebug
-                        ,
-                        Identity
-                    ][
-                    (* What value of this property seems to be associated with the value True that we're
-                       trying to infer? *)
-                    valueThatImpliesTrue =
-                    Part[
-                        valuesOfProperty,
-                        positionOfTrueValue
-                    ];
-                    If [MatchQ[
-                            valuesOfProperty,
-                            Replace[
-                                values,
-                                {
-                                    True -> valueThatImpliesTrue,
-                                    False -> Except[valueThatImpliesTrue]
-                                },
-                                {1}
-                            ]
-                        ],
-                        propertyName -> valueThatImpliesTrue
-                        ,
-                        Nothing
-                    ]
-                    ]
                 ],
-                transposedObjects
-            ];
-            
-            If [matchingProperties === {},
-                (* We couldn't find any referenceable property values to imply when our values
-                   are True vs False. *)
-                Return[Missing["NotFound"], Module]
-                ,
-                (* For now, choose the first property that matches. *)
+            MatchQ[values, {Repeated[_ARCScene]}],
+                (* Special handling for image values. *)
                 Return[
-                    (* Here we are returning an association of the form
-                       <|propertyName -> valueThatImpliesTrue|> whereas this function
-                       usually just returns a property name. *)
-                    <|ARCChooseBestTransform[matchingProperties]|>,
+                    ARCFindPropertyToInferImageValues[propertyPath, objects, values],
                     Module
                 ]
-            ]
-            ,
-            (* `values` doesn't consist of True/False values. *)
-            matchingProperties = Select[
-                transposedObjects,
-                # === values &
-            ]
         ];
         
         (* What properties of these objects, if we use some math, appear to be usable
@@ -8184,6 +8135,162 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
                     ,
                     Missing["NotFound"]
                 ]
+        ]
+    ]
+
+(*!
+    \function ARCFindPropertyToInferImageValues
+    
+    \calltable
+        ARCFindPropertyToInferImageValues[propertyPath, objects, values] '' Tries to find a property of a referenceable object to infer a list of image, possibly involving transforms.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindPropertyToInferImageValues]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindPropertyToInferImageValues];
+ARCFindPropertyToInferImageValues[propertyPath_List, objects_List, values_List] :=
+    Module[{transformations},
+        
+        (* Before we do an expensive comparison of the images with various potential transforms
+           of those images, first check to ensure the colors of the images are at least
+           compatible. One case where we don't need to do this is where there's just a single
+           color and we're trying to infer the Shape property value. *)
+        If [And[
+                !And[
+                    Last[propertyPath] === "Shape",
+                    MatchQ[objects[[All, "Colors"]], {Repeated[{_}]}]
+                ],
+                (ARCImageColors /@ values) =!= objects[[All, "Colors"]]
+            ],
+            Return[Missing["NotFound"], Module]
+        ];
+        
+        (* For each image value, compare it to the shapes of the object from the corresponding
+           scene to see if one or more transformations are a match. *)
+        transformations = MapIndexed[
+            Function[{object, pos},
+                Append[
+                    object,
+                    "Transforms" -> ARCImageTransforms[object, values[[First[pos]]]]
+                ]
+            ],
+            objects
+        ];
+        
+        Replace[
+            ARCChooseTransform[transformations, "FallbackToPruning" -> False],
+            {
+                {Repeated[KeyValuePattern["Transform" -> transform_]]} :> (
+                    (*Echo["TRANFORM" -> transform];
+                    ARCEcho2["transformations" -> transformations];
+                    ARCEcho2["objects" -> objects];
+                    ARCEcho2["values" -> values];
+                    Throw["HERE"];*)
+                    Inactive[Transform][
+                        ObjectValue[TODO, Last[propertyPath]],
+                        transform
+                    ]
+                ),
+                _ :> Missing["NotFound"]
+            }
+        ]
+    ]
+
+(*!
+    \function ARCFindPropertyToInferBooleanValues
+    
+    \calltable
+        ARCFindPropertyToInferBooleanValues[properthPath, transposedObjects, values] '' Tries to find a property of a referenceable object to infer a list of boolean values.
+    
+    Examples:
+    
+    ARCFindPropertyToInferBooleanValues[properthPath, transposedObjects, values] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCFindPropertyToInferBooleanValues];
+ARCFindPropertyToInferBooleanValues[properthPath_List, transposedObjects_Association, values_List] :=
+    Module[{positionOfTrueValue, matchingProperties, valueThatImpliesTrue},
+        
+        (* NOTE: The below code was written for 6773b310 so that when processing the
+                 AddComponents rule, which applies to some grid cells (if two pink pixels)
+                 but not others, it would be able to use InptuScene.ObjectCount to
+                 generalize a condition of when to add a blue pixel vs. when not.
+                 However, because some grid cells involve pink pixels that are
+                 touching on a diagonal, they form a single object, which means
+                 that we can't use InputScene.ObjectCount, nor can we currently
+                 use any scene property, so it is unable to generalize the
+                 condition. Thus, as of Sept 11 2022, the below code isn't
+                 being used by an examples that we're aware of, and if it were,
+                 we have yet to implement the ARCApplyRules code necessary
+                 to abide by that new "Condition" attribute of the AddObjects
+                 transform. *)
+        
+        (* For now, since we don't typically have actual True/False values for property values,
+           we'll just immediately look for non-True/False values, such as integers, that can
+           be used to imply our True/False values. In the future if we do have object property
+           values that are True/False, then we should consider them as well, although perhaps
+           they'll implicitly get considered here, so maybe we should show some preference
+           to them if they are an option. Also, for the moment we don't show any preference
+           to properties where the values that correspond to False are all the same, and
+           perhaps we should. *)
+        
+        If [Min[Counts[values]] < $MinimumExamplesPerRule,
+            (* There aren't enough examples of True and/or False. For example, it's typically
+               too risky to form a conclusion based on only a single example. *)
+            Return[
+                Missing["NotFound", "InsufficientValueExamples"],
+                Module
+            ]
+        ];
+        
+        (* What is the position of the first True value in the list? *)
+        positionOfTrueValue =
+            First[FirstPosition[values, True, {1}, Heads -> False]];
+        
+        matchingProperties = KeyValueMap[
+            Function[{propertyName, valuesOfProperty},
+                (* What value of this property seems to be associated with the value True that we're
+                    trying to infer? *)
+                valueThatImpliesTrue = Part[
+                    valuesOfProperty,
+                    positionOfTrueValue
+                ];
+                If [MatchQ[
+                        valuesOfProperty,
+                        Replace[
+                            values,
+                            {
+                                True -> valueThatImpliesTrue,
+                                False -> Except[valueThatImpliesTrue]
+                            },
+                            {1}
+                        ]
+                    ],
+                    propertyName -> valueThatImpliesTrue
+                    ,
+                    Nothing
+                ]
+            ],
+            transposedObjects
+        ];
+        
+        If [matchingProperties === {},
+            (* We couldn't find any referenceable property values to imply when our values
+               are True vs False. *)
+            Missing["NotFound"]
+            ,
+            (* Here we are returning an association of the form
+                <|propertyName -> valueThatImpliesTrue|> whereas this function
+                usually just returns a property name. *)
+            <|ARCChooseBestTransform[matchingProperties]|>
         ]
     ]
 
@@ -11343,19 +11450,36 @@ ARCTaskLog[] :=
             "NewEvaluationSuccesses" -> {"3979b1a8"}
         |>,
         (* Rule set is proper, but is now passing. *)
-        <|
+        (* Broke Sept 12. *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 10}],
             "RuntimeParallel" -> Quantity[8.8, "Minutes"],
             "Runtimecomment" -> "Added some uses of Memoized, which sped things up a bit.",
             "CodeLength" -> 18288,
             "ExampleImplemented" -> "963e52fc"
-        |>,
+        |>,*)
         <|
             "Timestamp" -> DateObject[{2022, 9, 11}],
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 18960,
             "ExampleImplemented" -> "6773b310",
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "Timestamp" -> DateObject[{2022, 9, 12}],
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "CodeLength" -> 19239,
+            "ExampleImplemented" -> "8e5a5113",
+            "NewGeneralizedSuccesses" -> {"f25fbde4"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 12}],
+            "CodeLength" -> 19239,
+            "ExampleImplemented" -> "f25fbde4",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -13899,7 +14023,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
 *)
 Clear[ARCRuleForAddedObjects];
 ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
-    Module[{examples = examplesIn, counter = 0, addedObjectUUIDs, generalizedCondition},
+    Module[{examples = examplesIn, counter = 0, generalizedCondition},
         
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
@@ -13907,16 +14031,21 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
             MatchQ[addedObjects, {Repeated[_Missing]}],
                 (* There are no objects added. Nothing to do. *)
                 Nothing,
+            
             MatchQ[addedObjects, {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {_}]]]}],
+                
                 (* There is always exactly one object added, so we'll see if we can model that. *)
-                addedObjectUUIDs = Flatten[addedObjects[[All, "Transform", "Objects", All, "UUID"]]];
+                
+                (*addedObjectUUIDs = Flatten[addedObjects[[All, "Transform", "Objects", All, "UUID"]]];*)
                 (* Remove these 'added objects' from the output scenes so that the referenceable objects
                    we form below don't try to use the very objects we're trying to add. *)
-                examples[[All, "Output"]] = Replace[
+                (* Commented out as the below code to form referenceable output objects isn't
+                   currently in use. *)
+                (*examples[[All, "Output"]] = Replace[
                     examples[[All, "Output"]],
                     KeyValuePattern["UUID" -> Alternatives @@ addedObjectUUIDs] :> Nothing,
                     {0, Infinity}
-                ];
+                ];*)
                 ReturnIfFailure@
                 ARCGeneralizeConclusions[
                     Function[{item},
@@ -13937,6 +14066,7 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                     examples
                 ],
             MatchQ[addedObjects, {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {_}]] | _Missing]}],
+                
                 (* Sometimes we add a single object, sometimes we don't add an object. *)
                 
                 (* Get the positions within `addedObjects` of both cases where no object was
@@ -13985,8 +14115,6 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                     ]
                 ];
                 
-                (* HERE10 *)
-                
                 (* Generalize the added object. *)
                 Replace[
                     ReturnIfFailure@
@@ -14007,6 +14135,28 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                         ]
                     )
                 ],
+            
+            And[
+                (* Objects are always added.*)
+                MatchQ[
+                    addedObjects,
+                    {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {__}]]]}
+                ],
+                (* The number of objects added is always the same. *)
+                Length[DeleteDuplicates[Length /@ addedObjects[[All, "Transform", "Objects"]]]] === 1
+            ],
+                
+                (* Multiple objects are added, but the number is consistent. e.g. 8e5a5113 *)
+                
+                ReturnIfFailure@
+                ARCGeneralizeConclusions[
+                    Function[{item},
+                        Append[item, "Example" -> ++counter]
+                    ] /@ addedObjects,
+                    referenceableInputObjects,
+                    examples
+                ],
+            
             True,
                 (* The number of objects is inconsistent. We don't yet have support for this. *)
                 ReturnFailure[
@@ -16696,6 +16846,21 @@ ARCObjectImageShape[object_Association] :=
         ]["Image"]
     ]
 
+ARCObjectImageShape[image_ARCScene, colors : _List | Automatic : Automatic, monochrome : _ARCScene | Automatic : Automatic] :=
+    If [Length[
+            Replace[
+                colors,
+                Automatic -> ARCImageColors[image]
+            ]
+        ] === 1,
+        Replace[
+            monochrome,
+            Automatic -> ARCToMonochrome[image, $nonImageColor]
+        ]
+        ,
+        image
+    ]
+
 (*!
     \function ARCRemoveExtendedMetadataFromConclusion
     
@@ -18042,7 +18207,7 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
         },
         
         (* No transforms? *)
-        If [MatchQ[DeleteDuplicates[conclusionsIn[[All, "Transforms"]]], {_Missing}],
+        If [MatchQ[DeleteDuplicates[conclusionsIn[[All, "Transforms"]]], {_Missing | {}}],
             Return[conclusionsIn, Module]
         ];
         
@@ -18103,7 +18268,7 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
             
             conclusionsWithNoopTransforms =
                 Function[{conclusion},
-                    If [MissingQ[conclusion["Transforms"]] && !MissingQ[conclusion["Image"]],
+                    If [MatchQ[conclusion["Transforms"], _Missing | {}] && !MissingQ[conclusion["Image"]],
                         imageShape = ARCObjectImageShape[conclusion];
                         Append[
                             conclusion,
@@ -18970,6 +19135,101 @@ ARCPixelsAsScenes[ARCScene[image_]] :=
         image,
         color_Integer :> ARCScene[{{color}}],
         {2}
+    ]
+
+(*!
+    \function ARCImageTransforms
+    
+    \calltable
+        ARCImageTransforms[object, otherImage] '' Given an object, and a differing image, checks whether there are any potential image transforms that could explain the difference from object to the other image.
+    
+    Examples:
+    
+    ARCImageTransforms[object, otherImage] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCImageTransforms];
+ARCImageTransforms[object_Association, otherImage_ARCScene] :=
+    Module[{imageShapes},
+        
+        otherImageShape = ARCObjectImageShape[otherImage];
+        
+        imageShapes =
+            Select[
+                object["Shapes"],
+                MatchQ[
+                    #,
+                    KeyValuePattern[
+                        {
+                            "Image" -> otherImageShape,
+                            "Transform" -> _
+                        }
+                    ]
+                ] &
+            ];
+        
+        If [imageShapes =!= {},
+            Replace[
+                imageShapes[[All, "Transform"]],
+                {
+                    assoc:KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}] :> (
+                        (* The angle specified in Shapes is the angle needed to
+                           transform the image in Shapes to the image of the
+                           object in the training example. We want the inverse
+                           angle for transforming an input to an output. *)
+                        Sett[assoc, "Angle" -> 360 - assoc["Angle"]]
+                    ),
+                    assoc:KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}] :> (
+                        Sett[assoc, "Factor" -> N[1 / assoc["Factor"]]]
+                    )
+                },
+                {1}
+            ]
+            ,
+            {}
+        ]
+    ]
+
+(*!
+    \function Transform
+    
+    \calltable
+        Transform[value, transform] '' Transforms the value by the given transform.
+    
+    Examples:
+    
+    Transform[ARCScene[{{1, 1}, {-1, -1}}], <|"Type" -> "Rotation", "Angle" -> 270|>]
+    
+    ===
+    
+    ARCScene[{{1, -1}, {1, -1}}]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`Transform]
+    
+    \maintainer danielb
+*)
+Clear[Transform];
+
+Transform[value_, transform: KeyValuePattern[{"Type" -> "Rotation", "Angle" -> _}]] :=
+    RotateImage[value, transform["Angle"]]
+
+Transform[value_, transform: KeyValuePattern[{"Type" -> "Flip", "Direction" -> _}]] :=
+    ARCFlipImage[value, transform["Direction"]]
+
+Transform[value_, transform: KeyValuePattern[{"Type" -> "Scaled", "Factor" -> _}]] :=
+    ARCScaleImage[value, transform["Factor"]]
+
+Transform[value_, transform_] :=
+    Module[{},
+        ReturnFailure[
+            "UnimplementedTransform",
+            "The given transformation isn't yet supported.",
+            "Transform" -> transform,
+            "Value" -> value
+        ]
     ]
 
 End[]

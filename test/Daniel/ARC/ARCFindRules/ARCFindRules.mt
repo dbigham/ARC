@@ -199,6 +199,8 @@ Test[
                 "Components" -> {
                     <|
                         "Shape" -> <|"Name" -> "Square", "Filled" -> True|>,
+                        "Color" -> Daniel`ARC`ObjectValue[<|"Colors" -> Except[{5}]|>, "Color"],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>,
                         "Width" -> Inactive[Plus][
                             Daniel`ARC`ObjectValue["InputObject", "Width"],
                             -2
@@ -206,9 +208,7 @@ Test[
                         "Height" -> Inactive[Plus][
                             Daniel`ARC`ObjectValue["InputObject", "Height"],
                             -2
-                        ],
-                        "Color" -> Daniel`ARC`ObjectValue[<|"Colors" -> Except[{5}]|>, "Color"],
-                        "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>
+                        ]
                     |>
                 }
             |>
@@ -239,13 +239,13 @@ Test[
                     "Components" -> {
                         <|
                             "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                            "Color" -> 3,
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 1|>|>,
                             "Width" -> Inactive[Plus][
                                 Daniel`ARC`ObjectValue["InputObject", "Width"],
                                 -2
                             ],
-                            "Height" -> 1,
-                            "Color" -> 3,
-                            "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 1|>|>
+                            "Height" -> 1
                         |>
                     }
                 |>
@@ -256,13 +256,13 @@ Test[
                     "Components" -> {
                         <|
                             "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                            "Color" -> 3,
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 0|>|>,
                             "Width" -> 1,
                             "Height" -> Inactive[Plus][
                                 Daniel`ARC`ObjectValue["InputObject", "Height"],
                                 -2
-                            ],
-                            "Color" -> 3,
-                            "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 0|>|>
+                            ]
                         |>
                     }
                 |>
@@ -1165,7 +1165,8 @@ Test[
                         "X" -> 1,
                         "Y" -> 1,
                         "X2Inverse" -> 1,
-                        "Y2Inverse" -> 1
+                        "Y2Inverse" -> 1,
+                        "ZOrder" -> 0
                     |>
                 }
             |>
@@ -1275,8 +1276,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1A2E2828"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1A2E2828"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1294,7 +1299,8 @@ Test[
                             "X" -> 1,
                             "Y" -> 1,
                             "X2" -> 1,
-                            "Y2" -> 1
+                            "Y2" -> 1,
+                            "ZOrder" -> 0
                         |>
                     }
                 |>
@@ -1518,8 +1524,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b9b7f026"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b9b7f026"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -1536,7 +1546,8 @@ Test[
                             "X" -> 1,
                             "Y" -> 1,
                             "X2" -> 1,
-                            "Y2" -> 1
+                            "Y2" -> 1,
+                            "ZOrder" -> 0
                         |>
                     }
                 |>
@@ -1794,8 +1805,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "middle"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "middle"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -2405,8 +2420,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d0f5fe59"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d0f5fe59"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -2423,7 +2442,8 @@ Test[
                             "X" -> 1,
                             "Y" -> 1,
                             "Width" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"],
-                            "Height" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"]
+                            "Height" -> Daniel`ARC`ObjectValue["InputScene", "ObjectCount"],
+                            "ZOrder" -> 0
                         |>
                     }
                 |>
@@ -2453,8 +2473,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "272f95fa"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "272f95fa"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -2474,7 +2498,8 @@ Test[
                                         "X" -> 1,
                                         "Y" -> 1,
                                         "X2Inverse" -> 1,
-                                        "Y2Inverse" -> 1
+                                        "Y2Inverse" -> 1,
+                                        "ZOrder" -> 0
                                     |>
                                 }
                             |>
@@ -2496,7 +2521,8 @@ Test[
                                         "X" -> 1,
                                         "Y" -> 1,
                                         "X2Inverse" -> 1,
-                                        "Y2Inverse" -> 1
+                                        "Y2Inverse" -> 1,
+                                        "ZOrder" -> 0
                                     |>
                                 }
                             |>
@@ -2515,7 +2541,8 @@ Test[
                                         "X" -> 1,
                                         "Y" -> 1,
                                         "X2Inverse" -> 1,
-                                        "Y2Inverse" -> 1
+                                        "Y2Inverse" -> 1,
+                                        "ZOrder" -> 0
                                     |>
                                 }
                             |>
@@ -2534,7 +2561,8 @@ Test[
                                         "X" -> 1,
                                         "Y" -> 1,
                                         "X2Inverse" -> 1,
-                                        "Y2Inverse" -> 1
+                                        "Y2Inverse" -> 1,
+                                        "ZOrder" -> 0
                                     |>
                                 }
                             |>
@@ -2556,7 +2584,8 @@ Test[
                                         "X" -> 1,
                                         "Y" -> 1,
                                         "X2Inverse" -> 1,
-                                        "Y2Inverse" -> 1
+                                        "Y2Inverse" -> 1,
+                                        "ZOrder" -> 0
                                     |>
                                 }
                             |>
@@ -2594,4 +2623,39 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220911-0EVEKZ"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "8e5a5113"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|"Same" -> True|>,
+        <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[<|"Colors" -> Except[{5}]|>, "Image"],
+                            <|"Type" -> "Rotation", "Angle" -> 90|>
+                        ],
+                        "Y" -> 1,
+                        "X" -> 5
+                    |>,
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[<|"Colors" -> Except[{5}]|>, "Image"],
+                            <|"Type" -> "Rotation", "Angle" -> 180|>
+                        ],
+                        "Y" -> 1,
+                        "X" -> 9
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220912-V40529"
 ]
