@@ -860,7 +860,8 @@ Options[ARCParseScene] =
     "ExampleIndex" -> Missing["NotSpecified"],              (*< Given a list of example inputs/outputs, what example number is this scene? *)
     "InputOrOutput" -> Missing["NotSpecified"],             (*< Is this an input scene or an output scene? *)
     "SubdivideInput" -> False,                              (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
-    "Background" -> Automatic                               (*< The background color of scenes. *)
+    "Background" -> Automatic,                              (*< The background color of scenes. *)
+    "FollowDiagonals" -> Automatic                          (*< Should diagonally adjacent pixels form a single object? *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ARCMemoized["MemoizationKey" -> {scene, opts}]@
@@ -1007,7 +1008,8 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
                     ReturnIfFailure@
                     ARCContiguousImageRegions[
                         scene,
-                        "Background" -> backgroundColor
+                        "Background" -> backgroundColor,
+                        "FollowDiagonals" -> (OptionValue["FollowDiagonals"] =!= False)
                     ],
                     ImageWidth[sceneImage],
                     ImageHeight[sceneImage]
@@ -1088,7 +1090,8 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
                         ARCContiguousImageRegions[
                             (* Make all non-background pixels white. *)
                             ARCToMonochrome[sceneImage, backgroundColor],
-                            "Background" -> backgroundColor
+                            "Background" -> backgroundColor,
+                            "FollowDiagonals" -> (OptionValue["FollowDiagonals"] =!= False)
                         ],
                         ImageWidth[sceneImage],
                         ImageHeight[sceneImage]
@@ -1171,7 +1174,8 @@ Options[ARCParseInputAndOutputScenes] =
     "SingleObject" -> False,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "SubdivideInput" -> False,                      (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
     "FindOcclusions" -> True,                       (*< Whether we should consider possible occlusions when interpreting the scene. *)
-    "Background" -> Automatic                       (*< The background color of scenes. *)
+    "Background" -> Automatic,                      (*< The background color of scenes. *)
+    "FollowDiagonals" -> Automatic                  (*< Should diagonally adjacent pixels form a single object? *)
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
@@ -1212,6 +1216,7 @@ ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
                                                 "InputOrOutput" -> inputOrOutput,
                                                 "FindOcclusions" -> False,
                                                 "Background" -> OptionValue["Background"],
+                                                "FollowDiagonals" -> OptionValue["FollowDiagonals"],
                                                 "InferPropertiesThatRequireFullObjectList" -> False,
                                                 opts
                                             ]
@@ -1271,7 +1276,8 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
         
         commonParseSceneOptions = Sequence @@ {
             "FindOcclusions" -> OptionValue["FindOcclusions"],
-            "Background" -> OptionValue["Background"]
+            "Background" -> OptionValue["Background"],
+            "FollowDiagonals" -> OptionValue["FollowDiagonals"]
         };
         
         If [TrueQ[OptionValue["SingleObject"]] || ListQ[OptionValue["SubdivideInput"]],
@@ -3665,7 +3671,8 @@ Options[ARCFindRules] =
     "SubdivideInput" -> False,                          (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
     "AllowSubdividing" -> True,                         (*< Should we consider subdividing the input and/or output scenes? *)
     "FindOcclusions" -> True,                           (*< Whether we should consider possible occlusions when interpreting the scene. *)
-    "Background" -> Automatic                           (*< The background color of scenes. *)
+    "Background" -> Automatic,                          (*< The background color of scenes. *)
+    "FollowDiagonals" -> Automatic                      (*< Should diagonally adjacent pixels form a single object? *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     Internal`InheritedBlock[{$memoization},
@@ -3891,6 +3898,31 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If we haven't found a rule set and we have a small image, then check whether
+           _not_ following diagonals when forming images results in a rule set.
+           e.g. 67385A82 *)
+        If [And[
+                OptionValue["FollowDiagonals"] === Automatic,
+                ListQ[parsedExamples],
+                !TrueQ[workingRulesFound[]],
+                And[
+                    AllTrue[parsedExamples[[All, "Input", "Width"]], Function[Between[#, {2, 8}]]],
+                    AllTrue[parsedExamples[[All, "Input", "Height"]], Function[Between[#, {2, 8}]]]
+                ]
+            ],
+            res2 = arcFindRulesHelper[
+                    examples,
+                    "Background" -> 0,
+                    "FollowDiagonals" -> False,
+                    opts
+                ];
+            foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+            If [foundRulesQ2,
+                foundRulesQ = True;
+                res = res2
+            ]
+        ];
+        
         If [MatchQ[OptionValue["Denoise"], Automatic | True],
             If [!TrueQ[workingRulesFound[]],
                 
@@ -3999,6 +4031,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             ,
                             Nothing
                         ],
+                        If [OptionValue["FollowDiagonals"] =!= Automatic,
+                            "FollowDiagonals" -> OptionValue["FollowDiagonals"]
+                            ,
+                            Nothing
+                        ],
                         With[
                             {
                                 inputBackgrounds = DeleteDuplicates[examples[[All, "Input", "Background"]]],
@@ -4078,7 +4115,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
                 "SubdivideInput" -> OptionValue["SubdivideInput"],
                 "FindOcclusions" -> OptionValue["FindOcclusions"],
-                "Background" -> OptionValue["Background"]
+                "Background" -> OptionValue["Background"],
+                "FollowDiagonals" -> OptionValue["FollowDiagonals"]
             ];
         
         (* If the caller is interested in capturing this we'll pass it this way. *)
@@ -5080,6 +5118,10 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ReturnIfFailure@
             ARCParseScene[
                 scene,
+                
+                (* TODO: WHEN ADDING PROPERTIES HERE, REMEMBER TO UPDATE:
+                         ARCRulesForOutput *)
+                
                 If [TrueQ[rules["SceneAsSingleObject"]],
                     "SingleObject" -> True
                     ,
@@ -5087,6 +5129,11 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                 ],
                 If [rules["FormMultiColorCompositeObjects"] === False,
                     "FormMultiColorCompositeObjects" -> False
+                    ,
+                    Sequence @@ {}
+                ],
+                If [!MissingQ[rules["FollowDiagonals"]],
+                    "FollowDiagonals" -> rules["FollowDiagonals"]
                     ,
                     Sequence @@ {}
                 ],
@@ -11007,7 +11054,7 @@ ARCTaskLog[] :=
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "178fcbfb-easier",
             "ImplementationTime" -> Quantity[12, "Hours"],
-            "NewGeneralizedSuccesses" -> {"4347f46a", "67385a82"},
+            "NewGeneralizedSuccesses" -> {"4347f46a"},
             "NewEvaluationSuccesses" -> {"fc754716"}
         |>,
         <|
@@ -11016,14 +11063,6 @@ ARCTaskLog[] :=
             "Runtime" -> Quantity[6.7, "Minutes"],
             "CodeLength" -> 11845,
             "ExampleImplemented" -> "4347f46a",
-            "ImplementationTime" -> Quantity[12, "Hours"]
-        |>,
-        <|
-            "GeneralizedSuccess" -> True,
-            "Timestamp" -> DateObject[{2022, 8, 26}],
-            "Runtime" -> Quantity[6.7, "Minutes"],
-            "CodeLength" -> 11845,
-            "ExampleImplemented" -> "67385a82",
             "ImplementationTime" -> Quantity[12, "Hours"]
         |>,
         <|
@@ -11609,9 +11648,7 @@ ARCTaskLog[] :=
             "GeneralizedSuccess" -> True,
             "Timestamp" -> DateObject[{2022, 9, 12}],
             "CodeLength" -> 19239,
-            "ExampleImplemented" -> "f25fbde4",
-            "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "ExampleImplemented" -> "f25fbde4"
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 12}],
@@ -11634,9 +11671,7 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 13}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 19383,
-            "ExampleImplemented" -> "9dfd6313",
-            "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "ExampleImplemented" -> "9dfd6313"
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 13}],
@@ -11653,6 +11688,27 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "5117e062",
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "67385a82",
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "ImplementationTime" -> Quantity[0.6, "Hours"],
+            "CodeLength" -> 19573,
+            "NewGeneralizedSuccesses" -> {"8efcae92", "aedd82e4"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Luck. Incorrect rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "CodeLength" -> 19573,
+            "ExampleImplemented" -> "8efcae92"
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "Timestamp" -> DateObject[{2022, 9, 13}],
+            "CodeLength" -> 19573,
+            "ExampleImplemented" -> "aedd82e4"
         |>
     }
 
@@ -17703,6 +17759,7 @@ ARCRulesForOutput[rules_Association] :=
             "Denoise",
             "SceneAsSingleObject",
             "FormMultiColorCompositeObjects",
+            "FollowDiagonals",
             "RemoveEmptySpace",
             "Background",
             "Width",

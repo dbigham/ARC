@@ -9,8 +9,6 @@
 ![DSL rules for 67385a82](rules.png?raw=true)
 
 ## Notes
-This example started working after implementing 178fcbfb-easier.
+By default when parsing a scene, we consider diagonally adjacent pixels to be part of the same object.
 
-But as of Aug 26 2022, this is basically passing “by accident” since the rule set is awful and definitely not properly generalized.
-
-I think what we need to do here is to have a scene parsing mode where it considers not follow diagonals when deciding how large an image should be.
+If a rule set isn’t found using that approach, we try parsing the scene again whereby we consider diagonally adjacent pixels to be part of different objects.
