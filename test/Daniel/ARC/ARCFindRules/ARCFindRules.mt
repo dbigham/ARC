@@ -2848,3 +2848,33 @@ Test[
     ,
     TestID -> "ARCFindRules-20220917-JF7L0Z"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "496994bd"]["Train"]]
+    ]
+    ,
+    <|
+        "CheckForGridsAndDividers" -> False,
+        "Rules" -> {
+            <||> -> <|"Same" -> True|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Image" -> Inactive[Daniel`ARC`Transform][
+                                Daniel`ARC`ObjectValue[<|"Position" -> {1, 1}|>, "Image"],
+                                <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                            ],
+                            "Y" -> Daniel`ARC`ObjectValue[<|"Position" -> {1, 1}|>, "Y2Inverse"],
+                            "X" -> 1
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220917-CYFM4Y"
+]

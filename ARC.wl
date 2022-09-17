@@ -885,7 +885,8 @@ Options[ARCParseScene] =
     "InputOrOutput" -> Missing["NotSpecified"],             (*< Is this an input scene or an output scene? *)
     "SubdivideInput" -> False,                              (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
     "Background" -> Automatic,                              (*< The background color of scenes. *)
-    "FollowDiagonals" -> Automatic                          (*< Should diagonally adjacent pixels form a single object? *)
+    "FollowDiagonals" -> Automatic,                         (*< Should diagonally adjacent pixels form a single object? *)
+    "CheckForGridsAndDividers" -> True                      (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
 };
 ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ARCMemoized["MemoizationKey" -> {scene, opts}]@
@@ -1040,18 +1041,23 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
                 ]
         ];
         
-        (* Determine if any of the objects are grids or dividers. *)
-        objects =
-            ARCGridOrDividerQ["Objects" -> objects, ImageWidth[scene], ImageHeight[scene]];
-        
-        (* Remove any grids/dividers from the main object list, since we don't want them
-           to get combined with other objects into composite objects. *)
-        gridsAndDividers = Select[objects, AssociationQ[#["GridOrDivider"]] &];
-        objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
-        
-        gridsAndDividers =
-            ReturnIfFailure@
-            ARCCombineDividersIntoGrid[scene, gridsAndDividers];
+        If [TrueQ[OptionValue["CheckForGridsAndDividers"]],
+            
+            (* Determine if any of the objects are grids or dividers. *)
+            objects =
+                ARCGridOrDividerQ["Objects" -> objects, ImageWidth[scene], ImageHeight[scene]];
+            
+            (* Remove any grids/dividers from the main object list, since we don't want them
+               to get combined with other objects into composite objects. *)
+            gridsAndDividers = Select[objects, AssociationQ[#["GridOrDivider"]] &];
+            objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
+            
+            gridsAndDividers =
+                ReturnIfFailure@
+                ARCCombineDividersIntoGrid[scene, gridsAndDividers];
+            ,
+            gridsAndDividers = {}
+        ];
         
         (*ARCEcho[SimplifyObjects[gridsAndDividers]];*)
         
@@ -1199,7 +1205,8 @@ Options[ARCParseInputAndOutputScenes] =
     "SubdivideInput" -> False,                      (*< If {rowCount, columnCount} is passed in, we subdivide the input into a grid of objects and then try to find rules. e.g. 2dee498d *)
     "FindOcclusions" -> True,                       (*< Whether we should consider possible occlusions when interpreting the scene. *)
     "Background" -> Automatic,                      (*< The background color of scenes. *)
-    "FollowDiagonals" -> Automatic                  (*< Should diagonally adjacent pixels form a single object? *)
+    "FollowDiagonals" -> Automatic,                 (*< Should diagonally adjacent pixels form a single object? *)
+    "CheckForGridsAndDividers" -> True              (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
 };
 
 ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
@@ -1301,7 +1308,8 @@ ARCParseInputAndOutputScenes[inputScene_ARCScene, outputScene_ARCScene, exampleI
         commonParseSceneOptions = Sequence @@ {
             "FindOcclusions" -> OptionValue["FindOcclusions"],
             "Background" -> OptionValue["Background"],
-            "FollowDiagonals" -> OptionValue["FollowDiagonals"]
+            "FollowDiagonals" -> OptionValue["FollowDiagonals"],
+            "CheckForGridsAndDividers" -> OptionValue["CheckForGridsAndDividers"]
         };
         
         If [TrueQ[OptionValue["SingleObject"]] || ListQ[OptionValue["SubdivideInput"]],
@@ -3512,7 +3520,7 @@ SimplifyObjects["Expression" -> expr_, OptionsPattern[]] :=
                 temporaryAssociationSymbol[___, "UUID" -> _, ___],
                 temporaryAssociationSymbol[___, "Image" -> _ARCScene, ___]
              ] :>
-                KeyTake[Association @@ object, {"Image", "Position", "Transform", "Transforms", Sequence @@ OptionValue["ExtraKeys"]}],
+                KeyTake[Association @@ object, {"Image", "Position", "GridOrDivider", "Transform", "Transforms", Sequence @@ OptionValue["ExtraKeys"]}],
             {0, Infinity}
         ]
     ]
@@ -3718,7 +3726,8 @@ Options[ARCFindRules] =
     "AllowSubdividing" -> True,                         (*< Should we consider subdividing the input and/or output scenes? *)
     "FindOcclusions" -> True,                           (*< Whether we should consider possible occlusions when interpreting the scene. *)
     "Background" -> Automatic,                          (*< The background color of scenes. *)
-    "FollowDiagonals" -> Automatic                      (*< Should diagonally adjacent pixels form a single object? *)
+    "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
+    "CheckForGridsAndDividers" -> True                  (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     Internal`InheritedBlock[{$memoization},
@@ -3969,6 +3978,26 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If one or more objects were treated as a divider, then try parsing the scene again
+           without treating those things as dividers. e.g. 496994bd *)
+        If [And[
+                ListQ[parsedExamples],
+                !FreeQ[parsedExamples, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Divider"]]]
+            ],
+            If [!TrueQ[workingRulesFound[]],
+                res2 = arcFindRulesHelper[
+                    examples,
+                    "CheckForGridsAndDividers" -> False,
+                    opts
+                ];
+                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = res2
+                ]
+            ]
+        ];
+        
         If [MatchQ[OptionValue["Denoise"], Automatic | True],
             If [!TrueQ[workingRulesFound[]],
                 
@@ -4056,6 +4085,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         returnRules[rules_Association] :=
             Block[{rulesResult},
                 Return[
+                    
+                    (* TODO: WHEN ADDING PROPERTIES HERE, REMEMBER TO UPDATE:
+                             ARCRulesForOutput *)
+                    
                     rulesResult = <|
                         If [ListQ[OptionValue["SubdivideInput"]],
                             "SubdivideInput" -> OptionValue["SubdivideInput"]
@@ -4079,6 +4112,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                         ],
                         If [OptionValue["FollowDiagonals"] =!= Automatic,
                             "FollowDiagonals" -> OptionValue["FollowDiagonals"]
+                            ,
+                            Nothing
+                        ],
+                        If [OptionValue["CheckForGridsAndDividers"] === False,
+                            "CheckForGridsAndDividers" -> False
                             ,
                             Nothing
                         ],
@@ -4162,7 +4200,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 "SubdivideInput" -> OptionValue["SubdivideInput"],
                 "FindOcclusions" -> OptionValue["FindOcclusions"],
                 "Background" -> OptionValue["Background"],
-                "FollowDiagonals" -> OptionValue["FollowDiagonals"]
+                "FollowDiagonals" -> OptionValue["FollowDiagonals"],
+                "CheckForGridsAndDividers" -> OptionValue["CheckForGridsAndDividers"]
             ];
         
         (* If the caller is interested in capturing this we'll pass it this way. *)
@@ -5170,10 +5209,6 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ReturnIfFailure@
             ARCParseScene[
                 scene,
-                
-                (* TODO: WHEN ADDING PROPERTIES HERE, REMEMBER TO UPDATE:
-                         ARCRulesForOutput *)
-                
                 If [TrueQ[rules["SceneAsSingleObject"]],
                     "SingleObject" -> True
                     ,
@@ -5191,6 +5226,11 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                 ],
                 If [ListQ[rules["SubdivideInput"]],
                     "SubdivideInput" -> rules["SubdivideInput"]
+                    ,
+                    Sequence @@ {}
+                ],
+                If [!MissingQ[rules["CheckForGridsAndDividers"]],
+                    "CheckForGridsAndDividers" -> rules["CheckForGridsAndDividers"]
                     ,
                     Sequence @@ {}
                 ],
@@ -11814,6 +11854,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 20814,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "496994bd",
+            "Timestamp" -> DateObject[{2022, 9, 17}],
+            "ImplementationTime" -> Quantity[0.25, "Hours"],
+            "CodeLength" -> 20863,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -17885,6 +17933,7 @@ ARCRulesForOutput[rules_Association] :=
             "SceneAsSingleObject",
             "FormMultiColorCompositeObjects",
             "FollowDiagonals",
+            "CheckForGridsAndDividers",
             "RemoveEmptySpace",
             "Background",
             "Width",
