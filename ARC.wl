@@ -474,6 +474,30 @@ ARCImageFlipPlusRotations::usage = "ARCImageFlipPlusRotations  "
 
 ARCHandlerForListConclusions::usage = "ARCHandlerForListConclusions  "
 
+ARCPossiblyGeneratedObjectQ::usage = "ARCPossiblyGeneratedObjectQ  "
+
+ARCPixelPossiblyPartOfLine::usage = "ARCPixelPossiblyPartOfLine  "
+
+ARCFollowLine::usage = "ARCFollowLine  "
+
+ARCLineTurnCount::usage = "ARCLineTurnCount  "
+
+ARCMappingsForGeneratedObject::usage = "ARCMappingsForGeneratedObject  "
+
+ARCTurnDegrees::usage = "ARCTurnDegrees  "
+
+SignedVectorAngle::usage = "SignedVectorAngle  "
+
+ARCDirectionForAngle::usage = "ARCDirectionForAngle  "
+
+ARCFindRulesForGeneratedObjects::usage = "ARCFindRulesForGeneratedObjects  "
+
+ARCRemoveObjectFromScene::usage = "ARCRemoveObjectFromScene  "
+
+ARCCompleteRuleSubsets::usage = "ARCCompleteRuleSubsets  "
+
+ARCSetPropertyListPositions::usage = "ARCSetPropertyListPositions  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1979,14 +2003,28 @@ $properties = <|
 
 $properties = ARCAddRankProperties[$properties];
 
-(* Given a property, what position is it within the list of properties? *)
-$propertyListPositions =
-    MapIndexed[
-        Function[{property, position},
-            property -> First[position]
-        ],
-        Keys[$properties]
-    ];
+(*!
+    \function ARCSetPropertyListPositions
+    
+    \calltable
+        ARCSetPropertyListPositions[] '' Updates $propertyListPositions to specify where a given property occurs in $properties.
+    
+    \maintainer danielb
+*)
+Clear[ARCSetPropertyListPositions];
+ARCSetPropertyListPositions[] :=
+    Module[{},
+        (* Given a property, what position is it within the list of properties? *)
+        $propertyListPositions =
+            MapIndexed[
+                Function[{property, position},
+                    property -> First[position]
+                ],
+                Keys[$properties]
+            ]
+    ]
+
+ARCSetPropertyListPositions[];
 
 (*EchoIndented[$properties];*)
 
@@ -9656,15 +9694,28 @@ ARCOutOfBounds[position_List, image_List] :=
     \maintainer danielb
 *)
 Clear[ARCSimplifyRules];
-ARCSimplifyRules[rules_List] :=
+Options[ARCSimplifyRules] =
+{
+    "ExtraKeys" -> {}       (* Additional keys to keep. *)
+};
+ARCSimplifyRules[rules_List, OptionsPattern[]] :=
     Replace[
         rules,
-        assoc: KeyValuePattern["Examples" -> _] :>
-            KeyDrop[assoc, {"Examples", "ExampleCount", "UseCount", "InputObjects"}],
+        assoc: KeyValuePattern["Examples" | "InputObjects" -> _] :>
+            KeyDrop[
+                assoc,
+                Complement[
+                    {"Examples", "ExampleCount", "UseCount", "InputObjects"},
+                    Replace[
+                        OptionValue["ExtraKeys"],
+                        key_String :> {key}
+                    ]
+                ]
+            ],
         {0, Infinity}
     ]
 
-ARCSimplifyRules[rules_Association] :=
+ARCSimplifyRules[rules_Association, OptionsPattern[]] :=
     Module[{},
         If [Keys[rules] === {"Rules"},
             (* If it's only the "Rules" key that is specified, then we'll only return the
@@ -15397,7 +15448,11 @@ ARCExpressionComplexity[exprIn_] :=
                         "XInverse" -> "XInv",
                         "X2Inverse" -> "X2Inv",
                         "YInverse" -> "YInv",
-                        "Y2Inverse" -> "YInv"
+                        "Y2Inverse" -> "YInv",
+                        (* A property like ColorAheadMatchesObject is more general than a property
+                           like ColorAhead, so we don't want to have a big penalty on it due to
+                           the length of its name. e.g. 28e73c20 *)
+                        "MatchesObject" -> "MO"
                     }
                 ]
             ],
@@ -17541,7 +17596,7 @@ ARCDenoise[imageIn_List, noiseObject_Association] :=
         surroundingPixelColors =
             Counts@
             DeleteMissing@
-            ARCSurroundingPixels[noiseObject, image];
+            Values[ARCSurroundingPixels[noiseObject, image]];
         
         maxColorCount = Max[surroundingPixelColors];
         
@@ -17639,37 +17694,43 @@ ARCDenoise[examples_List] :=
 *)
 Clear[ARCSurroundingPixels];
 ARCSurroundingPixels[object_Association, image_] :=
+    ARCSurroundingPixels[
+        object["Y"],
+        object["X"],
+        object["Y2"],
+        object["X2"],
+        image
+    ]
+
+ARCSurroundingPixels[objectY_, objectX_, objectY2_, objectX2_, image_] :=
     Module[{pixelLocations, y},
         
         pixelLocations = Join[
             (* Top *)
-            y = object["Y"] - 1;
+            y = objectY - 1;
             Function[{x},
                 {y, x}
-            ] /@ Range[object["X"] - 1, object["X2"] + 1]
+            ] /@ Range[objectX - 1, objectX2 + 1]
             ,
-            (* Left *)
-            x = object["X"] - 1;
-            Function[{y},
-                {y, x}
-            ] /@ Range[object["Y"], object["Y"]]
-            ,
-            (* Right *)
-            x = object["X2"] + 1;
-            Function[{y},
-                {y, x}
-            ] /@ Range[object["Y"], object["Y"]]
+            {
+                (* Left *)
+                {objectY, objectX - 1},
+                (* Right *)
+                {objectY, objectX2 + 1}
+            }
             ,
             (* Bottom *)
-            y = object["Y2"] + 1;
+            y = objectY2 + 1;
             Function[{x},
                 {y, x}
-            ] /@ Range[object["X"] - 1, object["X2"] + 1]
+            ] /@ Range[objectX - 1, objectX2 + 1]
         ];
         
-        Function[{pixelLocation},
-            ARCPixelColor[image, pixelLocation]
-        ] /@ pixelLocations
+        Association[
+            Function[{pixelLocation},
+                pixelLocation -> ARCPixelColor[image, pixelLocation]
+            ] /@ pixelLocations
+        ]
     ]
 
 (*!
@@ -19575,6 +19636,1120 @@ ARCHandlerForListConclusions[key:"Transform", values_List, applyConclusionFunc_,
 
 ARCHandlerForListConclusions[key_, value_, applyConclusionFunc_, object_Association] :=
     applyConclusionFunc[object, key, value]
+
+(*!
+    \function ARCPossiblyGeneratedObjectQ
+    
+    \calltable
+        ARCPossiblyGeneratedObjectQ[object] '' Given an object, tries to make a determination of whether it might be considered a "generated object" that was produced by following a set of rules repeatedly.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPossiblyGeneratedObjectQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCPossiblyGeneratedObjectQ];
+Options[ARCPossiblyGeneratedObjectQ] =
+{
+    "FirstPosition" -> Automatic    (*< The position from which to explore the line. *)
+};
+ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
+    Module[{image, position, line, turnCount},
+        
+        If [!And[
+                (* The following two conditions are not ideal, but will use this for now to try
+                   to avoid spending computation on things that are unlikely to be generated,
+                   such as pixels and other tiny objects. *)
+                object["FilledArea"] >= 5,
+                object["FilledProportion"] <= 0.95,
+                (* For now we'll only support single-color objects. *)
+                !MissingQ[object["Color"]]
+            ],
+            Return[False, Module]
+        ];
+        
+        image = object["Image"][[1]];
+        
+        position = Replace[
+            OptionValue["FirstPosition"],
+            Automatic :>
+                Replace[
+                    FirstPosition[image, Except[$nonImageColor], {2}, Heads -> False],
+                    _Missing :> Return[False, Module]
+                ]
+        ];
+        
+        line =
+            ReturnIfFailure@
+            ARCFollowLine[image, color, position];
+        
+        <|
+            "Result" -> And[
+                ListQ[line],
+                Length[line] >= 5,
+                (* For now we'll only consider objects where we were able to trace the entire
+                   object as a line-with-turns / path. *)
+                Sort[object["PixelPositions"]] === Sort[line],
+                (* For now we'll consider one turn to be the minimum for something that we
+                   consider potentially "generated". *)
+                (turnCount = ARCLineTurnCount[line]) >= 1,
+                (* The end of the line is on the border. *)
+                MatchQ[
+                    line[[1]],
+                    {1, _} | {_, 1} | {object["Height"], _} | {_, object["Width"]}
+                ]
+            ],
+            "TurnCount" -> turnCount,
+            If [ListQ[line],
+                "Line" -> line
+                ,
+                Nothing
+            ]
+        |>
+    ]
+
+(*!
+    \function ARCPixelPossiblyPartOfLine
+    
+    \calltable
+        ARCPixelPossiblyPartOfLine[image, position] '' Returns <|"Result" -> True | False, "AdjacentPixel1" -> {_, _}, "AdjacentPixel2" -> {_, _}|> where the True/False indicates whether this looks like it could be part of a line, and the two adjacent pixels are what appear to be part of that line. The adjacent pixels are missing when the indicator is False, and one of them would be missing if we are at the end of a line.
+    
+    Examples:
+    
+    ARCPixelPossiblyPartOfLine[
+        ARCParseScene[ARCParseFile["28e73c20"]["Train", 1, "Output"]][["Objects", 1, "Image", 1]],
+        {1, 2}
+    ]
+    
+    ===
+    
+    <|"Result" -> True, "AdjacentPixels" -> {{1, 1}, {1, 3}}|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCPixelPossiblyPartOfLine]
+    
+    \maintainer danielb
+*)
+Clear[ARCPixelPossiblyPartOfLine];
+ARCPixelPossiblyPartOfLine[image_List, position_List] :=
+    Module[{color, surroundingPixels, adjacentPixelsOfSameColor},
+        
+        color = image[[position[[1]], position[[2]]]];
+        
+        If [color === $nonImageColor, Return[<|"Result" -> False|>, Module]];
+        
+        surroundingPixels =
+            ARCSurroundingPixels[
+                position[[1]],
+                position[[2]],
+                position[[1]],
+                position[[2]],
+                image
+            ];
+        
+        adjacentPixelsOfSameColor =
+            Select[surroundingPixels, # === color &];
+        
+        If [Length[adjacentPixelsOfSameColor] > 2,
+            <|"Result" -> False|>
+            ,
+            <|
+                "Result" -> True,
+                "AdjacentPixels" -> Keys[adjacentPixelsOfSameColor]
+            |>
+        ]
+    ]
+
+(*!
+    \function ARCFollowLine
+    
+    \calltable
+        ARCFollowLine[image, color, position, prevPosition] '' Traces a line/path until an end point is found, or a point where there is no longer a single-pixel path to follow.
+    
+    Examples:
+    
+    ARCFollowLine[image, position, prevPosition] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCFollowLine];
+ARCFollowLine[image_List, color_Integer, positionIn_List, prevPositionIn_List] :=
+    Module[
+        {
+            position = positionIn,
+            prevPosition = prevPositionIn,
+            prevPrevPosition = None,
+            direction = positionIn - prevPositionIn,
+            surroundingPixels,
+            otherAdjacentPixelsOfSameColor,
+            positionList = {positionIn}
+        },
+        While[True,
+            
+            surroundingPixels =
+                ARCSurroundingPixels[
+                    position[[1]],
+                    position[[2]],
+                    position[[1]],
+                    position[[2]],
+                    image
+                ];
+            
+            otherAdjacentPixelsOfSameColor =
+                DeleteCases[
+                    Keys[Select[surroundingPixels, # === color &]],
+                    prevPosition
+                ];
+            
+            If [Length[otherAdjacentPixelsOfSameColor] > 1,
+                If [MemberQ[otherAdjacentPixelsOfSameColor, position + direction],
+                    (* If there are multiple other adjacent pixels, but we can just follow
+                       the current direction to avoid ambiguity, then we'll do that. *)
+                    otherAdjacentPixelsOfSameColor = {position + direction}
+                    ,
+                    (* If there are multiple other adjacent pixels, then also drop our
+                       prev-prev location. For example, when we're exiting a corner, we
+                       don't want to be distracted by our prev-prev location. *)
+                    otherAdjacentPixelsOfSameColor = DeleteCases[
+                        otherAdjacentPixelsOfSameColor,
+                        prevPrevPosition
+                    ];
+                    
+                    (* If there are still multiple adjacent pixels, and there is both a
+                       non-diagonal pixel adjancent to us as well as a diagonal pixel adjacent
+                       to us, drop the diagonal one and treat the non-diagonal one as our next
+                       pixel. *)
+                    Replace[
+                        Select[
+                            otherAdjacentPixelsOfSameColor,
+                            Or[
+                                #[[1]] === position[[1]],
+                                #[[2]] === position[[2]]
+                            ] &
+                        ],
+                        {singlePosition_} :> (
+                            otherAdjacentPixelsOfSameColor = {singlePosition};
+                        )
+                    ]
+                ]
+            ];
+            
+            Which[
+                Length[otherAdjacentPixelsOfSameColor] === 0,
+                    (* We have found the end of the line. *)
+                    Return[positionList, Module],
+                Length[otherAdjacentPixelsOfSameColor] === 1,
+                    (* We have found the next pixel in the line. *)
+                    prevPrevPosition = prevPosition;
+                    prevPosition = position;
+                    position = otherAdjacentPixelsOfSameColor[[1]];
+                    direction = position - prevPosition;
+                    If [MemberQ[positionList, position],
+                        (* We've already seen this position. What we should do in this case
+                           is a bit unclear to me. For now we'll just return. *)
+                        Return[positionList, Module]
+                    ];
+                    AppendTo[positionList, position],
+                True,
+                    (* There are multiple adjacent pixels of the line's color, so we no longer
+                       have an unambiguous path to follow. *)
+                    (*Echo[prevPrevPosition -> prevPosition -> {position -> direction} -> otherAdjacentPixelsOfSameColor];*)
+                    Return[Append[positionList, "*"], Module]
+            ]
+        ]
+    ]
+
+ARCFollowLine[image_List, color_Integer, position_List] :=
+    Module[{startingPosition = position, positionAttributes},
+        
+        positionAttributes =
+            ARCPixelPossiblyPartOfLine[image, startingPosition];
+        
+        (* If the first pixel position doesn't appear to be on a line, then we'll abort. *)
+        If [!TrueQ[positionAttributes["Result"]],
+            Return[Missing["NotFound"], Module]
+        ];
+        
+        (* Search outward in each direction, checking at each location if it still
+           looks like a line. Try to find the end of the line that is along the
+           outer border of the object. *)
+        Replace[
+            SortBy[
+                Function[{adjacentPixel},
+                    ARCFollowLine[image, color, adjacentPixel, position]
+                ] /@ positionAttributes["AdjacentPixels"],
+                Replace[
+                    MemberQ[#, "*"],
+                    {
+                        False -> 0,
+                        True -> 1
+                    }
+                ] &
+            ],
+            {
+                (* There were lines eminating outward in two directions. The above SortBy tries
+                   to ensure that if at least one of the directions had a good ending, it is
+                   put first. We reverse the order of that one, so that the complete line will
+                   flow from beginning to end. *)
+                {a_, b_} :> {Sequence @@ Reverse[a], startingPosition, Sequence @@ b},
+                (* Our line started at an ending position whereby it only eminated outward
+                   in a single direction, so just prepend that line with the starting position. *)
+                {line_} :> Prepend[line, startingPosition]
+            }
+        ]
+    ]
+
+(*!
+    \function ARCLineTurnCount
+    
+    \calltable
+        ARCLineTurnCount[line] '' Given a line's list of positions, returns the number of 'turns' in the line, which we define as the number of steps where the direction to the next pixel isn't the same as the direction from the previous pixel.
+    
+    Examples:
+    
+    ARCLineTurnCount[{{1, 1}, {1, 2}, {1, 3}, {2, 3}, {3, 3}}] === 1
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCLineTurnCount]
+    
+    \maintainer danielb
+*)
+Clear[ARCLineTurnCount];
+
+ARCLineTurnCount[{} | {_} | {_, _}] := 0
+
+ARCLineTurnCount[line_List] :=
+    Module[{prevDirection = line[[2]] - line[[1]], direction, turnCount = 0},
+        
+        Function[{i},
+            direction = line[[i]] - line[[i - 1]];
+            If [direction =!= prevDirection,
+                ++turnCount
+            ];
+            prevDirection = direction
+        ] /@ Range[3, Length[line]];
+        
+        turnCount
+    ]
+
+(*!
+    \function ARCMappingsForGeneratedObject
+    
+    \calltable
+        ARCMappingsForGeneratedObject[line, color, scene] '' Given a line that might have been "generated", produces mappings for each position along the line from the input attributes at that position to the output attributes at that position.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCMappingsForGeneratedObject]
+    
+    \maintainer danielb
+*)
+Clear[ARCMappingsForGeneratedObject];
+ARCMappingsForGeneratedObject[line_List, color_Integer, scene_ARCScene] :=
+    Module[
+        {
+            sceneImage = ARCRemoveObjectFromScene[scene, line][[1]],
+            mapping,
+            prevPosition = Missing[],
+            incomingDirection = Missing[],
+            outgoingDirection = Missing[],
+            prevIncomingDirection = Missing[],
+            distanceSinceLastTurn = 1
+        },
+        Function[{i},
+            position = line[[i]];
+            nextPosition =
+                If [i < Length[line],
+                    line[[i + 1]]
+                    ,
+                    Missing[]
+                ];
+            mapping = Rule[
+                DeleteMissing@
+                <|
+                    "UUID" -> CreateUUID[],
+                    "Position" -> position,
+                    "PreviousPosition" -> prevPosition,
+                    If [MissingQ[prevPosition],
+                        <|
+                            "Start" -> True
+                        |>
+                        ,
+                        <|
+                            (* The incoming direction (LHS) is the direction we traveled in
+                               to get to the current position on the line. *)
+                            "IncomingDirection" -> (incomingDirection = position - prevPosition),
+                            "IncomingDirectionY" -> incomingDirection[[1]],
+                            "IncomingDirectionX" -> incomingDirection[[2]]
+                        |>
+                    ],
+                    (* The previous incoming direction is the direction we needed to travel to
+                       arrive at the previous position on the line. *)
+                    "PreviousIncomingDirection" -> prevIncomingDirection,
+                    ARCDirectionForAngle[thisDir, 135];
+                    If [!MissingQ[incomingDirection],
+                        <|
+                            "ColorAhead" -> (color2 = Replace[ARCPixelColor[sceneImage, position + incomingDirection], _Missing -> -2]),
+                            "ColorAheadMatchesObject" -> (color2 === color),
+                            "ColorAhead2" -> (color2 = Replace[ARCPixelColor[sceneImage, position + incomingDirection * 2], _Missing -> -2]),
+                            "ColorAhead2MatchesObject" -> (color2 === color),
+                            "ColorAhead3" -> (color2 = Replace[ARCPixelColor[sceneImage, position + incomingDirection * 3], _Missing -> -2]),
+                            "ColorAhead3MatchesObject" -> (color2 === color),
+                            "Color135Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, 135]], _Missing -> -2]),
+                            "Color135DegreesMatchesObject" -> (color2 === color),
+                            "Color90Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, 90]], _Missing -> -2]),
+                            "Color90DegreesMatchesObject" -> (color2 === color),
+                            "Color90Degrees2" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, 90] * 2], _Missing -> -2]),
+                            "Color90Degrees2MatchesObject" -> (color2 === color),
+                            "Color45Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, 45]], _Missing -> -2]),
+                            "Color45DegreesMatchesObject" -> (color2 === color),
+                            "ColorNegative45Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, -45]], _Missing -> -2]),
+                            "ColorNegative45DegreesMatchesObject" -> (color2 === color),
+                            "ColorNegative90Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, -90]], _Missing -> -2]),
+                            "ColorNegative90DegreesMatchesObject" -> (color2 === color),
+                            "ColorNegative135Degrees" -> (color2 = Replace[ARCPixelColor[sceneImage, position + ARCDirectionForAngle[incomingDirection, -135]], _Missing -> -2]),
+                            "ColorNegative135DegreesMatchesObject" -> (color2 === color)
+                        |>
+                        ,
+                        Nothing
+                    ],
+                    
+                    (* The distance since the last turn can be thought of as the length of the
+                       current segment up to the current position. *)
+                    "DistanceSinceLastTurn" -> distanceSinceLastTurn++,
+                    (* Starts counting at 1, so the first position on the line has a
+                       TotalDistanceSoFar of 1. *)
+                    "TotalDistanceSoFar" -> i
+                |>,
+                <|
+                    If [!MissingQ[nextPosition],
+                        <|
+                            (* The outgoing direction (RHS) is the direction we now need to travel in
+                               to get to the next position on the line. *)
+                            "OutgoingDirection" -> (outgoingDirection = nextPosition - position),
+                            "OutgoingDirectionY" -> outgoingDirection[[1]],
+                            "OutgoingDirectionX" -> outgoingDirection[[2]],
+                            If [!MissingQ[incomingDirection],
+                                "TurnDegrees" -> ARCTurnDegrees[position, incomingDirection, nextPosition]
+                                ,
+                                Nothing
+                            ]
+                        |>
+                        ,
+                        <|
+                            "Stop" -> True
+                        |>
+                    ]
+                |>
+            ];
+            
+            If [!MatchQ[mapping[[2, "TurnDegrees"]], 0 | _Missing],
+                distanceSinceLastTurn = 2
+            ];
+            
+            prevPosition = position;
+            prevIncomingDirection = incomingDirection;
+            
+            (* Fill in this pixel with the color of the object to simulate for the next
+               step what the scene image would look like at this point in the generating
+               process. *)
+            sceneImage[[
+                position[[1]],
+                position[[2]]
+            ]] = color;
+            
+            mapping
+        ] /@ Range[Length[line]]
+    ]
+
+(* https://resources.wolframcloud.com/FunctionRepository/resources/SignedVectorAngle/ *)
+SignedVectorAngle[v1_List, v2_List] /; Length[v1] === 2 && Length[v2] === 2 :=
+    If [VectorAngle[v1, v2] === Pi,
+        Pi
+        ,
+        Sign[Last[Cross[Append[v1, 0], Append[v2, 0]]]] * VectorAngle[v1, v2]
+    ]
+
+(*!
+    \function ARCTurnDegrees
+    
+    \calltable
+        ARCTurnDegrees[position, incomingDirection, nextPosition] '' Given two sequential positions, and the direction that was being traveled to arrive at the first position, specifies the number of degrees of the turn to move to the next position. Unlike typical math, I'm using positive angles to represent a clockwise turn, and negative angles to represent a counterclockwise turn.
+    
+    NOTE: Within this package, vectors are {y, x} due to Mathematica images being accessed
+          as image[[y, x]].
+    
+    Examples:
+    
+    ARCTurnDegrees[{5, 5}, {0, 1}, {6, 5}] === 90
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTurnDegrees]
+    
+    \maintainer danielb
+*)
+Clear[ARCTurnDegrees];
+ARCTurnDegrees[position_List, incomingDirection_List, nextPosition_List] :=
+    Module[{radians},
+        
+        (* We'll treat clockwise as positive and counter-clockwise as negative. *)
+        radians = -SignedVectorAngle[
+            (* Vector 1 *)
+            incomingDirection,
+            (* Vector 2*)
+            nextPosition - position
+        ];
+        
+        (* Degrees *)
+        radians / Pi * 180
+    ]
+
+(*!
+    \function ARCDirectionForAngle
+    
+    \calltable
+        ARCDirectionForAngle[direction, angle] '' Given a direction of travel and an offset angle, returns the corresponding direction for that angle.
+    
+    Examples:
+    
+    ARCDirectionForAngle[{-1, 0}, 90] === {0, 1}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCDirectionForAngle]
+    
+    \maintainer danielb
+*)
+Clear[ARCDirectionForAngle];
+
+(* Up *)
+With[{thisDir = {-1, 0}},
+ARCDirectionForAngle[thisDir, 135] := {1, 1};
+ARCDirectionForAngle[thisDir, 90] := {0, 1};
+ARCDirectionForAngle[thisDir, 45] := {-1, 1};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {-1, -1};
+ARCDirectionForAngle[thisDir, -90] := {0, -1};
+ARCDirectionForAngle[thisDir, -135] := {1, -1};
+];
+
+(* Down *)
+With[{thisDir = {1, 0}},
+ARCDirectionForAngle[thisDir, 135] := {-1, -1};
+ARCDirectionForAngle[thisDir, 90] := {0, -1};
+ARCDirectionForAngle[thisDir, 45] := {1, -1};
+ARCDirectionForAngle[dir:thisDir, 0] := dir;
+ARCDirectionForAngle[thisDir, -45] := {1, 1};
+ARCDirectionForAngle[thisDir, -90] := {0, 1};
+ARCDirectionForAngle[thisDir, -135] := {-1, 1};
+];
+
+(* Left *)
+With[{thisDir = {0, -1}},
+ARCDirectionForAngle[thisDir, 135] := {-1, 1};
+ARCDirectionForAngle[thisDir, 90] := {-1, 0};
+ARCDirectionForAngle[thisDir, 45] := {-1, -1};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {1, -1};
+ARCDirectionForAngle[thisDir, -90] := {1, 0};
+ARCDirectionForAngle[thisDir, -135] := {1, 1};
+];
+
+(* Right *)
+With[{thisDir = {0, 1}},
+ARCDirectionForAngle[thisDir, 135] := {1, -1};
+ARCDirectionForAngle[thisDir, 90] := {1, 0};
+ARCDirectionForAngle[thisDir, 45] := {1, 1};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {-1, 1};
+ARCDirectionForAngle[thisDir, -90] := {-1, 0};
+ARCDirectionForAngle[thisDir, -135] := {-1, -1};
+];
+
+(* 45 degrees *)
+With[{thisDir = {-1, 1}},
+ARCDirectionForAngle[thisDir, 135] := {1, 0};
+ARCDirectionForAngle[thisDir, 90] := {1, 1};
+ARCDirectionForAngle[thisDir, 45] := {0, 1};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {-1, 0};
+ARCDirectionForAngle[thisDir, -90] := {-1, -1};
+ARCDirectionForAngle[thisDir, -135] := {0, -1};
+];
+
+(* -135 degrees *)
+With[{thisDir = {1, -1}},
+ARCDirectionForAngle[thisDir, 135] := {-1, 0};
+ARCDirectionForAngle[thisDir, 90] := {-1, -1};
+ARCDirectionForAngle[thisDir, 45] := {0, -1};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {1, 0};
+ARCDirectionForAngle[thisDir, -90] := {1, 1};
+ARCDirectionForAngle[thisDir, -135] := {0, 1};
+];
+
+(* -45 degrees *)
+With[{thisDir = {-1, -1}},
+ARCDirectionForAngle[thisDir, 135] := {0, -1};
+ARCDirectionForAngle[thisDir, 90] := {-1, 1};
+ARCDirectionForAngle[thisDir, 45] := {-1, 0};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {0, -1};
+ARCDirectionForAngle[thisDir, -90] := {1, -1};
+ARCDirectionForAngle[thisDir, -135] := {1, 0};
+];
+
+(* 135 degrees *)
+With[{thisDir = {1, 1}},
+ARCDirectionForAngle[thisDir, 135] := {0, 1};
+ARCDirectionForAngle[thisDir, 90] := {1, -1};
+ARCDirectionForAngle[thisDir, 45] := {1, 0};
+ARCDirectionForAngle[thisDir, 0] := thisDir;
+ARCDirectionForAngle[thisDir, -45] := {0, 1};
+ARCDirectionForAngle[thisDir, -90] := {-1, 1};
+ARCDirectionForAngle[thisDir, -135] := {-1, 0};
+];
+
+$generatorStepProperties = <|
+    "Start" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "Boolean"
+    |>,
+    "Position" -> <|
+        "Type" -> "Position",
+        "Type2" -> "Position"
+    |>,
+    "PreviousPosition" -> <|
+        "Type" -> "Position",
+        "Type2" -> "Position"
+    |>,
+    "IncomingDirection" -> <|
+        "Type" -> "Direction",
+        "Type2" -> "Direction"
+    |>,
+    "IncomingDirectionY" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "DirectionDimensionValue"
+    |>,
+    "IncomingDirectionX" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "DirectionDimensionValue"
+    |>,
+    "ColorAheadMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorAhead" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "ColorAhead2MatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorAhead2" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "ColorAhead3MatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorAhead3" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "Color45DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorNegative45DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "Color45Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "ColorNegative45Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "Color90DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorNegative90DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "Color90Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "ColorNegative90Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "Color135DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "ColorNegative135DegreesMatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "Color135Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "ColorNegative135Degrees" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "Color90Degrees2MatchesObject" -> <|
+        "Type" -> "Boolean",
+        "Type2" -> "ColorMatchesObject"
+    |>,
+    "Color90Degrees2" -> <|
+        "Type" -> "Color",
+        "Type2" -> "Color"
+    |>,
+    "DistanceSinceLastTurn" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Distance"
+    |>,
+    "TotalDistanceSoFar" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Distance"
+    |>
+|>;
+
+$generatorStepTransformTypes = <|
+    Automatic -> <|
+        "MinimalPropertySets" -> {
+            {"OutgoingDirection"},
+            {"OutgoingDirectionY", "OutgoingDirectionX"},
+            {"TurnDegrees"},
+            {"Stop"}
+        }
+    |>
+|>;
+
+(*!
+    \function ARCFindRulesForGeneratedObjects
+    
+    \calltable
+        ARCFindRulesForGeneratedObjects[objects, examples] '' Given a list of possibly generated objects from different examples, tries to to find a set of rules for generating those objects.
+    
+    Each object should have a "Scene" property that gives its corresponding scene image,
+    and that scene object should have had all background color pixels changed to be
+    $nonImageColor.
+    
+    Examples:
+    
+    ARCFindRulesForGeneratedObjects[objects] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCFindRulesForGeneratedObjects];
+ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
+    Module[{analysis, mappings, inputObjectsNeedingMapping},
+        
+        analysis =
+            ARCPossiblyGeneratedObjectQ /@ objects;
+        
+        If [And @@ analysis[[All, "Result"]],
+            (* All of the objects look like they might be generated objects. *)
+            mappings =
+                Flatten@
+                MapIndexed[
+                    Function[{analysisResult, pos},
+                        mappings =
+                            ReturnIfFailure@
+                            ARCMappingsForGeneratedObject[
+                                analysisResult["Line"],
+                                objects[[First[pos]]]["Color"],
+                                ReturnFailureIfMissing[
+                                    objects[[First[pos]]]["Scene"],
+                                    "ARCFindRulesForGeneratedObjectsFailure",
+                                    "An object passed to ARCFindRulesForGeneratedObjects doesn't specify its Scene property."
+                                ]
+                            ];
+                        
+                        (* Annotate each RHS with "Example" and "Input". *)
+                        Function[{mapping},
+                            ReplacePart[
+                                mapping,
+                                2 -> Join[
+                                    mapping[[2]],
+                                    <|
+                                        "Example" -> First[pos],
+                                        "Input" -> mapping[[1]]
+                                    |>
+                                ]
+                            ]
+                        ] /@ mappings
+                    ],
+                    analysis
+                ];
+            
+            stopMappings = Select[
+                mappings,
+                MatchQ[
+                    #[[2]],
+                    KeyValuePattern["Stop" -> True]
+                ] &
+            ];
+            
+            (* TODO: For now we will not include the Start and Stop items in our main
+                     rule-finding process. *)
+            mappings = Select[
+                mappings,
+                And[
+                    !MatchQ[
+                        #[[1]],
+                        KeyValuePattern["Start" -> True]
+                    ],
+                    !MatchQ[
+                        #[[2]],
+                        KeyValuePattern["Stop" -> True]
+                    ]
+                ] &
+            ];
+            
+            (*Global`djb = stopMappings;*)
+            
+            inputObjectsNeedingMapping = mappings[[All, 1, "UUID"]];
+            
+            (*Global`mappings = mappings;
+            Global`inputObjectsNeedingMapping = inputObjectsNeedingMapping;*)
+            
+            (*Echo["inputObjectsNeedingMapping" -> Length[inputObjectsNeedingMapping]];*)
+            
+            Block[
+                {
+                    $properties = $generatorStepProperties,
+                    $propertyListPositions,
+                    $transformTypes = $generatorStepTransformTypes
+                },
+                
+                ARCSetPropertyListPositions[];
+                
+                ruleSets = {};
+                
+                ruleFindings =
+                    Association@
+                    Flatten[
+                        Function[{property},
+                            
+                            rules =
+                                ReturnIfFailure@
+                                ARCFindRules[
+                                    mappings,
+                                    property,
+                                    (* referenceableInputObjects *)
+                                    <||>,
+                                    (* examples *)
+                                    examples
+                                ];
+                            
+                            (*ARCEcho2[ARCSimplifyRules[rules]];*)
+                            
+                            (* Echo[property -> Length[Flatten[rules[[All, 2, "InputObjects"]]]]]; *)
+                            
+                            If [SameQ[
+                                    Length[
+                                        mappedInputObjects =
+                                            DeleteDuplicates@
+                                            Flatten[rules[[All, 2, "InputObjects"]]]
+                                    ],
+                                    Length[inputObjectsNeedingMapping]
+                                ],
+                                If [!MissingQ[rules],
+                                    AppendTo[
+                                        ruleSets,
+                                        <|"Rules" -> rules|>
+                                    ]
+                                ]
+                                ,
+                                (* The rules formed using this property do not handle the mapping of every
+                                   input object across all training example. *)
+                                If [rules =!= {},
+                                    property -> <|
+                                        "MappedInputObjects" -> mappedInputObjects,
+                                        With[{unmappedObjects = Complement[inputObjectsNeedingMapping, mappedInputObjects]},
+                                            "UnmappedInputObjects" -> unmappedObjects
+                                        ],
+                                        "Rules" -> rules
+                                    |>
+                                    ,
+                                    Nothing
+                                ]
+                            ]
+                        ] /@
+                            (* UNDOME2 *)
+                            DeleteCases[
+                                If [False,
+                                    {"ColorAhead", "ColorAhead2MatchesObject", None}
+                                    (*{"ColorAhead2MatchesObject"}*)
+                                    ,
+                                    Prepend[
+                                        Keys[$properties],
+                                        (* See if one rule can be used to transform all objects. *)
+                                        None
+                                    ]
+                                ],
+                                Alternatives[
+                                    "Position",
+                                    "PreviousPosition",
+                                    "TotalDistanceSoFar"
+                                ]
+                            ]
+                    ];
+                
+                If [ruleSets === {},
+                    completedRuleSets = ARCCompleteRuleSubsets[
+                        Append[
+                            Flatten[Values[ruleFindings][[All, "Rules"]]],
+                            (* Add an "Else" rule that could be considered to use for the case where
+                            TurnDegrees is 0. *)
+                            "Else" -> <|
+                                "TurnDegrees" -> 0,
+                                "InputObjects" ->
+                                    Select[mappings, #[[2, "TurnDegrees"]] === 0 &][[All, 2, "Input", "UUID"]]
+                            |>
+                        ],
+                        inputObjectsNeedingMapping
+                    ];
+                    
+                    If [MatchQ[completedRuleSets["Results"], {__}],
+                        ruleSets = completedRuleSets["Results"]
+                    ]
+                ];
+                
+                If [MatchQ[ruleSets, {__}],
+                    ARCChooseBestRuleSet[ruleSets]
+                    ,
+                    Missing["NotFound"]
+                ]
+            ]
+            ,
+            Missing["NotFound"]
+        ]
+    ]
+
+(*!
+    \function ARCRemoveObjectFromScene
+    
+    \calltable
+        ARCRemoveObjectFromScene[scene, object] '' Sets the object's pixels to the background color to remove it from the scene.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCRemoveObjectFromScene]
+    
+    \maintainer danielb
+*)
+Clear[ARCRemoveObjectFromScene];
+ARCRemoveObjectFromScene[scene_ARCScene, object_Association] :=
+    ARCRemoveObjectFromScene[scene, object["PixelPositions"]]
+
+ARCRemoveObjectFromScene[ARCScene[imageIn_], pixelPositions_List] :=
+    Module[{image = imageIn},
+        
+        Function[{pixelPosition},
+            image[[
+                pixelPosition[[1]],
+                pixelPosition[[2]]
+            ]] = $nonImageColor;
+        ] /@ pixelPositions;
+        
+        ARCScene[image]
+    ]
+
+(*!
+    \function ARCCompleteRuleSubsets
+    
+    \calltable
+        ARCCompleteRuleSubsets[rules, cases] '' Given a list of rules the full list of cases that need to be covered (UUIDs), find sets of rules that can cover all cases.
+        ARCCompleteRuleSubsets[rules, caseCount] '' Given a list of rules (their IDs) and the list of cases (their identifiers) they cover, find sets of rules that can cover all cases.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCompleteRuleSubsets]
+    
+    \maintainer danielb
+*)
+Clear[ARCCompleteRuleSubsets];
+
+ARCCompleteRuleSubsets[rules_List, cases_List] :=
+    Module[{res},
+        
+        res = ARCCompleteRuleSubsets[
+            MapIndexed[
+                Function[{rule, pos},
+                    <|
+                        "RuleID" -> First[pos],
+                        "CasesCovered" -> rule[[2, "InputObjects"]]
+                    |>
+                ],
+                rules
+            ],
+            Length[cases]
+        ];
+        
+        res["Results"] = Replace[
+            res["Results"],
+            assoc: KeyValuePattern["RuleIDs" -> _] :> (
+                Part[
+                    rules,
+                    assoc["RuleIDs"]
+                ]
+            ),
+            {1}
+        ];
+        
+        res["PartialResults"] =
+            Reverse@
+            SortBy[
+                Replace[
+                    res["PartialResults"],
+                    assoc: KeyValuePattern["RuleIDs" -> _] :> (
+                        Join[
+                            Prepend[
+                                RenameKeys[KeyDrop[assoc, "RuleIDs"], "CasesCovered" -> "InputObjects"],
+                                "Rules" -> Part[
+                                    rules,
+                                    assoc["RuleIDs"]
+                                ]
+                            ],
+                            <|
+                                unhandled = Complement[
+                                    cases,
+                                    assoc["CasesCovered"]
+                                ];
+                                "UseCount" -> Length[assoc["CasesCovered"]],
+                                "UnhandledCount" -> Length[unhandled],
+                                "Unhandled" -> unhandled
+                            |>
+                        ]
+                    ),
+                    {1}
+                ],
+                #["UseCount"] &
+            ];
+        
+        res
+    ]
+
+ARCCompleteRuleSubsets[rules_List, caseCount_Integer] :=
+    Module[{res},
+        
+        res = ARCCompleteRuleSubsets[
+            rules,
+            <|
+                "Results" ->
+                    Function[{rule},
+                        <|
+                            "RuleIDs" -> {rule["RuleID"]},
+                            "CasesCovered" -> rule["CasesCovered"]
+                        |>
+                    ] /@ rules,
+                "PartialResults" -> {}
+            |>,
+            caseCount
+        ]
+    ]
+
+ARCCompleteRuleSubsets[rules_List, resIn_Association, caseCount_Integer] :=
+    Module[
+        {
+            res = resIn,
+            newCases = {},
+            newPartialResults = {},
+            subsetUpdatedQ,
+            subsetDuplicateAlreadyExtendedQ,
+            resultsForSubset
+        },
+        
+        res["Results"] = Flatten[
+            Function[{subset},
+                subsetUpdatedQ = False;
+                subsetDuplicateAlreadyExtendedQ = False;
+                If [Length[subset["CasesCovered"]] < caseCount,
+                    resultsForSubset =
+                        Function[{rule},
+                            If [And[
+                                    !MemberQ[subset["RuleIDs"], rule["RuleID"]],
+                                    Intersection[subset["CasesCovered"], rule["CasesCovered"]] === {}
+                                ],
+                                theseRuleIDs = Sort[Append[subset["RuleIDs"], rule["RuleID"]]];
+                                If [!MemberQ[newCases, theseRuleIDs],
+                                    AppendTo[newCases, theseRuleIDs];
+                                    subsetUpdatedQ = True;
+                                    Sett[
+                                        subset,
+                                        {
+                                            "RuleIDs" -> theseRuleIDs,
+                                            "CasesCovered" -> Join[subset["CasesCovered"], rule["CasesCovered"]]
+                                        }
+                                    ]
+                                    ,
+                                    subsetDuplicateAlreadyExtendedQ = True;
+                                    Nothing
+                                ]
+                                ,
+                                Nothing
+                            ]
+                        ] /@ rules;
+                    If [subsetUpdatedQ,
+                        resultsForSubset
+                        ,
+                        (* This path was a dead end. *)
+                        If [!TrueQ[subsetDuplicateAlreadyExtendedQ],
+                            AppendTo[newPartialResults, subset]
+                        ];
+                        Nothing
+                    ]
+                    ,
+                    subset
+                ]
+            ] /@ res["Results"]
+        ];
+        
+        res["PartialResults"] = Join[res["PartialResults"], newPartialResults];
+        
+        If [newCases =!= {},
+            ARCCompleteRuleSubsets[
+                rules,
+                res,
+                caseCount
+            ]
+            ,
+            res
+        ]
+    ]
 
 End[]
 
