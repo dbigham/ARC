@@ -473,7 +473,10 @@ Test[
     {
         <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
         <|"Shape" -> Except[<|"Name" -> "Pixel"|>]|> -> <|
-            "Color" -> Daniel`ARC`ObjectValue[<|"Shape" -> <|"Name" -> "Pixel"|>|>, "Color"]
+            "Color" -> Daniel`ARC`ObjectValue[
+                <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}]|>,
+                "Color"
+            ]
         |>
     }
     ,
@@ -619,11 +622,17 @@ Test[
                         "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
                         "Direction" -> {-1, 0},
                         "Color" -> Daniel`ARC`ObjectValue[
-                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Context" -> "Component"|>,
+                            <|
+                                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
+                                "Context" -> "Component"
+                            |>,
                             "Color"
                         ],
                         "X" -> Daniel`ARC`ObjectValue[
-                            <|"Shape" -> <|"Name" -> "Pixel"|>, "Context" -> "Component"|>,
+                            <|
+                                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
+                                "Context" -> "Component"
+                            |>,
                             "X"
                         ]
                     |>
@@ -1016,7 +1025,6 @@ Test[
             |>,
             <|"PrimarySizeDimension.Rank" -> 2|> -> <|
                 "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                 "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
             |>
         }
@@ -1445,32 +1453,17 @@ Test[
     <|
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <|"Shape" -> <|"Name" -> "L"|>|> -> <|
+            <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{-1, 10}, {10, 10}}]|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 3|>|>
+            |>,
+            <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{10, -1}, {10, 10}}]|> -> <|
                 "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 1|>|>
             |>,
-            <|
-                "Shape" -> <|
-                    "Name" -> "L",
-                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>
-                |>
-            |> -> <|
-                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
-            |>,
-            <|
-                "Shape" -> <|
-                    "Name" -> "L",
-                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 180|>
-                |>
-            |> -> <|
+            <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}, {-1, 10}}]|> -> <|
                 "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 3|>|>
             |>,
-            <|
-                "Shape" -> <|
-                    "Name" -> "L",
-                    "Transform" -> <|"Type" -> "Rotation", "Angle" -> 270|>
-                |>
-            |> -> <|
-                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 3|>|>
+            <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}, {10, -1}}]|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
             |>
         }
     |>
@@ -1637,7 +1630,7 @@ Test[
                 },
                 "X" -> 1,
                 "Y" -> 1,
-                "X2" -> Daniel`ARC`ObjectValue["InputObject", "FilledArea"],
+                "X2" -> Daniel`ARC`ObjectValue["InputScene", "FilledArea"],
                 "Y2" -> 1
             |>
         }
@@ -1887,22 +1880,45 @@ Test[
                 "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
             |>,
             <|"Width.InverseRank" -> 5|> -> <|
-                "Color" -> Inactive[Plus][
-                    Daniel`ARC`ObjectValue[<|"Colors" -> {1}|>, "Width.InverseRank"],
-                    1
-                ]
+                "Color" -> Daniel`ARC`ObjectValue[<|"MostUsedColor.Rank" -> 2|>, "Y"]
             |>,
             <|"Width.Rank" -> 1|> -> <|
                 "Color" -> Daniel`ARC`ObjectValue[
-                    <|"Shape" -> <|"Name" -> "Square", "Filled" -> True|>|>,
+                    <|"MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}]|>,
                     "Color"
                 ]
             |>,
             <|"Width.Rank" -> 2|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 4|>, "Color"]
+                "Color" -> Daniel`ARC`ObjectValue[
+                    <|
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10},
+                                {10, -1, -1, 10},
+                                {10, -1, -1, 10},
+                                {10, 10, 10, 10}
+                            }
+                        ]
+                    |>,
+                    "Color"
+                ]
             |>,
             <|"Width.Rank" -> 3|> -> <|
-                "Color" -> Daniel`ARC`ObjectValue[<|"Width" -> 6|>, "Color"]
+                "Color" -> Daniel`ARC`ObjectValue[
+                    <|
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10},
+                                {10, -1, -1, -1, -1, 10},
+                                {10, -1, -1, -1, -1, 10},
+                                {10, -1, -1, -1, -1, 10},
+                                {10, -1, -1, -1, -1, 10},
+                                {10, 10, 10, 10, 10, 10}
+                            }
+                        ]
+                    |>,
+                    "Color"
+                ]
             |>
         }
     |>
@@ -1992,29 +2008,29 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67a3c6ac"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67a3c6ac"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|
-        "SceneAsSingleObject" -> True,
-        "Rules" -> {
-            <||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>|>
-        }
-    |>
+    {<||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Horizontal"|>|>}
     ,
     TestID -> "ARCFindRules-20220907-9K7CJL"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "68b16354"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "68b16354"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|
-        "SceneAsSingleObject" -> True,
-        "Rules" -> {<||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>|>}
-    |>
+    {<||> -> <|"Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>|>}
     ,
     TestID -> "ARCFindRules-20220907-J2QT3W"
 ]
@@ -2256,8 +2272,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "2dee498d"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "2dee498d"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
@@ -2265,7 +2285,7 @@ Test[
         "RemoveEmptySpace" -> True,
         "Rules" -> {
             <|"Position" -> Except[{1, 1}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
-            <|"Position" -> {1, 1}|> -> <|"Same" -> True|>
+            <|"Position" -> {1, 1}|> -> <||>
         }
     |>
     ,
@@ -2759,4 +2779,40 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220913-KU8N1T"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "ac0a08a4"]["Train"]]
+    ]
+    ,
+    <|
+        "SceneAsSingleObject" -> True,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "Scaled",
+                    "Factor" -> Daniel`ARC`ObjectValue["InputScene", "ColorCount"]
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220917-QQ6EKK"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67385a82"]["Train"]]
+    ]
+    ,
+    <|
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Same" -> True|>,
+            <|"Shape" -> Except[<|"Name" -> "Pixel"|>]|> -> <|"Color" -> 8|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220917-JP5P6M"
 ]

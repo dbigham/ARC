@@ -3183,17 +3183,25 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             ,
             (* Our object is composite, so we check if one or more of our objects are part of a
                composite object. *)
-            matchingComponents = Block[{},
+            Block[{},
+                
                 Function[{component},
                     {mappedToObject, matchingComponent} =
                         ARCObjectWithComponent[objectsToMapTo, component];
                     If [!MissingQ[mappedToObject],
                         Return[
-                            DeleteMissing[
+                            matchingComponents = DeleteMissing[
                                 Function[{component2},
                                     ARCGetMatchingComponent[mappedToObject, component2]
                                 ] /@ object["Components"]
-                            ],
+                            ];
+                            If [Length[matchingComponents] === Length[object["Components"]],
+                                Return[Null, Block]
+                                ,
+                                (* Not all components from the input were present in the output. *)
+                                mappedToObject = Null
+                            ];
+                            ,
                             Block
                         ]
                     ]
@@ -4257,8 +4265,14 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (* Determine if input objects can be referenced in any particular ways in general. *)
         referenceableInputObjects =
             Prepend[
-                ReturnIfFailure@
-                ARCMakeObjectsReferenceable[examples[[All, "Input"]]],
+                If [!TrueQ[OptionValue["SingleObject"]],
+                    ReturnIfFailure@
+                    ARCMakeObjectsReferenceable[examples[[All, "Input"]]]
+                    ,
+                    (* If the scene is a single object, then Object["InputScene"] should
+                       suffice to refer to it. *)
+                    <||>
+                ],
                 Object["InputScene"] -> <||>
             ];
         
@@ -7800,6 +7814,11 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                                      perhaps move away from using ObjectGet _functions_
                                      and instead specify them as the corresponding property
                                      name. *)
+                            If [First[differences] === 0.,
+                                (* Integer vs Real, but the values are the same, so we can just
+                                   inherit the input's property values. *)
+                                Return[Nothing, Module]
+                            ];
                             property -> Inactive[Plus][
                                 ObjectValue["InputObject", property],
                                 First[differences]
@@ -8241,8 +8260,6 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
             ] &
         ];
         
-        (* HERE *)
-        
         matchingProperties =
             ARCPruneMatchingPropertiesForRelativePositions[
                 matchingProperties,
@@ -8284,6 +8301,14 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
                             property
                         ],
                         With[{difference = values[[1]] - transposedObjects[[property, 1]]},
+                            If [difference === 0.,
+                                (* If we have one set of values being integers, and the other
+                                   being Reals, then this can happen. e.g. ac0a08a4 *)
+                                Return[
+                                    property,
+                                    Module
+                                ]
+                            ];
                             difference
                         ]
                     ]
@@ -11760,6 +11785,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 13}],
             "CodeLength" -> 19573,
             "ExampleImplemented" -> "aedd82e4"
+        |>,
+        <|
+            "ExampleImplemented" -> "ac0a08a4",
+            "Timestamp" -> DateObject[{2022, 9, 17}],
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "CodeLength" -> 20797,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -17310,6 +17343,12 @@ ARCImageScalings[image_List, OptionsPattern[]] :=
             If [width <= 3 && height <= 3,
                 (* b91ae062 *)
                 4
+                ,
+                Nothing
+            ],
+            If [width <= 3 && height <= 3,
+                (* AC0A08A4 *)
+                5
                 ,
                 Nothing
             ]

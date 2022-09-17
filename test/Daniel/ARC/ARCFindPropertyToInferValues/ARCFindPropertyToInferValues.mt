@@ -133,3 +133,15 @@ Test[
     ,
     TestID -> "ARCFindPropertyToInferValues-20220911-SRFP0H"
 ]
+
+Test[
+    Daniel`ARC`ARCFindPropertyToInferValues[
+        {"Y"},
+        {<|"Y" -> 1|>, <|"Y" -> 1|>, <|"Y" -> 2|>, <|"Y" -> 2|>},
+        {1., 1., 2., 2.}
+    ]
+    ,
+    "Y"
+    ,
+    TestID -> "ARCFindPropertyToInferValues-20220917-H9TKY7"
+]
