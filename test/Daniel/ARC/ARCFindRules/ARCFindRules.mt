@@ -2816,3 +2816,35 @@ Test[
     ,
     TestID -> "ARCFindRules-20220917-JP5P6M"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "28bf18c6"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Image" -> Daniel`ARC`ObjectValue[<|"Width" -> 3|>, "Image"],
+                            "Y" -> 1,
+                            "X" -> 1
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ObjectValue[<|"Width" -> 3|>, "Image"],
+                            "Y" -> 1,
+                            "X" -> 4
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220917-JF7L0Z"
+]

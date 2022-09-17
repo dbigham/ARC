@@ -8814,7 +8814,12 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                the bounds of an output object that is being considered to be split up.
                If so, don't split the object up, since our convention so far has been
                to treat things as "AddComponents" transforms. e.g. 25d487eb *)
-            If [OptionValue["InputOrOutput"] === "Output",
+            If [And[
+                    OptionValue["InputOrOutput"] === "Output",
+                    (* That said, if the output object is a single color, then we do want to split
+                       it up since it wouldn't get parsed as multiple things otherwise. *)
+                    MissingQ[object["Color"]]
+                ],
                 Function[{exampleObject},
                     If [And[
                             exampleObject["InputOrOutput"] === "Input",
@@ -8931,12 +8936,20 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                                    color, then we don't break of the image.
                                    For example:
                                    - The green "L" in ifmyulnv8-dynamic-shape.
-                                   Example of where we _do_ want to break things up:
+                                     Example of where we _do_ want to break things up:
                                    - The first example input of 6c434453, where there's only
                                      a diagonal connection between the "+" and "O". *)
                                 !And[
                                     IntegerQ[object["Color"]],
-                                    TrueQ[ARCContiguousSubImageQ[object["Image"][[1]], subImage, subImagePosition]]
+                                    TrueQ[ARCContiguousSubImageQ[object["Image"][[1]], subImage, subImagePosition]],
+                                    (* But if our sub-image is at least 3x3 in size, and it occurs
+                                       multiple times in this sub-image, then we will split it up.
+                                       e.g. 28bf18c6 *)
+                                    !And[
+                                        ImageWidth[subImage] >= 3,
+                                        ImageHeight[subImage] >= 3,
+                                        Length[subImagePositions] >= 2
+                                    ]
                                 ]
                             ],
                             (* Paint this region of `leftoverImage` $nonImageColor so that at the end
@@ -11793,6 +11806,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 20797,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "28bf18c6",
+            "Timestamp" -> DateObject[{2022, 9, 17}],
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "CodeLength" -> 20814,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -12130,6 +12151,10 @@ ARCImplementedTasksMarkdown[] :=
         arcEvaluationTasksPassingDueToGeneralization =
             Flatten@
             Cases[ARCTaskLog[][[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]];
+        
+        Echo[
+            Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization]
+        ];
         
         StringRiffle[
             Flatten@
