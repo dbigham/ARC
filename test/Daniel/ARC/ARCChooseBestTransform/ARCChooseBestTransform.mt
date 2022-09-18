@@ -175,3 +175,22 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220910-Q2YR41"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            <|"Color" -> Daniel`ARC`ClassValue[<|"Colors" -> Except[{5}]|>, "Color"]|>,
+            <|"Color" -> Daniel`ARC`ClassValue[<|"XMiddle.Rank" -> 1|>, "Color"]|>,
+            <|
+                "Color" -> Daniel`ARC`ClassValue[
+                    <|"FilledProportion.InverseRank" -> 2|>,
+                    "Color"
+                ]
+            |>
+        }
+    ]
+    ,
+    <|"Color" -> Daniel`ARC`ClassValue[<|"Colors" -> Except[{5}]|>, "Color"]|>
+    ,
+    TestID -> "ARCChooseBestTransform-20220917-5877CF"
+]

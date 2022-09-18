@@ -24,15 +24,24 @@ Test[
     <|
         Daniel`ARC`Object[<|"Colors" -> {1}|>] -> <|
             "Color" -> 1,
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>}
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "MostUsedColor" -> 1,
+            "MostUsedColor.Rank" -> 3,
+            "MostUsedColor.InverseRank" -> 1
         |>,
         Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|
             "Color" -> 2,
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>}
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "MostUsedColor" -> 2,
+            "MostUsedColor.Rank" -> 2,
+            "MostUsedColor.InverseRank" -> 2
         |>,
         Daniel`ARC`Object[<|"Colors" -> {4}|>] -> <|
             "Color" -> 4,
-            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>}
+            "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},
+            "MostUsedColor" -> 4,
+            "MostUsedColor.Rank" -> 1,
+            "MostUsedColor.InverseRank" -> 3
         |>,
         Daniel`ARC`Object[<|"Y" -> 3|>] -> <|
             "Shapes" -> {<|"Name" -> "Rectangle"|>, <|"Name" -> "Rectangle", "Filled" -> True|>},

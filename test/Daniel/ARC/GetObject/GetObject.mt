@@ -72,13 +72,61 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`GetObject[
-        "InputObject",
-        <|"Objects" -> {<|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>}|>,
-        <|"InputObject" -> "HERE"|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`GetObject[
+            "InputObject",
+            <|"Objects" -> {<|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>}|>,
+            "NamedObjects" -> <|"InputObject" -> "HERE"|>
+        ]
     ]
     ,
     "HERE"
     ,
     TestID -> "GetObject-20220809-JZ27M2"
+]
+
+Test[
+    Daniel`ARC`GetObject[
+        Daniel`ARC`Class[<|"Colors" -> {"Blue"}|>],
+        <|"Objects" -> {<|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>}|>
+    ]
+    ,
+    {<|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>}
+    ,
+    TestID -> "GetObject-20220917-N15VX8"
+]
+
+Test[
+    Daniel`ARC`GetObject[
+        Daniel`ARC`Class[<|"Colors" -> {"Blue"}|>],
+        <|
+            "Objects" -> {
+                <|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>,
+                <|"Colors" -> {"Blue"}, "Position" -> {1, 2}|>
+            }
+        |>
+    ]
+    ,
+    {
+        <|"Colors" -> {"Blue"}, "Position" -> {1, 1}|>,
+        <|"Colors" -> {"Blue"}, "Position" -> {1, 2}|>
+    }
+    ,
+    TestID -> "GetObject-20220917-EM9VNL"
+]
+
+Test[
+    Daniel`ARC`GetObject[Daniel`ARC`Class[<|"Colors" -> {"Blue"}|>], <|"Objects" -> {}|>]
+    ,
+    Failure[
+        "NoObjectsOfClassFound",
+        <|
+            "MessageTemplate" -> "No objects of the given class were found in the scene.",
+            "MessageParameters" -> <||>,
+            "Class" -> <|"Colors" -> {"Blue"}|>,
+            "Objects" -> {}
+        |>
+    ]
+    ,
+    TestID -> "GetObject-20220917-JPWP37"
 ]

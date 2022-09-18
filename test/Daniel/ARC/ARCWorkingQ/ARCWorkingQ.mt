@@ -873,3 +873,19 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220917-9FOUCE"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["1190e5a7"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220917-8NGWG7"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["f76d97a5"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220917-SIULJ3"
+]

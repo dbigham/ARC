@@ -100,7 +100,11 @@ ARCParseExamples::usage = "ARCParseExamples  "
 
 Object::usage = "Object  "
 
+Class::usage = "Class  "
+
 ObjectValue::usage = "ObjectValue  "
+
+ClassValue::usage = "ClassValue  "
 
 ARCReferenceableObjectProperties::usage = "ARCReferenceableObjectProperties  "
 
@@ -4612,7 +4616,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {None}
+                        {"Colors"}
                         ,
                         Prepend[
                             Keys[$properties],
@@ -5407,13 +5411,12 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             }
         ];
         
-        colors = ARCImageColors[object["Image"]];
-        
         (* Convert our sparse output objects to fuller objects that have their various
            properties set so that when applying "AddObjects" rules, if their object
            reference patterns need to make use of those properties, they'll be set. *)
         outputScene["Objects"] =
             Function[{object},
+                colors = ARCImageColors[object["Image"]];
                 ARCInferObjectProperties[
                     <|
                         "Image" -> ReturnFailureIfMissing[
@@ -6584,6 +6587,8 @@ ARCMakeObjectsReferenceable[parsedScenes_List, opts:OptionsPattern[]] :=
         opts
     ]
 
+$EnableReferenceableClasses = True;
+
 ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:OptionsPattern[]] :=
     ARCMemoized[
         "MemoizationKey" -> {
@@ -6647,12 +6652,23 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                     Function[{value},
                         {
                             countsForValue = #[value] & /@ valueCounts;
-                            If [MatchQ[countsForValue, {Repeated[1]}],
-                                (* There is always 1 object with this value, so we can introduce
-                                   it as a referenceable thing. *)
-                                value
-                                ,
-                                Nothing
+                            (*If [property === "Color",
+                                Echo[property -> value -> countsForValue]
+                            ];*)
+                            Which[
+                                MatchQ[countsForValue, {Repeated[1]}],
+                                    (* There is always 1 object with this value, so we can introduce
+                                       it as a referenceable thing. *)
+                                    value -> 1,
+                                And[
+                                    TrueQ[$EnableReferenceableClasses],
+                                    AllTrue[countsForValue, And[IntegerQ[#] && # >= 1] &]
+                                ],
+                                    (* There is always one or more objects with this value, so we
+                                       treat this as a referenceable class. *)
+                                    value -> "*",
+                                True,
+                                    Nothing
                             ]
                             ,
                             countsForNotValue =
@@ -6662,7 +6678,11 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                                         -Replace[valueCountsForScene[value], _Missing -> 0]
                                     ]
                                 ] /@ valueCounts;
-                            If [And[
+                            (*If [property === "Color",
+                                Echo[property -> Except[value] -> countsForNotValue]
+                            ];*)
+                            Which[
+                                And[
                                     (* In every scene, this is always at least one object with
                                        this color. Note: I'm a bit unsure whether we want this
                                        condition, since in theory you could still use an Except
@@ -6673,12 +6693,19 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                                        this property value. *)
                                     MatchQ[countsForNotValue, {Repeated[1]}]
                                 ],
-                                (* There is always 1 object _not_ with this value and the rest of
-                                   the objects with this value, so we can introduce it as
-                                   a referenceable thing. *)
-                                Except[value]
-                                ,
-                                Nothing
+                                    (* There is always 1 object _not_ with this value and the rest of
+                                       the objects with this value, so we can introduce it as
+                                       a referenceable thing. *)
+                                    Except[value] -> 1,
+                                And[
+                                    TrueQ[$EnableReferenceableClasses],
+                                    AllTrue[countsForNotValue, And[IntegerQ[#], # >= 1] &]
+                                ],
+                                    (* There is always one or more objects _not_ with this value,
+                                       so we treat this as a referenceable class. *)
+                                    Except[value] -> "*",
+                                True,
+                                    Nothing
                             ]
                         }
                     ] /@ uniqueValues,
@@ -6690,17 +6717,25 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             ]
         ];
         
+        (*EchoIndented[usablePropertiesAndValues];*)
+        
         usablePropertiesAndValues = DeleteCases[usablePropertiesAndValues, {}];
         
         objectReferences =
             Flatten@
             KeyValueMap[
                 Function[{property, values},
-                    Function[{value},
-                        Object[
-                            <|
-                                property -> value
-                            |>
+                    Function[{item},
+                        With[{value = item[[1]], count = item[[2]]},
+                            If [count === 1,
+                                Object
+                                ,
+                                Class
+                            ][
+                                <|
+                                    property -> value
+                                |>
+                            ]
                         ]
                     ] /@ values
                 ],
@@ -6751,7 +6786,7 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
     \function GetObject
     
     \calltable
-        GetObject[object, parsedScene] '' Gets a referenceable object from a parsed scene.
+        GetObject[object, parsedScene] '' Gets a referenceable object from a parsed scene. Can also be used to retrieve objects of a class.
     
     Examples:
     
@@ -6771,10 +6806,24 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
     \maintainer danielb
 *)
 Clear[GetObject];
-GetObject[object_Object, parsedSceneOrObjectsList_, namedObjects_Association : <||>] :=
-    GetObject[object[[1]], parsedSceneOrObjectsList, namedObjects]
+Options[GetObject] =
+{
+    "NamedObjects" -> <||>,         (*< Objects that can be referred to by name like Object["MyObject"]. *)
+    "Class" -> False                (*< Can be set to True if we're looking up a class rather than a single object, such that a list of 1 or more objects should be returned. *)
+};
+GetObject[object: _Object | _Class, parsedSceneOrObjectsList_, opts:OptionsPattern[]] :=
+    GetObject[
+        object[[1]],
+        parsedSceneOrObjectsList,
+        If [MatchQ[object, _Class],
+            "Class" -> True
+            ,
+            Sequence @@ {}
+        ],
+        opts
+    ]
 
-GetObject[object: _Association | _String, parsedScene_Association, namedObjects_Association : <||>] :=
+GetObject[object: _Association | _String, parsedScene_Association, opts:OptionsPattern[]] :=
     Which[
         object === "InputScene",
             parsedScene,
@@ -6784,14 +6833,14 @@ GetObject[object: _Association | _String, parsedScene_Association, namedObjects_
             GetObject[
                 object,
                 Replace[
-                    namedObjects["InputObject", "Components"],
+                    OptionValue["NamedObjects"]["InputObject", "Components"],
                     Except[_List] :> {}
                 ],
-                namedObjects
+                opts
             ],
         AssociationQ[object] && object["Context"] === "Output",
             (* Requires that the caller correctly passes in the _output_ scene. *)
-            GetObject[object, parsedScene["Objects"], namedObjects],
+            GetObject[object, parsedScene["Objects"], opts],
         StringQ[object["Context"]],
             ReturnFailure[
                 "UnsupportedContext",
@@ -6799,42 +6848,84 @@ GetObject[object: _Association | _String, parsedScene_Association, namedObjects_
                 "Object" -> object
             ],
         True,
-            GetObject[object, parsedScene["Objects"], namedObjects]
+            GetObject[object, parsedScene["Objects"], opts]
     ]
 
-GetObject[object_Association, objects_List, namedObjects_Association : <||>] :=
-    Module[{},
+GetObject[object_Association, objects_List, OptionsPattern[]] :=
+    Module[{condition, matchingObject2},
         Replace[
             Cases[
                 objects,
                 KeyValuePattern@
                 Normal@
-                (* We drop the "Context" key since that should be handled by higher-level
-                   code to ensure that `objects` is for that context. *)
-                KeyDrop[object, "Context"]
+                (
+                    (* We drop the "Context" key since that should be handled by higher-level
+                       code to ensure that `objects` is for that context. *)
+                    condition = KeyDrop[object, "Context"]
+                )
             ],
             {
-                {matchingObject_} :> matchingObject,
-                {} :> ReturnFailure[
-                    "ObjectNotFound",
-                    "The object wasn't found in the scene.",
-                    "Object" -> object,
-                    "Objects" -> objects
-                ],
-                multipleObjects:{_, __} :> ReturnFailure[
-                    "AmbiguousObject",
-                    "Multiple matching objects were found, but only 1 match was expected.",
-                    "ObjectPattern" -> object,
-                    "MatchingObjects" -> SimplifyObjects[objects]
-                ]
+                {matchingObject_} :>
+                    If [TrueQ[OptionValue["Class"]],
+                        {matchingObject}
+                        ,
+                        matchingObject
+                    ],
+                {} :> (
+                    If [And[
+                            MatchQ[condition, Association["Position" -> _]],
+                            !MissingQ[
+                                With[{position = condition["Position"]},
+                                    (* If we couldn't find the object, but we're looking for an
+                                       object at a particular position, and we _were_ able to find
+                                       an object that occupies that position even though it's
+                                       top-left corner isn't at that position, then for now we'll
+                                       return this object. e.g. f76d97a5 test example *)
+                                    matchingObject2 = SelectFirst[
+                                        objects,
+                                        MemberQ[#["PixelPositions"], position] &
+                                    ]
+                                ]
+                            ]
+                        ],
+                        matchingObject2
+                        ,
+                        If [TrueQ[OptionValue["Class"]],
+                            ReturnFailure[
+                                "NoObjectsOfClassFound",
+                                "No objects of the given class were found in the scene.",
+                                "Class" -> object,
+                                "Objects" -> objects
+                            ]
+                            ,
+                            ReturnFailure[
+                                "ObjectNotFound",
+                                "The object wasn't found in the scene.",
+                                "Object" -> object,
+                                "Objects" -> objects
+                            ]
+                        ]
+                    ]
+                ),
+                multipleObjects:{_, __} :>
+                    If [TrueQ[OptionValue["Class"]],
+                        multipleObjects
+                        ,
+                        ReturnFailure[
+                            "AmbiguousObject",
+                            "Multiple matching objects were found, but only 1 match was expected.",
+                            "ObjectPattern" -> object,
+                            "MatchingObjects" -> SimplifyObjects[objects]
+                        ]
+                    ]
             }
         ]
     ]
 
-GetObject[objectName_String, objects_List, namedObjects_Association : <||>] :=
+GetObject[objectName_String, objects_List, opts:OptionsPattern[]] :=
     Module[{},
         ReturnFailureIfMissing[
-            namedObjects[objectName],
+            OptionValue["NamedObjects"][objectName],
             "NamedObjectNotFound",
             "An object with the name " <> objectName <> " wasn't specified."
         ]
@@ -6892,11 +6983,16 @@ ARCReferenceableObjectProperties[objects_List, objectLists_List] :=
         res = Function[{objectReference},
             
             (* Find the objects of this type from the given scene. *)
-            objectsOfType = Function[{objectList},
-                object =
-                    ReturnIfFailure@
-                    GetObject[objectReference, objectList]
-            ] /@ objectLists;
+            objectsOfType =
+                (* We use flatten incase the object reference is for a class rather than a
+                   single object. *)
+                Flatten[
+                    Function[{objectList},
+                        object =
+                            ReturnIfFailure@
+                            GetObject[objectReference, objectList]
+                    ] /@ objectLists
+                ];
             
             (* Find the commonalities between these objects. *)
             objectReference -> Append[
@@ -7525,7 +7621,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Shape",
+        (*If [property === "Color",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -8074,9 +8170,19 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             opts
         }
     ]@
-    Module[{referenceableObjects = Keys[referenceableObjectsIn], theseExamples, theseComponents, objects, valuesToInfer, property},
+    Module[
+        {
+            referenceableObjects = Keys[referenceableObjectsIn],
+            theseExamples,
+            theseComponents,
+            (* Note that this can also contain nested lists of objects if a reference is for a
+               class. *)
+            objects,
+            valuesToInfer,
+            property
+        },
         
-        (*$debugProperty = "Color";*)
+        $debugProperty = "Color";
         
         theseExamples = examples[[values[[All, "Example"]]]];
         theseComponents = values[[All, "Input", "Components"]];
@@ -8098,7 +8204,8 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
         valuesToInfer = values[[All, "Value"]];
         
         (*If [Last[propertyPath] === $debugProperty,
-            ARCEcho["valuesToInfer" -> valuesToInfer]
+            ARCEcho["valuesToInfer" -> valuesToInfer];
+            (*ARCEcho2[referenceableObjectsIn];*)
         ];*)
         
         referenceableValues =
@@ -8113,27 +8220,30 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                         AssociationQ[reference[[1]]],
                         MatchQ[reference[[1, "Context"]], "Component"]
                     ],
-                        objects = Function[{components},
-                            ReturnIfFailure@
-                            GetObject[reference, components]
-                        ] /@ theseComponents,
+                        objects =
+                            Function[{components},
+                                ReturnIfFailure@
+                                GetObject[reference, components]
+                            ] /@ theseComponents,
                     And[
                         AssociationQ[reference[[1]]],
                         MatchQ[reference[[1, "Context"]], "Output"]
                     ],
-                        objects = Function[{example},
-                            ReturnIfFailure@
-                            GetObject[reference, example["Output"]]
-                        ] /@ theseExamples,
+                        objects =
+                            Function[{example},
+                                ReturnIfFailure@
+                                GetObject[reference, example["Output"]]
+                            ] /@ theseExamples,
                     True,
                         If [Or[
                                 StringQ[reference[[1]]],
                                 MissingQ[reference[[1, "Context"]]]
                             ],
-                            objects = Function[{example},
-                                ReturnIfFailure@
-                                GetObject[reference, example["Input"]]
-                            ] /@ theseExamples
+                            objects =
+                                Function[{example},
+                                    ReturnIfFailure@
+                                    GetObject[reference, example["Input"]]
+                                ] /@ theseExamples
                             ,
                             ReturnFailure[
                                 "UnsupportedReferenceContext",
@@ -8154,16 +8264,25 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                         propertyPath,
                         objects,
                         valuesToInfer,
+                        "Reference" -> reference,
                         opts
                     ];
                 
                 (*If [And[
                         Last[propertyPath] === $debugProperty,
-                        reference === Object[<|"ColorCount" -> 2|>]
+                        MatchQ[
+                            reference,
+                            Alternatives[
+                                Verbatim @ Class[<|"Colors" -> Except[{5}]|>],
+                                Verbatim @ Class[<|"XMiddle.Rank" -> 1|>]
+                            ]
+                        ]
                     ],
                     ARCEcho[
                         {
-                            "Objects" -> SimplifyObjects["ExtraKeys" -> "Shape"][objects],
+                            "Reference" -> reference,
+                            "UsableProperty" -> property,
+                            "Objects" -> SimplifyObjects["ExtraKeys" -> {}][objects],
                             "ValuesToInfer" -> valuesToInfer
                         }
                     ]
@@ -8171,7 +8290,11 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                 
                 If [!MissingQ[property],
                     If [FreeQ[property, TODO],
-                        ObjectValue[reference[[1]], property]
+                        If [MatchQ[reference, _Class],
+                            ClassValue
+                            ,
+                            ObjectValue
+                        ][reference[[1]], property]
                         ,
                         (* We didn't get back a property name but rather an expression
                            involving the property, which needs the object reference pattern
@@ -8194,12 +8317,13 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
         
         If [MatchQ[referenceableValues, {__}],
             (*If [Last[propertyPath] === $debugProperty,
-                ARCEcho["referenceableValues" -> referenceableValues];
-                Global`djb = Association[Last[propertyPath] -> #] & /@ referenceableValues;
+                ARCEcho["referenceableValues"];
                 ARCDebug@
                 ARCEcho2@
                 ARCChooseBestTransform[
-                    Association[Last[propertyPath] -> #] & /@ referenceableValues
+                    EchoIndented2[
+                        Association[Last[propertyPath] -> #] & /@ referenceableValues
+                    ]
                 ];
                 Throw["HERE"]
             ];*)
@@ -8229,6 +8353,9 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
     \calltable
         ARCFindPropertyToInferValues[propertyPath, objects, values] '' Given a list of objects and a corresponding list of values that need to be inferred, returns the property that can be used to perform the inference, or Missing if none found.
     
+    objects:
+        Note that this can also contain nested lists of objects if a reference is for a class.
+    
     Examples:
     
     See function notebook
@@ -8242,20 +8369,33 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
 Clear[ARCFindPropertyToInferValues];
 Options[ARCFindPropertyToInferValues] =
 {
-    "RelativePosition" -> False     (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
+    "RelativePosition" -> False,    (*< Can be set to True if we are trying to infer a relative position, in which case we only want to consider particular properties. For example, we shouldn't use an absolute Y property value to infer a relative position property. *)
+    "Reference" -> Null             (*< The reference being considered. *)
 };
-ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:OptionsPattern[]] :=
+ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opts:OptionsPattern[]] :=
     Module[
         {
             transposedObjects,
             matchingProperties,
-            values2
+            values2,
+            objects = objectsIn
         },
         
+        (* If any of the items aren't actually associations but lists/groups of associations,
+           then turn them into associations keeping their common values. We do this for example
+           when using referenceable classes, where we may have multiple objects in a scene that
+           match that class, but we can only make use of properties that are consistent. *)
+        objects = Replace[
+            objects,
+            objectList_List :> ARCObjectCommonalities[objectList],
+            {1}
+        ];
+        
         transposedObjects = AssociationTranspose[
-            KeyDrop[
+            Replace[
                 objects,
-                {"UUID"}
+                assoc_Association :> KeyDrop[assoc, {"UUID"}],
+                {1, 2}
             ]
         ];
         
@@ -8263,6 +8403,14 @@ ARCFindPropertyToInferValues[propertyPath_List, objects_List, values_List, opts:
             transposedObjects,
             # === values &
         ];
+        
+        (*If [And[
+                Last[propertyPath] === "Color",
+                OptionValue["Reference"] === Class[<|"Colors" -> Except[{5}]|>]
+            ],
+            ARCEcho2["transposedObjects" -> transposedObjects["Colors"]];
+            ARCEcho2["matchingProperties" -> matchingProperties];
+        ];*)
         
         (* What properties of these objects appear to be usable to infer these values? *)
         Which[
@@ -8555,11 +8703,13 @@ ARCFindPropertyToInferBooleanValues[properthPath_List, transposedObjects_Associa
     \maintainer danielb
 *)
 Clear[AssociationTranspose];
-AssociationTranspose[assocs_] :=
-    With[{keys = DeleteDuplicates[Flatten[Keys[assocs]]]},
-        GroupBy[
-            Flatten[Normal[assocs[[All, keys]]]],
-            First -> Last
+AssociationTranspose[assocsIn_] :=
+    Module[{assocs = assocsIn},
+        With[{keys = DeleteDuplicates[Flatten[Keys[assocs]]]},
+            GroupBy[
+                Flatten[Normal[assocs[[All, keys]]]],
+                First -> Last
+            ]
         ]
     ]
 
@@ -8590,13 +8740,34 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
             expr,
             {
                 (* Resolve an object's value. *)
-                ObjectValue[pattern_, property_] :> (
+                (objectOrClassValueHead:(ObjectValue | ClassValue))[pattern_, property_] :> (
                     
                     head = None;
                     
                     resolvedObject =
                         ReturnIfFailure@
-                        GetObject[pattern, scene, <|"InputObject" -> inputObject|>];
+                        GetObject[
+                            pattern,
+                            scene,
+                            "NamedObjects" -> <|"InputObject" -> inputObject|>,
+                            "Class" -> (objectOrClassValueHead === ClassValue)
+                        ];
+                    
+                    If [objectOrClassValueHead === ClassValue,
+                        propertyValue = DeleteDuplicates[resolvedObject[[All, property]]];
+                        If [MatchQ[propertyValue, {_}],
+                            propertyValue = First[propertyValue]
+                            ,
+                            ReturnFailure[
+                                "InconsistentClassValue",
+                                "A ClassValue resolved to differing values.",
+                                "Reference" -> expr,
+                                "Values" -> resolvedObject[[All, property]]
+                            ]
+                        ]
+                        ,
+                        propertyValue = resolvedObject[property]
+                    ];
                     
                     propertyValue = ReturnFailureIfMissing[
                         Replace[
@@ -8605,9 +8776,9 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                                 Inactive[h_][propertyName_String] :> (
                                     (* A function should be applied to the property value. *)
                                     head = h;
-                                    resolvedObject[propertyName]
+                                    propertyValue
                                 ),
-                                propertyName_String :> resolvedObject[property]
+                                propertyName_String :> propertyValue
                             }
                         ],
                         "MissingPropertyValue",
@@ -8627,7 +8798,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                 (* Resolve an object. *)
                 Object[pattern_] :>
                     ReturnFailureIfMissing[
-                        GetObject[pattern, scene, <|"InputObject" -> inputObject|>],
+                        GetObject[pattern, scene, "NamedObjects" -> <|"InputObject" -> inputObject|>],
                         "MissingObject",
                         "An object couldn't be resolved.",
                         "ObjectPattern" -> pattern
@@ -9121,6 +9292,15 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
             horizontalLineSymmetry,
             pixelColorCounts
         },
+        
+        If [!MatchQ[object["Image"], _ARCScene],
+            AppendTo[Global`djb2, object];
+            ReturnFailure[
+                "ObjectWithoutImage",
+                "ARCInferObjectProperties was called with an object that doesn't have an Image specified.",
+                "Object" -> object
+            ]
+        ];
         
         width = ImageWidth[object["Image"]];
         height = ImageHeight[object["Image"]];
@@ -10150,11 +10330,13 @@ ARCTransformScore[transformIn_] :=
         If [AssociationQ[transform],
             transform = ARCRemoveExtendedMetadataFromConclusion[transform]
         ];
+        
         Replace[
             transform,
             assoc: KeyValuePattern[
                 _ -> Alternatives[
                     _ObjectValue,
+                    _ClassValue,
                     Inactive[Plus][_ObjectValue, _]
                 ]
             ] :> (
@@ -10162,7 +10344,12 @@ ARCTransformScore[transformIn_] :=
                     Function[{key, rhs},
                         Replace[
                             rhs,
-                            ObjectValue[condition_, property_, ___] :> (
+                            (ObjectValue | ClassValue)[condition_, property_, ___] :> (
+                                If [AssociationQ[condition],
+                                    score +=
+                                        ReturnIfFailure@
+                                        ARCConditionsScore[KeyDrop[condition, "Context"]]
+                                ];
                                 objectValueCondition = condition;
                                 objectValueProperty = property
                             ),
@@ -10204,7 +10391,7 @@ ARCTransformScore[transformIn_] :=
                             score += 0.7
                         ];
                     ],
-                    Select[assoc, !FreeQ[#, _ObjectValue] &]
+                    Select[assoc, !FreeQ[#, _ObjectValue | _ClassValue] &]
                 ];
                 assoc
             ),
@@ -10239,7 +10426,7 @@ ARCTransformScore[transformIn_] :=
             ]
         ];
         
-        (* Next, consider the complexity of the expressions. We want to be consistant
+        (* Next, consider the complexity of the expressions. We want to be consistent
            with Occam's Razor, whereby simpler explanations are preferred.
            e.g. 05f2a901 (when implementing referenceable-components) *)
         score += -ARCExpressionComplexity[transform];
@@ -10400,8 +10587,8 @@ ARCNotebook[fileIn_String] :=
                 Subitem["Start: "],
                 Subitem["Stop: "],*)
                 Item["Implementation: X hours"],
-                Subitem["Start: "],
-                Subitem["Stop: "]
+                Item["Start: "],
+                Item["Stop: "]
                 (*Section["Working"]*)
             },
             "ReturnNotebook" -> True
@@ -11862,6 +12049,20 @@ ARCTaskLog[] :=
             "CodeLength" -> 20863,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "f76d97a5",
+            "Timestamp" -> DateObject[{2022, 9, 17}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 21059,
+            "NewGeneralizedSuccesses" -> {"1190e5a7"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "1190e5a7",
+            "Timestamp" -> DateObject[{2022, 9, 17}],
+            "CodeLength" -> 21059
         |>
     }
 
@@ -15534,7 +15735,7 @@ ARCExpressionComplexity[exprIn_] :=
             Infinity
         ];
         
-        (* Consider the complexity of the expressions. We want to be consistant
+        (* Consider the complexity of the expressions. We want to be consistent
            with Occam's Razor, whereby simpler explanations are preferred.
            e.g. 05f2a901 (when implementing referenceable-components) *)
         (* The variable `$penaltyPointsPerExpressionCharacter` is a hyperparameter and
@@ -20613,7 +20814,6 @@ ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
                                 ]
                             ]
                         ] /@
-                            (* UNDOME2 *)
                             DeleteCases[
                                 If [False,
                                     {"ColorAhead", "ColorAhead2MatchesObject", None}
