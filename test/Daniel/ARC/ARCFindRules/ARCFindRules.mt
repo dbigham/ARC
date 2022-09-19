@@ -1018,14 +1018,10 @@ Test[
         "FormMultiColorCompositeObjects" -> False,
         "RemoveEmptySpace" -> True,
         "Rules" -> {
-            <|"PrimarySizeDimension.Rank" -> 1|> -> <|
+            <||> -> <|
                 "Shape" -> <|"Name" -> "Pixel"|>,
                 "X" -> Daniel`ARC`ObjectValue["InputObject", "X.InverseRank"],
                 "Y" -> Daniel`ARC`ObjectValue["InputObject", "Y.InverseRank"]
-            |>,
-            <|"PrimarySizeDimension.Rank" -> 2|> -> <|
-                "Image" -> Daniel`ARC`ARCScene[{{8}}],
-                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.5|>
             |>
         }
     |>
@@ -2878,57 +2874,4 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20220917-CYFM4Y"
-]
-
-Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f76d97a5"]["Train"]]
-    ]
-    ,
-    <|
-        "FormMultiColorCompositeObjects" -> False,
-        "Rules" -> {
-            <|"Colors" -> {5}|> -> <|
-                "Color" -> Daniel`ARC`ClassValue[<|"Colors" -> Except[{5}]|>, "Color"]
-            |>,
-            <|"Colors" -> Except[{5}]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
-        }
-    |>
-    ,
-    TestID -> "ARCFindRules-20220917-7Z1CN7"
-]
-
-Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1190e5a7"]["Train"]]
-    ]
-    ,
-    <|
-        "FormMultiColorCompositeObjects" -> False,
-        "RemoveEmptySpace" -> True,
-        "Rules" -> {
-            <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
-            <|
-                "Transform" -> <|
-                    "Type" -> "AddObjects",
-                    "Objects" -> {
-                        <|
-                            "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
-                            "Color" -> Daniel`ARC`ClassValue[
-                                <|"Area.InverseRank" -> 1|>,
-                                "Color"
-                            ],
-                            "X" -> 1,
-                            "Y" -> 1,
-                            "X2" -> Daniel`ARC`ClassValue[<|"Position" -> {1, 1}|>, "X.Rank"],
-                            "Y2" -> Daniel`ARC`ClassValue[<|"Position" -> {1, 1}|>, "Y.Rank"],
-                            "ZOrder" -> 0
-                        |>
-                    }
-                |>
-            |>
-        }
-    |>
-    ,
-    TestID -> "ARCFindRules-20220917-AFMOA9"
 ]

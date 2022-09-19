@@ -125,7 +125,11 @@ Test[
         Daniel`ARC`SimplifyObjects[
             Daniel`ARC`ARCChooseTransform[
                 {
-                    <|"Image" -> Daniel`ARC`ARCScene[{{8, 6}, {6, 8}}], "Colors" -> {6, 8}|>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[{{8, 6}, {6, 8}}],
+                        "Colors" -> {6, 8},
+                        "Input" -> <|"Image" -> Daniel`ARC`ARCScene[{{8, 6}, {6, 8}}]|>
+                    |>,
                     <|
                         "Image" -> Daniel`ARC`ARCScene[{{8, 8, 8}, {8, 7, 7}, {8, 7, 7}}],
                         "Transforms" -> {<|"Type" -> "Rotation", "Angle" -> 180|>}

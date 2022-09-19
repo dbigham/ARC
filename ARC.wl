@@ -13,6 +13,7 @@ BeginPackage["Daniel`ARC`"]
 
 Needs["Utility`Indent`"]
 Needs["Utility`"]
+Needs["EntityLink`"]
 
 ParseARCGrid::usage = "ParseARCGrid  "
 
@@ -502,6 +503,16 @@ ARCCompleteRuleSubsets::usage = "ARCCompleteRuleSubsets  "
 
 ARCSetPropertyListPositions::usage = "ARCSetPropertyListPositions  "
 
+ARCTimeConstrained::usage = "ARCTimeConstrained  "
+
+ProcessARCLog::usage = "ProcessARCLog  "
+
+ARCLogScope::usage = "ARCLogScope  "
+
+ARCLog::usage = "ARCLog  "
+
+ARCTwoDiagonalRectanglesQ::usage = "ARCTwoDiagonalRectanglesQ  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -537,6 +548,54 @@ MoveNotebook = DevTools`NotebookTools`MoveNotebook;
 FilterOptions = Utility`FilterOptions;
 Memoized = Utility`Memoized;
 CreateMemoizationFunction = Utility`CreateMemoizationFunction;
+LogScope = EntityLink`Logging`LogScope;
+ClearLog = EntityLink`Logging`ClearLog;
+ProcessLog = EntityLink`Logging`ProcessLog;
+EntityRepository = EntityLink`EntityRepository;
+EntityRepositorySet = EntityLink`EntityRepositorySet;
+
+(* For the purposes of using LogScope. *)
+initializeEntityRepository[] :=
+    Module[{},
+        
+        entityRepositoryDirectory = FileNameJoin[{$TemporaryDirectory, "ARC"}];
+        
+        CreateDirectoryIfDoesntExist[entityRepositoryDirectory];
+        
+        ReturnIfFailure@
+        EntityRepository[$repo, entityRepositoryDirectory];
+        
+        ReturnIfFailure@
+        EntityRepositorySet[$repo, "LogDirectory" -> FileNameJoin[{entityRepositoryDirectory, "Logs"}]];
+        
+        ReturnIfFailure@
+        EntityRepositorySet[
+            $repo,
+            "DatabaseTablePrefix" -> "arc_"
+        ];
+        
+        ReturnIfFailure@
+        EntityRepositorySet[
+            $repo,
+            "DatabaseConnectionOpener" ->
+                Inactive[
+                    DatabaseLink`OpenSQLConnection[
+                        DatabaseLink`JDBC["PostgreSQL", "localhost:5432/postgres"],
+                        "Username" -> "postgres",
+                        "Password" -> "password"
+                    ]
+                ],
+            Automatic
+        ];
+        
+        ReturnIfFailure@
+        EntityLink`EntityTypeCreate`LoadCoreEntityLinkEntityTypes[$repo];
+    ]
+
+If [!MatchQ[$repo, _EntityRepository],
+    PrintIfFailure@
+    initializeEntityRepository[]
+];
 
 With[{contexts = ERP`MX`MXContexts[]},
     With[{contexts2 = DeleteDuplicates[Append[contexts, "Daniel`"]]},
@@ -1220,6 +1279,7 @@ ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
             opts
         }
     ]@
+    ARCLogScope["ARCParseInputAndOutputScenes"]@
     Module[{},
         
         (* Detect the list of notable sub-images across all input and output scenes. *)
@@ -2470,6 +2530,9 @@ ARCClassifyFlippedImage[imageIn_List, classifyFunction_] :=
     \maintainer danielb
 *)
 Clear[ARCIndent];
+
+ARCIndent[failure_Failure] := failure
+
 ARCIndent[expr_, opts:OptionsPattern[]] :=
     Module[{temporaryAssociationSymbol, expr2},
         Indent3[
@@ -2889,7 +2952,8 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
         {
             singleColorObjectsByUUID,
             singleColorObjectsByPixelPosition,
-            res
+            res,
+            singleColorObjectsToCombine
         },
         
         singleColorObjectsByUUID = ObjectsByAttribute[singleColorObjects, "UUID"];
@@ -2897,27 +2961,44 @@ ARCFormCompositeObjects[scene_ARCScene, singleColorObjects_List, singleOrMultiCo
         
         res = Function[{object},
             
-            ARCFormCompositeObject[
-                scene,
-                object,
+            singleColorObjectsToCombine = Lookup[
+                singleColorObjectsByUUID,
+                DeleteDuplicates@
                 Lookup[
-                    singleColorObjectsByUUID,
-                    DeleteDuplicates@
-                    Lookup[
-                        singleColorObjectsByPixelPosition,
-                        object["PixelPositions"],
-                        ReturnFailure[
-                            "ObjectNotFound",
-                            "An object couldn't be found by its pixel positions while forming composite objects.",
-                            "PixelPositions" -> object["PixelPositions"],
-                            "Lookup" -> singleColorObjectsByPixelPosition
-                        ]
-                    ],
+                    singleColorObjectsByPixelPosition,
+                    object["PixelPositions"],
                     ReturnFailure[
                         "ObjectNotFound",
-                        "An object couldn't be found by its UUID while forming composite objects."
+                        "An object couldn't be found by its pixel positions while forming composite objects.",
+                        "PixelPositions" -> object["PixelPositions"],
+                        "Lookup" -> singleColorObjectsByPixelPosition
                     ]
+                ],
+                ReturnFailure[
+                    "ObjectNotFound",
+                    "An object couldn't be found by its UUID while forming composite objects."
                 ]
+            ];
+            
+            If [Length[singleColorObjectsToCombine] > 1,
+                If [(* If there are two rectangles that are just connected on their corner, then
+                       by default we won't combine them into a single object. e.g. 445eab21 *)
+                    !And[
+                        Length[singleColorObjectsToCombine] === 2,
+                        TrueQ[ARCTwoDiagonalRectanglesQ @@ singleColorObjectsToCombine]
+                    ],
+                    ARCFormCompositeObject[
+                        scene,
+                        object,
+                        singleColorObjectsToCombine
+                    ]
+                    ,
+                    Sequence @@
+                    singleColorObjectsToCombine
+                ]
+                ,
+                (* Just a single object, so no need to form a composite object. *)
+                singleColorObjectsToCombine[[1]]
             ]
             
         ] /@ singleOrMultiColorObjects;
@@ -3019,6 +3100,7 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
     ]
 
 ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[]] :=
+    ARCLogScope["ARCFindObjectMapping"]@
     Module[
         {
             outputObjects,
@@ -3734,7 +3816,17 @@ Options[ARCFindRules] =
     "CheckForGridsAndDividers" -> True                  (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
+    (* When running the training or evaluation sets in parallel, tasks take about 50% longer to
+       execute as compared to when they are run in serial, so this maximum time needs to take
+       that into account. *)
+    ARCTimeConstrained[Quantity[55, "Seconds"]]@
     Internal`InheritedBlock[{$memoization},
+    Function[{expr},
+        ClearLog[$repo];
+        expr,
+        {HoldAllComplete}
+    ]@
+    ARCLogScope["ARCFindRules"]@
     Module[
         {
             examples = examplesIn,
@@ -3772,8 +3864,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                  where there isn't really a code failure, but rather we simply couldn't find
                  rules, such as in Aug 2022 how we don't yet have support for dealing with
                  AddObjects where multiple objects need to be added, and a Failure is returned. *)
-        If [!TrueQ[OptionValue["SingleObject"]],
-            res = arcFindRulesHelper[examples, opts];
+        If [And[
+                OptionValue["FormMultiColorCompositeObjects"] =!= False,
+                !TrueQ[OptionValue["SingleObject"]]
+            ],
+            res =
+                ARCLogScope["ARCFindRules:MultiColorObjects"]@
+                arcFindRulesHelper[examples, opts];
             parsedExamples = $parsedExamples
         ];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
@@ -3781,7 +3878,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho[ARCSimplifyRules[res["Rules"]]];*)
         
         If [And[
-                OptionValue["FormMultiColorCompositeObjects"] === Automatic,
+                MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | False],
                 !TrueQ[OptionValue["SingleObject"]]
                 (* At first we would only try parsing the scene without the formation
                    of composite objects if the scene always consisted of a single
@@ -3802,11 +3899,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                composite objects. *)
             If [!TrueQ[workingRulesFound[]],
                 (* Try finding rules without forming composite objects. *)
-                res2 = arcFindRulesHelper[
-                    examples,
-                    "FormMultiColorCompositeObjects" -> False,
-                    opts
-                ];
+                res2 =
+                    ARCLogScope["ARCFindRules:SingleColorObjects"]@
+                    arcFindRulesHelper[
+                        examples,
+                        "FormMultiColorCompositeObjects" -> False,
+                        opts
+                    ];
                 foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 If [foundRulesQ,
                     res = <|
@@ -3833,7 +3932,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     ]
                 ],
                 (* Try again, this time parsing the scene as a single object. *)
-                res2 = arcFindRulesHelper[examples, "SingleObject" -> True, opts];
+                res2 =
+                    ARCLogScope["ARCFindRules:SingleObject"]@
+                    arcFindRulesHelper[examples, "SingleObject" -> True, opts];
                 foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 
                 (*ARCEcho2[ARCRulesForOutput[res2]];*)
@@ -3877,7 +3978,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                  TrueQ[OptionValue["AllowSubdividing"]]
             ],
             If [!TrueQ[workingRulesFound[]],
-                res2 = ARCFindRulesForGridSubdivision[parsedExamples];
+                res2 =
+                    ARCLogScope["ARCFindRulesForGridSubdivision"]@
+                    ARCFindRulesForGridSubdivision[parsedExamples];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 If [foundRulesQ2,
                     foundRulesQ = True;
@@ -3895,7 +3998,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 TrueQ[OptionValue["AllowSubdividing"]]
             ],
             If [!TrueQ[workingRulesFound[]],
-                res2 = ARCFindRulesForGridSubdivisionToOutputPixels[parsedExamples];
+                res2 =
+                    ARCLogScope["ARCFindRulesForGridSubdivisionToOutputPixels"]@
+                    ARCFindRulesForGridSubdivisionToOutputPixels[parsedExamples];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
                 If [foundRulesQ2,
                     foundRulesQ = True;
@@ -3915,11 +4020,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     ]
                 ]
             ],
-            res2 = arcFindRulesHelper[
-                    examples,
-                    "FindOcclusions" -> False,
-                    opts
-                ];
+            res2 =
+                ARCLogScope["ARCFindRules:Occlusions"]@
+                arcFindRulesHelper[
+                        examples,
+                        "FindOcclusions" -> False,
+                        opts
+                    ];
             foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
             If [foundRulesQ2,
                 foundRulesQ = True;
@@ -3930,6 +4037,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         (* If we can't find a rule set, and only some examples make use of non-black background,
            then try parsing the scenes again assuming a black background. e.g. 7468f01a *)
         If [And[
+                OptionValue["Background"] === Automatic,
                 ListQ[parsedExamples],
                 !TrueQ[workingRulesFound[]],
                 With[
@@ -3945,7 +4053,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     ]
                 ]
             ],
-            res2 = arcFindRulesHelper[
+            res2 =
+                ARCLogScope["ARCFindRules:BlackBackground"]@
+                arcFindRulesHelper[
                     examples,
                     "Background" -> 0,
                     opts
@@ -3969,7 +4079,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     AllTrue[parsedExamples[[All, "Input", "Height"]], Function[Between[#, {2, 8}]]]
                 ]
             ],
-            res2 = arcFindRulesHelper[
+            res2 =
+                ARCLogScope["ARCFindRules:DontFollowDiagonals"]@
+                arcFindRulesHelper[
                     examples,
                     "Background" -> 0,
                     "FollowDiagonals" -> False,
@@ -3989,11 +4101,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 !FreeQ[parsedExamples, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Divider"]]]
             ],
             If [!TrueQ[workingRulesFound[]],
-                res2 = arcFindRulesHelper[
-                    examples,
-                    "CheckForGridsAndDividers" -> False,
-                    opts
-                ];
+                res2 =
+                    ARCLogScope["ARCFindRules:NoGridsOrDividers"]@
+                    arcFindRulesHelper[
+                        examples,
+                        "CheckForGridsAndDividers" -> False,
+                        opts
+                    ];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
                 If [foundRulesQ2,
                     foundRulesQ = True;
@@ -4011,11 +4125,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 If [TrueQ[denoiseResult["Denoised"]],
                     
                     Block[{$denoised = True},
-                        res2 = ARCFindRules[
-                            denoiseResult["Examples"],
-                            "Denoise" -> False,
-                            opts
-                        ]
+                        res2 =
+                            ARCLogScope["ARCFindRules:Denoise"]@
+                            ARCFindRules[
+                                denoiseResult["Examples"],
+                                "Denoise" -> False,
+                                opts
+                            ]
                     ];
                     foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                     
@@ -4032,7 +4148,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 (* Try again, this time allowing rules to be formed with only 1 example.
                    e.g. 0d3d703e *)
                 Block[{$MinimumExamplesPerRule = 1},
-                    res2 = ARCFindRules[examples, opts];
+                    res2 =
+                        ARCLogScope["ARCFindRules:OneExamplePerRule"]@
+                        ARCFindRules[examples, opts];
                     foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                     If [foundRulesQ, res = res2];
                 ]
@@ -4319,9 +4437,13 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 Object["InputScene"] -> <||>
             ];
         
+        ARCLog["ReferenceableInputObjects" -> Length[referenceableInputObjects]];
+        
         referenceableOutputObjects =
             ReturnIfFailure@
             ARCMakeObjectsReferenceable[examples[[All, "Output"]]];
+        
+        ARCLog["ReferenceableOutputObjects" -> Length[referenceableOutputObjects]];
         
         (*ARCEcho[SimplifyObjects[referenceableInputObjects]];*)
         
@@ -4331,6 +4453,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         examples =
             ReturnIfFailure@
+            ARCLogScope["AddMoveAttributes"]@
             ARCAddMoveAttributes[examples, referenceableOutputObjects];
         
         (*ARCEcho[SimplifyObjects[examples]];*)
@@ -4342,7 +4465,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho2[objectMappings];*)
         (*ARCEcho[objectMappings];*)
         
-        res = ARCFindRules[examples, objectMappings, referenceableInputObjects];
+        res =
+            ARCLogScope["ARCFindRules"]@
+            ARCFindRules[examples, objectMappings, referenceableInputObjects];
         
         (*ARCEcho2[ruleSets];*)
         
@@ -4368,6 +4493,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             
             {ruleSets2, ruleFindings2, additionalRules2} =
                 ReturnIfFailure@
+                ARCLogScope["ARCFindRulesWithNoObjectMapping"]@
                 ARCFindRules[
                     examples,
                     Function[{output},
@@ -4679,6 +4805,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
     ]
 
 ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_Association, examples_List] :=
+    ARCLogScope["ARCFindRules:" <> ToString[property]]@
     Module[
         {
             unhandled,
@@ -4946,6 +5073,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
             opts
         }
     ]@
+    ARCLogScope["ARCFindRules2"]@
     Module[
         {
             conclusionGroup = conclusionGroupIn,
@@ -6587,7 +6715,10 @@ ARCMakeObjectsReferenceable[parsedScenes_List, opts:OptionsPattern[]] :=
         opts
     ]
 
-$EnableReferenceableClasses = True;
+(* Disabled for now as of Sept 18 2022 since this causes the number of referenceable things
+   to explode, such as going from 4 to 85 for examples like 746b3537, which causes a massive
+   slowdown. *)
+$EnableReferenceableClasses = False;
 
 ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:OptionsPattern[]] :=
     ARCMemoized[
@@ -6596,6 +6727,7 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             opts
         }
     ]@
+    ARCLogScope["ARCMakeObjectsReferenceable"]@
     Module[
         {
             usablePropertiesAndValues,
@@ -7374,6 +7506,7 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
             examples
         }
     ]@
+    ARCLogScope["ARCGeneralizeConclusions"]@
     Module[
         {
             conclusions = conclusionsIn,
@@ -7386,7 +7519,7 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
         
         (* HERE1 *)
         
-        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> "ZOrder"][conclusions[[All, "Input"]]]];*)
+        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> {"Transform", "Input"}][conclusions]];*)
         
         inputObjectComponentSets = conclusions[[All, "Input", "Components"]];
         If [MatchQ[inputObjectComponentSets, {Repeated[{__}]}],
@@ -7621,7 +7754,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Color",
+        (*If [property === "Height",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -7727,7 +7860,12 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                             propertyAttributes,
                             conclusions,
                             referenceableObjects,
-                            examples
+                            examples,
+                            (* This is all we're wanting to do in this context. It's important
+                               we set this, because trying to generalize values using
+                               referenceable objects can be expensive, so we want to avoid
+                               doing that unless it's helpful in a context. *)
+                            "OnlyCheckIfValuesMatchInputObjects" -> True
                         ] === Nothing
                     ],
                     (* But actually, its value is always the same as the input's value,
@@ -7871,7 +8009,11 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
     \maintainer danielb
 *)
 Clear[ARCGeneralizeConclusionValueNonRecursive];
-ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
+Options[ARCGeneralizeConclusionValueNonRecursive] =
+{
+    "OnlyCheckIfValuesMatchInputObjects" -> False   (*< If True, we will only check if the values match the corresponding values in the input objects. *)
+};
+ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List, OptionsPattern[]] :=
     Module[
         {
             property =
@@ -7936,6 +8078,12 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                        from our rule conclusion. *)
                     values === inputObjectValues,
                         Return[Nothing, Module],
+                    TrueQ[OptionValue["OnlyCheckIfValuesMatchInputObjects"]],
+                        (* Now that we've had a chance (above) to check if these values are the
+                           same as the input values, if that's all we were asked to do, then we
+                           should return to indicate that the values didn't match the input
+                           values. *)
+                        Return[Missing["NotFound"], Module],
                     And[
                         AllTrue[inputObjectValues, NumberQ],
                         Length[differences = DeleteDuplicates[values - inputObjectValues]] === 1
@@ -8170,6 +8318,13 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             opts
         }
     ]@
+    ARCLogScope[
+        "ARCGeneralizeConclusionValueUsingReferenceableObjects",
+        <|
+            "PropertyPath" -> propertyPath,
+            "ReferenceableObjects" -> Length[referenceableObjectsIn]
+        |>
+    ]@
     Module[
         {
             referenceableObjects = Keys[referenceableObjectsIn],
@@ -8208,9 +8363,10 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             (*ARCEcho2[referenceableObjectsIn];*)
         ];*)
         
+        ARCLogScope["GetReferenceableValues"(*, <|"Values" -> valuesToInfer|>*)][
         referenceableValues =
             Function[{reference},
-                
+                (*ARCLogScope["GetReferenceableValues2", <|"Reference" -> reference|>][*)
                 Which[
                     reference === Object["InputScene"],
                         objects = theseExamples[[All, "Input"]],
@@ -8308,15 +8464,16 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                     ,
                     Nothing
                 ]
-                
-            ] /@ referenceableObjects;
+                (*]*)
+            ] /@ referenceableObjects
+        ];
         
         (*If [Last[propertyPath] === $debugProperty,
             Echo[referenceableObjects -> referenceableValues]
         ];*)
         
         If [MatchQ[referenceableValues, {__}],
-            (*If [Last[propertyPath] === $debugProperty,
+            (*If [Last[propertyPath] === "Color",
                 ARCEcho["referenceableValues"];
                 ARCDebug@
                 ARCEcho2@
@@ -8406,9 +8563,9 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
         
         (*If [And[
                 Last[propertyPath] === "Color",
-                OptionValue["Reference"] === Class[<|"Colors" -> Except[{5}]|>]
+                OptionValue["Reference"] === Object[<|"Width.Rank" -> 1|>]
             ],
-            ARCEcho2["transposedObjects" -> transposedObjects["Colors"]];
+            ARCEcho2["transposedObjects" -> transposedObjects["Color"]];
             ARCEcho2["matchingProperties" -> matchingProperties];
         ];*)
         
@@ -12046,24 +12203,32 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "496994bd",
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "ImplementationTime" -> Quantity[0.25, "Hours"],
+            "RuntimeParallel" -> Quantity[33, "Minutes"],
+            "RuntimeComment" -> "I can't remember whether this was the run that took 33 minutes, but it was approximately around this point.",
             "CodeLength" -> 20863,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>,
-        <|
+        |>
+        (* Implemented via "referenceable classes", but we've disabled that for now since it
+           was causing an explosion in runtime. $EnableReferenceableClasses *)
+        (*<|
             "ExampleImplemented" -> "f76d97a5",
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "ImplementationTime" -> Quantity[3, "Hours"],
+            "RuntimeParallel" -> Quantity[15, "Minutes"],
+            "RuntimeComment" -> "Added TimeConstrained, and wasn't running ARCWorkingQ in parallel.",
             "CodeLength" -> 21059,
             "NewGeneralizedSuccesses" -> {"1190e5a7"},
             "NewEvaluationSuccesses" -> {}
-        |>,
-        <|
+        |>,*)
+        (* Implemented via "referenceable classes", but we've disabled that for now since it
+           was causing an explosion in runtime. $EnableReferenceableClasses *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "1190e5a7",
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "CodeLength" -> 21059
-        |>
+        |>*)
     }
 
 (* ADD NEW SUCCESSES HERE *)
@@ -14608,6 +14773,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
 *)
 Clear[ARCRuleForAddedObjects];
 ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
+    ARCLogScope["ARCRuleForAddedObjects"]@
     Module[{examples = examplesIn, counter = 0, generalizedCondition},
         
         (* If there are objects in the output that don't seem to correspond to objects in the
@@ -16869,6 +17035,7 @@ ARCConsiderMappingObjectsByColor[inputObjects_List, outputObjects_List, output_A
 *)
 Clear[ARCRemoveEmptySpaceQ];
 ARCRemoveEmptySpaceQ[rules_Association, examples_List] :=
+    ARCLogScope["ARCRemoveEmptySpaceQ"]@
     Module[{counts},
         
         counts = Counts[
@@ -18898,7 +19065,7 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
                             conclusion,
                             "Transforms" -> Select[
                                 ARCImageShapes[
-                                    conclusion["Image"],
+                                    conclusion["Input", "Image"],
                                     "IncludeBaseShape" -> False,
                                     "IncludeNoopTransforms" -> True
                                 ],
@@ -21061,6 +21228,157 @@ ARCCompleteRuleSubsets[rules_List, resIn_Association, caseCount_Integer] :=
             ]
             ,
             res
+        ]
+    ]
+
+(*!
+    \function ARCTimeConstrained
+    
+    \calltable
+        ARCTimeConstrained[expr, maxTime] '' Evaluates the given expression, returning a failure if the maximum time is exceeded.
+    
+    Examples:
+    
+    ARCTimeConstrained[Pause[0.15], Quantity[100, "Milliseconds"]]
+    
+    ===
+    
+    Failure[
+        "TimeLimitExceeded",
+        <|
+            "MessageTemplate" -> "The expression took too long to evaluate.",
+            "MessageParameters" -> <||>,
+            "MaximumTime" -> Quantity[100, "Milliseconds"],
+            "Expression" -> Hold[Pause[0.15]]
+        |>
+    ]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTimeConstrained]
+    
+    \maintainer danielb
+*)
+Clear[ARCTimeConstrained];
+Attributes[ARCTimeConstrained] = {HoldFirst};
+ARCTimeConstrained[expr_, maxTime_Quantity] :=
+    Module[{},
+        Replace[
+            TimeConstrained[
+                expr,
+                maxTime
+            ],
+            $Aborted :> ReturnFailure[
+                "TimeLimitExceeded",
+                "The expression took too long to evaluate.",
+                "MaximumTime" -> maxTime,
+                "Expression" -> Hold[expr]
+            ]
+        ]
+    ]
+
+ARCTimeConstrained[maxTime_Quantity] :=
+    Function[{expr},
+        ARCTimeConstrained[expr, maxTime],
+        {HoldAllComplete}
+    ]
+
+(*!
+    \function ProcessARCLog
+    
+    \calltable
+        ProcessARCLog[] '' Processes pending LogScopes for ARC.
+    
+    \maintainer danielb
+*)
+Clear[ProcessARCLog];
+ProcessARCLog[] :=
+    EntityLink`Logging`LogScopeView[
+        $repo,
+        ProcessLog[$repo, "LinkEntityRevisionLogScopes" -> False],
+        "IncludeTimings" -> True
+    ]
+
+(*!
+    \function ARCLogsScope
+    
+    \calltable
+        ARCLogScope[type, params] '' LogScope for ARC.
+    
+    Examples: See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[ARC`ARCLogsScope]
+    
+    \maintainer danielb
+*)
+Clear[ARCLogScope];
+ARCLogScope[args___] :=
+    LogScope[$repo, args]
+
+(*!
+    \function ARCLog
+    
+    \calltable
+        ARCLog[expr] '' Calls Logg wrt the ERPEntityRepository.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[ERP`ARCLog]
+    
+    \maintainer danielb
+*)
+Clear[ARCLog];
+Options[ARCLog] = Options[EntityLink`Logging`Logg]
+ARCLog[expr_, opts:OptionsPattern[]] :=
+    EntityLink`Logging`Logg[$repo, expr, opts]
+
+(*!
+    \function ARCTwoDiagonalRectanglesQ
+    
+    \calltable
+        ARCTwoDiagonalRectanglesQ[object1, object2] '' Returns True if the two objects are rectangles that are connected diagonally.
+    
+    e.g. 445eab21 (training input 3)
+    
+    Examples:
+    
+    ARCTwoDiagonalRectanglesQ[
+        <|"Shape" -> <|"Name" -> "Rectangle"|>, "X" -> 6, "Y" -> 6, "X2" -> 10, "Y2" -> 10|>,
+        <|"Shape" -> <|"Name" -> "Rectangle"|>, "X2" -> 5, "Y2" -> 5|>
+    ]
+    
+    ===
+    
+    True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCTwoDiagonalRectanglesQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCTwoDiagonalRectanglesQ];
+ARCTwoDiagonalRectanglesQ[object1In_Association, object2In_Association] :=
+    Module[{object1, object2},
+        And[
+            MatchQ[object1In["Shape"], KeyValuePattern["Name" -> "Rectangle" | "Square"]],
+            MatchQ[object2In["Shape"], KeyValuePattern["Name" -> "Rectangle" | "Square"]],
+            (
+                {object1, object2} = SortBy[
+                    {object1In, object2In},
+                    #["X2"] &
+                ];
+                And[
+                    object2["Y"] === object1["Y2"] + 1,
+                    object2["X"] === object1["X2"] + 1
+                ]
+            )
         ]
     ]
 
