@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     62263,       1510]
-NotebookOptionsPosition[     55254,       1344]
-NotebookOutlinePosition[     60855,       1483]
-CellTagsIndexPosition[     60812,       1480]
+NotebookDataLength[     66902,       1626]
+NotebookOptionsPosition[     59596,       1455]
+NotebookOutlinePosition[     65197,       1594]
+CellTagsIndexPosition[     65154,       1591]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1337,8 +1337,119 @@ Cell[BoxData[
   3.8704683755088816`*^9, 3.8704684763766394`*^9, 3.870468665823106*^9, 
   3.8704687325372972`*^9, 3.8704688001777315`*^9, 3.870468876894125*^9},
  CellLabel->
-  "Out[1754]=",ExpressionUUID->"6d0fa5ab-362e-443b-ad97-5e57bf541c8e"]
-}, Closed]]
+  "Out[1754]=",ExpressionUUID->"6d0fa5ab-362e-443b-ad97-5e57bf541c8e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"ARCChooseBestRuleSet", "[", "\n", "\t", 
+  RowBox[{"{", "\n", "\t\t", 
+   RowBox[{
+    RowBox[{"{", "\n", "\t\t\t", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"<|", 
+        RowBox[{"\"\<Width.Rank\>\"", " ", "->", " ", "1"}], "|>"}], " ", "->",
+        " ", 
+       RowBox[{"<|", 
+        RowBox[{"\"\<X\>\"", " ", "->", " ", "1"}], "|>"}]}], ",", "\n", 
+      "\t\t\t", 
+      RowBox[{
+       RowBox[{"<|", 
+        RowBox[{"\"\<Width.Rank\>\"", " ", "->", " ", "2"}], "|>"}], " ", "->",
+        " ", 
+       RowBox[{"<|", 
+        RowBox[{"\"\<X\>\"", " ", "->", " ", "2"}], "|>"}]}]}], "\n", "\t\t", 
+     "}"}], ",", "\n", "\t\t", 
+    RowBox[{"{", "\n", "\t\t\t", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"<|", "\n", "\t\t\t\t", 
+        RowBox[{"\"\<Image\>\"", " ", "->", " ", 
+         RowBox[{"ARCScene", "[", "\n", "\t\t\t\t\t", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Table", "[", 
+             RowBox[{"1", ",", " ", 
+              RowBox[{"{", "10", "}"}]}], "]"}], ",", " ", 
+            RowBox[{"Sequence", " ", "@@", " ", 
+             RowBox[{"Table", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"1", ",", " ", 
+                 RowBox[{"Sequence", " ", "@@", " ", 
+                  RowBox[{"Table", "[", 
+                   RowBox[{"0", ",", " ", 
+                    RowBox[{"{", "8", "}"}]}], "]"}]}], ",", " ", "1"}], 
+                "}"}], ",", " ", 
+               RowBox[{"{", "8", "}"}]}], "]"}]}], ",", " ", 
+            RowBox[{"Table", "[", 
+             RowBox[{"1", ",", " ", 
+              RowBox[{"{", "10", "}"}]}], "]"}]}], "}"}], "\n", "\t\t\t\t", 
+          "]"}]}], "\n", "\t\t\t", "|>"}], " ", "->", " ", 
+       RowBox[{"<|", "\n", "\t\t\t\t", 
+        RowBox[{"\"\<Color\>\"", " ", "->", " ", "1"}], "\n", "\t\t\t", 
+        "|>"}]}], ",", "\n", "\t\t\t", 
+      RowBox[{
+       RowBox[{"<|", "\n", "\t\t\t\t", 
+        RowBox[{"\"\<Image\>\"", " ", "->", " ", 
+         RowBox[{"ARCScene", "[", "\n", "\t\t\t\t\t", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Table", "[", 
+             RowBox[{"1", ",", " ", 
+              RowBox[{"{", "10", "}"}]}], "]"}], ",", " ", 
+            RowBox[{"Sequence", " ", "@@", " ", 
+             RowBox[{"Table", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"1", ",", " ", 
+                 RowBox[{"Sequence", " ", "@@", " ", 
+                  RowBox[{"Table", "[", 
+                   RowBox[{"0", ",", " ", 
+                    RowBox[{"{", "8", "}"}]}], "]"}]}], ",", " ", "2"}], 
+                "}"}], ",", " ", 
+               RowBox[{"{", "8", "}"}]}], "]"}]}], ",", " ", 
+            RowBox[{"Table", "[", 
+             RowBox[{"1", ",", " ", 
+              RowBox[{"{", "10", "}"}]}], "]"}]}], "}"}], "\n", "\t\t\t\t", 
+          "]"}]}], "\n", "\t\t\t", "|>"}], " ", "->", " ", 
+       RowBox[{"<|", "\n", "\t\t\t\t", 
+        RowBox[{"\"\<Color\>\"", " ", "->", " ", "2"}], "\n", "\t\t\t", 
+        "|>"}]}]}], "\n", "\t\t", "}"}]}], "\n", "\t", "}"}], "\n", 
+  "]"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8704675483622117`*^9, 3.8704675558543043`*^9}, {
+  3.87261653737217*^9, 3.8726165586377296`*^9}, {3.872616597551843*^9, 
+  3.8726166038436213`*^9}},
+ CellLabel->"In[153]:=",
+ CellID->299671095,
+ "TestId" -> 
+ "ARCChooseBestRuleSet-20220825-GQ1MJL",ExpressionUUID->"ede1868f-2ef1-42cb-\
+935f-b95710233fe9"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{"\<\"Width.Rank\"\>", "\[Rule]", "1"}], "\[RightAssociation]"}], 
+    "\[Rule]", 
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{"\<\"X\"\>", "\[Rule]", "1"}], "\[RightAssociation]"}]}], ",", 
+   RowBox[{
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{"\<\"Width.Rank\"\>", "\[Rule]", "2"}], "\[RightAssociation]"}], 
+    "\[Rule]", 
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{"\<\"X\"\>", "\[Rule]", "2"}], "\[RightAssociation]"}]}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.8726165305440617`*^9, 3.872616560199998*^9}, 
+   3.872616604294982*^9},
+ CellLabel->
+  "Out[154]=",ExpressionUUID->"3a15dbde-f7a8-4518-8b7f-4b8c4e3c57d8"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
@@ -1508,8 +1619,13 @@ Cell[11135, 296, 40878, 976, 5401, "Code",ExpressionUUID->"67d58f46-0aaf-4672-bb
  InitializationCell->False,
  CellID->76302675]
 }, Open  ]],
-Cell[52028, 1275, 3186, 64, 105, "Output",ExpressionUUID->"6d0fa5ab-362e-443b-ad97-5e57bf541c8e"]
-}, Closed]]
+Cell[52028, 1275, 3186, 64, 105, "Output",ExpressionUUID->"6d0fa5ab-362e-443b-ad97-5e57bf541c8e"],
+Cell[55217, 1341, 3595, 88, 468, "Code",ExpressionUUID->"ede1868f-2ef1-42cb-935f-b95710233fe9",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->299671095],
+Cell[58815, 1431, 741, 19, 33, "Output",ExpressionUUID->"3a15dbde-f7a8-4518-8b7f-4b8c4e3c57d8"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }

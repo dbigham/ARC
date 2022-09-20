@@ -88,3 +88,20 @@ Test[
     ,
     TestID -> "ARCFormExceptRules-20220902-I72XUI"
 ]
+
+Test[
+    Daniel`ARC`ARCFormExceptRules[
+        {
+            <|"FilledArea" -> 6|> -> <|"Color" -> 1|>,
+            <|"FilledArea" -> 2 | 3 | 4 | 5 | 7|> -> <|"Color" -> 2|>
+        },
+        {}
+    ]
+    ,
+    {
+        <|"FilledArea" -> 6|> -> <|"Color" -> 1|>,
+        <|"FilledArea" -> Except[6]|> -> <|"Color" -> 2|>
+    }
+    ,
+    TestID -> "ARCFormExceptRules-20220919-W0DTK2"
+]

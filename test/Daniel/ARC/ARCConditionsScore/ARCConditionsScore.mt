@@ -15,7 +15,7 @@ Test[
         Daniel`ARC`ARCConditionsScore[<|"Color" -> 1|>]
     ]
     ,
-    -0.07303442871535162
+    -0.07280109889280519
     ,
     TestID -> "ARCConditionsScore-20220825-IHY3H7"
 ]
@@ -38,4 +38,118 @@ Test[
     -0.5008991914547277
     ,
     TestID -> "ARCConditionsScore-20220825-GWXD0K"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConditionsScore[<|"Shapes" -> <|"Name" -> "Square"|>|>]
+    ]
+    ,
+    0.11146748404803987
+    ,
+    TestID -> "ARCConditionsScore-20220919-H71RYH"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConditionsScore[<|"Area.Rank" -> 1|>]
+    ]
+    ,
+    -0.06244997998398395
+    ,
+    TestID -> "ARCConditionsScore-20220919-33M71R"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConditionsScore[<|"Area.Rank" -> Except[1]|>]
+    ]
+    ,
+    -0.15198684153570663
+    ,
+    TestID -> "ARCConditionsScore-20220919-3BOBSB"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConditionsScore[<|"Shapes" -> <|"Name" -> Except["Square"]|>|>]
+    ]
+    ,
+    -0.13991068579633215
+    ,
+    TestID -> "ARCConditionsScore-20220919-BISAI5"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConditionsScore[<|"Shape" -> <|"Name" -> Except["Square"]|>|>]
+    ]
+    ,
+    -0.11357816691600557
+    ,
+    TestID -> "ARCConditionsScore-20220919-SEP3PR"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5|>]
+    ,
+    -0.3264965543462902
+    ,
+    TestID -> "ARCConditionsScore-20220920-5JHCEE"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5 | 6|>]
+    ,
+    -0.6198386886924694
+    ,
+    TestID -> "ARCConditionsScore-20220920-JZT7AD"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5 | 6 | 7|>]
+    ,
+    -1.1140017953306898
+    ,
+    TestID -> "ARCConditionsScore-20220920-TQQ6OA"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5 | 6 | 7 | 8|>]
+    ,
+    -2.1073680267100947
+    ,
+    TestID -> "ARCConditionsScore-20220920-XHYMVG"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5 | 6 | 7 | 8 | 9 | 10|>]
+    ,
+    -4.105812952388357
+    ,
+    TestID -> "ARCConditionsScore-20220920-KI6U47"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 6|>]
+    ,
+    -1.2986916493148017
+    ,
+    TestID -> "ARCConditionsScore-20220920-3TIQ48"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> 4 | 5|>]
+    ,
+    -0.3264965543462902
+    ,
+    TestID -> "ARCConditionsScore-20220920-F2LJT4"
+]
+
+Test[
+    Daniel`ARC`ARCConditionsScore[<|"Height" -> "a" | "c"|>]
+    ,
+    -0.3264965543462902
+    ,
+    TestID -> "ARCConditionsScore-20220920-QUF9IB"
 ]

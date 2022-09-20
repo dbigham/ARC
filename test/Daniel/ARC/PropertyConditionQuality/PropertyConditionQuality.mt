@@ -15,7 +15,7 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Color"]
     ]
     ,
-    -0.020833333333333332
+    -0.02
     ,
     TestID -> "PropertyConditionQuality-20220826-8NFDPP"
 ]
@@ -53,7 +53,7 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Width"]
     ]
     ,
-    -0.07291666666666667
+    -0.08
     ,
     TestID -> "PropertyConditionQuality-20220826-6OCF5M"
 ]
@@ -63,7 +63,37 @@ Test[
         Daniel`ARC`PropertyConditionQuality["Width.Rank"]
     ]
     ,
-    -0.4270833333333333
+    -0.33000000000000007
     ,
     TestID -> "PropertyConditionQuality-20220826-8AGQEV"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`PropertyConditionQuality["Height"]
+    ]
+    ,
+    -0.09
+    ,
+    TestID -> "PropertyConditionQuality-20220920-KBR4HB"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`PropertyConditionQuality["Height.Rank"]
+    ]
+    ,
+    -0.35
+    ,
+    TestID -> "PropertyConditionQuality-20220920-TI02QS"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`PropertyConditionQuality["Height.InverseRank"]
+    ]
+    ,
+    -0.36
+    ,
+    TestID -> "PropertyConditionQuality-20220920-TDFYQY"
 ]

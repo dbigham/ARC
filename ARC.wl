@@ -592,7 +592,7 @@ initializeEntityRepository[] :=
         EntityLink`EntityTypeCreate`LoadCoreEntityLinkEntityTypes[$repo];
     ]
 
-If [!MatchQ[$repo, _EntityRepository],
+If [!MatchQ[$repo, _EntityRepository] && !TrueQ[$disableARCLogScopes],
     PrintIfFailure@
     initializeEntityRepository[]
 ];
@@ -1898,7 +1898,7 @@ $properties = <|
         "Type2" -> "Shape",
         (* We'll fudge this higher than we otherwise would since the ARCExpressionComplexity
            of values for this property tend to penalize these conditions too much. *)
-        "RuleConditionQuality" -> 1
+        "RuleConditionQuality" -> 1.195
     |>,
     "Angle" -> <|
         "Type" -> "Angle",
@@ -3804,7 +3804,6 @@ Clear[ARCFindRules];
 Options[ARCFindRules] =
 {
     "FormMultiColorCompositeObjects" -> Automatic,      (*< Whether connected single-color objects should be combined to form multi-color composite objects. If Automatic, we will try forming them, but if that isn't looking to work, we may also try not forming them. *)
-    "UnnormalizedConclusionGroup" -> Missing[],         (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
     "SettleForOneExamplePerRule" -> True,               (*< If we can't find a workable rule set supported by 2+ examples per rule, should we try again and settle for 1+ examples per rule? *)
     "SingleObject" -> Automatic,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "Denoise" -> Automatic,                             (*< Should we consider removing noise from the image? *)
@@ -3813,7 +3812,9 @@ Options[ARCFindRules] =
     "FindOcclusions" -> True,                           (*< Whether we should consider possible occlusions when interpreting the scene. *)
     "Background" -> Automatic,                          (*< The background color of scenes. *)
     "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
-    "CheckForGridsAndDividers" -> True                  (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
+    "CheckForGridsAndDividers" -> True,                 (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
+    
+    "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     (* When running the training or evaluation sets in parallel, tasks take about 50% longer to
@@ -3822,7 +3823,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     ARCTimeConstrained[Quantity[55, "Seconds"]]@
     Internal`InheritedBlock[{$memoization},
     Function[{expr},
-        ClearLog[$repo];
+        If [!TrueQ[$disableARCLogScopes],
+            ClearLog[$repo]
+        ];
         expr,
         {HoldAllComplete}
     ]@
@@ -4681,7 +4684,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         ReturnIfFailure@
                         ARCFindRules[preRules, property, referenceableInputObjects, examples];
                     
-                    (* Echo[property -> Length[Flatten[rules[[All, 2, "InputObjects"]]]]]; *)
+                    (*Echo[property -> Length[Flatten[rules[[All, 2, "InputObjects"]]]]];*)
                     
                     If [SameQ[
                             Length[
@@ -4742,7 +4745,9 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False,
-                        {"Colors"}
+                        {"Height.Rank", "Height.InverseRank", "Height"}
+                        (*{"Area.Rank", "Shapes"}*)
+                        (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
                         Prepend[
                             Keys[$properties],
@@ -4762,10 +4767,13 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ]
             ];
         
-        If [ruleSets === {},
-            (* If none of the properties produced rules that span all input objects, try combining
-               properties like HeightRank and HeightInverseRank to see if they can together span
-               all inputs. *)
+        If [True, (*ruleSets === {},*)
+            (* Try combining properties like HeightRank and HeightInverseRank to see if they
+               can together span all inputs. Should we do this in all cases, or only if there
+               are no possible rules using a single property? As of Setp 20 2022, we always
+               consider this, since for a61f2674 there are rules for Height, but they aren't
+               the ones we want. This way, downstream scoring code can be responsible for
+               deciding which rules are the best. *)
             KeyValueMap[
                 Function[{rankPropertyName, rankPropertyAttributes},
                     mappedInputObjects = Union[
@@ -4776,7 +4784,16 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                             Length[mappedInputObjects],
                             Length[inputObjectsNeedingMapping]
                         ],
-                        Return[
+                        AppendTo[
+                            ruleSets,
+                            <|
+                                "Rules" -> Join[
+                                    ruleFindings[rankPropertyName, "Rules"],
+                                    ruleFindings[rankPropertyAttributes["InverseRankProperty"], "Rules"]
+                                ]
+                            |>
+                        ]
+                        (*Return[
                             {
                                 {
                                     <|
@@ -4790,7 +4807,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                                 additionalRules
                             },
                             Module
-                        ]
+                        ]*)
                     ];
                 ],
                 Select[$properties, TrueQ[#["Rank"]] && !TrueQ[#["InverseRank"]] &]
@@ -4813,7 +4830,11 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             conclusion,
             rules,
             pattern,
-            mutuallyExclusiveRules = True
+            mutuallyExclusiveRules = True,
+            rulesWithInsufficientSupport,
+            rulesWithSufficientSupport,
+            unhandledInputs,
+            method1ExceptRuleFailedQ = False
         },
         
         (*Echo[property];*)
@@ -4821,7 +4842,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
         unhandled = {};
         
         (*ARCEcho[preRules];*)
-        (*ARCEcho[SimplifyObjects[preRules]];*)
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Color"][preRules]];*)
         
         (* Question: Here we are first grouping by the property-value pair, and then below
                      we later group by the transformation type, and finally look for
@@ -4886,6 +4907,11 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                         unhandledBeforeRuleSearch = unhandled;
                         
                         {conclusion, unhandled} =
+                            (*If [pattern === <|"FilledArea" -> 3|>,
+                                ARCDebug
+                                ,
+                                Identity
+                            ]@*)
                             ReturnIfFailure@
                             ARCFindRules[
                                 conclusionGroup,
@@ -4970,6 +4996,30 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ];
         ];
         
+        If [$MinimumExamplesPerRule > 1,
+            (* If there are rules with insufficient support, try forming an Except rule via
+               "Method 1" below prior to trying to find one using "Method2" further below.
+               To do this, we need to update `unhandled` to be the conclusions that had
+               either no rules, or rules with insufficient support. *)
+            rulesWithInsufficientSupport =
+                Select[rules, #[[2, "ExampleCount"]] < $MinimumExamplesPerRule &];
+            rulesWithSufficientSupport =
+                Select[rules, #[[2, "ExampleCount"]] >= $MinimumExamplesPerRule &];
+            If [Length[rulesWithInsufficientSupport] >= 1,
+                unhandledInputs = Flatten[rulesWithInsufficientSupport[[All, 2, "InputObjects"]]];
+                unhandled = Join[
+                    unhandled,
+                    Select[
+                        preRules[[All, 2]],
+                        MemberQ[unhandledInputs, #[["Input", "UUID"]]] &
+                    ]
+                ];
+            ]
+            ,
+            rulesWithSufficientSupport = rules
+        ];
+        
+        (* Method 1 for forming an except rule. *)
         If [And[
                 Length[unhandled] > 0 &&
                 property =!= None &&
@@ -4980,7 +5030,6 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                     Length[DeleteDuplicates[unhandled[[All, "Transform", "Type"]]]] === 1
                 )
             ],
-            
             (* We have mappings/conclusions that we weren't able to create rules for using
                explicit property values, so now we can look into trying property patterns
                of the form Except[_]. *)
@@ -4995,7 +5044,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             pattern = <|
                 property -> Except[
                     Replace[
-                        rules[[All, 1, property]],
+                        rulesWithSufficientSupport[[All, 1, property]],
                         {
                             {singleValue_} :> singleValue,
                             multipleValues:{Repeated[_, {2, Infinity}]} :>
@@ -5026,10 +5075,14 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                 ];
             
             If [!MissingQ[conclusion],
-                rules = AppendTo[
-                    rules,
+                (* We found an Except rule, so we'll discard any rules we were hanging on to
+                   that had insufficient support, and use this Except rule instead. *)
+                rules = Append[
+                    rulesWithSufficientSupport,
                     pattern -> conclusion
                 ]
+                ,
+                method1ExceptRuleFailedQ = True
             ]
         ];
         
@@ -5038,20 +5091,45 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
             ReturnIfFailure@
             ARCGroupRulesByConclusion[rules];
         
-        (* Actually, this causes us to be too liberal, resulting in garbage rules.
-           Commenting out the below and keeping it in its old spot. *)
+        (*ARCEcho[ARCSimplifyRules[rules]];*)
+        
+        (* Method 2 for finding an except rule.
+           e.g. d2abd087 *)
+        rules2 =
+            ReturnIfFailure@
+            ARCFormExceptRules[rules, preRules[[All, 1]]];
+        
+        (*If [And[
+                TrueQ[method1ExceptRuleFailedQ],
+                rules === rules2
+            ],
+            (* We were unable to form a rule to handle the Except case, and we had unhandled
+               pre-rules, so we don't have a complete rule set. *)
+            Return[{}, Module]
+        ];*)
+        
+        rules = rules2;
+        
+        (*ARCEcho[ARCSimplifyRules[rules]];*)
+        
         (* If a rule is only supported by one example input/output pair, then we won't
            keep it, since that is very strong evidence that we haven't found a workable
            generalization. Note that we need to wait until this point, after we've merged
            rules with the same conclusion, otherwise we might prematurely discard rules
            that don't appear to have enough support. e.g. 746b3537 *)
-        (*Function[{rule},
+        rules = Function[{rule},
             If [rule[[2, "ExampleCount"]] < $MinimumExamplesPerRule,
-                Return[{}, Module]
+                (*ARCEcho2["InsufficientSupport" -> rule];*)
+                (* Drop this rule. We don't actually want to abort, since for cases like
+                   a61f2674, we want to allow Height.Rank and Height.InverseRank
+                   rules to be combined in the caller. And the caller has code to
+                   detect that this particular property's rule's don't cover all
+                   property values. *)
+                Nothing
+                ,
+                rule
             ]
-        ] /@ rules;*)
-        
-        (*ARCEcho[ARCSimplifyRules[rules]];*)
+        ] /@ rules;
         
         (* Perhaps we should return not just the rules here, but also `unhandled` so that:
            1) Downstream code can more easily check whether there were any unhandled cases. 
@@ -5145,7 +5223,14 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                         ARCPropertiesNeededForConclusions[{conclusion}]
                     ][[2]];
                 (* Only keep the conclusion property values that differ from the input. *)
-                conclusion = KeyTake[conclusion, propertiesWithChangingValue[[1]]]
+                conclusion = KeyTake[conclusion, propertiesWithChangingValue[[1]]];
+                (* It's important that we prune away secondary inferrable property values from
+                   the conclusion here since otherwise downstream code that tries to group
+                   rules by conclusion might avoid grouping this rule. In addition to
+                   producing dirtier rule sets, this might cause the rule to get seen
+                   as something without enough support, causing the whole rule set
+                   to get thrown away. e.g. d2abd087 *)
+                conclusion = ARCPrunePattern[conclusion, "Conclusion" -> True];
             (* We don't need to handle this case, since we did a GroupBy above which
                 guarentees that each group has items.
             Length[groupedByConclusion] === 0,
@@ -5185,9 +5270,22 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
             (* Question: Should we instead check that UseCount is < 2? I experimented with that
                          quickly Aug 13 2022 and found that it didn't break any ARCWorkingQ
                          tests but did make one ARCFindRules test output hairier. *)
-            If [conclusion["ExampleCount"] < $MinimumExamplesPerRule,
+            (* A significant question is whether we should prune rules with insufficient
+               support here, or whether we should wait until we can group rules with
+               alternatives. e.g. "FilledArea" -> 1 | 2 | 3. At one point we tried the
+               latter and it produced garbage rules, but for d2abd087 I don't really see
+               any other way to allow the needed rules to survive, since for FilledArea
+               of 7, there's only one example. (That case _does_ have a UseCount of 2,
+               so in theory that's what we could consider here to allow it to survive)
+               We will try again commenting this out and do the pruning downstream,
+               with an attempt to put appropriate safeguards in place. *)
+            (*If [conclusion["ExampleCount"] < $MinimumExamplesPerRule,
+                ARCEcho2["InsufficientRuleSupport" -> conclusion];
                 conclusion = Missing["NotFound", "InsufficientRuleSupport"]
-            ]
+            ]*)
+            (*If [conclusion["ExampleCount"] < $MinimumExamplesPerRule,
+                ARCEcho2["ConclusionWithMinimalSupport" -> conclusion];
+            ]*)
             ,
             (* This pattern has multiple conflicting conclusions that we weren't able to
                generalize, so we'll drop this rule. *)
@@ -7519,7 +7617,7 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
         
         (* HERE1 *)
         
-        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> {"Transform", "Input"}][conclusions]];*)
+        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> {"Shape", "Input"}][conclusions]];*)
         
         inputObjectComponentSets = conclusions[[All, "Input", "Components"]];
         If [MatchQ[inputObjectComponentSets, {Repeated[{__}]}],
@@ -12203,20 +12301,18 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "496994bd",
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "ImplementationTime" -> Quantity[0.25, "Hours"],
-            "RuntimeParallel" -> Quantity[33, "Minutes"],
-            "RuntimeComment" -> "I can't remember whether this was the run that took 33 minutes, but it was approximately around this point.",
             "CodeLength" -> 20863,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>
+        |>,
         (* Implemented via "referenceable classes", but we've disabled that for now since it
            was causing an explosion in runtime. $EnableReferenceableClasses *)
         (*<|
             "ExampleImplemented" -> "f76d97a5",
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "ImplementationTime" -> Quantity[3, "Hours"],
-            "RuntimeParallel" -> Quantity[15, "Minutes"],
-            "RuntimeComment" -> "Added TimeConstrained, and wasn't running ARCWorkingQ in parallel.",
+            "RuntimeParallel" -> Quantity[12, "Minutes"],
+            "RuntimeComment" -> "Added TimeConstrained, made some optimizations, and wasn't running ARCWorkingQ in parallel.",
             "CodeLength" -> 21059,
             "NewGeneralizedSuccesses" -> {"1190e5a7"},
             "NewEvaluationSuccesses" -> {}
@@ -12229,6 +12325,11 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 17}],
             "CodeLength" -> 21059
         |>*)
+        <|
+            "ExampleImplemented" -> "d2abd087",
+            "Timestamp" -> DateObject[{2022, 9, 18}],
+            "CodeLength" -> 21574
+        |>
     }
 
 (* ADD NEW SUCCESSES HERE *)
@@ -12462,6 +12563,8 @@ ARCCleanRules[rulesIn_List, objects_List] :=
                 ]
             ] /@ rules;
         
+        (* We now also call this deeper in ARCFindRules, so not sure if we also need to call
+           it here. *)
         rules = ARCFormExceptRules[rules, objects];
         
         ARCSortRules[rules]
@@ -14507,7 +14610,7 @@ ARCGroupRulesByConclusion[rules_List] :=
                         <|
                             property ->
                                 ARCPruneAlternativesWrtExcept[
-                                    Alternatives @@ groupOfRules[[All, 1, 1]]
+                                    Alternatives @@ Sort[groupOfRules[[All, 1, 1]]]
                                 ]
                         |>,
                         ARCCombineConclusions[
@@ -15802,19 +15905,53 @@ ARCRuleSetScore[rules_Association] :=
 *)
 Clear[ARCConditionsScore];
 ARCConditionsScore[conditions_Association] :=
-    Module[{propertyQualitySum},
+    Module[{propertyQualitySum, propertyQuality},
         
         propertyQualitySum =
             SqrtButKeepSign@
             Total[
                 Function[{property},
-                    SquareButKeepSign@
-                    ReturnIfFailure[
+                    
+                    propertyQuality = ReturnIfFailure[
                         PropertyConditionQuality[property],
                         "ARCConditionsScoreFailure",
                         "A failure occurred computing a score for some conditions.",
                         "Conditions" -> conditions
-                    ]
+                    ];
+                    
+                    conditionValue = conditions[property];
+                    
+                    If [MatchQ[conditionValue, _Alternatives],
+                        sortedAlternativeValueList = Sort[List @@ conditionValue];
+                        If [And[
+                                MatchQ[conditionValue, HoldPattern[Alternatives][_Integer, _Integer, ___Integer]],
+                                !SameQ[
+                                    sortedAlternativeValueList,
+                                    Range[sortedAlternativeValueList[[1]], sortedAlternativeValueList[[-1]]]
+                                ]
+                            ],
+                            (* Gap in the alternatives. e.g. a61f2674 *)
+                            propertyQuality += -1
+                        ];
+                        Switch[
+                            Length[sortedAlternativeValueList],
+                            1,
+                                (* This ideally shouldn't happen, but if it does, don't add
+                                   a penalty. *)
+                                Null,
+                            2,
+                                propertyQuality += -0.2,
+                            3,
+                                propertyQuality += -0.5,
+                            4,
+                                propertyQuality += -1,
+                            _,
+                                propertyQuality += -2 + (5 - Length[sortedAlternativeValueList])
+                        ]
+                    ];
+                    
+                    SquareButKeepSign[propertyQuality]
+                    
                 ] /@ Keys[conditions]
             ];
         
@@ -15830,7 +15967,7 @@ ARCConditionsScore[conditions_Association] :=
 
 (* If something doesn't require any conditions, that means it is quite general,
    so we want to encourage that, and it should definitely win out (or at least
-   not be penalyzed) relative to explicit property conditions.
+   not be penalized) relative to explicit property conditions.
    ARCFindRules-20220817-R66XW8
    ARCFindRules-20220828-365IJ8 *)
 ARCConditionsScore[<||>] := 1.4
@@ -16019,6 +16156,22 @@ PropertyConditionQuality[property_String] :=
                     1 - (listPosition / Length[$propertyListPositions])
                 )
             }
+        ];
+        
+        If [StringContainsQ[property, "Rank"],
+            (* Rank and InverseRank properties are way down the list relative to the properties
+               they are based on, so they are heavily penalized. I can't really think why they
+               should be so heavily penalized, and that causes issues for inputs like a61f2674
+               where we want to favor more general rules based on Rank and InverseRank,
+               rather than more brittle rules based on Height. (in theory one might go so far
+               as to say that Rank and InverseRank rules, at least when their value is 1,
+               might be _preferable_ to their non-rank counerparts) That said, tests like
+               PropertyConditionQuality-20220826-6OCF5M and PropertyConditionQuality-20220826-8AGQEV
+               seem to imply that we wanted to penalize Rank properties at some point in
+               the past, so perhaps there is reason to favor non-rank properties, at least
+               in some cases. ARCConditionsScore-20220919-3BOBSB also seems to be a
+               case where we're banking on a Rank property getting penalized. *)
+            quality += 0.1
         ];
         
         (* A quality of 1 (top of the $properties list) gets converted to a qualityCenteredAt0 of 0. 
@@ -17400,6 +17553,10 @@ Clear[ARCFormExceptRules];
 ARCFormExceptRules[rulesIn_List, objects_List] :=
     Module[
         {
+            rules,
+            rule1,
+            rule2,
+            property,
             propertiesUsedInRuleConditions,
             conditionValuesUsingAlternatives,
             conditionValuesNotUsingAlternatives,
@@ -17409,6 +17566,30 @@ ARCFormExceptRules[rulesIn_List, objects_List] :=
         },
         
         rules = Cases[rulesIn, _Rule];
+        
+        (* While working on d2abd087, we introduced calling ARCFormExceptRules from deeper within
+           ARCFindRules. But it wasn't forming an except rule since it doesn't support gaps in
+           alternatives. For now we'll handle this case here as a band-aid, but potentially we
+           should more holistically enhance the function to allow cases like this. *)
+        If [And[
+                Length[rules] === 2,
+                (* The rule for a particular value of the property. *)
+                !MissingQ[rule1 = SelectFirst[rules, MatchQ[#[[1]], Association[_ -> Except[_Alternatives | _Except]]] &]],
+                (* The rule that has an Alternatives of several other values of this property. *)
+                !MissingQ[rule2 = SelectFirst[rules, MatchQ[#[[1]], Association[_ -> HoldPattern[Alternatives][_, _, _, ___]]] &]],
+                Keys[rule1[[1]]] === Keys[rule2[[1]]]
+            ],
+            property = First[Keys[rule1[[1]]]];
+            (* Form an Except rule. *)
+            Return[
+                {
+                    rule1,
+                    rule2[[1, property]] = Except[rule1[[1, property]]];
+                    rule2
+                },
+                Module
+            ]
+        ];
         
         propertiesUsedInRuleConditions =
             DeleteDuplicates[Flatten[Keys /@ rules[[All, 1]]]];
@@ -21315,7 +21496,11 @@ ProcessARCLog[] :=
 *)
 Clear[ARCLogScope];
 ARCLogScope[args___] :=
-    LogScope[$repo, args]
+    If [!TrueQ[$disableARCLogScopes],
+        LogScope[$repo, args]
+        ,
+        Identity
+    ]
 
 (*!
     \function ARCLog
