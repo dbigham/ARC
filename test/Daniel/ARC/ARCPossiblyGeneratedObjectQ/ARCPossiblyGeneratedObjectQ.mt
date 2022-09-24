@@ -106,3 +106,23 @@ Test[
     ,
     TestID -> "ARCPossiblyGeneratedObjectQ-20220914-I7TJWQ"
 ]
+
+Test[
+    Daniel`ARC`ARCPossiblyGeneratedObjectQ[
+        Daniel`ARC`ARCParseScene[
+            Daniel`ARC`ARCParseFile["e5790162"]["Train", 1, "Output"],
+            "FormMultiColorCompositeObjects" -> False
+        ][[
+            "Objects",
+            1
+        ]]
+    ]
+    ,
+    <|
+        "Result" -> True,
+        "TurnCount" -> 1,
+        "Line" -> {{3, 1}, {3, 2}, {3, 3}, {4, 3}, {5, 3}, {6, 3}}
+    |>
+    ,
+    TestID -> "ARCPossiblyGeneratedObjectQ-20220921-GFL67M"
+]

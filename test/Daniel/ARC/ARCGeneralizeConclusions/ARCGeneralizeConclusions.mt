@@ -41,7 +41,8 @@ Test[
                             "AspectRatio" -> 1,
                             "Area" -> 4,
                             "FilledArea" -> 4
-                        |>
+                        |>,
+                        "Output" -> <||>
                     |>,
                     <|
                         "Position" -> {6, 8},
@@ -83,7 +84,8 @@ Test[
                             "AspectRatio" -> 3/2,
                             "Area" -> 6,
                             "FilledArea" -> 6
-                        |>
+                        |>,
+                        "Output" -> <||>
                     |>,
                     <|
                         "Position" -> {3, 7},
@@ -119,7 +121,8 @@ Test[
                             "AspectRatio" -> 1/2,
                             "Area" -> 2,
                             "FilledArea" -> 2
-                        |>
+                        |>,
+                        "Output" -> <||>
                     |>
                 },
                 <|

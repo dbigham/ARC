@@ -259,7 +259,9 @@ Test[
         "SurfacePixelCount.Rank" -> 2,
         "SurfacePixelCount.InverseRank" -> 1,
         "ColorUseCount.Rank" -> 2,
-        "ColorUseCount.InverseRank" -> 1
+        "ColorUseCount.InverseRank" -> 1,
+        "MostUsedColor.Rank" -> 2,
+        "MostUsedColor.InverseRank" -> 1
     |>
     ,
     TestID -> "ARCMakeObjectsReferenceable-20220811-SKQ5BK"

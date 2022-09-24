@@ -2900,3 +2900,32 @@ Test[
     ,
     TestID -> "ARCFindRules-20220918-YCSX3K"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "e5790162"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Colors" -> {6} | {8}|> -> <|"Same" -> True|>,
+            <|"Colors" -> {3}|> -> <|
+                "Transform" -> <|
+                    "Type" -> "GenerateObject",
+                    "StartPosition" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 0|>|>,
+                    "Color" -> 3,
+                    "Rules" -> {
+                        <|"ColorAhead" -> Missing[]|> -> <|"OutgoingDirection" -> {0, 1}|>,
+                        <|"ColorAhead" -> -1|> -> <|"TurnDegrees" -> 0|>,
+                        <|"ColorAhead" -> 6|> -> <|"TurnDegrees" -> 90|>,
+                        <|"ColorAhead" -> -2|> -> <|"Stop" -> True|>,
+                        <|"ColorAhead" -> 8|> -> <|"TurnDegrees" -> -90|>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220922-NYXCK1"
+]
