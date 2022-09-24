@@ -517,6 +517,8 @@ ARCGenerateObject::usage = "ARCGenerateObject  "
 
 ARCGeneratorInputState::usage = "ARCGeneratorInputState  "
 
+ARCSetGridPosition::usage = "ARCSetGridPosition  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1122,6 +1124,16 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
             gridsAndDividers =
                 ReturnIfFailure@
                 ARCCombineDividersIntoGrid[scene, gridsAndDividers];
+            
+            If [Length[gridsAndDividers] === 1,
+                (* e.g. 0bb8dee *)
+                objects =
+                    ReturnIfFailure@
+                    ARCSetGridPosition[
+                        objects,
+                        gridsAndDividers[[1, "GridOrDivider"]]
+                    ]
+            ];
             ,
             gridsAndDividers = {}
         ];
@@ -2074,6 +2086,10 @@ $properties = <|
         "Type" -> "Integer",
         "Type2" -> "Count",
         "RuleConditionQuality" -> 0.5
+    |>,
+    "GridPosition" -> <|
+        "Type" -> "GridPosition",
+        "Type2" -> "Position"
     |>
 |>;
 
@@ -4774,7 +4790,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"Colors"}
+                        {"GridPosition"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -7988,7 +8004,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Height",
+        (*If [property === "X",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -10597,9 +10613,15 @@ ARCBlockingQ[object1In_Association, object2_Association, direction_List, scene_A
 *)
 Clear[ARCInferRankProperties];
 ARCInferRankProperties[objectsIn_List] :=
-    Module[{objects = objectsIn, rankProperties, property, sortedValues},
+    Module[{objects = objectsIn, grids, rankProperties, property, sortedValues},
         
         rankProperties = Select[$properties, TrueQ[#["Rank"]] &];
+        
+        (* Don't include grids/dividers in the list of objects when computing
+           rank properties, so that properties like X.Rank, Y.Rank aren't thrown
+           off by the grid itself. *)
+        grids = Select[objects, AssociationQ[#["GridOrDivider"]] &];
+        objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
         
         KeyValueMap[
             Function[{rankPropertyName, rankPropertyAttributes},
@@ -10633,7 +10655,7 @@ ARCInferRankProperties[objectsIn_List] :=
             rankProperties
         ];
         
-        objects
+        Join[grids, objects]
     ]
 
 (*!
@@ -10940,9 +10962,25 @@ ProcessExamples[files_List] :=
 *)
 Clear[ARCNotebook];
 ARCNotebook[fileIn_String] :=
-    Module[{file = ToLowerCase[fileIn], nb, exampleDetails, workingSectionCells},
+    Module[{file = ToLowerCase[fileIn], file2, nb, exampleDetails, workingSectionCells},
         
         exampleDetails = ReturnIfFailure[ARCResolveExample[file]];
+        
+        (* To avoid a Lui glitch whereby some notebook names cause it to lock up. *)
+        notebookFile = Cases[
+            ToLowerCase /@ FileNameTake[#, -1] & /@ FileNames["*", FileNameJoin[{Global`$DropboxDir, "Notebooks"}]],
+            file :> (
+                file2 = FileNameJoin[{Global`$DropboxDir, "Notebooks", file, file <> ".nb"}];
+                If [FileExistsQ[file2],
+                    Return[
+                        NotebookOpen[file2],
+                        Module
+                    ]
+                ]
+            )
+        ];
+        
+        Throw[notebookFile];
         
         nb = CreateNamedNotebook2[
             FileBaseName[file],
@@ -12472,6 +12510,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 24}],
             "ImplementationTime" -> Quantity[0.3, "Hours"],
             "CodeLength" -> 22039,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "0bb8dee",
+            "Timestamp" -> DateObject[{2022, 9, 24}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 22189,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -22100,6 +22146,48 @@ ARCGenerateObject[scene_ARCScene, inputObject_Association, transform_Association
                 ]
             ]
         ];
+    ]
+
+(*!
+    \function ARCSetGridPosition
+    
+    \calltable
+        ARCSetGridPosition[objects, grid] '' Given a grid from the scene, sets the GridPosition of each object in the scene.
+    
+    e.g. 0bb8dee
+    
+    \maintainer danielb
+*)
+Clear[ARCSetGridPosition];
+ARCSetGridPosition[objects_List, grid_Association] :=
+    Module[{rowYValues, columnXValues, y, x},
+        
+        rowYValues = grid["Cells"][[All, 1]][[All, "Y"]];
+        columnXValues = grid["Cells"][[1]][[All, "X"]];
+        
+        Function[{object},
+            y = object["Y"];
+            x = object["X"];
+            Append[
+                object,
+                "GridPosition" -> {
+                    Block[{},
+                        Function[{rowIndex},
+                            If [y >= rowYValues[[rowIndex]],
+                                Return[rowIndex, Block]
+                            ]
+                        ] /@ Range[grid["RowCount"], 1, -1]
+                    ],
+                    Block[{},
+                        Function[{columnIndex},
+                            If [x >= columnXValues[[columnIndex]],
+                                Return[columnIndex, Block]
+                            ]
+                        ] /@ Range[grid["ColumnCount"], 1, -1]
+                    ]
+                }
+            ]
+        ] /@ objects
     ]
 
 End[]

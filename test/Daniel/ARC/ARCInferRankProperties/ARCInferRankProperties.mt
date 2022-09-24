@@ -13,7 +13,12 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCInferRankProperties[
-            {<|"Length" -> 1|>, <|"Length" -> 5|>, <|"Length" -> 10|>}
+            {
+                <|"Length" -> 1|>,
+                <|"Length" -> 5|>,
+                <|"Length" -> 10|>,
+                <|"Length" -> 20, "GridOrDivider" -> <||>|>
+            }
         ]
     ]
     ,

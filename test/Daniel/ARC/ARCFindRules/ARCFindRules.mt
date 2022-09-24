@@ -2944,3 +2944,30 @@ Test[
     ,
     TestID -> "ARCFindRules-20220924-AGG2N7"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0bb8dee"]["Train"]]
+    ]
+    ,
+    <|
+        "RemoveEmptySpace" -> True,
+        "Rules" -> {
+            <|"GridPosition" -> {1, 1}|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 1|>|>
+            |>,
+            <|"GridPosition" -> {1, 2}|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 1, "X" -> 4|>|>
+            |>,
+            <|"GridPosition" -> {2, 1}|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 4, "X" -> 1|>|>
+            |>,
+            <|"GridPosition" -> {2, 2}|> -> <|
+                "Transform" -> <|"Type" -> "Move", "Position" -> <|"Y" -> 4, "X" -> 4|>|>
+            |>,
+            <|"GridPosition" -> Missing[]|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20220924-ERTT9B"
+]
