@@ -3840,8 +3840,9 @@ Options[ARCFindRules] =
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     (* When running the training or evaluation sets in parallel, tasks take about 50% longer to
        execute as compared to when they are run in serial, so this maximum time needs to take
-       that into account. *)
-    ARCTimeConstrained[Quantity[55, "Seconds"]]@
+       that into account.
+       Sept 24 2022: Increased from 55 to 90. (6773b310) *)
+    ARCTimeConstrained[Quantity[90, "Seconds"]]@
     Internal`InheritedBlock[{$memoization, $singleObject},
     Function[{expr},
         If [!TrueQ[$disableARCLogScopes],
@@ -4500,8 +4501,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         res =
             ARCLogScope["ARCFindRules"]@
             ARCFindRules[examples, objectMappings, referenceableInputObjects];
-        
-        (*ARCEcho2[ruleSets];*)
         
         If [And[
                 (* We weren't able to find a rule set. *)
@@ -5919,7 +5918,7 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                                     object2,
                                     objectOut,
                                     (* Do we only need to pass the output scene here, or is the input
-                                    scene sometimes needed as well? *)
+                                       scene sometimes needed as well? *)
                                     outputScene
                                 ]
                             ],
@@ -6228,10 +6227,19 @@ ARCApplyConclusion[key:"Color", value_, objectIn_Association, objectOut_Associat
         objectOut,
         {
             "Color" -> value,
-            "Colors" -> {value},
-            If [value =!= objectIn["Color"],
+            "Colors" -> {value}
+            (* We won't generate the image just yet, because there might be other
+               conclusion property values that are needed first. Instead, we construct
+               objects and their images back in the higher level ARCApplyConclusion
+               down value. *)
+            (*If [And[
+                    value =!= objectIn["Color"],
+                    (* e.g. 5582e5ca *)
+                    !SpecifiedQ[objectOut["Shape"]]
+                ],
                 "Image" -> Replace[
-                    FirstCase[{objectIn["Image"], objectIn["Shape"]}, _ARCScene],
+                    FirstCase[
+                        {objectIn["Image"], objectIn["Shape"]}, _ARCScene],
                     {
                         _Missing :> (
                             Missing["ToGenerate"]
@@ -6243,7 +6251,7 @@ ARCApplyConclusion[key:"Color", value_, objectIn_Association, objectOut_Associat
                 ]
                 ,
                 Nothing
-            ]
+            ]*)
         }
     ]
 
@@ -12445,6 +12453,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 22003,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "5582e5ca",
+            "Timestamp" -> DateObject[{2022, 9, 24}],
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "CodeLength" -> 22039,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -16834,9 +16850,6 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "FilledArea",
                     "FilledProportion",
                     "ColorUseCount",
-                    "ColorUseCount",
-                    "ColorUseCount",
-                    "ColorUseCount",
                     "Width.Rank",
                     "Width.InverseRank",
                     "Height.Rank",
@@ -20463,6 +20476,7 @@ ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
                            e.g. e5790162 *)
                         Transpose[image],
                         Except[$nonImageColor],
+                        Missing[],
                         {2},
                         Heads -> False
                     ],

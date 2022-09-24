@@ -2929,3 +2929,18 @@ Test[
     ,
     TestID -> "ARCFindRules-20220922-NYXCK1"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "5582e5ca"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Shape" -> <|"Name" -> "Square", "Filled" -> True|>,
+            "Color" -> Daniel`ARC`ObjectValue["InputScene", "MostUsedColor"]
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220924-AGG2N7"
+]
