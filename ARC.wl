@@ -6004,11 +6004,24 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
         ];
         
         If [MissingQ[objectOut["Shape"]] && !MissingQ[objectIn["Shape"]],
-            objectOut["Shape"] = objectIn["Shape"]
+            objectOut["Shape"] = objectIn["Shape"];
+            (* If we are inheriting our shape from the input object, but the output
+               object has a defined color, then we need to drop any color specifications
+               that the shape might have, such as can be the case with rectangles.
+               e.g. 0uduqqj6f *)
+            If [And[
+                    SpecifiedQ[objectOut["Color"]]
+                ],
+                If [MatchQ[objectOut["Shape"], KeyValuePattern["Interior" -> _]],
+                    objectOut["Shape"] = KeyDrop[objectOut["Shape"], "Interior"];
+                    objectOut["Shape"] = KeyDrop[objectOut["Shape"], "Border"]
+                ]
+            ]
         ];
         
         (* e.g. Infer the Image if necessary. *)
         objectOut = Replace[
+            (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Shape"][objectOut]];*)
             ARCConstructObject[objectOut, "Scene" -> outputScene],
             _Failure :> (
                 If [And[
@@ -13227,31 +13240,78 @@ ARCInferObjectImage[
 ARCInferObjectImage[
         shape: KeyValuePattern["Name" -> "L"],
         color_Integer,
-        width_,
-        height_
+        widthIn_,
+        heightIn_
     ] :=
-    ARCScene@
-    Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
-    {
-        Sequence @@
-        Table[
-            {
-                color,
-                Sequence @@
-                Table[
-                    If [TrueQ[shape["Filled"]],
-                        color
-                        ,
-                        $nonImageColor
-                    ],
-                    {width - 1}
+    Module[{width = widthIn, height = heightIn},
+        If [And[
+                MatchQ[shape["Transform"], KeyValuePattern["Angle" -> _]],
+                MatchQ[Abs[shape["Transform", "Angle"]], 90 | 270]
+            ],
+            width = heightIn;
+            height = widthIn;
+        ];
+        ARCScene@
+        Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
+        {
+            Sequence @@
+            Table[
+                {
+                    color,
+                    Sequence @@
+                    Table[
+                        If [TrueQ[shape["Filled"]],
+                            color
+                            ,
+                            $nonImageColor
+                        ],
+                        {width - 1}
+                    ]
+                },
+                {height - 1}
+            ],
+            (* Horizontal line. *)
+            Table[color, {width}]
+        }
+    ]
+
+(* NOTE: Doesn't do error checking to ensure width and height are compatible. *)
+ARCInferObjectImage[
+        shape: KeyValuePattern["Name" -> "Triangle"],
+        color_,
+        widthIn_,
+        heightIn_
+    ] :=
+    Module[{width = widthIn, height = heightIn},
+        If [And[
+                MatchQ[shape["Transform"], KeyValuePattern["Angle" -> _]],
+                MatchQ[Abs[shape["Transform", "Angle"]], 90 | 270]
+            ],
+            width = heightIn;
+            height = widthIn;
+        ];
+        ARCScene@
+        ReturnIfFailure@
+        Function[ARCApplyImageTransforms[#, shape["Transform"]]][
+            Function[{y},
+                With[{transparentWidth = (width - 1) / 2 - y + 1},
+                    {
+                        If [transparentWidth > 0,
+                            Sequence @@ Table[$nonImageColor, {transparentWidth}]
+                            ,
+                            Nothing
+                        ],
+                        Sequence @@ Table[color, {width - 2 * transparentWidth}],
+                        If [transparentWidth > 0,
+                            Sequence @@ Table[$nonImageColor, {transparentWidth}]
+                            ,
+                            Nothing
+                        ]
+                    }
                 ]
-            },
-            {height - 1}
-        ],
-        (* Horizontal line. *)
-        Table[color, {width}]
-    }
+            ] /@ Range[height]
+        ]
+    ]
 
 ARCInferObjectImage[
         shape: KeyValuePattern["Image" -> image_],

@@ -139,7 +139,12 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCInferObjectImage[
-            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 1, "Height" -> 3|>,
+            <|
+                "Shapes" -> {<|"Name" -> "Line"|>},
+                "Color" -> 2,
+                "Width" -> 1,
+                "Height" -> 3
+            |>,
             <||>
         ]
     ]
@@ -152,7 +157,12 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         Daniel`ARC`ARCInferObjectImage[
-            <|"Shapes" -> {<|"Name" -> "L"|>}, "Color" -> 2, "Width" -> 3, "Height" -> 1|>,
+            <|
+                "Shapes" -> {<|"Name" -> "Line"|>},
+                "Color" -> 2,
+                "Width" -> 3,
+                "Height" -> 1
+            |>,
             <||>
         ]
     ]
@@ -198,4 +208,96 @@ Test[
     ]
     ,
     TestID -> "ARCInferObjectImage-20220904-RENOKC"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {
+                <|"Name" -> "L", "Transform" -> <|"Type" -> "Rotation", "Angle" -> 90|>|>
+            },
+            "Color" -> 2,
+            "Width" -> 3,
+            "Height" -> 4
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2, 2}, {2, -1, -1}, {2, -1, -1}, {2, -1, -1}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220924-EKCAFL"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {<|"Name" -> "Triangle"|>},
+            "Color" -> 2,
+            "Width" -> 3,
+            "Height" -> 2
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{-1, 2, -1}, {2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220924-HTUWXF"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {<|"Name" -> "Triangle"|>},
+            "Color" -> 2,
+            "Width" -> 5,
+            "Height" -> 3
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{-1, -1, 2, -1, -1}, {-1, 2, 2, 2, -1}, {2, 2, 2, 2, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220924-BYL47K"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {
+                <|
+                    "Name" -> "Triangle",
+                    "Transform" -> <|"Type" -> "Rotation", <|"Angle" -> 90|>|>
+                |>
+            },
+            "Color" -> 2,
+            "Width" -> 3,
+            "Height" -> 5
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, -1, -1}, {2, 2, -1}, {2, 2, 2}, {2, 2, -1}, {2, -1, -1}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220924-VHAX85"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shapes" -> {
+                <|
+                    "Name" -> "Triangle",
+                    "Transform" -> <|"Type" -> "Rotation", <|"Angle" -> -90|>|>
+                |>
+            },
+            "Color" -> 2,
+            "Width" -> 3,
+            "Height" -> 5
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{-1, -1, 2}, {-1, 2, 2}, {2, 2, 2}, {-1, 2, 2}, {-1, -1, 2}}]
+    ,
+    TestID -> "ARCInferObjectImage-20220924-DQ9YLS"
 ]
