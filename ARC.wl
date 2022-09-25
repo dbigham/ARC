@@ -1113,7 +1113,8 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
                 ]
         ];
         
-        If [TrueQ[OptionValue["CheckForGridsAndDividers"]],
+        (* Can also be Automatic, which means True in this context. *)
+        If [OptionValue["CheckForGridsAndDividers"] =!= False,
             
             (* Determine if any of the objects are grids or dividers. *)
             objects =
@@ -3102,7 +3103,8 @@ Options[ARCFindObjectMapping] =
 {
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
     "SingleObject" -> Automatic,                    (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
-    "FollowDiagonals" -> Automatic                  (*< Should diagonally adjacent pixels form a single object? *)
+    "FollowDiagonals" -> Automatic,                 (*< Should diagonally adjacent pixels form a single object? *)
+    "CheckForGridsAndDividers" -> Automatic         (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -3862,7 +3864,7 @@ Options[ARCFindRules] =
     "FindOcclusions" -> True,                           (*< Whether we should consider possible occlusions when interpreting the scene. *)
     "Background" -> Automatic,                          (*< The background color of scenes. *)
     "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
-    "CheckForGridsAndDividers" -> True,                 (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
+    "CheckForGridsAndDividers" -> Automatic,            (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
     
     "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
@@ -3975,7 +3977,10 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
-        If [OptionValue["SingleObject"] =!= False,
+        If [And[
+                OptionValue["SingleObject"] =!= False,
+                MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | True]
+            ],
             If [Or[
                     !TrueQ[workingRulesFound[]],
                     (* Even if we have a working rule set, if it's score is sufficiently low,
@@ -4106,10 +4111,10 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                             parsedExamples[[All, "Input", "Background"]]
                         ]
                     },
-                    And[
-                        !FreeQ[backgroundColors, 0],
+                    (*And[
+                        !FreeQ[backgroundColors, 0],*)
                         !FreeQ[backgroundColors, Except[0]]
-                    ]
+                    (*]*)
                 ]
             ],
             res2 =
@@ -4153,16 +4158,21 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
-        (* If one or more objects were treated as a divider, then try parsing the scene again
-           without treating those things as dividers. e.g. 496994bd *)
+        (* If one or more objects were treated as a grid or divider, then try parsing the scene again
+           without treating those things as a grid (e.g. d9f24cd1) or dividers (e.g. 496994bd). *)
         If [And[
+                OptionValue["CheckForGridsAndDividers"] === Automatic,
                 ListQ[parsedExamples],
-                !FreeQ[parsedExamples, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Divider"]]]
+                !FreeQ[parsedExamples, KeyValuePattern["Grid" -> _Association]]
             ],
             If [!TrueQ[workingRulesFound[]],
                 res2 =
+                    (* Note that we need to do a full recursion into ARCFindRules rather than
+                       only to arcFindRulesHelper, since we might need to use a scene parsing
+                       mode like "FormMultiColorCompositeObjects" -> False to find a rule set.
+                       e.g. d9f24cd1 *)
                     ARCLogScope["ARCFindRules:NoGridsOrDividers"]@
-                    arcFindRulesHelper[
+                    ARCFindRules[
                         examples,
                         "CheckForGridsAndDividers" -> False,
                         opts
@@ -4304,18 +4314,22 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             ,
                             Nothing
                         ],
-                        With[
-                            {
-                                inputBackgrounds = DeleteDuplicates[examples[[All, "Input", "Background"]]],
-                                outputBackgrounds = DeleteDuplicates[examples[[All, "Output", "Background"]]]
-                            },
-                            If [And[
-                                    inputBackgrounds =!= outputBackgrounds,
-                                    MatchQ[outputBackgrounds, {_}]
-                                ],
-                                "Background" -> First[outputBackgrounds]
-                                ,
-                                Nothing
+                        If [OptionValue["Background"] =!= Automatic,
+                            "Background" -> OptionValue["Background"]
+                            ,
+                            With[
+                                {
+                                    inputBackgrounds = DeleteDuplicates[examples[[All, "Input", "Background"]]],
+                                    outputBackgrounds = DeleteDuplicates[examples[[All, "Output", "Background"]]]
+                                },
+                                If [And[
+                                        inputBackgrounds =!= outputBackgrounds,
+                                        MatchQ[outputBackgrounds, {_}]
+                                    ],
+                                    "Background" -> First[outputBackgrounds]
+                                    ,
+                                    Nothing
+                                ]
                             ]
                         ],
                         If [SpecifiedQ[widthExpression],
@@ -4565,6 +4579,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ];
             
             If [Length[additionalRules2] > 0,
+                (*If [OptionValue["Background"] === 0,
+                    ARCEcho[ARCSimplifyRules[additionalRules2]];
+                ];*)
                 ruleSets = {
                     <|
                         "Rules" -> {
@@ -4803,7 +4820,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"Position"}
+                        {"Colors"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -5295,14 +5312,17 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                         ReturnIfFailure@
                         ARCFindRulesForGeneratedObjects[
                             Function[{thisConclusion},
-                                Append[
+                                Join[
                                     thisConclusion["Output"],
                                     With[{thisExample = examples[[thisConclusion["Example"]]]},
-                                        "Scene" -> Replace[
-                                            thisExample["Output", "Scene"],
-                                            thisExample["Output", "Background"] -> $nonImageColor,
-                                            {3}
-                                        ]
+                                        <|
+                                            "Scene" -> Replace[
+                                                thisExample["Output", "Scene"],
+                                                thisExample["Output", "Background"] -> $nonImageColor,
+                                                {3}
+                                            ],
+                                            "Input" -> thisConclusion["Input"]
+                                        |>
                                     ]
                                 ]
                             ] /@ conclusionList,
@@ -7161,6 +7181,13 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             ]
         ];
         
+        If [MatchQ[Length /@ objectsForAllExamples, {Repeated[1]}],
+            res = Append[
+                res,
+                Object["Object"] -> <||>
+            ]
+        ];
+        
         res
     ]
 
@@ -7209,6 +7236,9 @@ GetObject[object: _Association | _String, parsedScene_Association, opts:OptionsP
     Which[
         object === "InputScene",
             parsedScene,
+        object === "Object",
+            (* Single object in scene. *)
+            parsedScene[["Objects", 1]],
         (* Note that `object` can be a string, so we explicitly check first that it's an
            association prior to checking its Context value. *)
         AssociationQ[object] && object["Context"] === "Component",
@@ -8600,9 +8630,17 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             property
         },
         
-        $debugProperty = "Color";
+        $debugProperty = "TurnDegrees";
         
-        theseExamples = examples[[values[[All, "Example"]]]];
+        theseExamples =
+            If [examples =!= {},
+                examples[[values[[All, "Example"]]]]
+                ,
+                (* When using ARCFindRules for generated objects, we don't currently pass a list of
+                   examples. *)
+                {}
+            ];
+        
         theseComponents = values[[All, "Input", "Components"]];
         
         (* If we find that the values we're wanting to infer aren't consistent/constant within
@@ -12554,6 +12592,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 22303,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "d9f24cd1",
+            "Timestamp" -> DateObject[{2022, 9, 25}],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 22465,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -15293,6 +15339,10 @@ ARCInferPropertiesThatRequireFullObjectList[objectsIn_List] :=
     
     \calltable
         ARCGridOrDividerQ[image, y, x, sceneHeight, sceneHeight] '' Given an image, returns True if it looks like it could be either a grid or a divider.
+    
+    TODO: If there are other non-grid / divider objects in the scene that are of the same color
+          as a suspected grid, then it probably implies that that color isn't used for a grid.
+          e.g. d9f24cd1
     
     Examples:
     
@@ -18185,6 +18235,8 @@ ARCImageScalings[image_List, OptionsPattern[]] :=
                 Nothing
             ]
         ] /@ {
+            0.16666666666666666666667,
+            0.2,
             0.25,
             0.33333333333333333333333,
             0.5,
@@ -20561,7 +20613,9 @@ ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
                    to avoid spending computation on things that are unlikely to be generated,
                    such as pixels and other tiny objects. *)
                 object["FilledArea"] >= 5,
-                object["FilledProportion"] <= 0.95,
+                (* As of Sept 25 2022, we need to disable this condition for d9f24cd1 because
+                   in some cases, _some_ of the generated objects will just be lines. *)
+                (*object["FilledProportion"] <= 0.95,*)
                 (* For now we'll only support single-color objects. *)
                 !MissingQ[object["Color"]]
             ],
@@ -20572,12 +20626,39 @@ ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
         
         position = Replace[
             OptionValue["FirstPosition"],
-            Automatic :>
+            Automatic :> Block[{},
+                If [AssociationQ[object["Input"]],
+                    (* This object is being mapped to from an input object, so we can make
+                       use of the position of the input object to decide where to start
+                       exploring the object from. *)
+                    If [And[
+                            object["Input", "Width"] === 1,
+                            object["Input", "Height"] === 1,
+                            MemberQ[object["PixelPositions"], object["Input", "Position"]]
+                        ],
+                        (* The input object is actually a position within this object,
+                           so we'll use its position. *)
+                        Return[
+                            (* Make the position relative to this object. *)
+                            object["Input", "Position"] - object["Position"] + {1, 1},
+                            Block
+                        ]
+                    ]
+                    
+                    (* TODO: Even if the input object isn't a pixel on the output
+                             object, we should still presumably use it to choose
+                             which position to start from. (if if it is just
+                             nearby) *)
+                ];
+                    
+                (* We weren't able to determine our starting position from an mapped-from
+                    input object. *)
+                Reverse@
                 Replace[
                     FirstPosition[
                         (* For now we'll favor the left-most position, rather than the
-                           top-most position, but this will need generalization.
-                           e.g. e5790162 *)
+                            top-most position, but this will need generalization.
+                            e.g. e5790162 *)
                         Transpose[image],
                         Except[$nonImageColor],
                         Missing[],
@@ -20586,11 +20667,19 @@ ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
                     ],
                     _Missing :> Return[False, Module]
                 ]
-        ] // Reverse;
+            ]
+        ];
         
         line =
             ReturnIfFailure@
             ARCFollowLine[image, object["Color"], position];
+        
+        (*ARCEcho2[ListQ[line] -> object];*)
+        
+        (*If [!TrueQ[ListQ[line]],
+            Global`djb = object;
+            Throw["FALSE"]
+        ];*)
         
         <|
             "Result" -> And[
@@ -20608,7 +20697,11 @@ ARCPossiblyGeneratedObjectQ[object_Association, OptionsPattern[]] :=
                 ],
                 (* For now we'll consider one turn to be the minimum for something that we
                    consider potentially "generated". *)
-                (turnCount = ARCLineTurnCount[line]) >= 1,
+                (* As of Sept 25 2022, we need to disable this condition for d9f24cd1 because
+                   in some cases, _some_ of the generated objects will just be lines. *)
+                turnCount = ARCLineTurnCount[line];
+                True,
+                (*ARCLineTurnCount[line]) >= 1,*)
                 (* The end of the line is on the border. *)
                 MatchQ[
                     line[[1]],
@@ -20671,13 +20764,60 @@ ARCPixelPossiblyPartOfLine[image_List, position_List] :=
         adjacentPixelsOfSameColor =
             Select[surroundingPixels, # === color &];
         
-        If [Length[adjacentPixelsOfSameColor] > 2,
-            <|"Result" -> False|>
-            ,
-            <|
-                "Result" -> True,
-                "AdjacentPixels" -> Keys[adjacentPixelsOfSameColor]
-            |>
+        Which[
+            Or[
+                Length[adjacentPixelsOfSameColor] > 4,
+                Length[adjacentPixelsOfSameColor] === 0
+            ],
+                <|"Result" -> False|>,
+            And[
+                Length[adjacentPixelsOfSameColor] <= 2,
+                Length[adjacentPixelsOfSameColor] >= 1
+            ],
+                <|
+                    "Result" -> True,
+                    "AdjacentPixels" -> Keys[adjacentPixelsOfSameColor]
+                |>,
+            (* Three or four adjacent pixels. *)
+            True,
+                nonDiagonalAdjacentPixels = Select[
+                    Keys[adjacentPixelsOfSameColor],
+                    (
+                        Total[Abs /@ (position - #)] === 1
+                    ) &
+                ];
+                diagonalAdjacentPixels = Complement[
+                    Keys[adjacentPixelsOfSameColor],
+                    nonDiagonalAdjacentPixels
+                ];
+                diagonalAdjacentPixelsNotAdjacentToNonDiagonalAdjacentPixels = Select[
+                    diagonalAdjacentPixels,
+                    Function[{diagonalAdjacentPixel},
+                        MissingQ[
+                            SelectFirst[
+                                nonDiagonalAdjacentPixels,
+                                Function[{otherPixel},
+                                    Total[Abs /@ (otherPixel - diagonalAdjacentPixel)] === 1
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                If [And[
+                        Length[nonDiagonalAdjacentPixels] <= 2,
+                        diagonalAdjacentPixelsNotAdjacentToNonDiagonalAdjacentPixels === {}
+                    ],
+                    (* Each of the diagonal pixels is adjacent to one of the non-diagonal
+                       adjacent pixels, so this is acceptable -- we can use the
+                       non-diagonal pixels as the adjacent pixels for line formation.
+                       ARCPixelPossiblyPartOfLine-20220925-VEVZ6O *)
+                    <|
+                        "Result" -> True,
+                        "AdjacentPixels" -> nonDiagonalAdjacentPixels
+                    |>
+                    ,
+                    <|"Result" -> False|>
+                ]
         ]
     ]
 
@@ -20830,14 +20970,28 @@ ARCFollowLine[image_List, color_Integer, position_List] :=
                     }
                 ] &
             ],
+            
             {
                 (* There were lines eminating outward in two directions. The above SortBy tries
                    to ensure that if at least one of the directions had a good ending, it is
                    put first. We reverse the order of that one, so that the complete line will
                    flow from beginning to end. *)
-                (* TODO: I don't think we know whether `a` should come first or `b` should come
-                         first, so we probably need an IF statement here to determine that. *)
-                {a_, b_} :> {Sequence @@ Reverse[b], startingPosition, Sequence @@ a},
+                (* TODO: Whether `a` should come first or `b` should come first feels fuzzy and we
+                         may not have enough information here to make the right decision. I suspect
+                         that where the line starts probably often depends on the object from the
+                         input that is being mapped from, but we aren't currently taking that
+                         into account. *)
+                {a_, b_} :> (
+                    (*Echo["A" -> a];
+                    Echo["B" -> b];*)
+                    reverseB = Reverse[b];
+                    (* Favor a direction from left-to-right. *)
+                    If [a[[-1, 2]] < b[[-1, 2]],
+                        {Sequence @@ Reverse[a], startingPosition, Sequence @@ b}
+                        ,
+                        {Sequence @@ Reverse[b], startingPosition, Sequence @@ a}
+                    ]
+                ),
                 (* Our line started at an ending position whereby it only eminated outward
                    in a single direction, so just prepend that line with the starting position. *)
                 {line_} :> Prepend[line, startingPosition]
@@ -21303,6 +21457,8 @@ ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
         
         (*EchoIndented[analysis];*)
         
+        (*Throw["DONE"];*)
+        
         If [And @@ analysis[[All, "Result"]],
             (* All of the objects look like they might be generated objects. *)
             mappings =
@@ -21328,6 +21484,10 @@ ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
                                 2 -> Join[
                                     mapping[[2]],
                                     <|
+                                        (* I don't believe we're making use of this currently.
+                                           Traditionally this would be the training task / scene
+                                           index, but here it's the generated object example
+                                           index. *)
                                         "Example" -> First[pos],
                                         "Input" -> mapping[[1]]
                                     |>
@@ -21396,8 +21556,8 @@ ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
                                     property,
                                     (* referenceableInputObjects *)
                                     <||>,
-                                    (* examples *)
-                                    examples
+                                    (* examples: Not applicable currently, so we'll pass an empty list. *)
+                                    {}
                                 ];
                             
                             (*ARCEcho2[ARCSimplifyRules[rules]];*)
@@ -21436,7 +21596,7 @@ ARCFindRulesForGeneratedObjects[objects_List, examples_List] :=
                         ] /@
                             DeleteCases[
                                 If [False,
-                                    {"ColorAhead", "ColorAhead2MatchesObject", None}
+                                    {"ColorAhead"}
                                     (*{"ColorAhead2MatchesObject"}*)
                                     ,
                                     Prepend[

@@ -126,3 +126,75 @@ Test[
     ,
     TestID -> "ARCPossiblyGeneratedObjectQ-20220921-GFL67M"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCPossiblyGeneratedObjectQ[
+                Daniel`ARC`ARCParseScene[
+                    Daniel`ARC`ARCParseFile["d9f24cd1"]["Train", 2, "Output"],
+                    "FormMultiColorCompositeObjects" -> False,
+                    "CheckForGridsAndDividers" -> False
+                ][[
+                    "Objects",
+                    1
+                ]]
+            ]
+        ]
+    ]
+    ,
+    <|
+        "Result" -> True,
+        "TurnCount" -> 2,
+        "Line" -> {
+            {10, 2},
+            {9, 2},
+            {8, 2},
+            {7, 2},
+            {7, 3},
+            {6, 3},
+            {5, 3},
+            {4, 3},
+            {3, 3},
+            {2, 3},
+            {1, 3}
+        }
+    |>
+    ,
+    TestID -> "ARCPossiblyGeneratedObjectQ-20220925-K15TTB"
+]
+
+Test[
+    Daniel`ARC`ARCPossiblyGeneratedObjectQ[
+        Append[
+            Daniel`ARC`ARCParseScene[
+                Daniel`ARC`ARCParseFile["d9f24cd1"]["Train", 1, "Output"],
+                "FormMultiColorCompositeObjects" -> False,
+                "CheckForGridsAndDividers" -> False
+            ][[
+                "Objects",
+                1
+            ]],
+            "Input" -> <|"Position" -> {10, 2}, "Width" -> 1, "Height" -> 1|>
+        ]
+    ]
+    ,
+    <|
+        "Result" -> True,
+        "TurnCount" -> 0,
+        "Line" -> {
+            {10, 2},
+            {9, 2},
+            {8, 2},
+            {7, 2},
+            {6, 2},
+            {5, 2},
+            {4, 2},
+            {3, 2},
+            {2, 2},
+            {1, 2}
+        }
+    |>
+    ,
+    TestID -> "ARCPossiblyGeneratedObjectQ-20220925-YWTDZO"
+]

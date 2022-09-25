@@ -73,3 +73,23 @@ Test[
     ,
     TestID -> "ARCPixelPossiblyPartOfLine-20220914-Q3P78M"
 ]
+
+Test[
+    Daniel`ARC`ARCPixelPossiblyPartOfLine[
+        Daniel`ARC`ARCParseScene[
+            Daniel`ARC`ARCParseFile["d9f24cd1"]["Train", 2, "Output"],
+            "FormMultiColorCompositeObjects" -> False,
+            "CheckForGridsAndDividers" -> False
+        ][[
+            "Objects",
+            1,
+            "Image",
+            1
+        ]],
+        {7, 1}
+    ]
+    ,
+    <|"Result" -> True, "AdjacentPixels" -> {{7, 2}, {8, 1}}|>
+    ,
+    TestID -> "ARCPixelPossiblyPartOfLine-20220925-VEVZ6O"
+]
