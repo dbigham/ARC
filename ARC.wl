@@ -519,6 +519,8 @@ ARCGeneratorInputState::usage = "ARCGeneratorInputState  "
 
 ARCSetGridPosition::usage = "ARCSetGridPosition  "
 
+ARCInferObjectPropertiesForRendering::usage = "ARCInferObjectPropertiesForRendering  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1056,6 +1058,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     "Color",
                     "ColorCount",
                     "MostUsedColor",
+                    "SecondMostUsedColor",
                     "YMiddle",
                     "XMiddle",
                     "Length",
@@ -1125,7 +1128,10 @@ ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
                 ReturnIfFailure@
                 ARCCombineDividersIntoGrid[scene, gridsAndDividers];
             
-            If [Length[gridsAndDividers] === 1,
+            If [And[
+                    Length[gridsAndDividers] === 1,
+                    gridsAndDividers[[1, "GridOrDivider", "Type"]] === "Grid"
+                ],
                 (* e.g. 0bb8dee *)
                 objects =
                     ReturnIfFailure@
@@ -2067,6 +2073,12 @@ $properties = <|
         "RuleConditionQuality" -> 0.9
     |>,
     "MostUsedColor" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "Color",
+        (* Adopting this from "ColorCount", not sure if it's needing to be high like this. *)
+        "RuleConditionQuality" -> 0.9
+    |>,
+    "SecondMostUsedColor" -> <|
         "Type" -> "Integer",
         "Type2" -> "Color",
         (* Adopting this from "ColorCount", not sure if it's needing to be high like this. *)
@@ -3089,7 +3101,8 @@ Clear[ARCFindObjectMapping];
 Options[ARCFindObjectMapping] =
 {
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
-    "SingleObject" -> Automatic                     (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "SingleObject" -> Automatic,                    (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "FollowDiagonals" -> Automatic                  (*< Should diagonally adjacent pixels form a single object? *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -4790,7 +4803,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"GridPosition"}
+                        {"Position"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -9745,6 +9758,19 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                         ]
                     ]
                 ],
+                If [Length[pixelColorCounts] < 2,
+                    Nothing
+                    ,
+                    With[{secondMostUsedColors = pixelColorCounts[[2, 2]]},
+                        Replace[
+                            secondMostUsedColors,
+                            {
+                                {c_} :> "SecondMostUsedColor" -> c,
+                                _ :> Nothing
+                            }
+                        ]
+                    ]
+                ],
                 "Y" -> (y = object["Position"][[1]]),
                 "X" -> (x = object["Position"][[2]]),
                 "YInverse" -> (sceneHeight - y + 1),
@@ -10979,8 +11005,6 @@ ARCNotebook[fileIn_String] :=
                 ]
             )
         ];
-        
-        Throw[notebookFile];
         
         nb = CreateNamedNotebook2[
             FileBaseName[file],
@@ -12519,6 +12543,16 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[1, "Hours"],
             "CodeLength" -> 22189,
             "NewGeneralizedSuccesses" -> {},
+            (* I'm not actually sure when these started passing since I haven't been running
+               the evaluation test set each time. *)
+            "NewEvaluationSuccesses" -> {"0bb8deee", "9110e3c5", "9a4bb226", "ca8de6ea", "cd3c21df"}
+        |>,
+        <|
+            "ExampleImplemented" -> "27a77e38",
+            "Timestamp" -> DateObject[{2022, 9, 24}],
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 22303,
+            "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
     }
@@ -13015,7 +13049,11 @@ InferColor["Color" -> color_] :=
     \maintainer danielb
 *)
 Clear[ARCInferObjectImage];
-ARCInferObjectImage[objectIn_Association, scene_Association] :=
+Options[ARCInferObjectImage] =
+{
+    "InferObjectPropertiesForRendering" -> True     (*< Should we try to infer any missing but required properties needed for rendering? *)
+};
+ARCInferObjectImage[objectIn_Association, scene_Association, OptionsPattern[]] :=
     FailureDetails[
         "ARCInferObjectImageFailure",
         "A failure occurred infering an object's image."
@@ -13024,52 +13062,10 @@ ARCInferObjectImage[objectIn_Association, scene_Association] :=
         
         ReturnIfNotMissing[object["Image"]];
         
-        If [MissingQ[object["X2"]],
-            If [!MissingQ[object["X2Inverse"]],
-                object["X2"] = scene["Width"] - object["X2Inverse"] + 1
-            ]
-        ];
-        
-        If [MissingQ[object["Y2"]],
-            If [!MissingQ[object["Y2Inverse"]],
-                object["Y2"] = scene["Height"] - object["Y2Inverse"] + 1
-            ]
-        ];
-        
-        If [MissingQ[object["Width"]],
-            If [!MissingQ[object["X"]] && !MissingQ[object["X2"]],
-                object["Width"] = object["X2"] - object["X"] + 1
-            ]
-        ];
-        
-        If [MissingQ[object["Height"]],
-            If [!MissingQ[object["Y"]] && !MissingQ[object["Y2"]],
-                object["Height"] = object["Y2"] - object["Y"] + 1
-            ]
-        ];
-        
-        If [MissingQ[object["Width"]] && object["Angle"] =!= 90 && object["Shape", "Angle"] =!= 90,
-            ReturnFailure[
-                "ARCInferObjectImageFailure",
-                "Either the Width property must be specified, or the Angle must be specified to be 90.",
-                "Object" -> object
-            ]
-            ,
-            If [MissingQ[object["Width"]],
-                object["Width"] = 1
-            ]
-        ];
-        
-        If [MissingQ[object["Height"]] && object["Angle"] =!= 0 && object["Shape", "Angle"] =!= 0,
-            ReturnFailure[
-                "ARCInferObjectImageFailure",
-                "Either the Height property must be specified, or the Angle must be specified to be 0.",
-                "Object" -> object
-            ]
-            ,
-            If [MissingQ[object["Height"]],
-                object["Height"] = 1
-            ]
+        If [TrueQ[OptionValue["InferObjectPropertiesForRendering"]],
+            object =
+                ReturnIfFailure@
+                ARCInferObjectPropertiesForRendering[object, scene]
         ];
         
         Which[
@@ -15751,14 +15747,9 @@ ARCConstructObject[objectIn:KeyValuePattern[{"Outward" -> True, "Shape" -> KeyVa
 ARCConstructObject[objectIn_, OptionsPattern[]] :=
     Module[{object = objectIn},
         
-        (* For example, if a conclusion set X2Inverse and Y2, and the line became
-           larger than the dimensions inherited from the input scene, then we end up
-           with `width` not having been updated, so we can correct it here.
-           e.g. "d13f3404" *)
-        If [EntityMatchQ[object["Shape"], <|"Name" -> "Line", "Angle" -> 45 | 135|>],
-            If [object["Width"] < object["Height"], object["Width"] = object["Height"]];
-            If [object["Height"] < object["Width"], object["Height"] = object["Width"]];
-        ];
+        object =
+            ReturnIfFailure@
+            ARCInferObjectPropertiesForRendering[object, OptionValue["Scene"]];
         
         If [MissingQ[object["Image"]],
             Prepend[
@@ -15768,7 +15759,9 @@ ARCConstructObject[objectIn_, OptionsPattern[]] :=
                     ARCInferObjectImage[
                         object,
                         ReturnFailureIfMissing@
-                        OptionValue["Scene"]
+                        OptionValue["Scene"],
+                        (* Avoid re-doing what we do above. *)
+                        "InferObjectPropertiesForRendering" -> False
                     ]
             ]
             ,
@@ -16993,7 +16986,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                 "Color",
                                 "Colors",
                                 "ColorCount",
-                                "MostUsedColor"
+                                "MostUsedColor",
+                                "SecondMostUsedColor"
                             },
                         MatchQ[patternIn["Image"], "Same"],
                             Sequence @@
@@ -17100,7 +17094,8 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 {
                     "Colors",
                     "ColorCount",
-                    "MostUsedColor"
+                    "MostUsedColor",
+                    "SecondMostUsedColor"
                 }
             ]
         ];
@@ -17280,6 +17275,9 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                     "MostUsedColor",
                     "MostUsedColor.Rank",
                     "MostUsedColor.InverseRank",
+                    "SecondMostUsedColor",
+                    "SecondMostUsedColor.Rank",
+                    "SecondMostUsedColor.InverseRank",
                     "ImageUseCount",
                     "ImageUseCount.Rank",
                     "ImageUseCount.InverseRank",
@@ -22188,6 +22186,124 @@ ARCSetGridPosition[objects_List, grid_Association] :=
                 }
             ]
         ] /@ objects
+    ]
+
+(*!
+    \function ARCInferObjectPropertiesForRendering
+    
+    \calltable
+        ARCInferObjectPropertiesForRendering[object, scene] '' Tries to fill in any missing properties required for rendering an object.
+    
+    Examples:
+    
+    ARCInferObjectPropertiesForRendering[<|"YInverse" -> 1|>, <|"Height" -> 10|>]
+    
+    ===
+    
+    <|"YInverse" -> 1, "Y" -> 10|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferObjectPropertiesForRendering]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferObjectPropertiesForRendering];
+ARCInferObjectPropertiesForRendering[objectIn_Association, scene_Association] :=
+    Module[{object = objectIn},
+        
+        (* Some of the below inferences are for AddObjects cases where we don't call
+           the low-level ARCApplyConclusion down values for each of their property
+           values, so we miss out on some of the logic there that can infer property
+           values that aren't specified explicitly. *)
+        
+        If [MissingQ[object["X2"]],
+            If [!MissingQ[object["X2Inverse"]],
+                object["X2"] = scene["Width"] - object["X2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["Y2"]],
+            (* e.g. 27a77e38 *)
+            If [!MissingQ[object["Y2Inverse"]],
+                object["Y2"] = scene["Height"] - object["Y2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["Width"]],
+            Which[
+                !MissingQ[object["X"]] && !MissingQ[object["X2"]],
+                    object["Width"] = object["X2"] - object["X"] + 1,
+                EntityMatchQ[object["Shape"], "Pixel"],
+                    object["Width"] = 1,
+                EntityMatchQ[object["Shape"], "Line"],
+                    If [object["Angle"] =!= 90 && object["Shape", "Angle"] =!= 90,
+                        ReturnFailure[
+                            "ARCInferObjectImageFailure",
+                            "For lines, either the Width property must be specified, or the Angle must be specified to be 90.",
+                            "Object" -> object
+                        ]
+                        ,
+                        object["Width"] = 1
+                    ]
+            ]
+        ];
+        
+        If [MissingQ[object["Height"]],
+            Which[
+                !MissingQ[object["Y"]] && !MissingQ[object["Y2"]],
+                    object["Height"] = object["Y2"] - object["Y"] + 1,
+                (* e.g. 27a77e38 *)
+                EntityMatchQ[object["Shape"], "Pixel"],
+                    object["Height"] = 1,
+                EntityMatchQ[object["Shape"], "Line"],
+                    If [object["Angle"] =!= 0 && object["Shape", "Angle"] =!= 0,
+                        ReturnFailure[
+                            "ARCInferObjectImageFailure",
+                            "For lines, either the Height property must be specified, or the Angle must be specified to be 0.",
+                            "Object" -> object
+                        ]
+                        ,
+                        object["Height"] = 1
+                    ]
+            ]
+        ];
+        
+        (* For example, if a conclusion set X2Inverse and Y2, and the line became
+           larger than the dimensions inherited from the input scene, then we end up
+           with `width` not having been updated, so we can correct it here.
+           e.g. "d13f3404" *)
+        If [EntityMatchQ[object["Shape"], <|"Name" -> "Line", "Angle" -> 45 | 135|>],
+            If [object["Width"] < object["Height"], object["Width"] = object["Height"]];
+            If [object["Height"] < object["Width"], object["Height"] = object["Width"]];
+        ];
+        
+        (* e.g. 27a77e38 *)
+        If [MissingQ[object["Y"]],
+            Which[
+                !MissingQ[object["YInverse"]],
+                    object["Y"] = scene["Height"] - object["YInverse"] + 1,
+                And[
+                    !MissingQ[object["Y2"]],
+                    !MissingQ[object["Height"]]
+                ],
+                    object["Y"] = object["Y2"] - object["Height"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["X"]],
+            Which[
+                !MissingQ[object["XInverse"]],
+                    object["X"] = scene["Width"] - object["XInverse"] + 1,
+                And[
+                    !MissingQ[object["X2"]],
+                    !MissingQ[object["Width"]]
+                ],
+                    object["X"] = object["X2"] - object["Width"] + 1
+            ]
+        ];
+        
+        object
     ]
 
 End[]

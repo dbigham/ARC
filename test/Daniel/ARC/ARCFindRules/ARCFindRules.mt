@@ -2971,3 +2971,31 @@ Test[
     ,
     TestID -> "ARCFindRules-20220924-ERTT9B"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "27a77e38"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|"Same" -> True|>,
+        <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {
+                    <|
+                        "Shape" -> <|"Name" -> "Pixel"|>,
+                        "Color" -> Daniel`ARC`ObjectValue["InputScene", "SecondMostUsedColor"],
+                        "X" -> Daniel`ARC`ObjectValue["InputScene", "YMiddle"],
+                        "YInverse" -> 1,
+                        "Width" -> 1,
+                        "Y2Inverse" -> 1,
+                        "ZOrder" -> 0
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220924-YHDBXZ"
+]
