@@ -4895,7 +4895,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"HollowCount"}
+                        {"Width"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -5354,12 +5354,21 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
         ];
         
         Which[
-            Length[
-                groupedByConclusion = GroupBy[
+            Or[
+                Length[
+                    groupedByConclusion = GroupBy[
+                        conclusionGroup,
+                        Function[KeyDrop[#, {"Example", "Input", "Output"}]]
+                    ]
+                ] > 1,
+                (* Even if there's only one example, if we are adding components, we'll still
+                   call ARCGeneralizeConclusions so that it will prune the rule down
+                   wrt minimal property sets. *)
+                !FreeQ[
                     conclusionGroup,
-                    Function[KeyDrop[#, {"Example", "Input", "Output"}]]
+                    KeyValuePattern[{"Image" -> _, "Shape" -> _, "Shapes" -> _}]
                 ]
-            ] > 1,
+            ],
                 (* This pattern has multiple possible conclusions, but before we discard it,
                    we should see whether it's possible to generalize those conclusions. *)
                 conclusionList = Flatten[Values[groupedByConclusion]];
@@ -5420,6 +5429,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
             Length[groupedByConclusion] === 1,
                 (* This pattern has only one RHS, so we can form a rule using it. *)
                 conclusion = groupedByConclusion[[1, 1]];
+                
                 propertiesWithChangingValue =
                     ReturnIfFailure[
                         ARCPropertiesNeededForConclusions[{conclusion}]
@@ -8250,7 +8260,16 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                              property set? (related: Did we add this Return here as a
                              performance optimization, or to fix something else?)
                              For now we'll handle this in ARCCleanRules. *)
-                    Return[property -> uniqueValue[[1]], Module]
+                    (* If the unique "value" is actually an object, then don't just return it,
+                       because it will be overly verbose. Instead we'll continue below so that
+                       minimal property sets can be used to minimize its size.
+                       e.g. 00dbd492 *)
+                    If [FreeQ[
+                            uniqueValue[[1]],
+                            KeyValuePattern[{"Image" -> _, "Shape" -> _, "Shapes" -> _}]
+                        ],
+                        Return[property -> uniqueValue[[1]], Module]
+                    ]
                 ]
             ]
         ];
@@ -12663,6 +12682,7 @@ ARCTaskLog[] :=
             "NewEvaluationSuccesses" -> {"0bb8deee", "9110e3c5", "9a4bb226", "ca8de6ea", "cd3c21df"}
         |>,
         <|
+            "EvaluationTask" -> True,
             "ExampleImplemented" -> "27a77e38",
             "Timestamp" -> DateObject[{2022, 9, 24}],
             "ImplementationTime" -> Quantity[1.5, "Hours"],
@@ -12676,7 +12696,8 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[2, "Hours"],
             "CodeLength" -> 22465,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            (* Due to misc edits though, I believe. *)
+            "NewEvaluationSuccesses" -> {"00dbd492"}
         |>
     }
 
@@ -12986,28 +13007,31 @@ Clear[ARCImplementedTasksMarkdown];
 ARCImplementedTasksMarkdown[] :=
     Module[
         {
+            taskLog,
             implementedARCTrainingTasks,
             implementedPersonallyCreatedTrainingTasks,
             arcTrainingTasksPassingDueToGeneralization,
             arcEvaluationTasksPassingDueToGeneralization
         },
         
+        taskLog = ARCTaskLog[];
+        
         implementedARCTrainingTasks = Select[
-            ARCTaskLog[],
+            taskLog,
             Function[
                 !TrueQ[#["PersonalExample"]] && !TrueQ[#["GeneralizedSuccess"]] && !TrueQ[#["EvaluationTask"]]
             ]
         ][[All, "ExampleImplemented"]];
         
         implementedPersonallyCreatedTrainingTasks = Select[
-            ARCTaskLog[],
+            taskLog,
             Function[
                 TrueQ[#["PersonalExample"]]
             ]
         ][[All, "ExampleImplemented"]];
         
         arcTrainingTasksPassingDueToGeneralization = Select[
-            ARCTaskLog[],
+            taskLog,
             Function[
                 !TrueQ[#["PersonalExample"]] && TrueQ[#["GeneralizedSuccess"]]
             ]
@@ -13015,11 +13039,18 @@ ARCImplementedTasksMarkdown[] :=
         
         arcEvaluationTasksPassingDueToGeneralization =
             Flatten@
-            Cases[ARCTaskLog[][[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]];
+            Join[
+                Cases[taskLog[[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]],
+                Select[taskLog, TrueQ[#["EvaluationTask"]] &][[All, "ExampleImplemented"]]
+            ];
         
         Echo[
-            Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization]
+            Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization] ->
+                Length[implementedARCTrainingTasks] ->
+                Length[arcTrainingTasksPassingDueToGeneralization]
         ];
+        
+        Echo[Length[arcEvaluationTasksPassingDueToGeneralization]];
         
         StringRiffle[
             Flatten@
@@ -13044,7 +13075,7 @@ ARCImplementedTasksMarkdown[] :=
                 "",
                 "### Evaluation Tasks (" <> ToString[Length[arcEvaluationTasksPassingDueToGeneralization]] <> ")",
                 "",
-                "The following ARC evaluation tasks are passing. Evaluation tasks have not been analyzed or implemented specifically.",
+                "The following ARC evaluation tasks are passing. My intention is to not analyzed or implemented evaluation examples specifically, but I have implemented a few accidentally.",
                 "",
                 tasksToMarkdown[arcEvaluationTasksPassingDueToGeneralization]
             },
@@ -13907,19 +13938,33 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
                                 ],
                                 "GroupPattern" -> True
                             ],
-                            <||> :> (
-                                If [Length[rules] =!= 1,
-                                    (* If we couldn't find any commonalities between the group
-                                       object, then we can't form a pattern to detect groups,
-                                       and if there is more than one rule, that tells us that
-                                       groups shouldn't apply to just any pair of things, so
-                                       we need to give up on this list of rules. *)
-                                    Return[
-                                        Missing["GroupPatternNotFound"],
-                                        Module
+                            {
+                                <||> :> (
+                                    If [Length[rules] =!= 1,
+                                        (* If we couldn't find any commonalities between the group
+                                           object, then we can't form a pattern to detect groups,
+                                           and if there is more than one rule, that tells us that
+                                           groups shouldn't apply to just any pair of things, so
+                                           we need to give up on this list of rules. *)
+                                        Return[
+                                            Missing["GroupPatternNotFound"],
+                                            Module
+                                        ]
                                     ]
-                                ]
-                            )
+                                ),
+                                (* If we have formed a rule with only a single xample, it might
+                                   result in a group that only has a single example, and that can
+                                   result in super-verbose group patterns, since
+                                   ARCObjectCommonalities will get run on a single object.
+                                   One way to cope with this is to see that the "Image" property
+                                   is populated. If so, that should be a maximally descriptive
+                                   thing, so we could just drop the other properties. This can also
+                                   happen in cases where there are more than one example, but there
+                                   too it seems better to prune things. e.g. 00dbd492 *)
+                                assoc:KeyValuePattern["Image" -> _ARCScene] :> (
+                                    KeyTake[assoc, "Image"]
+                                )
+                            }
                         ]
                         ,
                         Nothing
