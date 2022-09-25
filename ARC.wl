@@ -2170,7 +2170,7 @@ Options[ARCClassifyShape] =
     "IncludeImageShapes" -> False   (*< Whether to include shapes of type <|"Type" -> "Image", ...|>. *)
 };
 ARCClassifyShape[image_List, OptionsPattern[]] :=
-    Module[{},
+    Module[{rectangleClassification},
         {
             If [TrueQ[OptionValue["IncludeImageShapes"]],
                 ARCImageShapes[image]
@@ -2184,8 +2184,9 @@ ARCClassifyShape[image_List, OptionsPattern[]] :=
             {
                 ARCClassifyPixel[image],
                 ARCClassifyLine[image],
-                ARCClassifySquare[image],
-                ARCClassifyRectange[image],
+                rectangleClassification = ARCClassifyRectange[image];
+                ARCClassifySquare[image, "RectangleClassification" -> rectangleClassification],
+                rectangleClassification,
                 ARCClassifyL[image],
                 ARCClassifyTriangle[image],
                 Sequence @@
@@ -2266,11 +2267,20 @@ ARCClassifyTriangle[image_] :=
     \maintainer danielb
 *)
 Clear[ARCClassifySquare];
-ARCClassifySquare[image_List] :=
+Options[ARCClassifySquare] =
+{
+    "RectangleClassification" -> Null       (*< The return value of ARCClassifyRectangle if already known. *)
+};
+ARCClassifySquare[image_List, OptionsPattern[]] :=
     Module[{rectangle},
         If [And[
                 ImageWidth[image] === ImageHeight[image],
-                (rectangle = ARCClassifyRectange[image]) =!= Nothing
+                (
+                    rectangle = Replace[
+                        OptionValue["RectangleClassification"],
+                        Null :> ARCClassifyRectange[image]
+                    ]
+                ) =!= Nothing
             ],
             Sett[rectangle, "Name" -> "Square"]
             ,
@@ -2304,7 +2314,8 @@ ARCClassifyRectange[image_List] :=
             interiorColors,
             interiorColor,
             borderColors,
-            borderColor
+            borderColor,
+            renderable
         },
         (* Question: Should rectangles with a width or height of 1 be given the "Rectangle"
                      designation in addition to "Line"? *)
@@ -2322,7 +2333,7 @@ ARCClassifyRectange[image_List] :=
                         ]
                     ]
                 ],
-                (* Border is all one color. *)
+                (* Border is all non-background color. *)
                 MatchQ[
                     image,
                     (* Empty rectangle. *)
@@ -2338,7 +2349,7 @@ ARCClassifyRectange[image_List] :=
                             {0, Infinity}
                         ],
                         (* Horizontal line. *)
-                        List[Repeated[c:Except[$nonImageColor]]]
+                        List[Repeated[Except[$nonImageColor]]]
                     ]
                 ]
             ],
@@ -2370,6 +2381,32 @@ ARCClassifyRectange[image_List] :=
                 borderColor = borderColors[[1]]
             ];
             
+            (* If we know this shape and the colors of the border and inner area, could we
+               render the object? If the border or interior aren't solid colors, then we
+               cannot. *)
+            renderable = MatchQ[
+                image,
+                (* Empty rectangle. *)
+                List[
+                    (* Horizontal line. *)
+                    List[Repeated[border:Except[$nonImageColor]]],
+                    Repeated[
+                        List[
+                            border:Except[$nonImageColor],
+                            Repeated[interior_, {0, Infinity}],
+                            border:Except[$nonImageColor]
+                        ],
+                        {0, Infinity}
+                    ],
+                    If [ImageHeight[image] > 1,
+                        (* Horizontal line. *)
+                        List[Repeated[border:Except[$nonImageColor]]]
+                        ,
+                        Nothing
+                    ]
+                ]
+            ];
+            
             <|
                 "Name" -> "Rectangle",
                 Which[
@@ -2393,6 +2430,16 @@ ARCClassifyRectange[image_List] :=
                         "Interior" -> <|"Color" -> interiorColor|>,
                         "Border" -> <|"Color" -> borderColor|>
                     |>
+                    ,
+                    Nothing
+                ],
+                (* We need to specify this so that when choosing which item from "Shapes" to
+                   use as the singular "Shape" value, we avoid using a shape if it isn't
+                   renderable. This is because we want to ensure that when finding generalized
+                   rule expressions, we are guaranteed that Shape + Color, if inferrable, are
+                   enough to render an object. e.g. 37d3e8b2 *)
+                If [!TrueQ[renderable],
+                    "Renderable" -> False
                     ,
                     Nothing
                 ]
@@ -3871,9 +3918,19 @@ Options[ARCFindRules] =
 ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
     (* When running the training or evaluation sets in parallel, tasks take about 50% longer to
        execute as compared to when they are run in serial, so this maximum time needs to take
-       that into account.
-       Sept 24 2022: Increased from 55 to 90. (6773b310) *)
-    ARCTimeConstrained[Quantity[90, "Seconds"]]@
+       that into account. *)
+    ARCTimeConstrained[
+        Quantity[
+            If [MatchQ[$file, "6773b310" | "0d3d703e"],
+                (* If an input is known to be slow, but should be working, then we give
+                   it lots of time to try to avoid false positive failures. *)
+                180
+                ,
+                55
+            ],
+            "Seconds"
+        ]
+    ]@
     Internal`InheritedBlock[{$memoization, $singleObject},
     Function[{expr},
         If [!TrueQ[$disableARCLogScopes],
@@ -4163,7 +4220,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         If [And[
                 OptionValue["CheckForGridsAndDividers"] === Automatic,
                 ListQ[parsedExamples],
-                !FreeQ[parsedExamples, KeyValuePattern["Grid" -> _Association]]
+                !FreeQ[parsedExamples, KeyValuePattern["GridOrDivider" | "Grid" -> _Association]]
             ],
             If [!TrueQ[workingRulesFound[]],
                 res2 =
@@ -4175,6 +4232,19 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     ARCFindRules[
                         examples,
                         "CheckForGridsAndDividers" -> False,
+                        (* If we aren't in single-example mode, then our recursive call here
+                           shouldn't allow single examples, since later on we'll make a
+                           call if necessary to ARCFindRules with that option, which itself
+                           can recurse again in CheckForGridsAndDividers -> False mode if
+                           necessary. This avoids us finding single-example
+                           CheckForGridsAndDividers -> False rules before having the chance
+                           to consider single-example CheckForGridsAndDividers -> Automatic
+                           rules. e.g. 0d3d703e *)
+                        If [$MinimumExamplesPerRule =!= 1,
+                            "SettleForOneExamplePerRule" -> False
+                            ,
+                            Sequence @@ {}
+                        ],
                         opts
                     ];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
@@ -4199,6 +4269,11 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                             ARCFindRules[
                                 denoiseResult["Examples"],
                                 "Denoise" -> False,
+                                If [$MinimumExamplesPerRule =!= 1,
+                                    "SettleForOneExamplePerRule" -> False
+                                    ,
+                                    Sequence @@ {}
+                                ],
                                 opts
                             ]
                     ];
@@ -4820,7 +4895,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"Colors"}
+                        {"HollowCount"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -6067,6 +6142,8 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 ]
             ]
         ];
+        
+        (*ARCEcho2[object["Shape"]];*)
         
         (* e.g. Infer the Image if necessary. *)
         objectOut = Replace[
@@ -13500,7 +13577,7 @@ ARCAddGeneralizeShapes[shapes_List] :=
     Module[{},
         DeleteDuplicates@
         Join[
-            KeyTake[shapes, "Name"],
+            KeyTake[shapes, {"Name", "Renderable"}],
             shapes
         ]
     ]
@@ -14683,7 +14760,13 @@ ARCInferShapeAndShapes[image_List, colors_List, OptionsPattern[]] :=
         },
         <|
             "Shape" -> Replace[
-                shapes,
+                (* Only consider _renderable_ shapes for the Shape property so that we are
+                   guaranteed that if we know an object's Shape + Color, we can render it.
+                   e.g. 37d3e8b2 *)
+                DeleteCases[
+                    shapes,
+                    KeyValuePattern["Renderable" -> False]
+                ],
                 {
                     {} :>
                         ARCScene@
@@ -14698,7 +14781,11 @@ ARCInferShapeAndShapes[image_List, colors_List, OptionsPattern[]] :=
             "Shapes" ->
                 Join[
                     ARCImageShapes[image, "Monochrome" -> monochrome, "Colors" -> colors],
-                    shapes
+                    Replace[
+                        shapes,
+                        shape:KeyValuePattern["Renderable" -> False] :> KeyDrop[shape, "Renderable"],
+                        {1}
+                    ]
                 ]
         |>
     ]
@@ -20986,7 +21073,13 @@ ARCFollowLine[image_List, color_Integer, position_List] :=
                     Echo["B" -> b];*)
                     reverseB = Reverse[b];
                     (* Favor a direction from left-to-right. *)
-                    If [a[[-1, 2]] < b[[-1, 2]],
+                    If [Or[
+                            b[[-1]] === "*",
+                            And[
+                                a[[-1]] =!= "*",
+                                (a[[-1, 2]] < b[[-1, 2]])
+                            ]
+                        ],
                         {Sequence @@ Reverse[a], startingPosition, Sequence @@ b}
                         ,
                         {Sequence @@ Reverse[b], startingPosition, Sequence @@ a}
@@ -21913,12 +22006,17 @@ ARCTimeConstrained[expr_, maxTime_Quantity] :=
                 expr,
                 maxTime
             ],
-            $Aborted :> ReturnFailure[
-                "TimeLimitExceeded",
-                "The expression took too long to evaluate.",
-                "MaximumTime" -> maxTime,
-                "Expression" -> Hold[expr]
-            ]
+            $Aborted :> (
+                If [StringQ[$file],
+                    Echo["ARCTimeConstrained" -> $file -> maxTime]
+                ];
+                ReturnFailure[
+                    "TimeLimitExceeded",
+                    "The expression took too long to evaluate.",
+                    "MaximumTime" -> maxTime,
+                    "Expression" -> Hold[expr]
+                ]
+            )
         ]
     ]
 

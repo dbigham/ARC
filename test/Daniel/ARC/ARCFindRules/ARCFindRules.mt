@@ -3001,15 +3001,19 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d9f24cd1"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d9f24cd1"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
         "FormMultiColorCompositeObjects" -> False,
         "CheckForGridsAndDividers" -> False,
         "Rules" -> {
-            <|"Colors" -> {2}|> -> <|
+            <|"Image" -> Daniel`ARC`ARCScene[{{2}}]|> -> <|
                 "Transform" -> <|
                     "Type" -> "GenerateObject",
                     "StartPosition" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 0|>|>,
@@ -3025,7 +3029,7 @@ Test[
                     }
                 |>
             |>,
-            <|"Colors" -> {5}|> -> <|"Same" -> True|>
+            <|"Image" -> Daniel`ARC`ARCScene[{{5}}]|> -> <|"Same" -> True|>
         }
     |>
     ,
