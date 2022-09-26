@@ -8,7 +8,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (59)
+### Core ARC Training Tasks (60)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -69,6 +69,7 @@ https://github.com/fchollet/ARC
 * [5582e5ca](TaskNotes/5582e5ca/notes.md)
 * [0bb8dee](TaskNotes/0bb8dee/notes.md)
 * [d9f24cd1](TaskNotes/d9f24cd1/notes.md)
+* [0520fde7](TaskNotes/0520fde7/notes.md)
 
 ### Personally Created Training Tasks (14)
 
@@ -89,7 +90,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (59)
+### Training Tasks (62)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -152,8 +153,11 @@ The following ARC training tasks started passing after some different task was i
 * [9dfd6313](TaskNotes/9dfd6313/notes.md)
 * [8efcae92](TaskNotes/8efcae92/notes.md)
 * [aedd82e4](TaskNotes/aedd82e4/notes.md)
+* [1b2d62fb](TaskNotes/1b2d62fb/notes.md)
+* [99b1bc43](TaskNotes/99b1bc43/notes.md)
+* [0520fde7](TaskNotes/0520fde7/notes.md)
 
-### Evaluation Tasks (36)
+### Evaluation Tasks (37)
 
 The following ARC evaluation tasks are passing. My intention is to not analyzed or implemented evaluation examples specifically, but I have implemented a few accidentally.
 
@@ -190,6 +194,7 @@ The following ARC evaluation tasks are passing. My intention is to not analyzed 
 * [ca8de6ea](TaskNotes/ca8de6ea/notes.md)
 * [cd3c21df](TaskNotes/cd3c21df/notes.md)
 * [00dbd492](TaskNotes/00dbd492/notes.md)
+* [34b99a2b](TaskNotes/34b99a2b/notes.md)
 * [1a2e2828](TaskNotes/1A2E2828/notes.md)
 * [e5790162](TaskNotes/e5790162/notes.md)
 * [27a77e38](TaskNotes/27a77e38/notes.md)

@@ -78,32 +78,48 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            Counts[
-                Daniel`ARC`ARCGridOrDividerQ[
-                    "Objects" -> Daniel`ARC`ARCImageRegionToObject[
-                        Utility`ReturnIfFailure[
-                            Daniel`ARC`ARCContiguousImageRegions[
-                                Daniel`ARC`ARCParseFile["363442ee"][[1, "Train", 1, "Input"]],
-                                "Background" -> 0
-                            ]
-                        ],
-                        13,
-                        9
+            Daniel`ARC`ARCGridOrDividerQ[
+                "Objects" -> Daniel`ARC`ARCImageRegionToObject[
+                    Utility`ReturnIfFailure[
+                        Daniel`ARC`ARCContiguousImageRegions[
+                            Daniel`ARC`ARCParseFile["363442ee"][[1, "Train", 1, "Input"]],
+                            "Background" -> 0
+                        ]
                     ],
                     13,
                     9
-                ][[
-                    All,
-                    "GridOrDivider"
-                ]]
-            ]
+                ],
+                13,
+                9
+            ][[
+                All,
+                "GridOrDivider"
+            ]]
         ]
     ]
     ,
-    <|
-        Missing["KeyAbsent", "GridOrDivider"] -> 7,
-        <|"Type" -> "Divider", "Orientation" -> "Vertical"|> -> 1
-    |>
+    {
+        Missing["KeyAbsent", "GridOrDivider"],
+        Missing["KeyAbsent", "GridOrDivider"],
+        Missing["KeyAbsent", "GridOrDivider"],
+        Missing["KeyAbsent", "GridOrDivider"],
+        Missing["KeyAbsent", "GridOrDivider"],
+        Missing["KeyAbsent", "GridOrDivider"],
+        <|
+            "Type" -> "Divider",
+            "Orientation" -> "Vertical",
+            "RowCount" -> 1,
+            "ColumnCount" -> 2,
+            "Color" -> 5,
+            "Cells" -> {
+                {
+                    <|"Y" -> 1, "X" -> 1, "Width" -> 3, "Height" -> 9|>,
+                    <|"Y" -> 1, "X" -> 5, "Width" -> 9, "Height" -> 9|>
+                }
+            }
+        |>,
+        Missing["KeyAbsent", "GridOrDivider"]
+    }
     ,
     TestID -> "ARCGridOrDividerQ-20220820-82AR2Q"
 ]

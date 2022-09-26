@@ -51,3 +51,27 @@ Test[
     ,
     TestID -> "ARCParseGrid-20220910-LH6XVJ"
 ]
+
+Test[
+    Daniel`ARC`ARCParseGrid[
+        {
+            {-1, -1, -1, 5, -1, -1, -1},
+            {-1, -1, -1, 5, -1, -1, -1},
+            {-1, -1, -1, 5, -1, -1, -1}
+        }
+    ]
+    ,
+    <|
+        "RowCount" -> 1,
+        "ColumnCount" -> 2,
+        "Color" -> 5,
+        "Cells" -> {
+            {
+                <|"Y" -> 1, "X" -> 1, "Width" -> 3, "Height" -> 3|>,
+                <|"Y" -> 1, "X" -> 5, "Width" -> 3, "Height" -> 3|>
+            }
+        }
+    |>
+    ,
+    TestID -> "ARCParseGrid-20220925-B6WG4P"
+]

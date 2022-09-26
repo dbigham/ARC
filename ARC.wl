@@ -521,6 +521,18 @@ ARCSetGridPosition::usage = "ARCSetGridPosition  "
 
 ARCInferObjectPropertiesForRendering::usage = "ARCInferObjectPropertiesForRendering  "
 
+ARCCheckForLogicOperationQ::usage = "ARCCheckForLogicOperationQ  "
+
+ARCDrawSubImage::usage = "ARCDrawSubImage  "
+
+ARCConsiderLogicOperations::usage = "ARCConsiderLogicOperations  "
+
+ARCApplyValueMappingToGrid::usage = "ARCApplyValueMappingToGrid  "
+
+ARCSubdivisionImages::usage = "ARCSubdivisionImages  "
+
+ARCBinarizeImage::usage = "ARCBinarizeImage  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1039,10 +1051,10 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
             "Background" -> background,
             "Width" -> ImageWidth[scene[[1]]],
             "Height" -> ImageHeight[scene[[1]]],
-            With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> KeyValuePattern["Type" -> "Grid"]]] &]},
+            With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> _Association]] &]},
                 If [MatchQ[grids, {_}],
                     (* There is a single grid in the scene. *)
-                    "Grid" -> KeyDrop[grids[[1, "GridOrDivider"]], "Type"]
+                    "Grid" -> KeyDrop[grids[[1, "GridOrDivider"]], {"Type", "Orientation"}]
                     ,
                     Nothing
                 ]
@@ -3921,7 +3933,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
        that into account. *)
     ARCTimeConstrained[
         Quantity[
-            If [MatchQ[$file, "6773b310" | "0d3d703e"],
+            If [MatchQ[$file, "6773b310" | "0d3d703e" | "3194b014"],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
                 180
@@ -4126,6 +4138,38 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 If [foundRulesQ2,
                     foundRulesQ = True;
                     res = res2
+                ]
+            ]
+        ];
+        
+        (* If we can't find a rule set, all of the inputs are subdivided into segments of equal
+           sizes via dividers, and all outputs are the size of one of those segments (while also
+           being a single color), then we can consider whether the segments from the first image
+           should be combined via logical operations. *)
+        If [And[
+                ListQ[parsedExamples],
+                MatchQ[
+                    subdivisionInfo = ARCCheckForLogicOperationQ[parsedExamples],
+                    KeyValuePattern["Result" -> True]
+                ],
+                TrueQ[OptionValue["AllowSubdividing"]]
+            ],
+            If [!TrueQ[workingRulesFound[]],
+                res2 =
+                    ARCLogScope["ARCConsiderLogicOperations"]@
+                    ARCConsiderLogicOperations[parsedExamples, subdivisionInfo];
+                foundRulesQ2 = MatchQ[res2, _Association];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = <|
+                        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+                        "Rules" -> <|
+                            "Type" -> "ValueMap",
+                            "Binarize" -> True,
+                            "OutputColor" -> subdivisionInfo["OutputColor"],
+                            "Mapping" -> res2
+                        |>
+                    |>
                 ]
             ]
         ];
@@ -5698,7 +5742,7 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             
             If [And[
                     TrueQ[inputGridExpectedQ],
-                    !AssociationQ[parsedScene[["Grid"]]]
+                    !AssociationQ[parsedScene["Grid"]]
                 ],
                 ReturnFailure[
                     "ExpectedGridFailure",
@@ -5708,6 +5752,26 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ];
             
             Which[
+                MatchQ[rules["Rules"], KeyValuePattern["Type" -> "ValueMap"]],
+                    (* We have a value map that can take a single pixel from each grid cell
+                       and compute the value to use for the output image. e.g. 0520fde7 *)
+                    Return[
+                        Replace[
+                            ReturnIfFailure@
+                            ARCApplyValueMappingToGrid[
+                                Function[{image},
+                                    ARCBinarizeImage[
+                                        image,
+                                        parsedScene["Background"]
+                                    ]
+                                ] /@ Flatten[ARCSubdivideImageUsingGrid[parsedScene["Scene"], parsedScene["Grid"]]],
+                                rules["Rules"]
+                            ],
+                            $nonImageColor -> parsedScene["Background"],
+                            {3}
+                        ],
+                        Module
+                    ],
                 MatchQ[rules["Rules"], {Repeated[_List]}],
                     rows = Length[rules["Rules"]];
                     columns = Length[rules["Rules"][[1]]];
@@ -6643,66 +6707,7 @@ ARCRenderScene[scene_Association, OptionsPattern[]] :=
         
         Function[{object},
             
-            If [ListQ[object["Position"]],
-                posY = object["Position"][[1]];
-                posX = object["Position"][[2]];
-                ,
-                posY = object["Y"];
-                posX = object["X"];
-            ];
-            
-            If [MissingQ[object["Image"]],
-                ReturnFailure[
-                    "ARCRenderSceneFailure",
-                    "An object is missing its Image.",
-                    "Object" -> object
-                ]
-            ];
-            
-            image = object["Image"][[1]];
-            
-            Which[
-                posY + ImageHeight[image] - 1 > sceneHeight,
-                    ReturnFailure[
-                        "ObjectOutsideOfSceneBoundary",
-                        "The image extends beyond the bottom of the scene.",
-                        "Object" -> object,
-                        "ObjectY" -> posY,
-                        "ObjectHeight" -> ImageHeight[image],
-                        "SceneHeight" -> sceneHeight
-                    ],
-                posX + ImageWidth[image] - 1 > sceneWidth,
-                    ReturnFailure[
-                        "ObjectOutsideOfSceneBoundary",
-                        "The image extends beyond the right side of the scene.",
-                        "Object" -> object,
-                        "ObjectX" -> posX,
-                        "ObjectHeight" -> ImageWidth[image],
-                        "SceneHeight" -> sceneWidth
-                    ],
-                posY < 1,
-                    ReturnFailure[
-                        "ObjectOutsideOfSceneBoundary",
-                        "The image extends beyond the above the top of the scene.",
-                        "Object" -> object,
-                        "ObjectY" -> posY
-                    ],
-                posX < 1,
-                    ReturnFailure[
-                        "ObjectOutsideOfSceneBoundary",
-                        "The image extends beyond the left side of the scene.",
-                        "Object" -> object,
-                        "ObjectX" -> posX
-                    ]
-            ];
-            
-            Function[{y},
-                Function[{x},
-                    If [image[[y, x]] =!= $nonImageColor,
-                        output[[posY + y - 1, posX + x - 1]] = image[[y, x]]
-                    ]
-                ] /@ Range[ImageWidth[image]]
-            ] /@ Range[ImageHeight[image]];
+            output = ReturnIfFailure[ARCDrawSubImage[output, object]]
             
         ] /@ objects;
         
@@ -12698,6 +12703,41 @@ ARCTaskLog[] :=
             "NewGeneralizedSuccesses" -> {},
             (* Due to misc edits though, I believe. *)
             "NewEvaluationSuccesses" -> {"00dbd492"}
+        |>,
+        <|
+            "ExampleImplemented" -> "0520fde7",
+            "Timestamp" -> DateObject[{2022, 9, 25}],
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "CodeLength" -> 23007,
+            "NewGeneralizedSuccesses" -> {"1b2d62fb", "99b1bc43", "0520fde7"},
+            "NewEvaluationSuccesses" -> {"34b99a2b"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "1b2d62fb",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23015,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "99b1bc43",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23025,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "0520fde7",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23035,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -15623,7 +15663,18 @@ ARCGridOrDividerQ["Objects" -> objects_List, sceneWidth_, sceneHeight_] :=
                             If [gridOrDivider["Type"] === "Grid",
                                 ARCParseGrid[object["Image"][[1]]]
                                 ,
-                                <||>
+                                (* Divider *)
+                                ARCParseGrid@
+                                ARCDrawSubImage[
+                                    ConstantArray[
+                                        $nonImageColor,
+                                        {
+                                            sceneHeight,
+                                            sceneWidth
+                                        }
+                                    ],
+                                    object
+                                ]
                             ]
                         ]
                     |>
@@ -20140,12 +20191,8 @@ ARCAllExamplesUseGridInInputAndOutput[examples_List] :=
 *)
 Clear[ARCSubdivideImageUsingGrid];
 ARCSubdivideImageUsingGrid[ARCScene[image_], grid_Association] :=
-    Module[{subImageWidth, subImageHeight, res},
-        
-        subImageWidth = ImageWidth[image] / columns;
-        subImageHeight = ImageHeight[image] / rows;
-        
-        res = Function[{row},
+    Module[{},
+        Function[{row},
             Function[{column},
                 cell = grid[["Cells", row, column]];
                 ARCScene[
@@ -20161,10 +20208,11 @@ ARCSubdivideImageUsingGrid[ARCScene[image_], grid_Association] :=
                     ]]
                 ]
             ] /@ Range[grid["ColumnCount"]]
-        ] /@ Range[grid["RowCount"]];
-        
-        res
+        ] /@ Range[grid["RowCount"]]
     ]
+
+ARCSubdivideImageUsingGrid[parsedScene_Association] :=
+    ARCSubdivideImageUsingGrid[parsedScene["Scene"], parsedScene["Grid"]]
 
 (*!
     \function ARCFindRulesForGridSubdivision
@@ -22607,6 +22655,386 @@ ARCInferObjectPropertiesForRendering[objectIn_Association, scene_Association] :=
         ];
         
         object
+    ]
+
+(*!
+    \function ARCCheckForLogicOperationQ
+    
+    \calltable
+        ARCCheckForLogicOperationQ[parsedExamples] '' Returns True if we should check whether the output is a logical combination of segments from the input.
+    
+    e.g. 0520fde7
+    
+    TODO: Enhance this function to support cases where there is no _grid_, but rather the input
+          is always a multiple of the size of the output. e.g. 94F9D214
+    
+    Examples:
+    
+    ARCCheckForLogicOperationQ[ARCParseInputAndOutputScenes[ARCParseFile["0520fde7"]["Train"]]]
+    
+    ===
+    
+    <|
+        "Result" -> True,
+        "InputCells" -> {
+            <|"Y" -> 1, "X" -> 1, "Width" -> 3, "Height" -> 3|>,
+            <|"Y" -> 1, "X" -> 5, "Width" -> 3, "Height" -> 3|>
+        }
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForLogicOperationQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForLogicOperationQ];
+ARCCheckForLogicOperationQ[parsedExamples_List] :=
+    Module[{grids, cells},
+        
+        grids = parsedExamples[[All, "Input", "Grid"]];
+        
+        (* Do we always have a grid where the cells are are always the same size and
+           always a single row or single column? And are the outputs always the size
+           of exactly 1 grid cell, and make use of a single color? *)
+        If [And[
+                MatchQ[
+                    grids,
+                    {
+                        Repeated[
+                            KeyValuePattern[
+                                {
+                                    (* All grids have the same number of rows. *)
+                                    "RowCount" -> rowCount_,
+                                    (* All grids have the same number of columns. *)
+                                    "ColumnCount" -> columnCount_,
+                                    "Cells" -> {
+                                        Repeated[
+                                            {
+                                                Repeated[
+                                                    KeyValuePattern[
+                                                        {
+                                                            (* All cells have the same width. *)
+                                                            "Width" -> w_,
+                                                            (* All cells have the same height. *)
+                                                            "Height" -> h_
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                Or[
+                    grids[[1, "RowCount"]] === 1,
+                    grids[[1, "ColumnCount"]] === 1
+                ],
+                cells = Flatten[grids[[1, "Cells"]]];
+                (* Is the output width always the width of 1 grid cell? *)
+                MatchQ[
+                    parsedExamples[[All, "Output", "Width"]],
+                    {Repeated[cells[[1, "Width"]]]}
+                ],
+                (* Is the output height always the width of 1 grid cell? *)
+                MatchQ[
+                    parsedExamples[[All, "Output", "Height"]],
+                    {Repeated[cells[[1, "Height"]]]}
+                ],
+                (* All outputs use a single color. *)
+                MatchQ[
+                    parsedExamples[[All, "Output", "Colors"]],
+                    {Repeated[{color_}]}
+                ]
+            ],
+            <|
+                "Result" -> True,
+                "InputCells" -> cells,
+                "OutputColor" -> parsedExamples[[1, "Output", "Colors", 1]]
+            |>
+            ,
+            <|"Result" -> False|>
+        ]
+    ]
+
+(*!
+    \function ARCDrawSubImage
+    
+    \calltable
+        ARCDrawSubImage[image, object] '' Inserts the object's image into the appropriate location within the larger image.
+    
+    Examples:
+    
+    ARCDrawSubImage[
+        {{-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}},
+        <|"Image" -> ARCScene[{{9}}], "Position" -> {2, 2}|>
+    ]
+    
+    ===
+    
+    {{-1, -1, -1}, {-1, 9, -1}, {-1, -1, -1}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCDrawSubImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCDrawSubImage];
+ARCDrawSubImage[imageIn_List, object_Association] :=
+    Module[{image = imageIn, posX, posY, subImageWidth, subImageHeight},
+        
+        If [ListQ[object["Position"]],
+            posY = object["Position"][[1]];
+            posX = object["Position"][[2]];
+            ,
+            posY = object["Y"];
+            posX = object["X"];
+        ];
+        
+        If [MissingQ[object["Image"]],
+            ReturnFailure[
+                "ARCRenderSceneFailure",
+                "An object is missing its Image.",
+                "Object" -> object
+            ]
+        ];
+        
+        subImage = object["Image"][[1]];
+        
+        subImageWidth = ImageWidth[subImage];
+        subImageHeight = ImageHeight[subImage];
+        
+        Which[
+            posY + subImageHeight - 1 > sceneHeight,
+                ReturnFailure[
+                    "ObjectOutsideOfSceneBoundary",
+                    "The image extends beyond the bottom of the scene.",
+                    "Object" -> object,
+                    "ObjectY" -> posY,
+                    "ObjectHeight" -> subImageHeight,
+                    "SceneHeight" -> sceneHeight
+                ],
+            posX + subImageWidth - 1 > sceneWidth,
+                ReturnFailure[
+                    "ObjectOutsideOfSceneBoundary",
+                    "The image extends beyond the right side of the scene.",
+                    "Object" -> object,
+                    "ObjectX" -> posX,
+                    "ObjectHeight" -> subImageWidth,
+                    "SceneHeight" -> sceneWidth
+                ],
+            posY < 1,
+                ReturnFailure[
+                    "ObjectOutsideOfSceneBoundary",
+                    "The image extends beyond the above the top of the scene.",
+                    "Object" -> object,
+                    "ObjectY" -> posY
+                ],
+            posX < 1,
+                ReturnFailure[
+                    "ObjectOutsideOfSceneBoundary",
+                    "The image extends beyond the left side of the scene.",
+                    "Object" -> object,
+                    "ObjectX" -> posX
+                ]
+        ];
+        
+        Function[{y},
+            Function[{x},
+                If [subImage[[y, x]] =!= $nonImageColor,
+                    image[[posY + y - 1, posX + x - 1]] = subImage[[y, x]]
+                ]
+            ] /@ Range[subImageWidth]
+        ] /@ Range[subImageHeight];
+        
+        image
+    ]
+
+(*!
+    \function ARCConsiderLogicOperations
+    
+    \calltable
+        ARCConsiderLogicOperations[parsedExamples, subdivisionInfo] '' Checks to see if we can form rules that make use of logic operations to combine input subregions to produce the output.
+    
+    e.g. 0520fde7
+    
+    Examples:
+    
+    With[
+        {parsedExamples = ARCParseInputAndOutputScenes[ARCParseFile["0520fde7"]["Train"]]},
+        ARCConsiderLogicOperations[parsedExamples, ARCCheckForLogicOperationQ[parsedExamples]]
+    ]
+    
+    ===
+    
+    <|{1, -1} -> -1, {-1, -1} -> -1, {-1, 1} -> -1, {1, 1} -> 1|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCConsiderLogicOperations]
+    
+    \maintainer danielb
+*)
+Clear[ARCConsiderLogicOperations];
+ARCConsiderLogicOperations[parsedExamples_List, subdivisionInfo_Association] :=
+    Module[{inputImages, width, height, valueMappings},
+        
+        (* Gather the input subdivision images, setting their pixel colors to 1. *)
+        inputImages = Function[{example},
+            ARCSubdivisionImages[example["Input"], subdivisionInfo]
+        ] /@ parsedExamples;
+        
+        (* Gather the output images, setting their pixel colors to 1. *)
+        outputImages = Function[{example},
+            ARCBinarizeImage[
+                example["Output", "Scene"],
+                example["Output", "Background"]
+            ]
+        ] /@ parsedExamples;
+        
+        width = subdivisionInfo[["InputCells", 1, "Width"]];
+        height = subdivisionInfo[["InputCells", 1, "Height"]];
+        
+        (* Aggregate mappings from pairs of input pixels to their corresponding output
+           pixel. *)
+        valueMappings = GroupBy[
+            Flatten[
+                Function[{y},
+                    Function[{x},
+                        Transpose[
+                            {
+                                inputImages[[All, All, y, x]],
+                                outputImages[[All, y, x]]
+                            }
+                        ]
+                    ] /@ Range[width]
+                ] /@ Range[height],
+                2
+            ],
+            First -> Last
+        ];
+        
+        valueMappings = DeleteDuplicates /@ valueMappings;
+        
+        If [DeleteDuplicates[Values[Length /@ valueMappings]] =!= {1},
+            (* We've found that the same two input values don't always map to the same
+               output value, so we will be unable to find a deterministic function. *)
+            Return[Missing["NotFound"], Module]
+            ,
+            (* The same pairs of input values seem to always map to the same output
+               values, so this indicates a function. *)
+            valueMappings[[All, 1]]
+        ]
+    ]
+
+(*!
+    \function ARCApplyValueMappingToGrid
+    
+    \calltable
+        ARCApplyValueMappingToGrid[inputSubdivisions, rules] '' Given some subdivisions of an input, and a some rules that provide a value mapping, produces the output image.
+    
+    e.g. 0520fde7
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCApplyValueMappingToGrid]
+    
+    \maintainer danielb
+*)
+Clear[ARCApplyValueMappingToGrid];
+ARCApplyValueMappingToGrid[inputSubdivisions_List, rules_Association] :=
+    Module[
+        {
+            width = ImageWidth[inputSubdivisions[[1]]],
+            height = ImageHeight[inputSubdivisions[[1]]],
+            mapping = Append[
+                Normal[
+                    Replace[
+                        rules["Mapping"],
+                        {
+                            0 -> $nonImageColor,
+                            1 -> rules["OutputColor"]
+                        },
+                        {1}
+                    ]
+                ],
+                _ :> ReturnFailure[
+                    "UnamppedValue",
+                    "ARCApplyValueMappingToGrid found values that don't have an associated mapping rule.",
+                    "Mappings" -> rules["Mapping"]
+                ]
+            ]
+        },
+        ARCScene[
+            Function[{y},
+                Function[{x},
+                    Replace[
+                        inputSubdivisions[[All, y, x]],
+                        mapping
+                    ]
+                ] /@ Range[width]
+            ] /@ Range[height]
+        ]
+    ]
+
+(*!
+    \function ARCSubdivisionImages
+    
+    \calltable
+        ARCSubdivisionImages[parsedScene, subdivisionInfo] '' Returns a list of images for subdivisions of a scene.
+    
+    Examples:
+    
+    ARCSubdivisionImages[parsedScene, subdivisionInfo] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCSubdivisionImages];
+ARCSubdivisionImages[parsedScene_Association, subdivisionInfo_Association] :=
+    Module[{image},
+        (* Gather the input subdivision images, setting their pixel colors to 1. *)
+        image = ARCBinarizeImage[parsedScene["Scene"], parsedScene["Background"]];
+        Function[{cell},
+            image[[
+                cell["Y"] ;; cell["Y"] + cell["Height"] - 1,
+                cell["X"] ;; cell["X"] + cell["Width"] - 1
+            ]]
+        ] /@ subdivisionInfo["InputCells"]
+    ]
+
+(*!
+    \function ARCBinarizeImage
+    
+    \calltable
+        ARCBinarizeImage[image, background] '' Given an image and background color, returns a binarized image.
+    
+    Examples:
+    
+    ARCBinarizeImage[ARCScene[{{1, 2, 3}, {0, 0, 2}}], 0] === {{1, 1, 1}, {0, 0, 1}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCBinarizeImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCBinarizeImage];
+ARCBinarizeImage[ARCScene[image_], background_Integer] :=
+    Replace[
+        image,
+        {
+            background -> 0,
+            Except[background] -> 1
+        },
+        {2}
     ]
 
 End[]

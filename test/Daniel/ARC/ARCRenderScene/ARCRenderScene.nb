@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     28545,        660]
-NotebookOptionsPosition[     21693,        497]
-NotebookOutlinePosition[     27230,        634]
-CellTagsIndexPosition[     27187,        631]
+NotebookDataLength[     29706,        680]
+NotebookOptionsPosition[     22727,        514]
+NotebookOutlinePosition[     28264,        651]
+CellTagsIndexPosition[     28221,        648]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -22,13 +22,25 @@ Notebook[{
 Cell[CellGroupData[{
 Cell["ARCRenderScene", "Title",ExpressionUUID->"ba0fb901-fce7-463a-8401-355f99696b59"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{"RunUnitTests", "[", "ARCRenderScene", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[187]:=",ExpressionUUID->"4beca0bb-271b-4583-828c-0789f7edaf65"],
+  "In[353]:=",ExpressionUUID->"4beca0bb-271b-4583-828c-0789f7edaf65"],
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+  DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20229251863678879, StandardForm],
+  ImageSizeCache->{836., {196.634033203125, 202.365966796875}}]], "Output",
+ CellChangeTimes->{3.873132396295016*^9},
+ CellLabel->
+  "Out[354]=",ExpressionUUID->"918c0866-7ec9-49ce-9b71-a2877f92d9b2"]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -227,7 +239,7 @@ Cell[BoxData[{
  InitializationCell->False,
  CellChangeTimes->{
   3.8674944819668627`*^9, {3.868792805766202*^9, 3.868792809335902*^9}},
- CellLabel->"In[179]:=",
+ CellLabel->"In[357]:=",
  CellID->25925508,
  "TestId" -> 
  "ARCRenderScene-20220722-GLEI69",ExpressionUUID->"14279c3d-bfac-421f-a9fa-\
@@ -262,41 +274,45 @@ Cell[BoxData[
    GridBoxBackground->{
     "Columns" -> {{None}}, "Rows" -> {{None}}, 
      "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
-       GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> RGBColor[
-         Rational[5, 9], 
-         Rational[5, 9], 1], {1, 5} -> GrayLevel[0], {1, 6} -> 
-       GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> GrayLevel[0], {1, 9} -> 
-       GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
-       GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
-       RGBColor[1, 1, 0], {2, 7} -> GrayLevel[0], {2, 8} -> 
-       RGBColor[1, 1, 0], {2, 9} -> GrayLevel[0], {3, 1} -> 
-       GrayLevel[0], {3, 2} -> GrayLevel[0], {3, 3} -> 
-       RGBColor[1, 0.5, 0], {3, 4} -> GrayLevel[0], {3, 5} -> 
-       GrayLevel[0], {3, 6} -> GrayLevel[0], {3, 7} -> 
-       RGBColor[1, 0, 0], {3, 8} -> GrayLevel[0], {3, 9} -> 
-       GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
-       RGBColor[1, 0.5, 0], {4, 3} -> RGBColor[0, 0, 1], {4, 4} -> 
-       RGBColor[1, 0.5, 0], {4, 5} -> GrayLevel[0], {4, 6} -> 
-       RGBColor[1, 1, 0], {4, 7} -> GrayLevel[0], {4, 8} -> 
-       RGBColor[1, 1, 0], {4, 9} -> GrayLevel[0], {5, 1} -> 
-       GrayLevel[0], {5, 2} -> GrayLevel[0], {5, 3} -> 
-       RGBColor[1, 0.5, 0], {5, 4} -> GrayLevel[0], {5, 5} -> 
-       GrayLevel[0], {5, 6} -> GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
-       GrayLevel[0], {5, 9} -> GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
-       GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
-       GrayLevel[0], {6, 6} -> GrayLevel[0], {6, 7} -> 
-       RGBColor[1, 0.5, 0], {6, 8} -> GrayLevel[0], {6, 9} -> 
-       GrayLevel[0], {7, 1} -> RGBColor[1, 1, 0], {7, 2} -> 
-       GrayLevel[0], {7, 3} -> RGBColor[1, 1, 0], {7, 4} -> 
-       GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
-       RGBColor[1, 0.5, 0], {7, 7} -> RGBColor[0, 0, 1], {7, 8} -> 
-       RGBColor[1, 0.5, 0], {7, 9} -> GrayLevel[0], {8, 1} -> 
-       GrayLevel[0], {8, 2} -> RGBColor[1, 0, 0], {8, 3} -> 
+       GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+       RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {1, 5} -> 
+       GrayLevel[0], {1, 6} -> GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+       GrayLevel[0], {1, 9} -> GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+       GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+       GrayLevel[0], {2, 6} -> RGBColor[1., 0.8627450980392157, 0.], {2, 7} -> 
+       GrayLevel[0], {2, 8} -> RGBColor[1., 0.8627450980392157, 0.], {2, 9} -> 
+       GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> GrayLevel[0], {3, 3} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {3, 4} -> 
+       GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> GrayLevel[0], {3, 7} -> 
+       RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 8} -> 
+       GrayLevel[0], {3, 9} -> GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {4, 3} -> 
+       RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {4, 5} -> 
+       GrayLevel[0], {4, 6} -> RGBColor[1., 0.8627450980392157, 0.], {4, 7} -> 
+       GrayLevel[0], {4, 8} -> RGBColor[1., 0.8627450980392157, 0.], {4, 9} -> 
+       GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> GrayLevel[0], {5, 3} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {5, 4} -> 
+       GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> GrayLevel[0], {5, 7} -> 
+       GrayLevel[0], {5, 8} -> GrayLevel[0], {5, 9} -> GrayLevel[0], {6, 1} -> 
+       GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+       GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> GrayLevel[0], {6, 7} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {6, 8} -> 
+       GrayLevel[0], {6, 9} -> GrayLevel[0], {7, 1} -> 
+       RGBColor[1., 0.8627450980392157, 0.], {7, 2} -> GrayLevel[0], {7, 3} -> 
+       RGBColor[1., 0.8627450980392157, 0.], {7, 4} -> GrayLevel[0], {7, 5} -> 
+       GrayLevel[0], {7, 6} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {7, 7} -> 
+       RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 8} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {7, 9} -> 
+       GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+       RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 3} -> 
        GrayLevel[0], {8, 4} -> GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
-       GrayLevel[0], {8, 7} -> RGBColor[1, 0.5, 0], {8, 8} -> 
+       GrayLevel[0], {8, 7} -> 
+       RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {8, 8} -> 
        GrayLevel[0], {8, 9} -> GrayLevel[0], {9, 1} -> 
-       RGBColor[1, 1, 0], {9, 2} -> GrayLevel[0], {9, 3} -> 
-       RGBColor[1, 1, 0], {9, 4} -> GrayLevel[0], {9, 5} -> 
+       RGBColor[1., 0.8627450980392157, 0.], {9, 2} -> GrayLevel[0], {9, 3} -> 
+       RGBColor[1., 0.8627450980392157, 0.], {9, 4} -> GrayLevel[0], {9, 5} -> 
        GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
        GrayLevel[0], {9, 9} -> GrayLevel[0]}},
    GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
@@ -306,9 +322,10 @@ Cell[BoxData[
  CellChangeTimes->{{3.8674943785344496`*^9, 3.867494392864333*^9}, {
    3.867494452682158*^9, 3.8674944811472054`*^9}, 3.8674945246574755`*^9, {
    3.868792796853853*^9, 3.8687928137014894`*^9}, {3.8687929498817034`*^9, 
-   3.8687930024939537`*^9}, {3.8706053566047363`*^9, 3.870605387169924*^9}},
+   3.8687930024939537`*^9}, {3.8706053566047363`*^9, 3.870605387169924*^9}, 
+   3.8731323933737683`*^9, 3.8731324988581824`*^9},
  CellLabel->
-  "Out[180]=",ExpressionUUID->"dddaf6e8-eafc-41d0-8c67-47570dd26f5e"],
+  "Out[358]=",ExpressionUUID->"54057ad5-9213-4168-b277-bf7b904df4e5"],
 
 Cell[CellGroupData[{
 
@@ -491,7 +508,7 @@ rayLevel[0], {4, 2} -> GrayLevel[0], {4, 3} -> RGBColor[1, 0, 0], {4, 4} ->
  CellChangeTimes->{{3.8706054229489174`*^9, 3.870605459986475*^9}},
  CellLabel->
   "Out[186]=",ExpressionUUID->"54fce295-2742-46eb-b6a1-67b655f6e1d7"]
-}, Closed]]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
@@ -635,31 +652,34 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 86, 0, 98, "Title",ExpressionUUID->"ba0fb901-fce7-463a-8401-355f99696b59"],
-Cell[669, 24, 249, 6, 54, "Code",ExpressionUUID->"4beca0bb-271b-4583-828c-0789f7edaf65",
+Cell[CellGroupData[{
+Cell[691, 26, 249, 6, 54, "Code",ExpressionUUID->"4beca0bb-271b-4583-828c-0789f7edaf65",
  InitializationCell->False],
+Cell[943, 34, 332, 7, 419, "Output",ExpressionUUID->"918c0866-7ec9-49ce-9b71-a2877f92d9b2"]
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[943, 34, 79, 0, 67, "Section",ExpressionUUID->"b86a0dc4-7f14-49dd-9756-3e5ed091f95d"],
+Cell[1312, 46, 79, 0, 67, "Section",ExpressionUUID->"b86a0dc4-7f14-49dd-9756-3e5ed091f95d"],
 Cell[CellGroupData[{
-Cell[1047, 38, 3463, 80, 52, "TestUI",ExpressionUUID->"f10b8e54-c742-4298-b976-ab7982f908c0",
+Cell[1416, 50, 3463, 80, 52, "TestUI",ExpressionUUID->"f10b8e54-c742-4298-b976-ab7982f908c0",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4513, 120, 4450, 113, 288, "Code",ExpressionUUID->"14279c3d-bfac-421f-a9fa-80e7d450236c",
+Cell[4882, 132, 4450, 113, 288, "Code",ExpressionUUID->"14279c3d-bfac-421f-a9fa-80e7d450236c",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->25925508]
 }, Open  ]],
-Cell[8978, 236, 4259, 74, 239, "Output",ExpressionUUID->"dddaf6e8-eafc-41d0-8c67-47570dd26f5e"],
+Cell[9347, 248, 4924, 79, 239, "Output",ExpressionUUID->"54057ad5-9213-4168-b277-bf7b904df4e5"],
 Cell[CellGroupData[{
-Cell[13262, 314, 156, 3, 54, "Subsection",ExpressionUUID->"0e39bf50-172a-490f-a63c-6173bea637dc"],
+Cell[14296, 331, 156, 3, 54, "Subsection",ExpressionUUID->"0e39bf50-172a-490f-a63c-6173bea637dc"],
 Cell[CellGroupData[{
-Cell[13443, 321, 3497, 81, 52, "TestUI",ExpressionUUID->"6d9ca4a9-aa93-4570-92ad-0817bd8e0353",
+Cell[14477, 338, 3497, 81, 52, "TestUI",ExpressionUUID->"6d9ca4a9-aa93-4570-92ad-0817bd8e0353",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[16943, 404, 730, 18, 108, "Code",ExpressionUUID->"1da436be-cbef-4586-9fed-8fad339ccca0",
+Cell[17977, 421, 730, 18, 108, "Code",ExpressionUUID->"1da436be-cbef-4586-9fed-8fad339ccca0",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->50221627]
 }, Open  ]],
-Cell[17688, 425, 3965, 67, 239, "Output",ExpressionUUID->"54fce295-2742-46eb-b6a1-67b655f6e1d7"]
-}, Closed]]
+Cell[18722, 442, 3965, 67, 239, "Output",ExpressionUUID->"54fce295-2742-46eb-b6a1-67b655f6e1d7"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }

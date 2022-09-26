@@ -921,3 +921,35 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220925-FXL3OW"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["0520fde7"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220925-1WH4JS"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["99b1bc43"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220926-6ZJMZ2"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["1b2d62fb"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220926-9V9TDN"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["6430c8c4"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220926-K11J2Z"
+]

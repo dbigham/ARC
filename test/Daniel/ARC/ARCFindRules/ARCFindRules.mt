@@ -3035,3 +3035,75 @@ Test[
     ,
     TestID -> "ARCFindRules-20220925-550EAJ"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0520fde7"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 2,
+            "Mapping" -> <|{1, 0} -> 0, {0, 0} -> 0, {0, 1} -> 0, {1, 1} -> 1|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220925-KQT0JX"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1b2d62fb"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 8,
+            "Mapping" -> <|{0, 1} -> 0, {1, 1} -> 0, {0, 0} -> 1, {1, 0} -> 0|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220926-UK5L9O"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "99b1bc43"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 3,
+            "Mapping" -> <|{0, 0} -> 0, {1, 0} -> 1, {1, 1} -> 0, {0, 1} -> 1|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220926-HJD005"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6430c8c4"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 3,
+            "Mapping" -> <|{1, 0} -> 0, {0, 1} -> 0, {0, 0} -> 1, {1, 1} -> 0|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220926-HLLW9Q"
+]
