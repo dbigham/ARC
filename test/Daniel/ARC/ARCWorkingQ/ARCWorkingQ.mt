@@ -953,3 +953,19 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220926-K11J2Z"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["94f9d214"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220926-FGNHGA"
+]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["3428a4f5"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220926-LRBHOQ"
+]

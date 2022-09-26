@@ -3107,3 +3107,42 @@ Test[
     ,
     TestID -> "ARCFindRules-20220926-HLLW9Q"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "3428a4f5"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 3,
+            "Mapping" -> <|{0, 1} -> 1, {0, 0} -> 0, {1, 1} -> 0, {1, 0} -> 1|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220926-HDLZWN"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "94f9d214"]["Train"]]
+    ]
+    ,
+    <|
+        "Subdivision" -> <|
+            "Input" -> <|"Type" -> "ColorGrid", "RowCount" -> 2, "ColumnCount" -> 1|>,
+            "Output" -> None
+        |>,
+        "Rules" -> <|
+            "Type" -> "ValueMap",
+            "Binarize" -> True,
+            "OutputColor" -> 2,
+            "Mapping" -> <|{0, 0} -> 1, {1, 0} -> 0, {0, 1} -> 0, {1, 1} -> 0|>
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20220926-C3P684"
+]

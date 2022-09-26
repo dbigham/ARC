@@ -533,6 +533,8 @@ ARCSubdivisionImages::usage = "ARCSubdivisionImages  "
 
 ARCBinarizeImage::usage = "ARCBinarizeImage  "
 
+ARCParseColorGrids::usage = "ARCParseColorGrids  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -4142,6 +4144,17 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* Check if the input scenes can be subdivided into a grid structure on account of their
+           colorings. Sometimes this is done so that the output can be produced as a logical
+           combination of the input segments. e.g. 94f9d214 *)
+        If [FreeQ[parsedExamples, KeyValuePattern["Grid" -> _]],
+            With[{parseColorGridsResult = ARCParseColorGrids[parsedExamples]},
+                If [TrueQ[parseColorGridsResult["Result"]],
+                    parsedExamples[[All, "Input", "Grid"]] = KeyDrop[parseColorGridsResult, "Result"]
+                ]
+            ]
+        ];
+        
         (* If we can't find a rule set, all of the inputs are subdivided into segments of equal
            sizes via dividers, and all outputs are the size of one of those segments (while also
            being a single color), then we can consider whether the segments from the first image
@@ -4162,7 +4175,24 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 If [foundRulesQ2,
                     foundRulesQ = True;
                     res = <|
-                        "Subdivision" -> <|"Input" -> "Grid", "Output" -> None|>,
+                        "Subdivision" -> <|
+                            "Input" -> (
+                                gridType = Replace[
+                                    parsedExamples[[1, "Input", "Grid", "Type"]],
+                                    {
+                                        "ColorGrid" :> <|
+                                            "Type" -> "ColorGrid",
+                                            KeyTake[
+                                                parsedExamples[[1, "Input", "Grid"]],
+                                                {"RowCount", "ColumnCount"}
+                                            ]
+                                        |>,
+                                        _Missing :> "Grid"
+                                    }
+                                ]
+                            ),
+                            "Output" -> None
+                        |>,
                         "Rules" -> <|
                             "Type" -> "ValueMap",
                             "Binarize" -> True,
@@ -5735,10 +5765,36 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         If [Or[
                 inputGridExpectedQ = MatchQ[rules["Subdivision"], "Grid" | KeyValuePattern["Input" -> "Grid"]],
+                (* e.g. 94f9d214 *)
+                MatchQ[rules["Subdivision"], KeyValuePattern["Input" -> KeyValuePattern["Type" -> "ColorGrid"]]],
                 MatchQ[rules["Rules"], {Repeated[_List]}]
             ],
             
             (* There is a grid of rule sets to be applied to subdivisions of the image. *)
+            
+            If [MatchQ[rules["Subdivision"], KeyValuePattern["Input" -> KeyValuePattern["Type" -> "ColorGrid"]]],
+                (* The scene is expected to be a "color grid" where there are no explicit
+                   cell dividers, but rather there are subdivisions of the input that are
+                   each composed of a different color. e.g. 94f9d214 *)
+                parsedScene["Grid"] = <|
+                    "RowCount" -> (rows = rules["Subdivision", "Input", "RowCount"]),
+                    "ColumnCount" -> (columns = rules["Subdivision", "Input", "ColumnCount"]),
+                    "Cells" -> (
+                        cellWidth = parsedScene["Width"] / columns;
+                        cellHeight = parsedScene["Height"] / rows;
+                        Function[{row},
+                            Function[{column},
+                                <|
+                                    "Y" -> (row - 1) * cellHeight + 1,
+                                    "X" -> (column - 1) * cellWidth + 1,
+                                    "Width" -> cellWidth,
+                                    "Height" -> cellHeight
+                                |>
+                            ] /@ Range[columns]
+                        ] /@ Range[rows]
+                    )
+                |>
+            ];
             
             If [And[
                     TrueQ[inputGridExpectedQ],
@@ -12700,7 +12756,8 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 25}],
             "ImplementationTime" -> Quantity[2, "Hours"],
             "CodeLength" -> 22465,
-            "NewGeneralizedSuccesses" -> {},
+            (* Approx *)
+            "NewGeneralizedSuccesses" -> {"44d8ac46"},
             (* Due to misc edits though, I believe. *)
             "NewEvaluationSuccesses" -> {"00dbd492"}
         |>,
@@ -12709,7 +12766,7 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 25}],
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             "CodeLength" -> 23007,
-            "NewGeneralizedSuccesses" -> {"1b2d62fb", "99b1bc43", "0520fde7"},
+            "NewGeneralizedSuccesses" -> {"1b2d62fb", "99b1bc43", "0520fde7", "3428a4f5", "6430c8c4", "ce4f8723", "f2829549"},
             "NewEvaluationSuccesses" -> {"34b99a2b"}
         |>,
         <|
@@ -12736,6 +12793,59 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 26}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 23035,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "3428a4f5",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23184,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Not a proper rule set. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "44d8ac46",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23193,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "6430c8c4",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23203,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "ce4f8723",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23213,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "f2829549",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23222,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "94f9d214",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 23291,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -23035,6 +23145,147 @@ ARCBinarizeImage[ARCScene[image_], background_Integer] :=
             Except[background] -> 1
         },
         {2}
+    ]
+
+(*!
+    \function ARCParseColorGrids
+    
+    \calltable
+        ARCParseColorGrids[parsedExamples] '' Checks to see if there appears to be an implicit grid at play defined by regions of particular color.
+    
+    e.g. 94f9d214
+    
+    Examples:
+    
+    ARCParseColorGrids[ARCParseInputAndOutputScenes[ARCParseFile["94f9d214"]["Train"]]]
+    
+    ===
+    
+    <|
+        "Result" -> True,
+        "RowCount" -> 2,
+        "ColumnCount" -> 1,
+        "Cells" -> {
+            {<|"Y" -> 1, "X" -> 1, "Width" -> 4, "Height" -> 4|>},
+            {<|"Y" -> 5, "X" -> 1, "Width" -> 4, "Height" -> 4|>}
+        }
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCParseColorGrids]
+    
+    \maintainer danielb
+*)
+Clear[ARCParseColorGrids];
+ARCParseColorGrids[parsedExamples_List] :=
+    Module[
+        {
+            widthMultiples,
+            heightMultiples,
+            colors,
+            rows,
+            columns,
+            cellWidth,
+            cellHeight
+        },
+        
+        widthMultiples = DeleteDuplicates[
+            Function[{example},
+                example["Input", "Width"] / example["Output", "Width"]
+            ] /@ parsedExamples
+        ];
+        
+        heightMultiples = DeleteDuplicates[
+            Function[{example},
+                example["Input", "Height"] / example["Output", "Height"]
+            ] /@ parsedExamples
+        ];
+        
+        (* Are the width and height multiples consistent for all input-output pairs, and
+           is at least one of the multiples > 1? And all inputs are the same size? *)
+        If [And[
+                MatchQ[widthMultiples, {_}],
+                MatchQ[heightMultiples, {_}],
+                (* All inputs are the same width? *)
+                MatchQ[
+                    DeleteDuplicates[parsedExamples[[All, "Input", "Width"]]],
+                    {_}
+                ],
+                (* All inputs are the same height? *)
+                MatchQ[
+                    DeleteDuplicates[parsedExamples[[All, "Input", "Height"]]],
+                    {_}
+                ],
+                (* Either multiple rows or multiple columns? *)
+                Or[
+                    widthMultiples[[1]] > 1,
+                    heightMultiples[[1]] > 1
+                ],
+                (* Same colors in all inputs? *)
+                colors = DeleteDuplicates[parsedExamples[[All, "Input", "Colors"]]];
+                MatchQ[
+                    colors,
+                    {_}
+                ],
+                colors = colors[[1]];
+                rows = heightMultiples[[1]];
+                columns = widthMultiples[[1]];
+                (* One color per grid cell? *)
+                Length[colors] === rows * columns
+            ],
+            cellWidth = parsedExamples[[1, "Input", "Width"]] / columns;
+            cellHeight = parsedExamples[[1, "Input", "Height"]] / rows;
+            
+            res = <|
+                "Result" -> True,
+                "Type" -> "ColorGrid",
+                "RowCount" -> rows,
+                "ColumnCount" -> columns,
+                "Cells" -> (
+                    Function[{row},
+                        Function[{column},
+                            <|
+                                "Y" -> (row - 1) * cellHeight + 1,
+                                "X" -> (column - 1) * cellWidth + 1,
+                                "Width" -> cellWidth,
+                                "Height" -> cellHeight
+                            |>
+                        ] /@ Range[columns]
+                    ] /@ Range[rows]
+                )
+            |>;
+            
+            (* Check whether the colors in each cell are the same for all inputs. *)
+            If [And @@ (
+                    Function[{cell},
+                        MatchQ[
+                            DeleteDuplicates@
+                            Flatten[
+                                Function[{example},
+                                    DeleteCases[
+                                        Flatten[
+                                            example[[
+                                                "Input",
+                                                "Scene",
+                                                1,
+                                                cell["Y"] ;; cell["Y"] + cell["Height"] - 1,
+                                                cell["X"] ;; cell["X"] + cell["Width"] - 1
+                                            ]]
+                                        ],
+                                        example["Input", "Background"]
+                                    ]
+                                ] /@ parsedExamples
+                            ],
+                            {_}
+                        ]
+                    ] /@ Flatten[res["Cells"]]
+                ),
+                Return[res, Module]
+            ]
+        ];
+        
+        <|"Result" -> False|>
     ]
 
 End[]
