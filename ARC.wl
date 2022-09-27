@@ -4243,8 +4243,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ]
                     },
                     (*And[
-                        !FreeQ[backgroundColors, 0],*)
-                        !FreeQ[backgroundColors, Except[0]]
+                        MemberQ[backgroundColors, 0],*)
+                        MemberQ[backgroundColors, Except[0]]
                     (*]*)
                 ]
             ],
@@ -4296,7 +4296,11 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ListQ[parsedExamples],
                 !FreeQ[parsedExamples, KeyValuePattern["GridOrDivider" | "Grid" -> _Association]]
             ],
-            If [!TrueQ[workingRulesFound[]],
+            If [Or[
+                    !TrueQ[workingRulesFound[]],
+                    (* Contains a non-gray grid/divider. e.g. 496994bd *)
+                    !FreeQ[parsedExamples, KeyValuePattern["Grid" -> KeyValuePattern["Color" -> Except[5]]]]
+                ],
                 res2 =
                     (* Note that we need to do a full recursion into ARCFindRules rather than
                        only to arcFindRulesHelper, since we might need to use a scene parsing
@@ -5439,7 +5443,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                    call ARCGeneralizeConclusions so that it will prune the rule down
                    wrt minimal property sets. *)
                 !FreeQ[
-                    conclusionGroup,
+                    KeyDrop[Flatten[Values[groupedByConclusion]], {"Input", "Output"}],
                     KeyValuePattern[{"Image" -> _, "Shape" -> _, "Shapes" -> _}]
                 ]
             ],
@@ -9564,6 +9568,8 @@ ARCNotableSubImages[objects_List, sceneWidth_, sceneHeight_] :=
                 ] &
             ];
         
+        (*ARCEcho2[res];*)
+        
         ARCSortNotableSubImages[
             Function[{group},
                 <|
@@ -12834,6 +12840,7 @@ ARCTaskLog[] :=
             "NewEvaluationSuccesses" -> {}
         |>,
         <|
+            "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "f2829549",
             "Timestamp" -> DateObject[{2022, 9, 26}],
             "ImplementationTime" -> Quantity[0, "Hours"],
@@ -12845,7 +12852,27 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "94f9d214",
             "Timestamp" -> DateObject[{2022, 9, 26}],
             "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "RuntimeParallel" -> Quantity[11, "Minutes"],
             "CodeLength" -> 23291,
+            "NewGeneralizedSuccesses" -> {"dae9d2b5", "fafffa47"},
+            (* Some of these are from the previously implemented example. *)
+            "NewEvaluationSuccesses" -> {"0c9aba6e", "195ba7dc", "31d5ba1a", "506d28a5", "5d2a5c43", "66f2d22f", "d19f7514", "e133d23d", "e345f17b"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "dae9d2b5",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23282,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "fafffa47",
+            "Timestamp" -> DateObject[{2022, 9, 26}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23292,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -13188,6 +13215,7 @@ ARCImplementedTasksMarkdown[] :=
         ][[All, "ExampleImplemented"]];
         
         arcEvaluationTasksPassingDueToGeneralization =
+            DeleteDuplicates@
             Flatten@
             Join[
                 Cases[taskLog[[All, "NewEvaluationSuccesses"]], List[Repeated[_String]]],
@@ -22811,34 +22839,17 @@ ARCCheckForLogicOperationQ[parsedExamples_List] :=
                 MatchQ[
                     grids,
                     {
-                        Repeated[
-                            KeyValuePattern[
-                                {
-                                    (* All grids have the same number of rows. *)
-                                    "RowCount" -> rowCount_,
-                                    (* All grids have the same number of columns. *)
-                                    "ColumnCount" -> columnCount_,
-                                    "Cells" -> {
-                                        Repeated[
-                                            {
-                                                Repeated[
-                                                    KeyValuePattern[
-                                                        {
-                                                            (* All cells have the same width. *)
-                                                            "Width" -> w_,
-                                                            (* All cells have the same height. *)
-                                                            "Height" -> h_
-                                                        }
-                                                    ]
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        ]
+                        Repeated[KeyValuePattern[{"Cells" -> _}]]
                     }
                 ],
+                (* All grids have the same number of rows. *)
+                MatchQ[DeleteDuplicates[grids[[All, "RowCount"]]], {_}],
+                (* All grids have the same number of columns. *)
+                MatchQ[DeleteDuplicates[grids[[All, "ColumnCount"]]], {_}],
+                (* All cells have the same width. *)
+                MatchQ[DeleteDuplicates[Flatten[grids[[All, "Cells", All, All, "Width"]]]], {_}],
+                (* All cells have the same height. *)
+                MatchQ[DeleteDuplicates[Flatten[grids[[All, "Cells", All, All, "Height"]]]], {_}],
                 Or[
                     grids[[1, "RowCount"]] === 1,
                     grids[[1, "ColumnCount"]] === 1
