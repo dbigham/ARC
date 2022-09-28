@@ -3146,3 +3146,30 @@ Test[
     ,
     TestID -> "ARCFindRules-20220926-C3P684"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f25ffba3"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|"Same" -> True|>,
+        <|
+            "Transform" -> <|
+                "Type" -> "AddObjects",
+                "Objects" -> {
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue["Object", "Image"],
+                            <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        ],
+                        "Y" -> 1,
+                        "X" -> 1
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20220928-OSLLMJ"
+]

@@ -9638,6 +9638,10 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
             addComponentsDetectedQ = False;
             fromSameSceneQ = False;
             
+            subImagePositions = Missing[];
+            
+            subImage = subImageAssoc["Image"];
+            
             (*If [OptionValue["InputOrOutput"] === "Output" && OptionValue["ExampleIndex"] === 1,
                 ARCEcho[ARCScene[subImageAssoc["Image"]]];
             ];*)
@@ -9652,22 +9656,45 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                        it up since it wouldn't get parsed as multiple things otherwise. *)
                     MissingQ[object["Color"]]
                 ],
-                Function[{exampleObject},
-                    If [And[
-                            exampleObject["InputOrOutput"] === "Input",
-                            ObjectWithinQ[exampleObject, object]
-                        ],
-                        addComponentsDetectedQ = True
+                subImagePositions =
+                    ReturnIfFailure[
+                        (*ResourceFunction["FindSubmatrix"][*)
+                        FindSubmatrix[
+                            leftoverImage,
+                            subImage,
+                            "Positions"
+                        ]
                     ];
-                    If [exampleObject["InputOrOutput"] === "Output",
-                        (* This notable sub-image is actually from the same scene
-                           as the object we're considering. *)
-                        fromSameSceneQ = True
-                    ]
-                ] /@ subImageAssoc["ExampleObjects"]
+                (* Also, even if the output object isn't a single color, if there is a single-color
+                   contiguous connection between the sub-image and the larger image, then we again
+                   do want to split it up since it wouldn't get parsed as multiple things
+                   otherwise. e.g. f25ffba3 *)
+                (* Q: Should this be AllTrue or AnyTrue, or something more nuanced? The basic case
+                      is where there's just one subImagePosition, such as f25ffba3. *)
+                If [!AllTrue[
+                        subImagePositions,
+                        Function[{subImagePosition},
+                            TrueQ[ARCContiguousSubImageQ[object["Image"][[1]], subImage, subImagePosition]]
+                        ]
+                    ],
+                    (*If [OptionValue["InputOrOutput"] === "Output" && OptionValue["ExampleIndex"] === 1,
+                        ARCEcho[ARCScene[subImageAssoc["Image"]]];
+                    ];*)
+                    Function[{exampleObject},
+                        If [And[
+                                exampleObject["InputOrOutput"] === "Input",
+                                ObjectWithinQ[exampleObject, object]
+                            ],
+                            addComponentsDetectedQ = True
+                        ];
+                        If [exampleObject["InputOrOutput"] === "Output",
+                            (* This notable sub-image is actually from the same scene
+                            as the object we're considering. *)
+                            fromSameSceneQ = True
+                        ]
+                    ] /@ subImageAssoc["ExampleObjects"]
+                ]
             ];
-            
-            subImage = subImageAssoc["Image"];
             
             (* If [ImageWidth[subImage] === 3 && ImageHeight[subImage] === 3,
                 XEcho[SimplifyObjects[subImage]];
@@ -9700,15 +9727,18 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                     (* Skip this. See above. *)
                     Nothing,
                 True,
-                    subImagePositions =
-                        ReturnIfFailure[
-                            (*ResourceFunction["FindSubmatrix"][*)
-                            FindSubmatrix[
-                                leftoverImage,
-                                subImage,
-                                "Positions"
+                    (* If we haven't already computed this above. (avoid doing duplicate work) *)
+                    If [MissingQ[subImagePositions],
+                        subImagePositions =
+                            ReturnIfFailure[
+                                (*ResourceFunction["FindSubmatrix"][*)
+                                FindSubmatrix[
+                                    leftoverImage,
+                                    subImage,
+                                    "Positions"
+                                ]
                             ]
-                        ];
+                    ];
                     
                     (* If [$arcDebug,
                         EchoIndented[subImagePositions]
@@ -12873,6 +12903,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 26}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 23292,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "f25ffba3",
+            "Timestamp" -> DateObject[{2022, 9, 28}],
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "CodeLength" -> 23336,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
