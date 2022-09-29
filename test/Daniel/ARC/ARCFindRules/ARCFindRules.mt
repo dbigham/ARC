@@ -3173,3 +3173,43 @@ Test[
     ,
     TestID -> "ARCFindRules-20220928-OSLLMJ"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "9ecd008a"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    ,
+    TestID -> "ARCFindRules-20220928-EMUDDF"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "FF805C23"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    ,
+    TestID -> "ARCFindRules-20220928-7WECHR"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "DC0A314F"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    ,
+    TestID -> "ARCFindRules-20220928-SSJHVU"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67B4A34D"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    ,
+    TestID -> "ARCFindRules-20220928-RSY06C"
+]
