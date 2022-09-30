@@ -3213,3 +3213,33 @@ Test[
     ,
     TestID -> "ARCFindRules-20220928-RSY06C"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "29ec7d0e"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputationUsingPattern"|>
+    ,
+    TestID -> "ARCFindRules-20220929-V973SP"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0dfd9992"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputationUsingPattern"|>
+    ,
+    TestID -> "ARCFindRules-20220929-ES65R9"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "484b58aa"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "ImputationUsingPattern"|>
+    ,
+    TestID -> "ARCFindRules-20220929-35JPOP"
+]

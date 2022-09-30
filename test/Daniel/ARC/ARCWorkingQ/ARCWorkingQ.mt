@@ -1009,3 +1009,33 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20220928-KY6K0H"
 ]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[Daniel`ARC`ARCWorkingQ["29ec7d0e"]]
+    ]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220929-3C3DMJ"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[Daniel`ARC`ARCWorkingQ["0dfd9992"]]
+    ]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220929-XS8LSS"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[Daniel`ARC`ARCWorkingQ["484b58aa"]]
+    ]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20220929-4C7W1W"
+]

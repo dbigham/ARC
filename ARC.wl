@@ -539,6 +539,10 @@ ARCCheckForImputedRectangleForSymmetry::usage = "ARCCheckForImputedRectangleForS
 
 ARCSymmetryLocations::usage = "ARCSymmetryLocations  "
 
+ARCCheckForImputation::usage = "ARCCheckForImputation  "
+
+ARCSubImage::usage = "ARCSubImage  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -663,6 +667,7 @@ $MyTrainingDirectory = FileNameJoin[{$arcDirectory, "Data", "MyTrainingData"}];
 $evaluationDirectory = FileNameJoin[{$corpusGitDirectory, "data", "evaluation"}];
 
 $nonImageColor = -1;
+$outOfBoundsColor = -2;
 
 $integerToColor = <|
     0 -> Black,
@@ -3931,6 +3936,7 @@ Options[ARCFindRules] =
     "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
     "CheckForGridsAndDividers" -> Automatic,            (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
     "CheckForImputedRectangleForSymmetry" -> True,      (*< Should we check for ImputedRectangleForSymmetry? *)
+    "CheckForImputationUsingPattern" -> True,           (*< Check for whether areas of the input image need to be imputed using a pattern. *)
     
     "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
@@ -3987,6 +3993,15 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             Replace[
                 ARCCheckForImputedRectangleForSymmetry[examples],
                 res_Association :> Return[<|"Rules" -> res|>, Module]
+            ]
+        ];
+        
+        (* e.g. 29ec7d0e *)
+        If [TrueQ[OptionValue["CheckForImputationUsingPattern"]],
+            Replace[
+                (* For now we'll just use the first example. *)
+                ARCCheckForImputation[examples[[1, "Input"]], examples[[1, "Output"]]],
+                res_ARCScene :> Return[<|"Rules" -> <|"Type" -> "ImputationUsingPattern"|>|>, Module]
             ]
         ];
         
@@ -5767,6 +5782,15 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                             ] /@ imputations;
                             Return[ARCScene[outputImage], Module]
                         ),
+                        (* We were unable to find the imputations, so we'll bail out. *)
+                        _ :> Return[sceneIn, Module]
+                    }
+                ],
+            KeyValuePattern["Type" -> "ImputationUsingPattern"],
+                Replace[
+                    ARCCheckForImputation[sceneIn],
+                    {
+                        res_ARCScene :> Return[res, Module],
                         (* We were unable to find the imputations, so we'll bail out. *)
                         _ :> Return[sceneIn, Module]
                     }
@@ -12976,6 +13000,61 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 28}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 23602,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "29ec7d0e",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[4.5, "Hours"],
+            "CodeLength" -> 23976,
+            "NewGeneralizedSuccesses" -> {"0dfd9992", "484b58aa", "c3f564a4", "d10ecb37", "662c240a"},
+            "NewEvaluationSuccesses" -> {"1d0a4b61", "5207a7b5", "c663677b", "e95e3d8e"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "0dfd9992",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23984,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "484b58aa",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23993,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "c3f564a4",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23993,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Crazy rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "662c240a",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23993,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Crazy rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "d10ecb37",
+            "Timestamp" -> DateObject[{2022, 9, 30}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 23993,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -23008,8 +23087,8 @@ ARCCheckForLogicOperationQ[parsedExamples_List] :=
     \maintainer danielb
 *)
 Clear[ARCDrawSubImage];
-ARCDrawSubImage[imageIn_List, object_Association] :=
-    Module[{image = imageIn, posX, posY, subImageWidth, subImageHeight},
+ARCDrawSubImage[image_List, object_Association] :=
+    Module[{posX, posY},
         
         If [ListQ[object["Position"]],
             posY = object["Position"][[1]];
@@ -23027,53 +23106,56 @@ ARCDrawSubImage[imageIn_List, object_Association] :=
             ]
         ];
         
-        subImage = object["Image"][[1]];
+        ARCDrawSubImage[image, object["Image"][[1]], posY, posX]
+    ]
+
+ARCDrawSubImage[imageIn_List, subImage_List, insertPositionY_Integer, insertPositionX_Integer] :=
+    Module[
+        {
+            image = imageIn,
+            y1,
+            x1,
+            y2,
+            x2,
+            subImageWidth,
+            subImageHeight
+        },
         
         subImageWidth = ImageWidth[subImage];
         subImageHeight = ImageHeight[subImage];
         
-        Which[
-            posY + subImageHeight - 1 > sceneHeight,
-                ReturnFailure[
-                    "ObjectOutsideOfSceneBoundary",
-                    "The image extends beyond the bottom of the scene.",
-                    "Object" -> object,
-                    "ObjectY" -> posY,
-                    "ObjectHeight" -> subImageHeight,
-                    "SceneHeight" -> sceneHeight
-                ],
-            posX + subImageWidth - 1 > sceneWidth,
-                ReturnFailure[
-                    "ObjectOutsideOfSceneBoundary",
-                    "The image extends beyond the right side of the scene.",
-                    "Object" -> object,
-                    "ObjectX" -> posX,
-                    "ObjectHeight" -> subImageWidth,
-                    "SceneHeight" -> sceneWidth
-                ],
-            posY < 1,
-                ReturnFailure[
-                    "ObjectOutsideOfSceneBoundary",
-                    "The image extends beyond the above the top of the scene.",
-                    "Object" -> object,
-                    "ObjectY" -> posY
-                ],
-            posX < 1,
-                ReturnFailure[
-                    "ObjectOutsideOfSceneBoundary",
-                    "The image extends beyond the left side of the scene.",
-                    "Object" -> object,
-                    "ObjectX" -> posX
-                ]
+        y1 = 1;
+        x1 = 1;
+        
+        y2 = y1 + subImageHeight - 1;
+        x2 = x1 + subImageWidth - 1;
+        
+        If [insertPositionY + subImageHeight - 1 > ImageHeight[imageIn],
+            y2 -= (insertPositionY + subImageHeight - 1) - ImageHeight[imageIn]
+        ];
+        
+        If [insertPositionX + subImageWidth - 1 > ImageWidth[imageIn],
+            x2 -= (insertPositionX + subImageWidth - 1) - ImageWidth[imageIn]
+        ];
+        
+        If [insertPositionY < 1,
+            y1 += (1 - insertPositionY)
+        ];
+        
+        If [insertPositionX < 1,
+            x1 += (1 - insertPositionX)
         ];
         
         Function[{y},
             Function[{x},
-                If [subImage[[y, x]] =!= $nonImageColor,
-                    image[[posY + y - 1, posX + x - 1]] = subImage[[y, x]]
+                If [!MatchQ[subImage[[y, x]], $nonImageColor | $outOfBoundsColor],
+                    image[[
+                        insertPositionY + y - 1,
+                        insertPositionX + x - 1
+                    ]] = subImage[[y, x]]
                 ]
-            ] /@ Range[subImageWidth]
-        ] /@ Range[subImageHeight];
+            ] /@ Range[x1, x2]
+        ] /@ Range[y1, y2];
         
         image
     ]
@@ -23612,6 +23694,335 @@ ARCSymmetryLocations[width_Integer, height_Integer, {y_, x_}] :=
         {y, width - x + 1},
         {height - y + 1, width - x + 1}
     }
+
+(*!
+    \function ARCCheckForImputation
+    
+    \calltable
+        ARCCheckForImputation[inputImage, outputImage] '' Checks whether it appears that the input image is a corrupted version of an output image, and if so, attempts to repair the input image.
+    
+    e.g. 29ec7d0e
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForImputation]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForImputation];
+$patchWidth = 3;
+$patchHeight = 3;
+ARCCheckForImputation[ARCScene[imageIn_], output: ARCScene[outputImage_] : Missing["Unknown"]] :=
+    Module[
+        {
+            image = imageIn,
+            maxPatchesToConsider = 10,
+            (* Quite hard to know what number to go with here. If the image is relatively
+               small, <= 3 might be required. But that could also lead to a poor choice
+               of image patch for most actual examples, so we'll go with 4 for now. *)
+            minImagePatchInstanceCount = 4,
+            width,
+            height,
+            colorCounts,
+            rows,
+            columns,
+            patchPositions,
+            patches,
+            row
+        },
+        
+        width = ImageWidth[image];
+        height = ImageHeight[image];
+        
+        And[
+            Or[
+                MissingQ[output],
+                And[
+                    (* If the input and output images aren't the same size, abort. *)
+                    And[
+                        width === ImageWidth[outputImage],
+                        height === ImageHeight[outputImage]
+                    ],
+                    colorCounts = Counts[Flatten[image]],
+                    (* If the image doesn't have at least 3 colors, abort. *)
+                    Length[colorCounts] >= 3,
+                    (* If the image's most common color fills > 50% of the space, abort. *)
+                    Max[colorCounts] / Total[colorCounts] < 0.5,
+                    (* If the percentage difference from input to output is more than 22.5%, abort. *)
+                    With[{pixelComparisons = Counts[SameQ @@@ Transpose[{Flatten[image], Flatten[outputImage]}]]},
+                        diffProportion = N[pixelComparisons[False] / Total[pixelComparisons]];
+                        diffProportion < 0.225
+                    ]
+                ]
+            ]
+        ] // Replace[#, {False :> Return[False, Module]}] &;
+        
+        (* Patches to examine. *)
+        $patchWidth = 3;
+        $patchHeight = 3;
+        rows = Floor[height / $patchHeight];
+        columns = Floor[width / $patchWidth];
+        patches = Function[{i},
+            row = Floor[(i - 1) / columns] + 1;
+            column = Mod[i - 1, columns] + 1;
+            <|
+                "Row" -> row,
+                "Column" -> column,
+                "Y" -> (row - 1) * $patchHeight + 1,
+                "X" -> (column - 1) * $patchWidth + 1
+            |>
+        ] /@ Range[1, maxPatchesToConsider];
+        
+        (* Try to find an image patch with a sufficient number of colors and a sufficient
+           number of uses within the image. *)
+        Function[{patch},
+            
+            patchImage = image[[
+                patch["Y"] ;; patch["Y"] + $patchHeight - 1,
+                patch["X"] ;; patch["X"] + $patchWidth - 1
+            ]];
+            
+            patchColorCounts = Counts[Flatten[patchImage]];
+            
+            If [And[
+                    Length[patchColorCounts] >= 3,
+                    Length[
+                        patchPositions =
+                            ReturnIfFailure[
+                                (*ResourceFunction["FindSubmatrix"][*)
+                                FindSubmatrix[
+                                    image,
+                                    patchImage,
+                                    "Positions"
+                                ]
+                            ]
+                    ] >= minImagePatchInstanceCount
+                ],
+                
+                (*EchoIndented[patch];
+                Echo[ARCScene[patchImage]];*)
+                
+                (* Try using this patch to impute the corrupted parts of the image. *)
+                Replace[
+                    ARCCheckForImputation[
+                        image,
+                        Join[
+                            patch,
+                            <|
+                                "Positions" -> patchPositions,
+                                "Image" -> patchImage
+                            |>
+                        ]
+                    ],
+                    res_ARCScene :> Return[res, Module]
+                ]
+            ]
+            
+        ] /@ patches;
+        
+        False
+    ]
+
+ARCCheckForImputation[imageIn_List, patch_Association] :=
+    Module[
+        {
+            image = imageIn,
+            width,
+            height,
+            imagesCenteredOnPatchInstances,
+            reapTag,
+            patchSurround,
+            colorsInDisagreement,
+            corruptionColor
+        },
+        
+        width = ImageWidth[image];
+        height = ImageHeight[image];
+        
+        (* Assumes width and height of patches are the same, likewise for images. *)
+        patchPadding = Ceiling[(width - $patchWidth) / 2];
+        
+        imagesCenteredOnPatchInstances =
+            Function[{patchPosition},
+                (*EchoIndented[patchPosition];*)
+                ARCSubImage[
+                    image,
+                    patchPosition[[1]] - patchPadding,
+                    patchPosition[[2]] - patchPadding,
+                    patchPosition[[1]] + $patchHeight - 1 + patchPadding,
+                    patchPosition[[2]] + $patchWidth - 1 + patchPadding
+                ]
+            ] /@ patch["Positions"];
+        
+        (*ARCEcho[ARCScene /@ imagesCenteredOnPatchInstances];*)
+        
+        centeredImageWidthRange = Range[ImageWidth[imagesCenteredOnPatchInstances[[1]]]];
+        centeredImageHeight = ImageHeight[imagesCenteredOnPatchInstances[[1]]];
+        
+        transposedImages = Transpose[
+            imagesCenteredOnPatchInstances,
+            {3, 1, 2}
+        ];
+        
+        colorsInDisagreement = ReapList[
+            reapTag,
+            patchSurround = Function[{y},
+                Function[{x},
+                    colorCountsAtPosition = Counts[DeleteCases[transposedImages[[y, x]], $outOfBoundsColor]];
+                    colorCountAtPosition = Length[colorCountsAtPosition];
+                    Which[
+                        colorCountAtPosition === 0,
+                            (* Always out of bounds. Nothing to do. *)
+                            -2,
+                        colorCountAtPosition === 1,
+                            (* Note that this might end up being the corruption color in
+                               some cases, so below we replace these with -1 if any of them
+                               end up being the corruption color. *)
+                            First[Keys[colorCountsAtPosition]],
+                        colorCountAtPosition > 2,
+                            (* This implies a universal corruption color wasn't found.
+                               This currently assumes a single corruption color -- it would be
+                               ideal to support multiple corruption colors. *)
+                            (*Echo["UniversalCorruptionColorNotFound1"];*)
+                            Return[False, Module],
+                        True,
+                            Sow[Keys[colorCountsAtPosition], reapTag];
+                            colorCountsAtPosition
+                    ]
+                ] /@ centeredImageWidthRange
+            ] /@ Range[centeredImageHeight]
+        ];
+        
+        (*EchoIndented[colorsInDisagreement];*)
+        
+        corruptionColor = Replace[
+            Intersection @@ DeleteCases[colorsInDisagreement, {}],
+            {
+                {c_} :> c,
+                (* A universal corruption color wasn't found. This currently assumes a
+                   single corruption color -- it would be ideal to support multiple
+                   corruption colors. If `other` is an empty list, it implies that
+                   in all examples, this position was corrupted, so we didn't have any
+                   patches that showed us how to infer it. *)
+                other_ :> (
+                    EchoIndented["UniversalCorruptionColorNotFound2" -> other];
+                    Return[False, Module]
+                )
+            }
+        ];
+        
+        (* Resolve any disagreements now that we know the corruption color, to produce
+           a complete / uncorrupted surround image for our image patch. *)
+        patchSurround =
+            Replace[
+                patchSurround,
+                disagreement_Association :> (
+                    First[DeleteCases[Keys[disagreement], corruptionColor]]
+                ),
+                {2}
+            ];
+        
+        (*ARCEcho[ARCScene[patchSurround]];*)
+        
+        (* If any of the patch surround pixels ended up always being corrupted, then
+           replace them with the $nonImageColor so that when we apply the surround
+           image to the main image, it will preserve what pixel color was already there. *)
+        patchSurround = Replace[
+            patchSurround,
+            corruptionColor -> $nonImageColor,
+            {2}
+        ];
+        
+        (*ARCEcho[ARCScene[patchSurround]];*)
+        
+        (* Apply the patch surround image to each patch position to hopefully repair
+           the image. *)
+        Function[{patchPosition},
+            image = ARCDrawSubImage[
+                image,
+                patchSurround,
+                patchPosition[[1]] - patchPadding,
+                patchPosition[[2]] - patchPadding
+            ]
+        ] /@ patch["Positions"];
+        
+        If [FreeQ[image, corruptionColor],
+            ARCScene[image]
+            ,
+            False
+        ]
+    ]
+
+(*!
+    \function ARCSubImage
+    
+    \calltable
+        ARCSubImage[image, x1, y1, x2, y2] '' Gets a sub-image from a larger image, filling in any pixels outside of the image with -2.
+    
+    Examples:
+    
+    ARCSubImage[{{1, 2}, {3, 4}}, 2, 0, 2, 3] === {{-2, 3, 4, -2}}
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSubImage]
+    
+    \maintainer danielb
+*)
+Clear[ARCSubImage];
+ARCSubImage[image_List, y1In_Integer, x1In_Integer, y2In_Integer, x2In_Integer] :=
+    Module[
+        {
+            width = ImageWidth[image],
+            height = ImageHeight[image],
+            y1,
+            x1,
+            y2,
+            x2
+        },
+        If [And[
+                x1In >= 1,
+                x1In <= width,
+                y1In >= 1,
+                y1In <= height,
+                x2In >= 1,
+                x2In <= width,
+                y2In >= 1,
+                y2In <= height
+            ],
+            image[[y1In ;; y2In, x1In ;; x2In]]
+            ,
+            res = ConstantArray[
+                $outOfBoundsColor,
+                {y2In - y1In + 1, x2In - x1In + 1}
+            ];
+            
+            y1 = Min[Max[y1In, 1], height];
+            x1 = Min[Max[x1In, 1], width];
+            y2 = Min[Max[y2In, 1], height];
+            x2 = Min[Max[x2In, 1], width];
+            
+            yShift = 1 - y1In;
+            xShift = 1 - x1In;
+            
+            (*Echo[res];
+            Echo[{yShift, xShift}];*)
+            
+            res[[
+                y1 + yShift ;; y2 + yShift,
+                x1 + xShift ;; x2 + xShift
+            ]] = image[[
+                y1 ;; y2,
+                x1 ;; x2
+            ]];
+            
+            res
+        ]
+    ]
 
 End[]
 
