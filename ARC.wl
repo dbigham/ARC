@@ -568,7 +568,7 @@ ImageWidth = DevTools`ImageWidth;
 ImageHeight = DevTools`ImageHeight;
 Indent3 = EntityLink`Indent3;
 AssociationApply = Utility`AssociationApply;
-ProcessOneByOne = DevTools`NotebookTools`ProcessOneByOne;
+ProcessOneByOne = Utility`ProcessOneByOne;
 CreateNamedNotebook2 = DevTools`NotebookTools`CreateNamedNotebook2;
 CreateDirectoryIfDoesntExist = Utility`CreateDirectoryIfDoesntExist;
 SpecifiedQ = Utility`SpecifiedQ;
@@ -7982,14 +7982,25 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                     ]
                 },
                 If [TrueQ[OptionValue["Component"]],
-                    (* TODO: We need two rules for this, one for X, and one for Y.
-                            See: 25d487eb *)
+                    (* e.g. 25d487eb *)
                     {
                         "Outward",
                         "Shape",
                         "Direction",
                         "Color",
-                        "X"
+                        Alternatives[
+                            "Y" /;
+                                MatchQ[
+                                    #["Direction"],
+                                    {0, -1} | {0, 1}
+                                ],
+                            (* e.g. 25d487eb *)
+                            "X" /;
+                                MatchQ[
+                                    #["Direction"],
+                                    {-1, 0} | {1, 0}
+                                ]
+                        ]
                     }
                     ,
                     Nothing
@@ -13211,6 +13222,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 24197,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {"73ccf9c2", "d56f2372"}
+        |>,
+        <|
+            "ExampleImplemented" -> "3bd67248",
+            "Timestamp" -> DateObject[{2022, 10, 1}],
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "CodeLength" -> 24248,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -14849,7 +14868,7 @@ ARCOutwardComponentPropertiesIfAppropriate[inputObject_Association, newComponent
     Module[{newComponentX2, newComponentY2, res},
         newComponentX2 = newComponent[["Position", 2]] + newComponent["Width"] - 1;
         newComponentY2 = newComponent[["Position", 1]] + newComponent["Height"] - 1;
-        If [newComponent["Shape"]["Name"] === "Line",
+        If [EntityMatchQ[newComponent["Shape"], <|"Name" -> "Line", "Angle" -> 0 | 90|>],
             res = Which[
                 And[
                     newComponentX2 === inputObject["X"] - 1,

@@ -3287,3 +3287,44 @@ Test[
     ,
     TestID -> "ARCFindRules-20221001-EZXGLV"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "3bd67248"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Shape" -> <|"Name" -> "Line", "Angle" -> 45|>,
+                        "Color" -> 2,
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 1|>|>,
+                        "Width" -> Inactive[Plus][
+                            Daniel`ARC`ObjectValue["InputScene", "Width"],
+                            -1
+                        ],
+                        "Height" -> Inactive[Plus][
+                            Daniel`ARC`ObjectValue["InputObject", "Height"],
+                            -1
+                        ]
+                    |>,
+                    <|
+                        "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                        "Color" -> 4,
+                        "Position" -> <|"RelativePosition" -> <|"YInverse" -> 0, "X" -> 1|>|>,
+                        "Width" -> Inactive[Plus][
+                            Daniel`ARC`ObjectValue["InputScene", "Width"],
+                            -1
+                        ],
+                        "Height" -> 1
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20221001-27LKXS"
+]
