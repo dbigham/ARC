@@ -172,3 +172,26 @@ Test[
     ,
     TestID -> "ARCInferObjectProperties-20220924-T004CA"
 ]
+
+Test[
+    KeyTake[
+        Daniel`ARC`ARCInferObjectProperties[
+            <|"Image" -> Daniel`ARC`ARCScene[{{1}}], "Position" -> {1, 1}, "Colors" -> {1}|>,
+            10,
+            10
+        ],
+        {
+            "VerticalLineSymmetry",
+            "HorizontalLineSymmetry",
+            "VerticalAndHorizontalLineSymmetry"
+        }
+    ]
+    ,
+    <|
+        "VerticalLineSymmetry" -> True,
+        "HorizontalLineSymmetry" -> True,
+        "VerticalAndHorizontalLineSymmetry" -> True
+    |>
+    ,
+    TestID -> "ARCInferObjectProperties-20221001-ZT4LAJ"
+]

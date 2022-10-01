@@ -1095,7 +1095,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     "SurfacePixelCount",
                     "VerticalLineSymmetry",
                     "HorizontalLineSymmetry",
-                    "VerticalAndHorizontalLineSymmentry",
+                    "VerticalAndHorizontalLineSymmetry",
                     "HollowCount"
                 }
             ]
@@ -3977,7 +3977,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
        that into account. *)
     ARCTimeConstrained[
         Quantity[
-            If [MatchQ[$file, "6773b310" | "0d3d703e" | "3194b014"],
+            If [MatchQ[
+                    $file,
+                    "6773b310" | "0d3d703e" | "3194b014" |
+                    (* These started failing Oct 1 in training test runs, but didn't fail
+                       when I ran them locally, so adding them here experimentally. *)
+                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" | "d10ecb37"
+                ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
                 180
@@ -4120,11 +4126,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                        the scene as a single object yields a better rule set.
                        e.g. a740d043 *)
                     And[
-                        (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2,
+                        (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2
                         (* For now we will disallow SingleObject mode here if we're allowing single
                            examples per rule, otherwise it can produce a rule set that just maps
                            from a whole input scene to a whole output scene. *)
-                        $MinimumExamplesPerRule > 1
+                        (* Actually, we don't want to disable this, otherwise it breaks
+                           6e02f1e3. Note: Score for that example is about -2.1. *)
+                        (*$MinimumExamplesPerRule > 1*)
                     ]
                 ],
                 (* Try again, this time parsing the scene as a single object. *)
@@ -4458,6 +4466,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                             Sequence @@ {}
                         ],
                         "CheckForImputedRectangleForSymmetry" -> False,
+                        "CheckForImputationUsingPattern" -> False,
                         opts
                     ];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
@@ -4510,6 +4519,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ARCFindRules[
                             examples,
                             "CheckForImputedRectangleForSymmetry" -> False,
+                            "CheckForImputationUsingPattern" -> False,
                             opts
                         ];
                     foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -10232,28 +10242,22 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                 "FilledArea" -> (filledArea = Length[object["PixelPositions"]]),
                 "FilledProportion" -> N[filledArea / area],
                 "SurfacePixelCount" -> ARCSurfacePixelCount[object["Image"][[1]]],
-                If [And[
-                        Mod[width, 2] === 0,
-                        SameQ[
-                            object["Image"][[1, All, 1 ;; width / 2]],
-                            ARCApplyImageTransforms[
-                                object["Image"][[1, All, width / 2 + 1 ;; -1]],
-                                <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
-                            ]
+                If [SameQ[
+                        object["Image"][[1, All, 1 ;; Floor[width / 2]]],
+                        ARCApplyImageTransforms[
+                            object["Image"][[1, All, -Floor[width / 2] ;; -1]],
+                            <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
                         ]
                     ],
                     "VerticalLineSymmetry" -> (verticalLineSymmetry = True)
                     ,
                     "VerticalLineSymmetry" -> False
                 ],
-                If [And[
-                        Mod[height, 2] === 0,
-                        SameQ[
-                            object["Image"][[1, 1 ;; height / 2]],
-                            ARCApplyImageTransforms[
-                                object["Image"][[1, height / 2 + 1 ;; -1]],
-                                <|"Type" -> "Flip", "Direction" -> "Vertical"|>
-                            ]
+                If [SameQ[
+                        object["Image"][[1, 1 ;; Floor[height / 2]]],
+                        ARCApplyImageTransforms[
+                            object["Image"][[1, -Floor[height / 2] ;; -1]],
+                            <|"Type" -> "Flip", "Direction" -> "Vertical"|>
                         ]
                     ],
                     "HorizontalLineSymmetry" -> (horizontalLineSymmetry = True)
@@ -13198,6 +13202,15 @@ ARCTaskLog[] :=
             "CodeLength" -> 24106,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Fixed symmetry property bug wrt non-even widths and heights. *)
+        <|
+            "ExampleImplemented" -> "44f52bb0",
+            "Timestamp" -> DateObject[{2022, 10, 1}],
+            "ImplementationTime" -> Quantity[0.25, "Hours"],
+            "CodeLength" -> 24197,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {"73ccf9c2", "d56f2372"}
         |>
     }
 
@@ -13511,7 +13524,8 @@ ARCImplementedTasksMarkdown[] :=
             implementedARCTrainingTasks,
             implementedPersonallyCreatedTrainingTasks,
             arcTrainingTasksPassingDueToGeneralization,
-            arcEvaluationTasksPassingDueToGeneralization
+            arcEvaluationTasksPassingDueToGeneralization,
+            value
         },
         
         taskLog = ARCTaskLog[];
@@ -13546,12 +13560,32 @@ ARCImplementedTasksMarkdown[] :=
             ];
         
         Echo[
-            Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization] ->
-                Length[implementedARCTrainingTasks] ->
-                Length[arcTrainingTasksPassingDueToGeneralization]
+            Rule[
+                Row[{
+                    value = Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization],
+                    " (",
+                    Quantity[
+                        N[value / 400 * 100],
+                        "Percent"
+                    ],
+                    ")"
+                }]
+                ,
+                Length[implementedARCTrainingTasks] -> Length[arcTrainingTasksPassingDueToGeneralization]
+            ]
         ];
         
-        Echo[Length[arcEvaluationTasksPassingDueToGeneralization]];
+        Echo[
+            Row[{
+                value = Length[arcEvaluationTasksPassingDueToGeneralization],
+                " (",
+                Quantity[
+                    N[value / 400 * 100],
+                    "Percent"
+                ],
+                ")"
+            }]
+        ];
         
         StringRiffle[
             Flatten@
