@@ -543,6 +543,8 @@ ARCCheckForImputation::usage = "ARCCheckForImputation  "
 
 ARCSubImage::usage = "ARCSubImage  "
 
+ARCMappingForReplacedObject::usage = "ARCMappingForReplacedObject  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1108,7 +1110,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
     ]
     ]
 
-ARCParseScene[scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
+ARCParseScene[scene_ARCScene, backgroundColor_, opts:OptionsPattern[]] :=
     ARCMemoized["MemoizationKey" -> {scene, backgroundColor, opts}]@
     Module[
         {
@@ -2795,10 +2797,11 @@ Clear[ARCInferBackgroundColor];
 Options[ARCInferBackgroundColor] =
 {
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
-    "SingleObject" -> False                         (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "SingleObject" -> False,                        (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
+    "Return" -> "BackgroundColor"                   (*< Can also be set to "Details" to return not only the background color but details on how strong the background color was, etc. *)
 };
 ARCInferBackgroundColor[example_, OptionsPattern[]] :=
-    Module[{scenes, colorCounts, stats},
+    Module[{scenes, colorCounts, stats, res, blackAsFallback = False, ratioRequirement = Missing[]},
         
         scenes = Cases[example, _ARCScene, {0, Infinity}][[All, 1]];
         
@@ -2812,8 +2815,9 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
         ];
         
         stats = <|
+            (* The ratio of the most common color to the second-most-common color. *)
             "Ratio" -> Round[Normal[colorCounts][[1, 2]] / Normal[colorCounts][[2, 2]], 0.01],
-            "Counts" -> colorCounts
+            "ColorCounts" -> colorCounts
         |>;
         
         (*ARCEcho[example -> stats];*)
@@ -2823,7 +2827,7 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
            majority of scenes will use black as the background color, so the cost of non-black
            false positives will be high, and quickly diminish or eliminate the benefit of having
            a background color detector. *)
-        Which[
+        res = Which[
             stats["Ratio"] >= 10,
                 colorCounts[[1, 1]],
             And[
@@ -2843,9 +2847,9 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
                            For a740d043, I believe the ratio is >= 5.8.  *)
                         OptionValue["FormMultiColorCompositeObjects"] === False
                     ],
-                    stats["Ratio"] >= 4
+                    stats["Ratio"] >= (ratioRequirement = 4)
                     ,
-                    stats["Ratio"] >= 2
+                    stats["Ratio"] >= (ratioRequirement = 2)
                 ],
                 (* The second most common color isn't black. *)
                 colorCounts[[2, 1]] =!= 0
@@ -2864,9 +2868,27 @@ ARCInferBackgroundColor[example_, OptionsPattern[]] :=
                 (* See comment higher up explaining that we used to strictly disable this,
                    but now allow it, but require a higher ratio. *)
             ],
+                If [colorCounts[[1, 1]] =!= 0 && !MissingQ[ratioRequirement],
+                    stats["RatioRequirement"] = ratioRequirement
+                ];
                 colorCounts[[1, 1]],
             True,
+                blackAsFallback = True;
                 0
+        ];
+        
+        If [OptionValue["Return"] === "Details",
+            <|
+                "Background" -> res,
+                If [res === 0,
+                    "BlackAsFallback" -> blackAsFallback
+                    ,
+                    Nothing
+                ],
+                stats
+            |>
+            ,
+            res
         ]
     ]
 
@@ -3554,7 +3576,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         ];
         
         (* Check if the object was replaced by checking if there's a single output object that
-           our input object is fully contained within. *)
+           our input object is fully contained within, or vice versa. *)
         Replace[
             Select[
                 objectsToMapTo,
@@ -3571,23 +3593,32 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                             (* Since there was only 1 input object within this
                                output object, we'll create a mapping. *)
                             Return[
-                                object -> Sett[
-                                    mappedToObject,
-                                    {
-                                        "Image" -> mappedToObject["Image"],
-                                        With[{relativePosition = mappedToObject["Position"] - object["Position"]},
-                                            If [relativePosition =!= {0, 0},
-                                                "Position" -> <|
-                                                    "RelativePosition" -> mappedToObject["Position"] - object["Position"],
-                                                    "Y" -> mappedToObject["Position"][[1]],
-                                                    "X" -> mappedToObject["Position"][[2]]
-                                                |>
-                                                ,
-                                                Nothing
-                                            ]
-                                        ]
-                                    }
-                                ],
+                                ARCMappingForReplacedObject[object, mappedToObject],
+                                Module
+                            ]
+                        )
+                    ]
+                )
+            }
+        ];
+        (* e.g. d5d6de2d *)
+        Replace[
+            Select[
+                objectsToMapTo,
+                ObjectWithinQ[#, object] &
+            ],
+            {
+                {mappedToObject_} :> (
+                    Replace[
+                        Select[
+                            inputObjects,
+                            ObjectWithinQ[mappedToObject, #] &
+                        ],
+                        {_} :> (
+                            (* Since there was only 1 output object within this
+                               input object, we'll create a mapping. *)
+                            Return[
+                                ARCMappingForReplacedObject[object, mappedToObject],
                                 Module
                             ]
                         )
@@ -3976,7 +4007,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             existingRulesScore,
             denoiseResult,
             (* The parsed examples using the standard parsing approach, if computed. *)
-            parsedExamples
+            parsedExamples,
+            backgroundDetails
         },
         
         If [$memoization === None,
@@ -4291,6 +4323,77 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* If we can't find a rule set, and there is at least one example that used a black
+           background color, but black appears like it might in theory be a non-background
+           color, then try again using no background color. e.g. bda2d7a6 *)
+        If [And[
+                OptionValue["Background"] === Automatic,
+                ListQ[parsedExamples],
+                !TrueQ[workingRulesFound[]],
+                (* Black was chosen as the background color for at least one scene. *)
+                With[
+                    {
+                        backgroundColors = Join[
+                            parsedExamples[[All, "Output", "Background"]],
+                            parsedExamples[[All, "Input", "Background"]]
+                        ]
+                    },
+                    MemberQ[backgroundColors, 0]
+                ],
+                With[{colorCounts = Counts[Flatten[examples[[All, "Input", 1]]]]},
+                    And[
+                        (* Black is used as a color in the input scenes. *)
+                        Lookup[colorCounts, 0, 0] > 0,
+                        (* Black represents less than 40% of pixels in the scenes.
+                           In bda2d7a6, black is 32%. Now that we have a condition below
+                           to require that black wasn't more than a fallback background
+                           color below, it's possible that we should remove this condition,
+                           since this condition has a risk of false negatives.*)
+                        colorCounts[0] / Total[colorCounts] < 0.4
+                    ]
+                ]
+            ],
+            backgroundDetails =
+                Function[{example},
+                    ARCInferBackgroundColor[
+                        example["Input"],
+                        "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"],
+                        "SingleObject" -> Or[
+                            OptionValue["SingleObject"],
+                            ListQ[OptionValue["SubdivideInput"]]
+                        ],
+                        "Return" -> "Details"
+                    ]
+                ] /@ examples;
+            (* There weren't any cases where black was more than a fallback for default
+               background color. *)
+            If [FreeQ[backgroundDetails, KeyValuePattern[{"Background" -> 0, "BlackAsFallback" -> False}]],
+                res2 =
+                    ARCLogScope["ARCFindRules:NoBackground"]@
+                    ARCFindRules[
+                        examples,
+                        (* TODO: If `backgroundDetails` shows that there were non-black colors
+                                 that were strong enough to be a background color, then instead
+                                 of saying "Background" -> None, we should probably say something
+                                 like "Background" -> "NonBlack" or something which would tell
+                                 downstream code that non-black backgrounds are OK, but otherwise,
+                                 use None as the background color for a scene, not black. *)
+                        "Background" -> None,
+                        If [$MinimumExamplesPerRule =!= 1,
+                            "SettleForOneExamplePerRule" -> False
+                            ,
+                            Sequence @@ {}
+                        ],
+                        opts
+                    ];
+                foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
+                If [foundRulesQ2,
+                    foundRulesQ = True;
+                    res = res2
+                ]
+            ];
+        ];
+        
         (* If we haven't found a rule set and we have a small image, then check whether
            _not_ following diagonals when forming images results in a rule set.
            e.g. 67385A82 *)
@@ -4307,7 +4410,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ARCLogScope["ARCFindRules:DontFollowDiagonals"]@
                 arcFindRulesHelper[
                     examples,
-                    "Background" -> 0,
+                    (* Commenting this out since it looks like it might have been kept here
+                       by accident. *)
+                    (*"Background" -> 0,*)
                     "FollowDiagonals" -> False,
                     opts
                 ];
@@ -4513,7 +4618,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                                         inputBackgrounds =!= outputBackgrounds,
                                         MatchQ[outputBackgrounds, {_}]
                                     ],
-                                    "Background" -> First[outputBackgrounds]
+                                    "OutputBackground" -> First[outputBackgrounds]
                                     ,
                                     Nothing
                                 ]
@@ -5834,7 +5939,13 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                    occlusions when parsing the scene for applying rules, since there are cases
                    where this can result in invalid scene interpretation.
                    e.g. 90c28cc7 *)
-                "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]]
+                "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]],
+                If [!MissingQ[rules["Background"]],
+                    (* e.g. bda2d7a6 *)
+                    "Background" -> rules["Background"]
+                    ,
+                    Sequence @@ {}
+                ]
             ];
         
         objects = parsedScene["Objects"];
@@ -6101,8 +6212,12 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         (*ARCEcho2[outputScene["Objects"]];*)
         
-        If [IntegerQ[rules["Background"]],
-            outputScene["Background"] = rules["Background"]
+        If [IntegerQ[rules["OutputBackground"]],
+            outputScene["Background"] = rules["OutputBackground"]
+            ,
+            If [IntegerQ[rules["Background"]],
+                outputScene["Background"] = rules["Background"]
+            ]
         ];
         
         renderedScene =
@@ -9674,7 +9789,7 @@ ImageHeight[ARCScene[image_]] := ImageHeight[image]
 *)
 Clear[ARCMakeObjectsForSubImages];
 Options[ARCMakeObjectsForSubImages] = Options[ARCParseScene];
-ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, backgroundColor_Integer, opts:OptionsPattern[]] :=
+ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, backgroundColor_, opts:OptionsPattern[]] :=
     Module[
         {
             objectWidth,
@@ -10335,13 +10450,13 @@ ObjectWithinQ[object1_Association, object2_Association] :=
 *)
 Clear[ARCToMonochrome];
 
-ARCToMonochrome[image_List, backgroundColor_Integer] :=
+ARCToMonochrome[image_List, backgroundColor_] :=
     Replace[image, Except[backgroundColor, _Integer] :> 10, {2}]
 
-ARCToMonochrome[ARCScene[image_], backgroundColor_Integer] :=
+ARCToMonochrome[ARCScene[image_], backgroundColor_] :=
     ARCScene[ARCToMonochrome[image, backgroundColor]]
 
-ARCToMonochrome[object:KeyValuePattern["Image" -> image_], backgroundColor_Integer] :=
+ARCToMonochrome[object:KeyValuePattern["Image" -> image_], backgroundColor_] :=
     Sett[object, "Image" -> ARCToMonochrome[image, backgroundColor]]
 
 ARCToMonochrome[object_Association] := object
@@ -10474,7 +10589,7 @@ ARCAddMoveAttributes[examplesIn_List, referenceableOutputObjects_Association] :=
         examples
     ]
 
-ARCAddMoveAttributes[transform_Association, inputObject_Association, outputObject_Association, outputObjects_List, scene_ARCScene, backgroundColor_Integer, referenceableOutputObjects_Association] :=
+ARCAddMoveAttributes[transform_Association, inputObject_Association, outputObject_Association, outputObjects_List, scene_ARCScene, backgroundColor_, referenceableOutputObjects_Association] :=
     Module[
         {
             dx,
@@ -10623,9 +10738,9 @@ ARCObjectEdgePixels[object_Association, direction_List] :=
 *)
 Clear[ARCBlockingPixels];
 
-ARCBlockingPixels[{}, direction_List, ARCScene[scene_List], backgroundColor_Integer] := {}
+ARCBlockingPixels[{}, direction_List, ARCScene[scene_List], backgroundColor_] := {}
 
-ARCBlockingPixels[pixelPositions_List, direction_List, ARCScene[scene_List], backgroundColor_Integer] :=
+ARCBlockingPixels[pixelPositions_List, direction_List, ARCScene[scene_List], backgroundColor_] :=
     Module[{},
         If [ARCOutOfBounds[
                 pixelPositions[[1]] + direction,
@@ -10646,7 +10761,7 @@ ARCBlockingPixels[pixelPositions_List, direction_List, ARCScene[scene_List], bac
         ]
     ]
 
-ARCBlockingPixels[object_Association, direction_List, scene_ARCScene, backgroundColor_Integer] :=
+ARCBlockingPixels[object_Association, direction_List, scene_ARCScene, backgroundColor_] :=
     ARCBlockingPixels[ARCObjectEdgePixels[object, direction], direction, scene, backgroundColor]
 
 (*!
@@ -11404,7 +11519,7 @@ ARCNotebook[fileIn_String] :=
     \maintainer danielb
 *)
 Clear[ARCGroupByOutputObject];
-ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_Integer, sceneWidth_Integer, sceneHeight_Integer] :=
+ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_, sceneWidth_Integer, sceneHeight_Integer] :=
     Module[{outputObjectsByUUID, outputObjectsByUUID2, mapping2, outputObject},
         
         outputObjectsByUUID = ObjectsByAttribute[Values[mapping], "UUID"];
@@ -13055,6 +13170,32 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 30}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 23993,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "bda2d7a6",
+            "Timestamp" -> DateObject[{2022, 10, 1}],
+            "ImplementationTime" -> Quantity[0.3, "Hours"],
+            "CodeLength" -> 24077,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "d5d6de2d",
+            "Timestamp" -> DateObject[{2022, 10, 1}],
+            "ImplementationTime" -> Quantity[0.25, "Hours"],
+            "CodeLength" -> 24098,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Just started working, not sure why. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "2dc579da",
+            "Timestamp" -> DateObject[{2022, 10, 1}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 24106,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -17030,7 +17171,7 @@ SqrtButKeepSign[value_] :=
     \maintainer danielb
 *)
 Clear[ARCFindOccludedLines];
-ARCFindOccludedLines[scene_ARCScene, background_Integer, objects_List] :=
+ARCFindOccludedLines[scene_ARCScene, background_, objects_List] :=
     Module[
         {
             allLinesOrRectangles,
@@ -18034,7 +18175,7 @@ Options[ARCRemoveEmptySpace] =
 {
     "PruneLeftAndAbove" -> True     (*< Whether we shouldn't just prune to the right and below, but also to the left and above.*)
 };
-ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_Integer, OptionsPattern[]] :=
+ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_, OptionsPattern[]] :=
     Module[
         {
             scene = sceneIn[[1]],
@@ -18509,7 +18650,7 @@ Options[ARCObjectFromAllPixels] =
 {
     "Position" -> {1, 1}        (*< The position of the object in the scene. *)
 };
-ARCObjectFromAllPixels[scene_ARCScene, background_Integer, OptionsPattern[]] :=
+ARCObjectFromAllPixels[scene_ARCScene, background_, OptionsPattern[]] :=
     Module[
         {
             position = OptionValue["Position"],
@@ -19273,6 +19414,7 @@ ARCRulesForOutput[rules_Association] :=
             "CheckForGridsAndDividers",
             "RemoveEmptySpace",
             "Background",
+            "OutputBackground",
             "Width",
             "Height",
             "Rules",
@@ -23333,7 +23475,7 @@ ARCSubdivisionImages[parsedScene_Association, subdivisionInfo_Association] :=
     \maintainer danielb
 *)
 Clear[ARCBinarizeImage];
-ARCBinarizeImage[ARCScene[image_], background_Integer] :=
+ARCBinarizeImage[ARCScene[image_], background_] :=
     Replace[
         image,
         {
@@ -24021,6 +24163,36 @@ ARCSubImage[image_List, y1In_Integer, x1In_Integer, y2In_Integer, x2In_Integer] 
             ]];
             
             res
+        ]
+    ]
+
+(*!
+    \function ARCMappingForReplacedObject
+    
+    \calltable
+        ARCMappingForReplacedObject[inputObject, outputObject] '' Creates a mapping for ARCFindObjectMappings for an object that was replaced.
+    
+    \maintainer danielb
+*)
+Clear[ARCMappingForReplacedObject];
+ARCMappingForReplacedObject[inputObject_Association, outputObject_Association] :=
+    Module[{},
+        inputObject -> Sett[
+            outputObject,
+            {
+                "Image" -> outputObject["Image"],
+                With[{relativePosition = outputObject["Position"] - inputObject["Position"]},
+                    If [relativePosition =!= {0, 0},
+                        "Position" -> <|
+                            "RelativePosition" -> outputObject["Position"] - inputObject["Position"],
+                            "Y" -> outputObject["Position"][[1]],
+                            "X" -> outputObject["Position"][[2]]
+                        |>
+                        ,
+                        Nothing
+                    ]
+                ]
+            }
         ]
     ]
 

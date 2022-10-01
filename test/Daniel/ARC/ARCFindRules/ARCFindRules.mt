@@ -3243,3 +3243,47 @@ Test[
     ,
     TestID -> "ARCFindRules-20220929-35JPOP"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "bda2d7a6"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Background" -> None,
+        "Rules" -> {
+            <|"ColorUseCount.Rank" -> 1|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {3, 3}|>, "Color"]
+            |>,
+            <|"ColorUseCount.Rank" -> 2|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {1, 1}|>, "Color"]
+            |>,
+            <|"ColorUseCount.Rank" -> 3|> -> <|
+                "Color" -> Daniel`ARC`ObjectValue[<|"Position" -> {2, 2}|>, "Color"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221001-2DSTBL"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d5d6de2d"]["Train"]]
+    ]
+    ,
+    {
+        <|"HollowCount" -> 0|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+        <|"HollowCount" -> 1|> -> <|
+            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>},
+            "Color" -> 3,
+            "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], 1],
+            "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], 1],
+            "X2" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X2"], -1],
+            "Y2" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y2"], -1]
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20221001-EZXGLV"
+]
