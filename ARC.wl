@@ -545,6 +545,16 @@ ARCSubImage::usage = "ARCSubImage  "
 
 ARCMappingForReplacedObject::usage = "ARCMappingForReplacedObject  "
 
+ARCFindSymmetry::usage = "ARCFindSymmetry  "
+
+ARCThreePatchesToPossibleSymmetryBounds::usage = "ARCThreePatchesToPossibleSymmetryBounds  "
+
+ARCApproximateSymmetryQ::usage = "ARCApproximateSymmetryQ  "
+
+ARCCheckForImputationUsingSymmetry::usage = "ARCCheckForImputationUsingSymmetry  "
+
+ARCCheckForSceneRepairUsingImputationQ::usage = "ARCCheckForSceneRepairUsingImputationQ  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -585,6 +595,7 @@ ClearLog = EntityLink`Logging`ClearLog;
 ProcessLog = EntityLink`Logging`ProcessLog;
 EntityRepository = EntityLink`EntityRepository;
 EntityRepositorySet = EntityLink`EntityRepositorySet;
+EchoTiming2 = Utility`EchoTiming2;
 
 (* For the purposes of using LogScope. *)
 initializeEntityRepository[] :=
@@ -3966,8 +3977,7 @@ Options[ARCFindRules] =
     "Background" -> Automatic,                          (*< The background color of scenes. *)
     "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
     "CheckForGridsAndDividers" -> Automatic,            (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
-    "CheckForImputedRectangleForSymmetry" -> True,      (*< Should we check for ImputedRectangleForSymmetry? *)
-    "CheckForImputationUsingPattern" -> True,           (*< Check for whether areas of the input image need to be imputed using a pattern. *)
+    "CheckForImputation" -> True,                       (*< Should we check for imputation? *)
     
     "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
@@ -4009,7 +4019,6 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             res,
             foundRulesQ,
             foundRules2Q,
-            workingRulesQ,
             existingRulesScore,
             denoiseResult,
             (* The parsed examples using the standard parsing approach, if computed. *)
@@ -4027,19 +4036,54 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* Check whether these are examples of a rectangle in an input that can be imputed
            using symmetry. *)
-        If [TrueQ[OptionValue["CheckForImputedRectangleForSymmetry"]],
-            Replace[
-                ARCCheckForImputedRectangleForSymmetry[examples],
-                res_Association :> Return[<|"Rules" -> res|>, Module]
-            ]
-        ];
-        
-        (* e.g. 29ec7d0e *)
-        If [TrueQ[OptionValue["CheckForImputationUsingPattern"]],
-            Replace[
-                (* For now we'll just use the first example. *)
-                ARCCheckForImputation[examples[[1, "Input"]], examples[[1, "Output"]]],
-                res_ARCScene :> Return[<|"Rules" -> <|"Type" -> "ImputationUsingPattern"|>|>, Module]
+        If [TrueQ[OptionValue["CheckForImputation"]],
+            (* For now we'll just check for scene symmetry in the first example. *)
+            ARCLogScope["CheckForImputation"]@
+            With[{symmetryResult = ReturnIfFailure[ARCFindSymmetry[examples[[1, "Input"]]]]},
+                Replace[
+                    ARCCheckForImputedRectangleForSymmetry[symmetryResult],
+                    res_Association :> Return[<|"Rules" -> res|>, Module]
+                ];
+                (* Check for imputation repair involving a grid fill pattern. *)
+                Replace[
+                    (* For now we'll just use the first example. *)
+                    (* e.g. 29ec7d0e *)
+                    ReturnIfFailure@
+                    ARCCheckForImputation[examples[[1, "Input"]], examples[[1, "Output"]]],
+                    res_ARCScene :> Return[
+                        <|
+                            "Rules" -> <|
+                                "Type" -> "Imputation",
+                                "Pattern" -> "GridFill",
+                                "Output" -> "RepairedScene"
+                            |>
+                        |>,
+                        Module
+                    ]
+                ];
+                If [TrueQ[ARCCheckForSceneRepairUsingImputationQ[examples]],
+                    If [MatchQ[symmetryResult, _Association],
+                        (* Check for imputation repair using symmetry. *)
+                        Replace[
+                            (* For now we'll just use the first example. *)
+                            ReturnIfFailure@
+                            ARCCheckForImputationUsingSymmetry[
+                                examples[[1, "Input"]],
+                                symmetryResult
+                            ],
+                            res_ARCScene :> Return[
+                                <|
+                                    "Rules" -> <|
+                                        "Type" -> "Imputation",
+                                        "Pattern" -> "Symmetry",
+                                        "Output" -> "RepairedScene"
+                                    |>
+                                |>,
+                                Module
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ];
         
@@ -4147,7 +4191,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     If [And[
                             TrueQ[ARCWorkingQ[examples, res2]],
                             Or[
-                                !TrueQ[workingRulesQ],
+                                !workingRulesFound[],
                                 (* e.g. a740d043 *)
                                 (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 2.5
                             ]
@@ -4465,8 +4509,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                             ,
                             Sequence @@ {}
                         ],
-                        "CheckForImputedRectangleForSymmetry" -> False,
-                        "CheckForImputationUsingPattern" -> False,
+                        "CheckForImputation" -> False,
                         opts
                     ];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
@@ -4518,8 +4561,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ARCLogScope["ARCFindRules:OneExamplePerRule"]@
                         ARCFindRules[
                             examples,
-                            "CheckForImputedRectangleForSymmetry" -> False,
-                            "CheckForImputationUsingPattern" -> False,
+                            "CheckForImputation" -> False,
                             opts
                         ];
                     foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -4846,6 +4888,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         res =
             ARCLogScope["ARCFindRules"]@
             ARCFindRules[examples, objectMappings, referenceableInputObjects];
+        
+        (* HERE10 *)
+        (*Throw["HERE"];*)
         
         If [And[
                 (* We weren't able to find a rule set. *)
@@ -5862,7 +5907,16 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             subOutputs,
             inputGridExpectedQ = False,
             sceneForRowColumn,
-            rulesForRowColumn
+            rulesForRowColumn,
+            imputations,
+            imputationLocations,
+            yMin,
+            yMax,
+            xMin,
+            xMax,
+            width,
+            height,
+            outputImage
         },
         
         If [!ListQ[ruleList] && !AssociationQ[ruleList],
@@ -5876,11 +5930,12 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         
         Switch[
             ruleList,
-            KeyValuePattern["Type" -> "ImputedRectangleForSymmetry"],
+            KeyValuePattern[{"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"}],
                 Replace[
-                    ARCCheckForImputedRectangleForSymmetry[sceneIn],
+                    ARCFindSymmetry[sceneIn],
                     {
-                        imputations_List :> (
+                        imputationResult_Association :> (
+                            imputations = imputationResult["Imputations"];
                             imputationLocations = imputations[[All, 1]];
                             yMin = Min[imputationLocations[[All, 1]]];
                             yMax = Max[imputationLocations[[All, 1]]];
@@ -5901,9 +5956,23 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
                         _ :> Return[sceneIn, Module]
                     }
                 ],
-            KeyValuePattern["Type" -> "ImputationUsingPattern"],
+            (* e.g. 29ec7d0e *)
+            KeyValuePattern[{"Type" -> "Imputation", "Pattern" -> "GridFill", "Output" -> "RepairedScene"}],
                 Replace[
                     ARCCheckForImputation[sceneIn],
+                    {
+                        res_ARCScene :> Return[res, Module],
+                        (* We were unable to find the imputations, so we'll bail out. *)
+                        _ :> Return[sceneIn, Module]
+                    }
+                ],
+            (* e.g. 3631a71a *)
+            KeyValuePattern[{"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "RepairedScene"}],
+                Replace[
+                    ARCCheckForImputationUsingSymmetry[
+                        sceneIn,
+                        ARCFindSymmetry[sceneIn]
+                    ],
                     {
                         res_ARCScene :> Return[res, Module],
                         (* We were unable to find the imputations, so we'll bail out. *)
@@ -8407,7 +8476,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "X",
+        (*If [property === "Shape",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -10798,14 +10867,19 @@ ARCBlockingPixels[object_Association, direction_List, scene_ARCScene, background
 Clear[ARCOutOfBounds];
 ARCOutOfBounds[position_List, ARCScene[image_]] := ARCOutOfBounds[position, image]
 ARCOutOfBounds[position_List, image_List] :=
-    MatchQ[
-        position,
-        Alternatives[
-            {0, _},
-            {ImageHeight[image] + 1, _},
-            {_, 0},
-            {_, ImageWidth[image] + 1}
-        ]
+    Or[
+        position[[1]] > ImageHeight[image],
+        position[[1]] < 1,
+        position[[2]] > ImageWidth[image],
+        position[[2]] < 1
+    ]
+
+ARCOutOfBounds[{y_, x_}, width_Integer, height_Integer] :=
+    Or[
+        y > height,
+        y < 1,
+        x > width,
+        x < 1
     ]
 
 (*!
@@ -13228,6 +13302,22 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 1}],
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "CodeLength" -> 24248,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "3631a71a",
+            "Timestamp" -> DateObject[{2022, 10, 2}],
+            "ImplementationTime" -> Quantity[5, "Hours"],
+            "CodeLength" -> 24749,
+            "NewGeneralizedSuccesses" -> {"b8825c91"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "b8825c91",
+            "Timestamp" -> DateObject[{2022, 10, 2}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 24825,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -23684,17 +23774,17 @@ ARCParseColorGrids[parsedExamples_List] :=
     
     \calltable
         ARCCheckForImputedRectangleForSymmetry[examples] '' Checks whether the given examples are of type ImputedRectangleForSymmetry whereby each input has a rectangular corruption that can be fixed by imputation that leverages symmetry.
-        ARCCheckForImputedRectangleForSymmetry[image] '' Checks whether the given image is of type ImputedRectangleForSymmetry whereby each input has a rectangular corruption that can be fixed by imputation that leverages symmetry.
+        ARCCheckForImputedRectangleForSymmetry[image] '' Checks whether the given image appears to be symmetrical. If some pixels appear to be corrupted, they are indicated along with their presumed expected color.
+    
+    e.g. 9ecd008a
     
     Examples:
     
-    ARCCheckForImputedRectangleForSymmetry[
-        ARCParseInputAndOutputScenes[ARCParseFile["9ecd008a"]["Train"]]
-    ]
+    ARCCheckForImputedRectangleForSymmetry[ARCParseFile["9ecd008a"]["Train"]]
     
     ===
     
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     
     Unit tests:
     
@@ -23703,8 +23793,11 @@ ARCParseColorGrids[parsedExamples_List] :=
     \maintainer danielb
 *)
 Clear[ARCCheckForImputedRectangleForSymmetry];
-ARCCheckForImputedRectangleForSymmetry[examples_List] :=
-    Module[{imputations, imputationLocations},
+ARCCheckForImputedRectangleForSymmetry[examples_List, findSymmetryResultIn_ : Missing[]] :=
+    Module[{example, findSymmetryResult},
+        
+        (* For now we'll only consider the first example. *)
+        example = examples[[1]];
         
         And[
             (* Check whether either the output width is less than the input width or the output
@@ -23715,154 +23808,58 @@ ARCCheckForImputedRectangleForSymmetry[examples_List] :=
                     ImageWidth[#["Output"]] < ImageWidth[#["Input"]],
                     ImageHeight[#["Output"]] < ImageHeight[#["Input"]]
                 ] &
-            ],
-            (* Check whether the input width and height are the same. *)
-            AllTrue[
-                examples,
-                Function[
-                    ImageWidth[#["Input"]] === ImageHeight[#["Input"]]
-                ]
-            ],
-            (* Check whether the width and height are divisible by two. *)
-            AllTrue[
-                examples,
-                Function[
-                    And[
-                        Mod[ImageWidth[#["Input"]], 2] === 0,
-                        Mod[ImageHeight[#["Input"]], 2] === 0
-                    ]
-                ]
             ]
         ] // Replace[#, False :> Return[False, Module]] &;
         
-        Function[{example},
-            Replace[
-                imputations = ARCCheckForImputedRectangleForSymmetry[example["Input"]],
-                {
-                    Except[_List] :> Return[False, Module],
-                    _List :> (
-                        If [!SameQ[
-                                Length[imputations],
-                                ImageWidth[example["Output"]] * ImageHeight[example["Output"]]
-                            ],
-                            (* The number of imputations isn't equal to the number of pixels in the
-                            output, so return False. *)
-                            Return[False, Module]
-                        ];
-                        imputationLocations = imputations[[All, 1]];
-                        yMin = Min[imputationLocations[[All, 1]]];
-                        yMax = Max[imputationLocations[[All, 1]]];
-                        xMin = Min[imputationLocations[[All, 2]]];
-                        xMax = Max[imputationLocations[[All, 2]]];
-                        If [!SameQ[
-                                Length[imputations],
-                                (yMax - yMin + 1) * (xMax - xMin + 1)
-                            ],
-                            (* The imputations don't form a rectangle, so return False. *)
-                            Return[False, Module]
-                        ]
-                    )
-                }
-            ]
-        ] /@ examples;
+        findSymmetryResult = Replace[
+            findSymmetryResultIn,
+            _Missing :> ARCFindSymmetry[example["Input"]]
+        ];
+        
+        If [!SameQ[
+                Length[imputations],
+                ImageWidth[example["Output"]] * ImageHeight[example["Output"]]
+            ],
+            (* The number of imputations isn't equal to the number of pixels in the
+               output, so return False. *)
+            Return[False, Module]
+        ];
+        
+        ARCCheckForImputedRectangleForSymmetry[
+            findSymmetryResult
+        ]
+    ]
+
+ARCCheckForImputedRectangleForSymmetry[findSymmetryResult: _Association | False] :=
+    Module[{imputations, imputationLocations},
+        
+        If [!MatchQ[findSymmetryResult, _Association],
+            Return[False, Module]
+        ];
+        
+        imputations = findSymmetryResult["Imputations"];
+        
+        imputationLocations = imputations[[All, 1]];
+        yMin = Min[imputationLocations[[All, 1]]];
+        yMax = Max[imputationLocations[[All, 1]]];
+        xMin = Min[imputationLocations[[All, 2]]];
+        xMax = Max[imputationLocations[[All, 2]]];
+        
+        If [!SameQ[
+                Length[imputations],
+                (yMax - yMin + 1) * (xMax - xMin + 1)
+            ],
+            (* The imputations don't form a rectangle, so return False. *)
+            Return[False, Module]
+        ];
         
         (* All the of the examples seem to be an imputed rectangle, so return that
            as the rule. *)
-        <|"Type" -> "ImputedRectangleForSymmetry"|>
-    ]
-
-ARCCheckForImputedRectangleForSymmetry[ARCScene[image_]] :=
-    Module[
-        {
-            halfWidthRange,
-            colorsAtPosition,
-            symmetryLocations,
-            colorCountsAtPosition,
-            imputedColor,
-            reapTag,
-            imputations,
-            corruptedLocation,
-            corruptedLocations
-        },
-        
-        width = ImageWidth[image];
-        height = ImageHeight[image];
-        halfWidthRange = Range[width / 2];
-        
-        imputations = ReapList[
-            reapTag,
-            Function[{y},
-                Function[{x},
-                    Replace[
-                        Length[
-                            DeleteDuplicates[
-                                colorsAtPosition = Extract[
-                                    image,
-                                    symmetryLocations =
-                                        ARCSymmetryLocations[width, height, {y, x}]
-                                ]
-                            ]
-                        ],
-                        {
-                            4 | 3 :> Return[False, Module],
-                            (* Symmetrical at this location. Do nothing. *)
-                            1 :> Null,
-                            2 :> (
-                                colorCountsAtPosition = Counts[colorsAtPosition];
-                                Which[
-                                    Cases[colorCountsAtPosition, 2] =!= {},
-                                        (* Only two pixels are the same color, so we need to deter
-                                           our decision on what the correct color here is. *)
-                                        Sow[
-                                            <|
-                                                "Position" -> {y, x},
-                                                "SymmetryLocations" -> symmetryLocations,
-                                                "ColorsAtPosition" -> colorsAtPosition
-                                            |>,
-                                            reapTag
-                                        ],
-                                    True,
-                                        imputedColor =
-                                            First[Keys[Select[colorCountsAtPosition, # === 3 &]]];
-                                        corruptedLocation = SelectFirst[
-                                            symmetryLocations,
-                                            Function[
-                                                image[[#[[1]], #[[2]]]] =!= imputedColor
-                                            ]
-                                        ];
-                                        Sow[corruptedLocation -> imputedColor, reapTag]
-                                ]
-                            )
-                        }
-                    ]
-                ] /@ halfWidthRange
-            ] /@ Range[height / 2];
-        ];
-        
-        corruptionColor = Extract[
-            image,
-            imputations[[1, 1]]
-        ];
-        
-        Replace[
-            imputations,
-            delayedItem_Association :> (
-                imputedColor =
-                    FirstCase[delayedItem["ColorsAtPosition"], Except[corruptionColor]];
-                corruptedLocations = Select[
-                    delayedItem["SymmetryLocations"],
-                    Function[
-                        image[[#[[1]], #[[2]]]] =!= imputedColor
-                    ]
-                ];
-                Sequence @@ (
-                    Function[{corruptedLocation},
-                        corruptedLocation -> imputedColor
-                    ] /@ corruptedLocations
-                )
-            ),
-            {1}
-        ]
+        <|
+            "Type" -> "Imputation",
+            "Pattern" -> "Symmetry",
+            "Output" -> "ImputedRectangle"
+        |>
     ]
 
 (*!
@@ -23922,7 +23919,6 @@ ARCCheckForImputation[ARCScene[imageIn_], output: ARCScene[outputImage_] : Missi
             minImagePatchInstanceCount = 4,
             width,
             height,
-            colorCounts,
             rows,
             columns,
             patchPositions,
@@ -23933,43 +23929,32 @@ ARCCheckForImputation[ARCScene[imageIn_], output: ARCScene[outputImage_] : Missi
         width = ImageWidth[image];
         height = ImageHeight[image];
         
-        And[
-            Or[
-                MissingQ[output],
-                And[
-                    (* If the input and output images aren't the same size, abort. *)
-                    And[
-                        width === ImageWidth[outputImage],
-                        height === ImageHeight[outputImage]
-                    ],
-                    colorCounts = Counts[Flatten[image]],
-                    (* If the image doesn't have at least 3 colors, abort. *)
-                    Length[colorCounts] >= 3,
-                    (* If the image's most common color fills > 50% of the space, abort. *)
-                    Max[colorCounts] / Total[colorCounts] < 0.5,
-                    (* If the percentage difference from input to output is more than 22.5%, abort. *)
-                    With[{pixelComparisons = Counts[SameQ @@@ Transpose[{Flatten[image], Flatten[outputImage]}]]},
-                        diffProportion = N[pixelComparisons[False] / Total[pixelComparisons]];
-                        diffProportion < 0.225
-                    ]
-                ]
-            ]
-        ] // Replace[#, {False :> Return[False, Module]}] &;
+        If [Or[
+                width <= 10,
+                height <= 10
+            ],
+            Return[False, Module]
+        ];
         
         (* Patches to examine. *)
         $patchWidth = 3;
         $patchHeight = 3;
         rows = Floor[height / $patchHeight];
         columns = Floor[width / $patchWidth];
+        
         patches = Function[{i},
             row = Floor[(i - 1) / columns] + 1;
             column = Mod[i - 1, columns] + 1;
-            <|
-                "Row" -> row,
-                "Column" -> column,
-                "Y" -> (row - 1) * $patchHeight + 1,
-                "X" -> (column - 1) * $patchWidth + 1
-            |>
+            If [row <= rows,
+                <|
+                    "Row" -> row,
+                    "Column" -> column,
+                    "Y" -> (row - 1) * $patchHeight + 1,
+                    "X" -> (column - 1) * $patchWidth + 1
+                |>
+                ,
+                Nothing
+            ]
         ] /@ Range[1, maxPatchesToConsider];
         
         (* Try to find an image patch with a sufficient number of colors and a sufficient
@@ -24204,19 +24189,31 @@ ARCSubImage[image_List, y1In_Integer, x1In_Integer, y2In_Integer, x2In_Integer] 
             yShift = 1 - y1In;
             xShift = 1 - x1In;
             
-            (*Echo[res];
+            (*EchoTag["y1,x2,y2,x2"][{y1, x1, y2, x2}];
+            Echo[res];
             Echo[{yShift, xShift}];*)
             
-            res[[
-                y1 + yShift ;; y2 + yShift,
-                x1 + xShift ;; x2 + xShift
-            ]] = image[[
-                y1 ;; y2,
-                x1 ;; x2
-            ]];
+            If [And[y1 =!= y2, x1 =!= x2],
+                res[[
+                    y1 + yShift ;; y2 + yShift,
+                    x1 + xShift ;; x2 + xShift
+                ]] = image[[
+                    y1 ;; y2,
+                    x1 ;; x2
+                ]]
+            ];
             
             res
         ]
+    ]
+
+ARCSubImage[image_List, object_Association] :=
+    ARCSubImage[
+        image,
+        object["Y"],
+        object["X"],
+        object["Y2"],
+        object["X2"]
     ]
 
 (*!
@@ -24246,6 +24243,586 @@ ARCMappingForReplacedObject[inputObject_Association, outputObject_Association] :
                     ]
                 ]
             }
+        ]
+    ]
+
+(*!
+    \function ARCFindSymmetry
+    
+    \calltable
+        ARCFindSymmetry[image] '' Checks to see if the image contains a possibly non-centered symmetry.
+    
+    Examples:
+    
+    ARCFindSymmetry[
+        ARCParseFile["3631a71a"]["Train"][[1, "Input"]]
+    ]
+    
+    ===
+    
+    <|"Y" -> 3, "X" -> 3, "Y2" -> 30, "X2" -> 30|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindSymmetry]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindSymmetry];
+$arcFindSymmetryPatchWidth = 3;
+$arcFindSymmetryPatchHeight = 3;
+$arcFindSymmetryPatchCountY = 5;
+$arcFindSymmetryPatchCountX = 5;
+ARCFindSymmetry[ARCScene[image_]] :=
+    Module[{width, height},
+    Block[
+        {
+            patchesAreaWidth,
+            patchesAreaHeight,
+            patchesStartX,
+            patchesStartY,
+            patchXRange,
+            additionalImputations,
+            originOffset,
+            effectiveWidth,
+            effectiveHeight,
+            corruptionColor
+        },
+        
+        width = ImageWidth[image];
+        height = ImageHeight[image];
+        
+        And[
+            (* For now to keep things simple, we'll require a 15x15 image so that our
+               patch search area doesn't fall outside of the bounds of the image. *)
+            width >= 15,
+            height >= 15
+        ] // Replace[#, False :> Return[None, Module]] &;
+        
+        patchesAreaWidth = $arcFindSymmetryPatchWidth * $arcFindSymmetryPatchCountX;
+        patchesAreaHeight = $arcFindSymmetryPatchHeight * $arcFindSymmetryPatchCountY;
+        patchesStartX = Round[width / 2 - patchesAreaWidth / 2 + 1];
+        patchesStartY = Round[height / 2 - patchesAreaHeight / 2 + 1];
+        
+        (*Echo[{patchesStartY, patchesStartX}];
+        Echo[{width, height}];
+        Echo[{patchesAreaWidth, patchesAreaHeight}];*)
+        
+        patchXRange =
+            Range[patchesStartX, patchesStartX + patchesAreaWidth - $arcFindSymmetryPatchWidth, $arcFindSymmetryPatchWidth];
+        
+        (* Loop over grid of patches. *)
+        res = Block[{},
+            Function[{patchY},
+                Function[{patchX},
+                    
+                    patchImage = image[[
+                        patchY ;; patchY + $arcFindSymmetryPatchHeight - 1,
+                        patchX ;; patchX + $arcFindSymmetryPatchWidth - 1
+                    ]];
+                    
+                    (*ARCEcho2[{patchY, patchX} -> ARCScene[patchImage]];*)
+                    
+                    (* If there are at least three colors in this image patch. *)
+                    If [Length[DeleteDuplicates[Flatten[patchImage]]] >= 3,
+                        Replace[
+                            ReturnIfFailure@
+                            ARCFindSymmetry[image, patchY, patchX, patchImage],
+                            res_Association :> Return[res, Block]
+                        ]
+                    ];
+                    
+                ] /@ patchXRange
+            ] /@ Range[patchesStartY, patchesStartY + patchesAreaHeight - $arcFindSymmetryPatchHeight, $arcFindSymmetryPatchHeight]
+        ];
+        
+        If [!AssociationQ[res],
+            Return[None, Module]
+        ];
+        
+        If [Or[
+                res["Y"] =!= 1,
+                res["X"] =!= 1,
+                res["Y2"] =!= height,
+                res["X2"] =!= width
+            ],
+            
+            corruptionColor = res["CorruptionColor"];
+            
+            (* If the center of symmetry isn't along the 45 degree line down and to the
+                right from {0, 0}, then we will need to adjust pixel locations prior to
+                calling ARCSymmetryLocations, and then adjust them back. *)
+            originOffset = {0, 0};
+            If [res["X"] > res["Y"],
+                originOffset[[1]] = res["X"] - res["Y"]
+            ];
+            If [res["Y"] > res["X"],
+                originOffset[[2]] = res["Y"] - res["X"]
+            ];
+            effectiveWidth = Plus[
+                res["X2"],
+                -res["X"],
+                1,
+                Max[res["X"] - 1, res["Y"] - 1] * 2
+            ];
+            effectiveHeight = Plus[
+                res["Y2"],
+                -res["Y"],
+                1,
+                Max[res["X"] - 1, res["Y"] - 1] * 2
+            ];
+            
+            (*Echo[{effectiveWidth, effectiveHeight}];*)
+            
+            (* ARCFindSymmetry only finds and reports on corruptions that are within
+                the parts of the image that have all four locations of symmetry, so here
+                we check for and fix any additional corruptions that might only have
+                one or two symmetrical locations present in the image. *)
+            additionalImputations = Function[{additionalCorruptedPixel},
+                additionalCorruptedPixel -> Replace[
+                    DeleteDuplicates@
+                    DeleteCases[
+                        Extract[
+                            image,
+                            Select[
+                                (# + originOffset) & /@
+                                    ARCSymmetryLocations[
+                                        effectiveWidth,
+                                        effectiveHeight,
+                                        additionalCorruptedPixel + originOffset
+                                    ],
+                                !ARCOutOfBounds[#, width, height] &
+                            ]
+                        ],
+                        corruptionColor
+                    ],
+                    {
+                        {color_} :> (
+                            color
+                        ),
+                        (* We were unable to find a single color. *)
+                        {} | {_, __} :> Return[None, Module]
+                    }
+                ]
+            ] /@ Position[image, corruptionColor, {2}, Heads -> False];
+            
+            res["Imputations"] = Join[
+                res["Imputations"],
+                additionalImputations
+            ]
+        ];
+        
+        res
+    ]
+    ]
+
+(* Considers whether an image patch and its flipped variants can detect symmetry. *)
+ARCFindSymmetry[image_List, patchY_Integer, patchX_Integer, patchImage_List] :=
+    Module[
+        {
+            width = ImageWidth[image],
+            height = ImageHeight[image],
+            patchFlipImages,
+            horizontallyFlippedImage,
+            horizontallyAndVerticallyFlippedImage,
+            subImagePositions,
+            patchFlipImagePositions,
+            possiblySymmetryBounds
+        },
+        
+        (*ARCEcho[ARCScene[patchImage]];*)
+        
+        patchFlipImages = {
+            horizontallyFlippedImage = ARCFlipImage[patchImage, "Horizontal"],
+            ARCFlipImage[patchImage, "Vertical"],
+            horizontallyAndVerticallyFlippedImage = ARCFlipImage[horizontallyFlippedImage, "Vertical"]
+        };
+        
+        (*Echo[
+            ARCIndent[
+                {
+                    ARCScene /@ {patchImage, horizontallyFlippedImage},
+                    ARCScene /@ {patchFlipImages[[2]], patchFlipImages[[3]]}
+                },
+                "ColumnsAvailable" -> 130
+            ]
+        ];*)
+        
+        (* For each patch flip image, see if there are instances of that sub-image
+            in the scene either directly below or to the right of our patch
+            as appropriate, which might indicate that we've found symmetry. *)
+        patchFlipImagePositions = MapIndexed[
+            Function[{patchFlipImage, index},
+                subImagePositions =
+                    ReturnIfFailure[
+                        (*ResourceFunction["FindSubmatrix"][*)
+                        FindSubmatrix[
+                            image,
+                            patchFlipImage,
+                            "Positions"
+                        ]
+                    ];
+                subImagePositions = Select[
+                    subImagePositions,
+                    Switch[
+                        index,
+                        {1},
+                            (* Horizontally flipped patch. *)
+                            (* Needs to be directly to the right of the patch we're considering. *)
+                            And[
+                                #[[1]] === patchY,
+                                #[[2]] > patchX
+                            ],
+                        {2},
+                            (* Vertically flipped patch. *)
+                            (* Needs to be directly below the patch we're considering. *)
+                            And[
+                                #[[2]] === patchX,
+                                #[[1]] > patchY
+                            ],
+                        {3},
+                            (* Vertically and horizontally flipped patch. *)
+                            (* Include all of these for now because it's only in pairing it with
+                               a vertical or horizontally flipped patch that we can tell if it's
+                               a possible match or not. *)
+                            True
+                    ] &
+                ]
+            ],
+            (* The horizontally and vertically flipped images. *)
+            patchFlipImages[[1 ;; 3]]
+        ];
+        
+        (*Echo["patchFlipImagePositions" -> patchFlipImagePositions];*)
+        
+        patchPairsToConsider = Join[
+            (* Horizontal and vertical patch flips. *)
+            Flatten[
+                Function[{horizontalPatchFlipImagePosition},
+                    Function[{verticalPatchFlipImagePosition},
+                        {
+                            horizontalPatchFlipImagePosition,
+                            verticalPatchFlipImagePosition
+                        }
+                    ] /@ patchFlipImagePositions[[2]]
+                ] /@ patchFlipImagePositions[[1]],
+                1
+            ],
+            (* Horizontal and (horizontal + vertical) patch flips. *)
+            Flatten[
+                Function[{horizontalPatchFlipImagePosition},
+                    Function[{verticalAndHorizontalPatchFlipImagePosition},
+                        If [horizontalPatchFlipImagePosition[[2]] === verticalAndHorizontalPatchFlipImagePosition[[2]],
+                            {
+                                horizontalPatchFlipImagePosition,
+                                verticalAndHorizontalPatchFlipImagePosition
+                            }
+                            ,
+                            Nothing
+                        ]
+                    ] /@ patchFlipImagePositions[[3]]
+                ] /@ patchFlipImagePositions[[1]],
+                1
+            ],
+            (* Vertical and (horizontal + vertical) patch flips. *)
+            Flatten[
+                Function[{verticalPatchFlipImagePosition},
+                    Function[{verticalAndHorizontalPatchFlipImagePosition},
+                        If [verticalPatchFlipImagePosition[[1]] === verticalAndHorizontalPatchFlipImagePosition[[1]],
+                            {
+                                verticalPatchFlipImagePosition,
+                                verticalAndHorizontalPatchFlipImagePosition
+                            }
+                            ,
+                            Nothing
+                        ]
+                    ] /@ patchFlipImagePositions[[3]]
+                ] /@ patchFlipImagePositions[[2]],
+                1
+            ]
+        ];
+        
+        (*EchoTag["patchPairsToConsider"][patchPairsToConsider];*)
+        
+        Function[{patchPair},
+            Replace[
+                ARCFindSymmetry[
+                    "Centered",
+                    ARCScene@
+                    ARCSubImage[
+                        image,
+                        (* The hypothesized location of the horizontally and vertically
+                            flipped image does have the expected image, so we may have
+                            found a trio of patches to show us where the symmetry is. *)
+                        possiblySymmetryBounds = ARCThreePatchesToPossibleSymmetryBounds[
+                            {
+                                {patchY, patchX},
+                                patchPair[[1]],
+                                patchPair[[2]]
+                            },
+                            $arcFindSymmetryPatchWidth,
+                            $arcFindSymmetryPatchHeight,
+                            width,
+                            height
+                        ]
+                    ]
+                ],
+                res_Association :> Return[
+                    Join[
+                        possiblySymmetryBounds,
+                        With[{offset = {possiblySymmetryBounds["Y"], possiblySymmetryBounds["X"]} - {1, 1}},
+                            Sett[
+                                res,
+                                "Imputations" -> Function[{imputation},
+                                    ReplacePart[
+                                        imputation,
+                                        1 -> imputation[[1]] + offset
+                                    ]
+                                ] /@ res["Imputations"]
+                            ]
+                        ]
+                    ],
+                    Module
+                ]
+            ]
+        ] /@ patchPairsToConsider;
+        
+        None
+    ]
+
+ARCFindSymmetry["Centered", ARCScene[image_]] :=
+    Module[
+        {
+            width,
+            height,
+            halfWidthRange,
+            colorsAtPosition,
+            symmetryLocations,
+            colorCountsAtPosition,
+            imputedColor,
+            reapTag,
+            imputations,
+            corruptedLocation,
+            corruptedLocations
+        },
+        
+        width = ImageWidth[image];
+        height = ImageHeight[image];
+        halfWidthRange = Range[width / 2];
+        
+        imputations = ReapList[
+            reapTag,
+            Function[{y},
+                Function[{x},
+                    Replace[
+                        Length[
+                            DeleteDuplicates[
+                                colorsAtPosition = Extract[
+                                    image,
+                                    symmetryLocations =
+                                        ARCSymmetryLocations[width, height, {y, x}]
+                                ]
+                            ]
+                        ],
+                        {
+                            4 | 3 :> Return[False, Module],
+                            (* Symmetrical at this location. Do nothing. *)
+                            1 :> Null,
+                            2 :> (
+                                colorCountsAtPosition = Counts[colorsAtPosition];
+                                Which[
+                                    Cases[colorCountsAtPosition, 2] =!= {},
+                                        (* Only two pixels are the same color, so we need to deter
+                                           our decision on what the correct color here is. *)
+                                        Sow[
+                                            <|
+                                                "Position" -> {y, x},
+                                                "SymmetryLocations" -> symmetryLocations,
+                                                "ColorsAtPosition" -> colorsAtPosition
+                                            |>,
+                                            reapTag
+                                        ],
+                                    True,
+                                        imputedColor =
+                                            First[Keys[Select[colorCountsAtPosition, # === 3 &]]];
+                                        corruptedLocation = SelectFirst[
+                                            symmetryLocations,
+                                            Function[
+                                                image[[#[[1]], #[[2]]]] =!= imputedColor
+                                            ]
+                                        ];
+                                        Sow[corruptedLocation -> imputedColor, reapTag]
+                                ]
+                            )
+                        }
+                    ]
+                ] /@ halfWidthRange
+            ] /@ Range[height / 2];
+        ];
+        
+        corruptionColor =
+            If [imputations =!= {},
+                Extract[
+                    image,
+                    imputations[[1, 1]]
+                ]
+                ,
+                None
+            ];
+        
+        <|
+            "CorruptionColor" -> corruptionColor,
+            "Imputations" -> Replace[
+                imputations,
+                delayedItem_Association :> (
+                    imputedColor =
+                        FirstCase[delayedItem["ColorsAtPosition"], Except[corruptionColor]];
+                    corruptedLocations = Select[
+                        delayedItem["SymmetryLocations"],
+                        Function[
+                            image[[#[[1]], #[[2]]]] =!= imputedColor
+                        ]
+                    ];
+                    Sequence @@ (
+                        Function[{corruptedLocation},
+                            corruptedLocation -> imputedColor
+                        ] /@ corruptedLocations
+                    )
+                ),
+                {1}
+            ]
+        |>
+    ]
+
+(*!
+    \function ARCThreePatchesToPossibleSymmetryBounds
+    
+    \calltable
+        ARCThreePatchesToPossibleSymmetryBounds[patchPositions, patchWidth, patchHeight] '' Given three image patches which may have detected symmetry, returns the symmetrical image rectangle that they would imply.
+    
+    Examples:
+    
+    ARCThreePatchesToPossibleSymmetryBounds[{{8, 8}, {23, 8}, {23, 23}}, 3, 3, 30, 30]
+    
+    ===
+    
+    <|"Y" -> 3, "X" -> 3, "Y2" -> 30, "X2" -> 30|>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCThreePatchesToPossibleSymmetryBounds]
+    
+    \maintainer danielb
+*)
+Clear[ARCThreePatchesToPossibleSymmetryBounds];
+ARCThreePatchesToPossibleSymmetryBounds[patchPositions_List, patchWidth_Integer, patchHeight_Integer, sceneWidth_Integer, sceneHeight_Integer] :=
+    Module[{patchesY1, patchesX1, patchesY2, patchesX2},
+        
+        (*Echo[{patchPositions, patchWidth, patchHeight, sceneWidth, sceneHeight}];*)
+        
+        patchesY1 = Min[patchPositions[[All, 1]]];
+        patchesX1 = Min[patchPositions[[All, 2]]];
+        patchesY2 = Max[patchPositions[[All, 1]]] + patchHeight - 1;
+        patchesX2 = Max[patchPositions[[All, 2]]] + patchWidth - 1;
+        
+        centerY = N[(patchesY1 + patchesY2) / 2];
+        centerX = N[(patchesX1 + patchesX2) / 2];
+        
+        effectiveWidth = Max[{centerX, width + 1 - centerX}] * 2 - 1;
+        effectiveHeight = Max[{centerY, height + 1 - centerY}] * 2 - 1;
+        
+        padY = Min[{patchesY1 - 1, sceneHeight - patchesY2}];
+        padX = Min[{patchesX1 - 1, sceneWidth - patchesX2}];
+        
+        <|
+            "CenterY" -> centerY,
+            "CenterX" -> centerX,
+            "Y" -> patchesY1 - padY,
+            "X" -> patchesX1 - padX,
+            "Y2" -> patchesY2 + padY,
+            "X2" -> patchesX2 + padX
+        |>
+    ]
+
+(*!
+    \function ARCCheckForImputationUsingSymmetry
+    
+    \calltable
+        ARCCheckForImputationUsingSymmetry[examples, findSymmetryResult] '' Checks whether the examples repair corruptions in the inputs using symmetry to perform imputation.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForImputationUsingSymmetry]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForImputationUsingSymmetry];
+ARCCheckForImputationUsingSymmetry[ARCScene[imageIn_], findSymmetryResult_Association] :=
+    Module[{image = imageIn},
+        If [MatchQ[findSymmetryResult["Imputations"], {__}],
+            
+            (* Repair the image. *)
+            Function[{imputation},
+                image[[Sequence @@ imputation[[1]]]] = imputation[[2]]
+            ] /@ findSymmetryResult["Imputations"];
+            
+            ARCScene[image]
+            ,
+            (* There were no corruptions to repair. *)
+            False
+        ]
+    ]
+
+(*!
+    \function ARCCheckForSceneRepairUsingImputationQ
+    
+    \calltable
+        ARCCheckForSceneRepairUsingImputationQ[examples] '' Performs some preliminary checks and returns True if we should spend the time to do more in-depth checks of whether these examples involve repairing corruptions using imputation.
+    
+    Examples:
+    
+    ARCCheckForSceneRepairUsingImputationQ[ARCParseFile["3631a71a"]["Train"]] === True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForSceneRepairUsingImputationQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForSceneRepairUsingImputationQ];
+ARCCheckForSceneRepairUsingImputationQ[examples_List] :=
+    Module[{image, colorCounts, diffProportion},
+        AllTrue[
+            examples,
+            Function[{example},
+                image = example[["Input", 1]];
+                And[
+                    Or[
+                        And[
+                            (* If the input and output images aren't the same size, abort. *)
+                            And[
+                                ImageWidth[example["Input"]] === ImageWidth[example["Output"]],
+                                ImageHeight[example["Input"]] === ImageHeight[example["Output"]]
+                            ],
+                            colorCounts = Counts[Flatten[image]];
+                            (* If the image doesn't have at least 3 colors, abort. *)
+                            Length[colorCounts] >= 3,
+                            (* If the image's most common color fills > 70% of the space, abort.
+                               For example, 3631a71a is 59% black. *)
+                            N[Max[colorCounts] / Total[colorCounts]] < 0.7,
+                            (* If the percentage difference from input to output is more than 22.5%, abort. *)
+                            With[{pixelComparisons = Counts[SameQ @@@ Transpose[{Flatten[image], Flatten[example[["Output", 1]]]}]]},
+                                diffProportion = N[pixelComparisons[False] / Total[pixelComparisons]];
+                                diffProportion < 0.225
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ]
     ]
 

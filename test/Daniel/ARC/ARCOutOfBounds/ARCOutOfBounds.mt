@@ -57,3 +57,11 @@ Test[
     ,
     TestID -> "ARCOutOfBounds-20220803-YXYWQP"
 ]
+
+Test[
+    Daniel`ARC`ARCOutOfBounds[{-1, 1}, {{1, 0}, {0, 1}}]
+    ,
+    True
+    ,
+    TestID -> "ARCOutOfBounds-20221002-XUZVPR"
+]

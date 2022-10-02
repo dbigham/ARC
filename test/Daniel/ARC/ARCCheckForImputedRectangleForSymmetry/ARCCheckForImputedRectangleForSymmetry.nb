@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     20258,        499]
-NotebookOptionsPosition[     12892,        326]
-NotebookOutlinePosition[     18708,        468]
-CellTagsIndexPosition[     18665,        465]
+NotebookDataLength[     16410,        404]
+NotebookOptionsPosition[      9229,        235]
+NotebookOutlinePosition[     15045,        377]
+CellTagsIndexPosition[     15002,        374]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -29,7 +29,7 @@ Cell[BoxData[{
   "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[439]:=",ExpressionUUID->"99a8874a-a240-46f8-906f-f0dc6f4ae0d0"],
+  "In[391]:=",ExpressionUUID->"99a8874a-a240-46f8-906f-f0dc6f4ae0d0"],
 
 Cell[CellGroupData[{
 
@@ -142,7 +142,7 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.873394876323533*^9, {3.8733962013129435`*^9, 3.87339620270369*^9}, {
    3.8733984877392683`*^9, 3.8733985183351717`*^9}, 3.8733987851457777`*^9},
- CellLabel->"In[496]:=",
+ CellLabel->"In[389]:=",
  CellID->88491067,
  "TestId" -> 
  "ARCCheckForImputedRectangleForSymmetry-20220928-KG0CJN",ExpressionUUID->\
@@ -151,13 +151,17 @@ Cell[BoxData[{
 
 Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
-  RowBox[{"\<\"Type\"\>", "\[Rule]", "\<\"ImputedRectangleForSymmetry\"\>"}], 
+  RowBox[{
+   RowBox[{"\<\"Type\"\>", "\[Rule]", "\<\"Imputation\"\>"}], ",", 
+   RowBox[{"\<\"Pattern\"\>", "\[Rule]", "\<\"Symmetry\"\>"}], ",", 
+   RowBox[{"\<\"Output\"\>", "\[Rule]", "\<\"ImputedRectangle\"\>"}]}], 
   "\[RightAssociation]"}]], "Output",
  CellChangeTimes->{
   3.873398505661771*^9, {3.8733987807014136`*^9, 3.873398785723042*^9}, 
-   3.8734008091511116`*^9},
+   3.8734008091511116`*^9, 3.873709157527689*^9, 3.8737121994487376`*^9, 
+   3.873712930099595*^9, 3.8737133105126915`*^9, 3.873713914764303*^9},
  CellLabel->
-  "Out[497]=",ExpressionUUID->"d4f2423d-d34c-4e4a-9954-822f83a19a57"]
+  "Out[390]=",ExpressionUUID->"bba8a604-69c1-4691-b76a-47fec3b0537e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -186,125 +190,30 @@ Cell[BoxData[{
    3.8717270500575724`*^9, {3.87339488412662*^9, 3.8733949318123274`*^9}, {
    3.873397666497377*^9, 3.8733976674172325`*^9}, 3.8733985405834312`*^9},
  CellLabel->
-  "In[409]:=",ExpressionUUID->"7aa5c9d3-e55b-4e76-9b2d-4e75ad2e5ca5"],
+  "In[379]:=",ExpressionUUID->"7aa5c9d3-e55b-4e76-9b2d-4e75ad2e5ca5"],
 
 Cell[BoxData[
- TemplateBox[{"18.09`", "\"ms\"", "milliseconds", "\"Milliseconds\""},
+ TemplateBox[{"15.75`", "\"ms\"", "milliseconds", "\"Milliseconds\""},
   "Quantity"]], "Echo",
  CellChangeTimes->{
-  3.8733986714446297`*^9},ExpressionUUID->"7eba049c-5a44-4dcb-9497-\
-00677cd94e1b"]
+  3.873712935173756*^9},ExpressionUUID->"8c7ce034-99cc-4ecc-b31b-\
+1dacf3d84818"]
 }, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- DynamicBox[ToBoxes[
-   Column[{
-     Framed[
-      Grid[{{
-         Button["Run", 
-          
-          With[{DevTools`TestingTools`Private`res = 
-            DevTools`TestingTools`Private`runButtonClicked[
-             "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA", 
-              Daniel`ARC`ARCCheckForImputedRectangleForSymmetry, 
-              HoldComplete[
-              DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906], 43527051, "SubTest" -> None]}, 
-           If[
-            FailureQ[DevTools`TestingTools`Private`res], 
-            Print[DevTools`TestingTools`Private`res]]], 
-          ImageSize -> {57.5, 25}, Method -> "Queued"], 
-         Button[
-         "Update", {
-           "TestUiMarker", "TestId" -> 
-            "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA"}; 
-          DevTools`TestingTools`Private`updateTestClicked[
-           "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA", 
-            Daniel`ARC`ARCCheckForImputedRectangleForSymmetry, 
-            HoldComplete[
-            DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906], "CellID" -> 43527051, 
-            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
-         Button["Open in Editor", 
-          DevTools`TestingTools`Private`openInEditorClicked[
-          "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA", 
-           Daniel`ARC`ARCCheckForImputedRectangleForSymmetry, 
-           HoldComplete[
-           DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906], 
-           Utility`FilterOptions[
-           "SubTest" -> None, 
-            DevTools`TestingTools`Private`openInEditorClicked]], 
-          ImageSize -> {140., 25}, Method -> "Queued"], 
-         Row[{"ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA"}, 
-          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
-      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
-      FrameMargins -> 10], 
-     DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906; If[
-       And[
-        ValueQ[
-        DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906], 
-        DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906 =!= "", 
-        DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906 =!= Null], 
-       (If[
-        TrueQ[
-         OptionValue[
-         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
-        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
-        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
-         15]]& )[
-        Grid[{{
-           Pane[
-           DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906, "ImageSize" -> {Full, {0, 
-               OptionValue[
-               DevTools`NotebookTools`DynamicOutputSection, {}, 
-                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
-          If[
-           TrueQ[
-            OptionValue[
-            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
-           Apply[Sequence, {}], {
-            Button[
-            "OK", DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906 = "", 
-             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
-         Alignment -> {Left, Top}]], 
-       Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
-  TrackedSymbols:>{
-   DevTools`NotebookTools`Private`\
-DynamicOutputSectionVariable20229282015822906}]], "TestUI",
- CellMargins->{{65, 0}, {0, 0}},
- CellGroupingRules->{"GroupTogetherGrouping", 10000.},
- GeneratedCell->False,
- CellChangeTimes->{
-  3.873398518555844*^9},ExpressionUUID->"a8240171-f6b2-40fd-895c-\
-7cdbba58f646"],
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"ARCCheckForImputedRectangleForSymmetry", "[", "examples", "]"}], 
-  " ", "//", " ", "Indent2"}]}], "Code",
+  RowBox[{"NotTest", "@", "\n", 
+   RowBox[{"ARCCheckForImputedRectangleForSymmetry", "[", "examples", "]"}]}],
+   " ", "//", " ", "Indent2"}]}], "Code",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellChangeTimes->{
   3.873394876323533*^9, {3.8733962013129435`*^9, 3.87339620270369*^9}, 
-   3.873398518555844*^9},
- CellLabel->"In[433]:=",
+   3.873398518555844*^9, {3.873709169931272*^9, 3.873709171093027*^9}},
  CellID->43527051,
- "TestId" -> 
- "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA",ExpressionUUID->\
-"43aaffd6-4e91-413c-ae31-63319a1ffd1e"]
-}, Open  ]],
+ "TestId" -> "",ExpressionUUID->"98efbb3c-3ba4-45a1-81c3-3204ae90565b"],
 
 Cell[BoxData["\<\"<|\\\"Type\\\" -> \
 \\\"ImputedRectangleForSymmetry\\\"|>\"\>"], "Output",
@@ -481,24 +390,20 @@ Cell[5061, 132, 695, 16, 90, "Code",ExpressionUUID->"b77e17d6-4b14-4886-80d6-4fe
  InitializationCell->False,
  CellID->88491067]
 }, Open  ]],
-Cell[5771, 151, 366, 8, 33, "Output",ExpressionUUID->"d4f2423d-d34c-4e4a-9954-822f83a19a57"]
+Cell[5771, 151, 626, 12, 33, "Output",ExpressionUUID->"bba8a604-69c1-4691-b76a-47fec3b0537e"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6174, 164, 156, 3, 67, "Section",ExpressionUUID->"6c73ab93-466c-4a70-a952-4c2906b16169"],
+Cell[6434, 168, 156, 3, 67, "Section",ExpressionUUID->"6c73ab93-466c-4a70-a952-4c2906b16169"],
 Cell[CellGroupData[{
-Cell[6355, 171, 839, 17, 108, "Code",ExpressionUUID->"7aa5c9d3-e55b-4e76-9b2d-4e75ad2e5ca5",
+Cell[6615, 175, 839, 17, 108, "Code",ExpressionUUID->"7aa5c9d3-e55b-4e76-9b2d-4e75ad2e5ca5",
  InitializationCell->False],
-Cell[7197, 190, 212, 5, 32, "Echo",ExpressionUUID->"7eba049c-5a44-4dcb-9497-00677cd94e1b"]
+Cell[7457, 194, 210, 5, 32, "Echo",ExpressionUUID->"8c7ce034-99cc-4ecc-b31b-1dacf3d84818"]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[7446, 200, 3883, 88, 52, "TestUI",ExpressionUUID->"a8240171-f6b2-40fd-895c-7cdbba58f646",
- CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[11332, 290, 576, 15, 54, "Code",ExpressionUUID->"43aaffd6-4e91-413c-ae31-63319a1ffd1e",
+Cell[7682, 202, 575, 13, 72, "Code",ExpressionUUID->"98efbb3c-3ba4-45a1-81c3-3204ae90565b",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
- CellID->43527051]
-}, Open  ]],
-Cell[11923, 308, 941, 14, 33, "Output",ExpressionUUID->"69ee8d00-241b-4510-ada7-a81e7e4ba4ba"]
+ CellID->43527051],
+Cell[8260, 217, 941, 14, 33, "Output",ExpressionUUID->"69ee8d00-241b-4510-ada7-a81e7e4ba4ba"]
 }, Open  ]]
 }, Open  ]]
 }

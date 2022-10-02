@@ -3175,71 +3175,99 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "9ecd008a"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "9ecd008a"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     ,
     TestID -> "ARCFindRules-20220928-EMUDDF"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "FF805C23"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "FF805C23"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     ,
     TestID -> "ARCFindRules-20220928-7WECHR"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "DC0A314F"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "DC0A314F"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     ,
     TestID -> "ARCFindRules-20220928-SSJHVU"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67B4A34D"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "67B4A34D"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     ,
     TestID -> "ARCFindRules-20220928-RSY06C"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "29ec7d0e"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "29ec7d0e"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputationUsingPattern"|>
+    <|"Type" -> "Imputation", "Pattern" -> "GridFill", "Output" -> "RepairedScene"|>
     ,
     TestID -> "ARCFindRules-20220929-V973SP"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0dfd9992"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "0dfd9992"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputationUsingPattern"|>
+    <|"Type" -> "Imputation", "Pattern" -> "GridFill", "Output" -> "RepairedScene"|>
     ,
     TestID -> "ARCFindRules-20220929-ES65R9"
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "484b58aa"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "484b58aa"]["Train"]]
+            ]
+        ]
     ]
     ,
-    <|"Type" -> "ImputationUsingPattern"|>
+    <|"Type" -> "Imputation", "Pattern" -> "GridFill", "Output" -> "RepairedScene"|>
     ,
     TestID -> "ARCFindRules-20220929-35JPOP"
 ]
@@ -3327,4 +3355,14 @@ Test[
     }
     ,
     TestID -> "ARCFindRules-20221001-27LKXS"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "3631a71a"]["Train"]]
+    ]
+    ,
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "RepairedScene"|>
+    ,
+    TestID -> "ARCFindRules-20221002-SQVKWZ"
 ]

@@ -19,15 +19,7 @@ Test[
         ]
     ]
     ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
+    <|"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"|>
     ,
     TestID -> "ARCCheckForImputedRectangleForSymmetry-20220928-KG0CJN"
-]
-
-Test[
-    Daniel`ARC`ARCCheckForImputedRectangleForSymmetry[examples]
-    ,
-    <|"Type" -> "ImputedRectangleForSymmetry"|>
-    ,
-    TestID -> "ARCCheckForImputedRectangleForSymmetry-20220928-MHAMIA"
 ]
