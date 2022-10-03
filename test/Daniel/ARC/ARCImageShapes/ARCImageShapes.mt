@@ -11,7 +11,7 @@
 *)
 
 Test[
-    Daniel`ARC`ARCImageShapes[{{1}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[Daniel`ARC`ARCImageShapes[{{1}}]]
     ,
     {
         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
@@ -22,6 +22,24 @@ Test[
         <|
             "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
             "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}}
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10}
+                }
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
         |>
     }
     ,
@@ -29,7 +47,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCImageShapes[{{1, 2}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCImageShapes[{{1, 2}}]
+    ]
     ,
     {
         <|"Image" -> Daniel`ARC`ARCScene[{{1, 2}}]|>,
@@ -58,6 +78,29 @@ Test[
                 {{1, 1, 1, 2, 2, 2}, {1, 1, 1, 2, 2, 2}, {1, 1, 1, 2, 2, 2}}
             ],
             "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {1, 1, 1, 1, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 2, 2, 2, 2}
+                }
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2}
+                }
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
         |>
     }
     ,
@@ -65,7 +108,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCImageShapes[{{1}}, "IncludeNoopTransforms" -> True]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCImageShapes[{{1}}, "IncludeNoopTransforms" -> True]
+    ]
     ,
     {
         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
@@ -100,6 +145,24 @@ Test[
         <|
             "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
             "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}}
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10}
+                }
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
         |>
     }
     ,
@@ -107,7 +170,9 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCImageShapes[{{1}}, "Monochrome" -> {{10}}]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCImageShapes[{{1}}, "Monochrome" -> {{10}}]
+    ]
     ,
     {
         <|"Image" -> Daniel`ARC`ARCScene[{{10}}]|>,
@@ -118,6 +183,24 @@ Test[
         <|
             "Image" -> Daniel`ARC`ARCScene[{{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}],
             "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}, {10, 10, 10, 10}}
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+        |>,
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10},
+                    {10, 10, 10, 10, 10}
+                }
+            ],
+            "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
         |>
     }
     ,

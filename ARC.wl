@@ -3992,7 +3992,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     "6773b310" | "0d3d703e" | "3194b014" |
                     (* These started failing Oct 1 in training test runs, but didn't fail
                        when I ran them locally, so adding them here experimentally. *)
-                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" | "d10ecb37"
+                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -4193,7 +4193,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                             Or[
                                 !workingRulesFound[],
                                 (* e.g. a740d043 *)
-                                (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 2.5
+                                (* e.g. 6e02f1e3: Approx 0.5 improvement in score. *)
+                                (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0.5
                             ]
                         ],
                         foundRulesQ = True;
@@ -9440,6 +9441,8 @@ Clear[ARCFindPropertyToInferImageValues];
 ARCFindPropertyToInferImageValues[propertyPath_List, objects_List, values_List] :=
     Module[{transformations},
         
+        (* HERE11 *)
+        
         (* Before we do an expensive comparison of the images with various potential transforms
            of those images, first check to ensure the colors of the images are at least
            compatible. One case where we don't need to do this is where there's just a single
@@ -9466,6 +9469,9 @@ ARCFindPropertyToInferImageValues[propertyPath_List, objects_List, values_List] 
             objects
         ];
         
+        (*ARCEcho2["objects" -> objects];
+        ARCEcho2["values" -> values];*)
+        
         Replace[
             ARCChooseTransform[transformations, "FallbackToPruning" -> False],
             {
@@ -9480,7 +9486,9 @@ ARCFindPropertyToInferImageValues[propertyPath_List, objects_List, values_List] 
                         transform
                     ]
                 ),
-                _ :> Missing["NotFound"]
+                _ :> (
+                    Missing["NotFound"]
+                )
             }
         ]
     ]
@@ -13212,7 +13220,7 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 9, 30}],
             "ImplementationTime" -> Quantity[4.5, "Hours"],
             "CodeLength" -> 23976,
-            "NewGeneralizedSuccesses" -> {"0dfd9992", "484b58aa", "c3f564a4", "d10ecb37", "662c240a"},
+            "NewGeneralizedSuccesses" -> {"0dfd9992", "484b58aa", "c3f564a4"(*, "d10ecb37"*)},
             "NewEvaluationSuccesses" -> {"1d0a4b61", "5207a7b5", "c663677b", "e95e3d8e"}
         |>,
         <|
@@ -13243,7 +13251,8 @@ ARCTaskLog[] :=
             "NewEvaluationSuccesses" -> {}
         |>,
         (* Crazy rules. *)
-        <|
+        (* Stopped working Oct 2 2022. *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "662c240a",
             "Timestamp" -> DateObject[{2022, 9, 30}],
@@ -13251,9 +13260,10 @@ ARCTaskLog[] :=
             "CodeLength" -> 23993,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>,
+        |>,*)
         (* Crazy rules. *)
-        <|
+        (* Stopped working Oct 2 2022. *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "d10ecb37",
             "Timestamp" -> DateObject[{2022, 9, 30}],
@@ -13261,7 +13271,7 @@ ARCTaskLog[] :=
             "CodeLength" -> 23993,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>,
+        |>,*)
         <|
             "ExampleImplemented" -> "bda2d7a6",
             "Timestamp" -> DateObject[{2022, 10, 1}],
@@ -13311,13 +13321,22 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[5, "Hours"],
             "CodeLength" -> 24749,
             "NewGeneralizedSuccesses" -> {"b8825c91"},
-            "NewEvaluationSuccesses" -> {}
+            "NewEvaluationSuccesses" -> {"903d1b4a", "981571dc"}
         |>,
         <|
             "ExampleImplemented" -> "b8825c91",
             "Timestamp" -> DateObject[{2022, 10, 2}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 24825,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "ExampleImplemented" -> "4938f0c2-easy",
+            "Timestamp" -> DateObject[{2022, 10, 2}],
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 24851,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -20319,7 +20338,16 @@ ARCChooseTransform[conclusionsIn_List, OptionsPattern[]] :=
                             conclusion,
                             "Transforms" -> Select[
                                 ARCImageShapes[
-                                    conclusion["Input", "Image"],
+                                    Replace[
+                                        conclusion["Input", "Image"],
+                                        (* As of Oct 2 2022, we are debugging the call to this
+                                           function from ARCFindPropertyToInferImageValues, and
+                                           in that context, conclusion["Input"] isn't defined, so
+                                           I'm a bit confused. Since conclusion["Image"] _is_
+                                           defined in that context, and appears to be what we
+                                           want to use, we'll use that. *)
+                                        _Missing :> conclusion["Image"]
+                                    ],
                                     "IncludeBaseShape" -> False,
                                     "IncludeNoopTransforms" -> True
                                 ],

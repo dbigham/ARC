@@ -3366,3 +3366,53 @@ Test[
     ,
     TestID -> "ARCFindRules-20221002-SQVKWZ"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "4938f0c2-easy"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                        ],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "XInverse" -> 1|>|>
+                    |>,
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        ],
+                        "Position" -> <|"RelativePosition" -> <|"YInverse" -> 1, "X" -> 0|>|>
+                    |>,
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Rotation", "Angle" -> 180|>
+                        ],
+                        "Position" -> <|
+                            "RelativePosition" -> <|"YInverse" -> 1, "XInverse" -> 1|>
+                        |>
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20221002-UBDTIY"
+]
