@@ -3416,3 +3416,17 @@ Test[
     ,
     TestID -> "ARCFindRules-20221002-UBDTIY"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d13f3404"]["Train"]]
+    ]
+    ,
+    <|
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
+        "Rules" -> <|"Type" -> "PatternFill", "Start" -> {1, 1}, "Trajectory" -> {1, 1}|>
+    |>
+    ,
+    TestID -> "ARCFindRules-20221003-KLSKL1"
+]

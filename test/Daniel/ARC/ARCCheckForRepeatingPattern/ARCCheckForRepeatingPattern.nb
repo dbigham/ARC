@@ -1,0 +1,1283 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     56749,       1275]
+NotebookOptionsPosition[     48207,       1079]
+NotebookOutlinePosition[     53881,       1219]
+CellTagsIndexPosition[     53838,       1216]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["ARCCheckForRepeatingPattern", "Title",ExpressionUUID->"3d2e8cd6-29d0-4f0b-b457-3ce485fb8819"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"RunUnitTests", "[", "ARCCheckForRepeatingPattern", "]"}]}], "Code",
+ InitializationCell->False,
+ CellLabel->"In[19]:=",ExpressionUUID->"f041e721-9232-4daa-9a74-5ae6334a093e"],
+
+Cell[CellGroupData[{
+
+Cell["Tests", "Section",ExpressionUUID->"5b5c9472-55ae-4118-bcad-8262df6f6e24"],
+
+Cell[CellGroupData[{
+
+Cell["d13f3404", "Subsection",
+ CellChangeTimes->{
+  3.873792071332368*^9},ExpressionUUID->"2759cda5-2c46-412c-8c2d-\
+8e5b6d8cc965"],
+
+Cell[CellGroupData[{
+
+Cell["Single Example", "Subsubsection",
+ CellChangeTimes->{{3.873828917740711*^9, 
+  3.8738289303832674`*^9}},ExpressionUUID->"5caa4cc8-8ce0-4e7c-bdfa-\
+f01b3d0801f1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"ARCParseFile", "[", "\"\<d13f3404\>\"", "]"}], "[", 
+   "\"\<Train\>\"", "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.873792014326428*^9, 3.8737920287358866`*^9}, {
+  3.8737920755405717`*^9, 3.8737920775870066`*^9}},
+ CellLabel->
+  "In[553]:=",ExpressionUUID->"d5318630-fd33-48ec-bf14-9e238196b3cf"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"Input\"\>", "\[Rule]", 
+    TagBox[GridBox[{
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+      },
+      AutoDelete->False,
+      FrameStyle->{
+        AbsoluteThickness[1], 
+        GrayLevel[0.5]},
+      GridBoxBackground->{
+       "Columns" -> {{None}}, "Rows" -> {{None}}, 
+        "ItemsIndexed" -> {{1, 1} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {1, 
+           2} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 3} -> 
+          GrayLevel[0], {2, 1} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 2} -> 
+          GrayLevel[0], {2, 3} -> GrayLevel[0], {3, 1} -> 
+          GrayLevel[0], {3, 2} -> GrayLevel[0], {3, 3} -> GrayLevel[0]}},
+      GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+      GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+      GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+     "Grid"]}], ",", 
+   RowBox[{"\<\"Output\"\>", "\[Rule]", 
+    TagBox[GridBox[{
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+      },
+      AutoDelete->False,
+      FrameStyle->{
+        AbsoluteThickness[1], 
+        GrayLevel[0.5]},
+      GridBoxBackground->{
+       "Columns" -> {{None}}, "Rows" -> {{None}}, 
+        "ItemsIndexed" -> {{1, 1} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {1, 
+           2} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 3} -> 
+          GrayLevel[0], {1, 4} -> GrayLevel[0], {1, 5} -> 
+          GrayLevel[0], {1, 6} -> GrayLevel[0], {2, 1} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 2} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {2, 
+           3} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 4} -> 
+          GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+          GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 3} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {3, 
+           4} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 5} -> 
+          GrayLevel[0], {3, 6} -> GrayLevel[0], {4, 1} -> 
+          GrayLevel[0], {4, 2} -> GrayLevel[0], {4, 3} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 4} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {4, 
+           5} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 6} -> 
+          GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+          GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 5} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {5, 
+           6} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 1} -> 
+          GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+          GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
+          RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 6} -> 
+          RGBColor[
+           0.9411764705882353, 0.07058823529411765, 0.7450980392156863]}},
+      GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+      GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+      GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+     "Grid"]}]}], "\[RightAssociation]"}]], "Output",
+ CellChangeTimes->{{3.873792016977005*^9, 3.873792028966213*^9}, 
+   3.8737920778418283`*^9},
+ CellLabel->
+  "Out[553]=",ExpressionUUID->"af3b446c-8920-4319-bad0-103f8ba2a5da"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCCheckForRepeatingPattern-20221003-RVSKNR", 
+              Daniel`ARC`ARCCheckForRepeatingPattern, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526], 20546590, "SubTest" -> None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCCheckForRepeatingPattern-20221003-RVSKNR"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCCheckForRepeatingPattern-20221003-RVSKNR", 
+            Daniel`ARC`ARCCheckForRepeatingPattern, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526], "CellID" -> 20546590, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCCheckForRepeatingPattern-20221003-RVSKNR", 
+           Daniel`ARC`ARCCheckForRepeatingPattern, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCCheckForRepeatingPattern-20221003-RVSKNR"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{826., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163526}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8737944811626744`*^9},ExpressionUUID->"e34e9644-41a3-4523-87af-\
+cb0a64cf9911"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"example", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"ARCParseFile", "[", "\"\<d13f3404\>\"", "]"}], "[", 
+       RowBox[{"\"\<Train\>\"", ",", " ", "1"}], "]"}]}], "}"}], ",", "\n", 
+    "\t", 
+    RowBox[{"ARCCheckForRepeatingPattern", "[", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"Replace", "[", 
+       RowBox[{
+        RowBox[{"example", "[", "\"\<Input\>\"", "]"}], ",", " ", 
+        RowBox[{"0", " ", "->", " ", 
+         RowBox[{"-", "1"}]}], ",", " ", 
+        RowBox[{"{", "3", "}"}]}], "]"}], ",", "\n", "\t\t", 
+      RowBox[{"Replace", "[", 
+       RowBox[{
+        RowBox[{"example", "[", "\"\<Output\>\"", "]"}], ",", " ", 
+        RowBox[{"0", " ", "->", " ", 
+         RowBox[{"-", "1"}]}], ",", " ", 
+        RowBox[{"{", "3", "}"}]}], "]"}]}], "\n", "\t", "]"}]}], "\n", "]"}], 
+  " ", "//", " ", "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.873792035477066*^9, 3.8737920648092327`*^9}, {
+  3.8737920973247175`*^9, 3.873792097749211*^9}, {3.8737921398594503`*^9, 
+  3.873792172845147*^9}, {3.873794467993623*^9, 3.8737944811626744`*^9}},
+ CellLabel->"In[694]:=",
+ CellID->20546590,
+ "TestId" -> 
+ "ARCCheckForRepeatingPattern-20221003-RVSKNR",ExpressionUUID->"46957067-24e0-\
+4a62-ac33-89666c380c1e"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"<|\"\>"},
+    {"\<\"    \\\"Type\\\" -> \\\"PatternFill\\\",\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"    \"", 
+         TemplateBox[{"\"\\\"Pattern\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\""}, {"\"\"", "\"\"", "\"\""}, {
+              "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+             GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[
+                  0.9411764705882353, 0.07058823529411765, 
+                   0.7450980392156863], {1, 2} -> 
+                 RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 3} -> 
+                 GrayLevel[0.2], {2, 1} -> 
+                 RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                  2} -> GrayLevel[0.2], {2, 3} -> GrayLevel[0.2], {3, 1} -> 
+                 GrayLevel[0.2], {3, 2} -> GrayLevel[0.2], {3, 3} -> 
+                 GrayLevel[0.2]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
+    {"\<\"    \\\"Start\\\" -> {1, 1},\"\>"},
+    {"\<\"    \\\"Trajectory\\\" -> {1, 1}\"\>"},
+    {"\<\"|>\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{{3.8737920652029667`*^9, 3.873792108237158*^9}, {
+   3.873792148801031*^9, 3.8737921765983934`*^9}, 3.8737922397391396`*^9, {
+   3.87379229938722*^9, 3.8737923134108686`*^9}, 3.873792352240932*^9, {
+   3.8737924158949966`*^9, 3.873792459066261*^9}, 3.873792492728366*^9, 
+   3.8737926635555196`*^9, 3.8737928760771923`*^9, 3.873792933522995*^9, 
+   3.873793040741352*^9, {3.873793156443857*^9, 3.873793166491976*^9}, 
+   3.8737932797136545`*^9, {3.873794282052126*^9, 3.8737942890824685`*^9}, 
+   3.8737943388900523`*^9, {3.8737944649722385`*^9, 3.8737944700043397`*^9}},
+ CellLabel->
+  "Out[695]=",ExpressionUUID->"3f45a7c0-ffee-4e53-893f-b910bb36316a"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["All Examples", "Subsubsection",
+ CellChangeTimes->{{3.873828917740711*^9, 
+  3.8738289280092726`*^9}},ExpressionUUID->"f51c8799-6f0f-4fc5-9052-\
+89ea86f0c69d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ARCParseFile", "[", "\"\<d13f3404\>\"", "]"}], "[", 
+  "\"\<Train\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.873792014326428*^9, 3.8737920287358866`*^9}, {
+  3.8737920755405717`*^9, 3.8737920775870066`*^9}, {3.873828938515978*^9, 
+  3.8738289391868362`*^9}},
+ CellLabel->
+  "In[437]:=",ExpressionUUID->"2cc94baa-c794-403b-8002-f3117973ca3a"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {1,
+              2} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 
+             3} -> GrayLevel[0], {2, 1} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 2} -> 
+            GrayLevel[0], {2, 3} -> GrayLevel[0], {3, 1} -> 
+            GrayLevel[0], {3, 2} -> GrayLevel[0], {3, 3} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {1,
+              2} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 
+             3} -> GrayLevel[0], {1, 4} -> GrayLevel[0], {1, 5} -> 
+            GrayLevel[0], {1, 6} -> GrayLevel[0], {2, 1} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 2} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {2,
+              3} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 
+             4} -> GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 3} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {3,
+              4} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 
+             5} -> GrayLevel[0], {3, 6} -> GrayLevel[0], {4, 1} -> 
+            GrayLevel[0], {4, 2} -> GrayLevel[0], {4, 3} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 4} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {4,
+              5} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 
+             6} -> GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 5} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {5,
+              6} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 
+             1} -> GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+            GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 6} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}], ",", 
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {1, 3} -> 
+            GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {2, 3} -> 
+            GrayLevel[0], {3, 1} -> 
+            RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 2} -> 
+            GrayLevel[0], {3, 3} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {1, 3} -> 
+            GrayLevel[0], {1, 4} -> GrayLevel[0], {1, 5} -> 
+            GrayLevel[0], {1, 6} -> GrayLevel[0], {2, 1} -> 
+            GrayLevel[0], {2, 2} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {2, 3} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {2, 4} -> 
+            GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+            GrayLevel[0], {3, 1} -> 
+            RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 2} -> 
+            GrayLevel[0], {3, 3} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {3, 4} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {3, 5} -> 
+            GrayLevel[0], {3, 6} -> GrayLevel[0], {4, 1} -> 
+            GrayLevel[0], {4, 2} -> 
+            RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 3} -> 
+            GrayLevel[0], {4, 4} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {4, 5} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {4, 6} -> 
+            GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+            GrayLevel[0], {5, 3} -> 
+            RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 4} -> 
+            GrayLevel[0], {5, 5} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {5, 6} -> 
+            RGBColor[1., 0.8627450980392157, 0.], {6, 1} -> 
+            GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+            GrayLevel[0], {6, 4} -> 
+            RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 5} -> 
+            GrayLevel[0], {6, 6} -> 
+            RGBColor[0.4980392156862745, 0.8588235294117647, 1.]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}], ",", 
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"Input\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {2,
+              1} -> RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 
+             2} -> RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {
+             2, 3} -> GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+            GrayLevel[0], {3, 3} -> GrayLevel[0]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}], ",", 
+     RowBox[{"\<\"Output\"\>", "\[Rule]", 
+      TagBox[GridBox[{
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"},
+         {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\
+\>"}
+        },
+        AutoDelete->False,
+        FrameStyle->{
+          AbsoluteThickness[1], 
+          GrayLevel[0.5]},
+        GridBoxBackground->{
+         "Columns" -> {{None}}, "Rows" -> {{None}}, 
+          "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+            GrayLevel[0], {1, 3} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {1,
+              4} -> GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+            GrayLevel[0], {2, 1} -> 
+            RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 2} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 3} -> 
+            GrayLevel[0], {2, 4} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {2,
+              5} -> GrayLevel[0], {2, 6} -> GrayLevel[0], {3, 1} -> 
+            GrayLevel[0], {3, 2} -> 
+            RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 3} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 4} -> 
+            GrayLevel[0], {3, 5} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {3,
+              6} -> GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+            GrayLevel[0], {4, 3} -> 
+            RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 5} -> 
+            GrayLevel[0], {4, 6} -> 
+            RGBColor[
+             0.9411764705882353, 0.07058823529411765, 0.7450980392156863], {5,
+              1} -> GrayLevel[0], {5, 2} -> GrayLevel[0], {5, 3} -> 
+            GrayLevel[0], {5, 4} -> 
+            RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 5} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 6} -> 
+            GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+            GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+            GrayLevel[0], {6, 5} -> 
+            RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 6} -> 
+            RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`]}},
+        GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+        GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+        GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+       "Grid"]}]}], "\[RightAssociation]"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.873792016977005*^9, 3.873792028966213*^9}, 
+   3.8737920778418283`*^9, 3.8738289395774775`*^9},
+ CellLabel->
+  "Out[437]=",ExpressionUUID->"92940baf-8489-4f3a-802f-f43223f08449"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCCheckForRepeatingPattern-20221003-O89BKG", 
+              Daniel`ARC`ARCCheckForRepeatingPattern, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963], 70041508, "SubTest" -> 
+              None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCCheckForRepeatingPattern-20221003-O89BKG"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCCheckForRepeatingPattern-20221003-O89BKG", 
+            Daniel`ARC`ARCCheckForRepeatingPattern, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963], "CellID" -> 70041508, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCCheckForRepeatingPattern-20221003-O89BKG", 
+           Daniel`ARC`ARCCheckForRepeatingPattern, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCCheckForRepeatingPattern-20221003-O89BKG"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{826., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022103194234123963}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8738293540688095`*^9},ExpressionUUID->"b5a8a551-d44c-4b81-b66a-\
+1bb5bb509a8b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"examples", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"ARCParseFile", "[", "\"\<d13f3404\>\"", "]"}], "[", 
+       "\"\<Train\>\"", "]"}]}], "}"}], ",", "\n", "\t", 
+    RowBox[{"ARCCheckForRepeatingPattern", "[", "examples", "]"}]}], "\n", 
+   "]"}], " ", "//", " ", "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.873792035477066*^9, 3.8737920648092327`*^9}, {
+  3.8737920973247175`*^9, 3.873792097749211*^9}, {3.8737921398594503`*^9, 
+  3.873792172845147*^9}, {3.873794467993623*^9, 3.8737944811626744`*^9}, {
+  3.8738289507385874`*^9, 3.8738289678922515`*^9}},
+ CellLabel->"In[510]:=",
+ CellID->70041508,
+ "TestId" -> 
+ "ARCCheckForRepeatingPattern-20221003-O89BKG",ExpressionUUID->"5df6f0ef-0dcf-\
+4394-ab6f-c3b3786488a5"]
+}, Open  ]],
+
+Cell[BoxData["\<\"<|\\\"Type\\\" -> \\\"PatternFill\\\", \\\"Start\\\" -> {1, \
+1}, \\\"Trajectory\\\" -> {1, 1}|>\"\>"], "Output",
+ CellChangeTimes->{{3.8737920652029667`*^9, 3.873792108237158*^9}, {
+   3.873792148801031*^9, 3.8737921765983934`*^9}, 3.8737922397391396`*^9, {
+   3.87379229938722*^9, 3.8737923134108686`*^9}, 3.873792352240932*^9, {
+   3.8737924158949966`*^9, 3.873792459066261*^9}, 3.873792492728366*^9, 
+   3.8737926635555196`*^9, 3.8737928760771923`*^9, 3.873792933522995*^9, 
+   3.873793040741352*^9, {3.873793156443857*^9, 3.873793166491976*^9}, 
+   3.8737932797136545`*^9, {3.873794282052126*^9, 3.8737942890824685`*^9}, 
+   3.8737943388900523`*^9, {3.8737944649722385`*^9, 3.8737944700043397`*^9}, 
+   3.8738289702275896`*^9, 3.873829134982337*^9, 3.873829251136613*^9, {
+   3.873829334166257*^9, 3.873829349927165*^9}, 3.873829499114953*^9, 
+   3.873829889184187*^9, {3.8738299344524856`*^9, 3.873829962932507*^9}, {
+   3.8738299937104607`*^9, 3.873830023196344*^9}, 3.8738302377552524`*^9, 
+   3.873830614197671*^9, {3.873830679619378*^9, 3.873830750104204*^9}, 
+   3.873830851253295*^9, 3.873830899478896*^9, {3.8738309578104405`*^9, 
+   3.8738309869055977`*^9}, 3.873831761225563*^9},
+ CellLabel->
+  "Out[511]=",ExpressionUUID->"bd9d5730-0ef1-433d-9691-c4edb15e6e04"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["feca6190", "Subsection",
+ CellChangeTimes->{3.873792071332368*^9, 
+  3.873792672212572*^9},ExpressionUUID->"f4e1e13d-08ea-40ba-a035-\
+87c5720f5957"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"ARCParseFile", "[", "\"\<feca6190\>\"", "]"}], "[", 
+   "\"\<Train\>\"", "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.873792014326428*^9, 3.8737920287358866`*^9}, {
+   3.8737920755405717`*^9, 3.8737920775870066`*^9}, 3.8737926749061165`*^9},
+ CellLabel->
+  "In[588]:=",ExpressionUUID->"a779db45-1c5f-49be-9213-9f7bad6f4ae7"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"Input\"\>", "\[Rule]", 
+    TagBox[GridBox[{
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+      },
+      AutoDelete->False,
+      FrameStyle->{
+        AbsoluteThickness[1], 
+        GrayLevel[0.5]},
+      GridBoxBackground->{
+       "Columns" -> {{None}}, "Rows" -> {{None}}, 
+        "ItemsIndexed" -> {{1, 1} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 2} -> 
+          GrayLevel[0], {1, 3} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {1, 4} -> 
+          GrayLevel[0], {1, 5} -> GrayLevel[0]}},
+      GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+      GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+      GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+     "Grid"]}], ",", 
+   RowBox[{"\<\"Output\"\>", "\[Rule]", 
+    TagBox[GridBox[{
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"},
+       {"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", \
+"\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>", "\<\"\"\>"}
+      },
+      AutoDelete->False,
+      FrameStyle->{
+        AbsoluteThickness[1], 
+        GrayLevel[0.5]},
+      GridBoxBackground->{
+       "Columns" -> {{None}}, "Rows" -> {{None}}, 
+        "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+          GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+          GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+          GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+          GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 1} -> 
+          GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+          GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+          GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+          GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {2, 10} -> 
+          GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+          GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+          GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+          GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 9} -> 
+          GrayLevel[0], {3, 10} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {4, 1} -> 
+          GrayLevel[0], {4, 2} -> GrayLevel[0], {4, 3} -> 
+          GrayLevel[0], {4, 4} -> GrayLevel[0], {4, 5} -> 
+          GrayLevel[0], {4, 6} -> GrayLevel[0], {4, 7} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 8} -> 
+          GrayLevel[0], {4, 9} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {4, 10} -> 
+          GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+          GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+          GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 7} -> 
+          GrayLevel[0], {5, 8} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {5, 9} -> 
+          GrayLevel[0], {5, 10} -> GrayLevel[0], {6, 1} -> 
+          GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+          GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 6} -> 
+          GrayLevel[0], {6, 7} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {6, 8} -> 
+          GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+          GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+          GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 5} -> 
+          GrayLevel[0], {7, 6} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {7, 7} -> 
+          GrayLevel[0], {7, 8} -> GrayLevel[0], {7, 9} -> 
+          GrayLevel[0], {7, 10} -> GrayLevel[0], {8, 1} -> 
+          GrayLevel[0], {8, 2} -> GrayLevel[0], {8, 3} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 4} -> 
+          GrayLevel[0], {8, 5} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {8, 6} -> 
+          GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+          GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+          GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {9, 3} -> 
+          GrayLevel[0], {9, 4} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {9, 5} -> 
+          GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> 
+          GrayLevel[0], {9, 8} -> GrayLevel[0], {9, 9} -> 
+          GrayLevel[0], {9, 10} -> GrayLevel[0], {10, 1} -> 
+          RGBColor[0., 0.4549019607843137, 0.8509803921568627], {10, 2} -> 
+          GrayLevel[0], {10, 3} -> 
+          RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {10, 4} -> 
+          GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+          GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+          GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> GrayLevel[0]}},
+      GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+      GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+      GridBoxItemSize->{"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}],
+     "Grid"]}]}], "\[RightAssociation]"}]], "Output",
+ CellChangeTimes->{{3.873792016977005*^9, 3.873792028966213*^9}, 
+   3.8737920778418283`*^9, 3.8737926754541693`*^9},
+ CellLabel->
+  "Out[588]=",ExpressionUUID->"5a4e6dda-b8a8-4c69-b922-080c792f3484"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCCheckForRepeatingPattern-20221003-Z0UOD7", 
+              Daniel`ARC`ARCCheckForRepeatingPattern, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532], 47521898, "SubTest" -> None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCCheckForRepeatingPattern-20221003-Z0UOD7"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCCheckForRepeatingPattern-20221003-Z0UOD7", 
+            Daniel`ARC`ARCCheckForRepeatingPattern, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532], "CellID" -> 47521898, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCCheckForRepeatingPattern-20221003-Z0UOD7", 
+           Daniel`ARC`ARCCheckForRepeatingPattern, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCCheckForRepeatingPattern-20221003-Z0UOD7"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221031012163532}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.873794481388194*^9},ExpressionUUID->"c5a5b20a-8f7c-448f-b054-\
+6536232fad09"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"example", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"ARCParseFile", "[", "\"\<feca6190\>\"", "]"}], "[", 
+       RowBox[{"\"\<Train\>\"", ",", " ", "1"}], "]"}]}], "}"}], ",", "\n", 
+    "\t", 
+    RowBox[{"ARCCheckForRepeatingPattern", "[", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"Replace", "[", 
+       RowBox[{
+        RowBox[{"example", "[", "\"\<Input\>\"", "]"}], ",", " ", 
+        RowBox[{"0", " ", "->", " ", 
+         RowBox[{"-", "1"}]}], ",", " ", 
+        RowBox[{"{", "3", "}"}]}], "]"}], ",", "\n", "\t\t", 
+      RowBox[{"Replace", "[", 
+       RowBox[{
+        RowBox[{"example", "[", "\"\<Output\>\"", "]"}], ",", " ", 
+        RowBox[{"0", " ", "->", " ", 
+         RowBox[{"-", "1"}]}], ",", " ", 
+        RowBox[{"{", "3", "}"}]}], "]"}]}], "\n", "\t", "]"}]}], "\n", "]"}], 
+  " ", "//", " ", "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.873792035477066*^9, 3.8737920648092327`*^9}, {
+   3.8737920973247175`*^9, 3.873792097749211*^9}, {3.8737921398594503`*^9, 
+   3.873792172845147*^9}, 3.873792679364682*^9, {3.873794475744541*^9, 
+   3.873794481388194*^9}},
+ CellLabel->"In[698]:=",
+ CellID->47521898,
+ "TestId" -> 
+ "ARCCheckForRepeatingPattern-20221003-Z0UOD7",ExpressionUUID->"130053a4-c76b-\
+49c5-8bfa-26627c19d557"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"<|\"\>"},
+    {"\<\"    \\\"Type\\\" -> \\\"PatternFill\\\",\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"    \"", 
+         TemplateBox[{"\"\\\"Pattern\\\" -> \"", 
+           TagBox[
+            
+            GridBox[{{"\"\"", "\"\"", "\"\"", "\"\"", "\"\""}}, AutoDelete -> 
+             False, GridBoxBackground -> {
+              "Columns" -> {{None}}, "Rows" -> {{None}}, 
+               "ItemsIndexed" -> {{1, 1} -> 
+                 RGBColor[0., 0.4549019607843137, 0.8509803921568627], {1, 2} -> 
+                 GrayLevel[0.2], {1, 3} -> 
+                 RGBColor[1., 0.5215686274509804, 0.10588235294117647`], {1, 
+                  4} -> GrayLevel[0.2], {1, 5} -> GrayLevel[0.2]}}, 
+             GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+             GridBoxFrame -> {
+              "ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}}, 
+             GridBoxItemSize -> {"Columns" -> {{1.3}}, "Rows" -> {{1.5}}}, 
+             FrameStyle -> {
+               AbsoluteThickness[1], 
+               GrayLevel[0.5]}], "Grid"]}, "RowDefault"]}, "RowDefault"], 
+       "\",\""},
+      "RowDefault"]},
+    {"\<\"    \\\"Start\\\" -> {10, 1},\"\>"},
+    {"\<\"    \\\"Trajectory\\\" -> {-1, 1}\"\>"},
+    {"\<\"|>\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{{3.8737920652029667`*^9, 3.873792108237158*^9}, {
+   3.873792148801031*^9, 3.8737921765983934`*^9}, 3.8737922397391396`*^9, {
+   3.87379229938722*^9, 3.8737923134108686`*^9}, 3.873792352240932*^9, {
+   3.8737924158949966`*^9, 3.873792459066261*^9}, 3.873792492728366*^9, {
+   3.8737926635555196`*^9, 3.873792679876434*^9}, 3.8737927277390776`*^9, {
+   3.8737928607931337`*^9, 3.8737928779373474`*^9}, 3.8737929319931474`*^9, {
+   3.873794180705959*^9, 3.8737941912137985`*^9}, {3.873794474290782*^9, 
+   3.8737944782344465`*^9}},
+ CellLabel->
+  "Out[699]=",ExpressionUUID->"05ebac74-d599-423b-8986-fc0b16c0a373"]
+}, Closed]]
+}, Open  ]]
+}, Open  ]]
+},
+Evaluator->"Local",
+WindowSize->{958, 980},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+Visible->True,
+DockedCells->{
+  Cell[
+   BoxData[
+    DynamicBox[
+     ToBoxes[
+      Column[{
+        Row[{
+          Button["New Test", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`NewFunctionCell[
+            Daniel`ARC`ARCCheckForRepeatingPattern], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327]], ImageSize -> {95., 40}, 
+           Method -> "Queued"], " ", 
+          Button["Add Tests to File", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`CreateUnitTests[
+            Daniel`ARC`ARCCheckForRepeatingPattern, "SubTest" -> None], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327]], ImageSize -> {162.5, 40}, 
+           Method -> "Queued"], " ", 
+          Button[
+          "Run Tests", 
+           DevTools`TestingTools`RunUnitTestsInNotebook[
+            Daniel`ARC`ARCCheckForRepeatingPattern]; Null, 
+           ImageSize -> {102.5, 40}, Method -> "Queued"], " ", 
+          Button["Edit Tests", 
+           DevTools`TestingTools`EditUnitTests[
+           Daniel`ARC`ARCCheckForRepeatingPattern, "SubTest" -> None], 
+           ImageSize -> {110., 40}, Method -> "Queued"], " ", 
+          Button["Edit Function", 
+           DevTools`SourceTools`EditFunction[
+           Daniel`ARC`ARCCheckForRepeatingPattern], ImageSize -> {132.5, 40}, 
+           Method -> "Queued"], " ", 
+          Row[{
+            
+            DynamicModule[{
+             DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+              "Capture"}, 
+             Button[
+              Dynamic[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel], 
+              If[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel === 
+               "Capture", 
+               DevTools`TestingTools`FunctionCapture`EnableFunctionCapture[
+                Daniel`ARC`ARCCheckForRepeatingPattern]; 
+               DevTools`TestingTools`FunctionCapture`\
+RegisterFunctionCaptureNotebook[Daniel`ARC`ARCCheckForRepeatingPattern, 
+                 InputNotebook[]]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Release"; Null, 
+               DevTools`TestingTools`FunctionCapture`DisableFunctionCapture[
+                Daniel`ARC`ARCCheckForRepeatingPattern]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Capture"; Null], ImageSize -> {100, 40}, Method -> "Queued"],
+              DynamicModuleValues :> {}], 
+            Button["?", 
+             DevTools`TestingTools`FunctionCapture`CaptureFunctionHelp[], 
+             ImageSize -> {30, 40}, Method -> "Queued"]}], " ", 
+          Row[{
+            Button["<", 
+             DevTools`NotebookTools`MoveNotebook["Left"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"], 
+            Button[">", 
+             DevTools`NotebookTools`MoveNotebook["Right"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"]}]}], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327; If[
+          And[
+           ValueQ[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327], 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327 =!= "", 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327 =!= Null], 
+          (If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {"MaxHeight" -> 300},
+              "NakedSection"]], 
+           Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+           
+           Framed[#, FrameStyle -> LightGray, Background -> White, 
+            FrameMargins -> 15]]& )[
+           Grid[{{
+              Pane[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327, "ImageSize" -> {Full, {0, 
+                  OptionValue[
+                  DevTools`NotebookTools`DynamicOutputSection, {
+                   "MaxHeight" -> 300}, "MaxHeight"]}}, Scrollbars -> 
+               Automatic, FrameMargins -> 0]}, 
+             If[
+              TrueQ[
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {
+                "MaxHeight" -> 300}, "NakedSection"]], 
+              Apply[Sequence, {}], {
+               Button[
+               "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327 = "", 
+                ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+            Alignment -> {Left, Top}]], 
+          Apply[Sequence, {}]]}], StandardForm], 
+     TrackedSymbols :> {
+      DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221039195763327}]], "DockedCell"]},
+TaggingRules->{
+ "CreateNamedNotebook2Args" -> {
+   "ARCCheckForRepeatingPattern", "Type" -> "Function", 
+    "GenerateNotebookArgs" -> {
+     "Function" -> Daniel`ARC`ARCCheckForRepeatingPattern}, "ReturnNotebook" -> 
+    True}},
+InputAutoReplacements->{},
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"dcc2b156-b015-4260-8d72-8476995671f7"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 99, 0, 98, "Title",ExpressionUUID->"3d2e8cd6-29d0-4f0b-b457-3ce485fb8819"],
+Cell[682, 24, 258, 5, 54, "Code",ExpressionUUID->"f041e721-9232-4daa-9a74-5ae6334a093e",
+ InitializationCell->False],
+Cell[CellGroupData[{
+Cell[965, 33, 79, 0, 67, "Section",ExpressionUUID->"5b5c9472-55ae-4118-bcad-8262df6f6e24"],
+Cell[CellGroupData[{
+Cell[1069, 37, 132, 3, 54, "Subsection",ExpressionUUID->"2759cda5-2c46-412c-8c2d-8e5b6d8cc965"],
+Cell[CellGroupData[{
+Cell[1226, 44, 167, 3, 45, "Subsubsection",ExpressionUUID->"5caa4cc8-8ce0-4e7c-bdfa-f01b3d0801f1"],
+Cell[CellGroupData[{
+Cell[1418, 51, 380, 9, 29, "Input",ExpressionUUID->"d5318630-fd33-48ec-bf14-9e238196b3cf"],
+Cell[1801, 62, 4328, 87, 167, "Output",ExpressionUUID->"af3b446c-8920-4319-bad0-103f8ba2a5da"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6166, 154, 3797, 88, 52, "TestUI",ExpressionUUID->"e34e9644-41a3-4523-87af-cb0a64cf9911",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[9966, 244, 1463, 36, 144, "Code",ExpressionUUID->"46957067-24e0-4a62-ac33-89666c380c1e",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->20546590]
+}, Open  ]],
+Cell[11444, 283, 2455, 50, 181, "Output",ExpressionUUID->"3f45a7c0-ffee-4e53-893f-b910bb36316a"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[13936, 338, 165, 3, 37, "Subsubsection",ExpressionUUID->"f51c8799-6f0f-4fc5-9052-89ea86f0c69d"],
+Cell[CellGroupData[{
+Cell[14126, 345, 378, 8, 29, "Input",ExpressionUUID->"2cc94baa-c794-403b-8002-f3117973ca3a"],
+Cell[14507, 355, 12663, 255, 523, "Output",ExpressionUUID->"92940baf-8489-4f3a-802f-f43223f08449"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27207, 615, 3832, 89, 52, "TestUI",ExpressionUUID->"b5a8a551-d44c-4b81-b66a-1bb5bb509a8b",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[31042, 706, 964, 23, 90, "Code",ExpressionUUID->"5df6f0ef-0dcf-4394-ab6f-c3b3786488a5",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->70041508]
+}, Open  ]],
+Cell[32021, 732, 1295, 18, 33, "Output",ExpressionUUID->"bd9d5730-0ef1-433d-9691-c4edb15e6e04"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33365, 756, 154, 3, 54, "Subsection",ExpressionUUID->"f4e1e13d-08ea-40ba-a035-87c5720f5957"],
+Cell[CellGroupData[{
+Cell[33544, 763, 405, 9, 29, "Input",ExpressionUUID->"a779db45-1c5f-49be-9213-9f7bad6f4ae7"],
+Cell[33952, 774, 6765, 121, 263, "Output",ExpressionUUID->"5a4e6dda-b8a8-4c69-b922-080c792f3484"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40754, 900, 3795, 88, 52, "TestUI",ExpressionUUID->"c5a5b20a-8f7c-448f-b054-6536232fad09",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[44552, 990, 1489, 37, 144, "Code",ExpressionUUID->"130053a4-c76b-49c5-8bfa-26627c19d557",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->47521898]
+}, Open  ]],
+Cell[46056, 1030, 2111, 44, 133, "Output",ExpressionUUID->"05ebac74-d599-423b-8986-fc0b16c0a373"]
+}, Closed]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

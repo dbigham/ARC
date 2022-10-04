@@ -555,6 +555,12 @@ ARCCheckForImputationUsingSymmetry::usage = "ARCCheckForImputationUsingSymmetry 
 
 ARCCheckForSceneRepairUsingImputationQ::usage = "ARCCheckForSceneRepairUsingImputationQ  "
 
+ARCCheckForRepeatingPattern::usage = "ARCCheckForRepeatingPattern  "
+
+ARCApplyPatternFill::usage = "ARCApplyPatternFill  "
+
+ARCOverlapQ::usage = "ARCOverlapQ  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3978,6 +3984,7 @@ Options[ARCFindRules] =
     "FollowDiagonals" -> Automatic,                     (*< Should diagonally adjacent pixels form a single object? *)
     "CheckForGridsAndDividers" -> Automatic,            (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
     "CheckForImputation" -> True,                       (*< Should we check for imputation? *)
+    "CheckForPatternFill" -> True,                      (*< Should we check for pattern fill rules? *)
     
     "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
@@ -4084,6 +4091,44 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ]
                     ]
                 ]
+            ]
+        ];
+        
+        If [TrueQ[OptionValue["CheckForPatternFill"]],
+            Replace[
+                ARCCheckForRepeatingPattern[
+                    examples,
+                    "Background" -> OptionValue["Background"]
+                ],
+                rule_Association :> (
+                    Replace[
+                        {
+                            ARCGeneralizeValue[
+                                ImageWidth[#["Input"]] & /@ examples,
+                                ImageWidth[#["Output"]] & /@ examples,
+                                ObjectValue["InputScene", "Width"]
+                            ],
+                            ARCGeneralizeValue[
+                                ImageHeight[#["Input"]] & /@ examples,
+                                ImageHeight[#["Output"]] & /@ examples,
+                                ObjectValue["InputScene", "Height"]
+                            ]
+                        },
+                        {
+                            widthExpression: Except[_Missing],
+                            heightExpression: Except[_Missing]
+                        } :> (
+                            Return[
+                                <|
+                                    "Width" -> widthExpression,
+                                    "Height" -> heightExpression,
+                                    "Rules" -> rule
+                                |>,
+                                Module
+                            ]
+                        )
+                    ]
+                )
             ]
         ];
         
@@ -4432,6 +4477,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                                  downstream code that non-black backgrounds are OK, but otherwise,
                                  use None as the background color for a scene, not black. *)
                         "Background" -> None,
+                        "CheckForPatternFill" -> False,
                         If [$MinimumExamplesPerRule =!= 1,
                             "SettleForOneExamplePerRule" -> False
                             ,
@@ -4563,6 +4609,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ARCFindRules[
                             examples,
                             "CheckForImputation" -> False,
+                            "CheckForPatternFill" -> False,
                             opts
                         ];
                     foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -5917,7 +5964,9 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             xMax,
             width,
             height,
-            outputImage
+            outputImage,
+            outputWidth,
+            outputHeight
         },
         
         If [!ListQ[ruleList] && !AssociationQ[ruleList],
@@ -5929,8 +5978,51 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ]
         ];
         
+        If [SpecifiedQ[rules["Width"]],
+            outputWidth =
+                ToIntegerIfNoDecimal@
+                Activate[
+                    Replace[
+                        rules["Width"],
+                        ObjectValue["InputScene", "Width"] :> ImageWidth[sceneIn],
+                        {0, Infinity}
+                    ]
+                ]
+        ];
+        
+        If [SpecifiedQ[rules["Height"]],
+            outputHeight =
+                ToIntegerIfNoDecimal@
+                Activate[
+                    Replace[
+                        rules["Height"],
+                        ObjectValue["InputScene", "Height"] :> ImageHeight[sceneIn],
+                        {0, Infinity}
+                    ]
+                ]
+        ];
+        
         Switch[
             ruleList,
+            KeyValuePattern[{"Type" -> "PatternFill"}],
+                Return[
+                    ARCScene@
+                    ARCApplyPatternFill[
+                        ConstantArray[
+                            0,
+                            {outputWidth, outputHeight}
+                        ],
+                        Append[
+                            ruleList,
+                            "Pattern" -> Replace[
+                                sceneIn,
+                                ARCInferBackgroundColor[sceneIn] -> $nonImageColor,
+                                {3}
+                            ]
+                        ]
+                    ],
+                    Module
+                ],
             KeyValuePattern[{"Type" -> "Imputation", "Pattern" -> "Symmetry", "Output" -> "ImputedRectangle"}],
                 Replace[
                     ARCFindSymmetry[sceneIn],
@@ -6196,29 +6288,13 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
         outputScene = Sett[
             parsedScene,
             {
-                If [SpecifiedQ[rules["Width"]],
-                    "Width" ->
-                        ToIntegerIfNoDecimal@
-                        Activate[
-                            Replace[
-                                rules["Width"],
-                                ObjectValue["InputScene", "Width"] :> parsedScene["Width"],
-                                {0, Infinity}
-                            ]
-                        ]
+                If [SpecifiedQ[outputWidth],
+                    "Width" -> outputWidth
                     ,
                     Nothing
                 ],
-                If [SpecifiedQ[rules["Height"]],
-                    "Height" ->
-                        ToIntegerIfNoDecimal@
-                        Activate[
-                            Replace[
-                                rules["Height"],
-                                ObjectValue["InputScene", "Height"] :> parsedScene["Height"],
-                                {0, Infinity}
-                            ]
-                        ]
+                If [SpecifiedQ[outputHeight],
+                    "Height" -> outputHeight
                     ,
                     Nothing
                 ]
@@ -13337,6 +13413,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 2}],
             "ImplementationTime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 24851,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "d13f3404",
+            "Timestamp" -> DateObject[{2022, 10, 3}],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 25228,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -24852,6 +24936,297 @@ ARCCheckForSceneRepairUsingImputationQ[examples_List] :=
                 ]
             ]
         ]
+    ]
+
+(*!
+    \function ARCCheckForRepeatingPattern
+    
+    \calltable
+        ARCCheckForRepeatingPattern[patternImage, image] '' Check whether image can be created by applying the given `patternImage` repeatedly.
+    
+    Examples:
+    
+    With[
+        {example = ARCParseFile["d13f3404"]["Train", 1]},
+        ARCCheckForRepeatingPattern[
+            Replace[example["Input"], 0 -> -1, {3}],
+            Replace[example["Output"], 0 -> -1, {3}]
+        ]
+    ]
+    
+    ===
+    
+    <|
+        "Type" -> "PatternFill",
+        "Pattern" -> ARCScene[{{6, 1, -1}, {3, -1, -1}, {-1, -1, -1}}],
+        "Start" -> {1, 1},
+        "Trajectory" -> {1, 1}
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForRepeatingPattern]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForRepeatingPattern];
+Options[ARCCheckForRepeatingPattern] =
+{
+    "Background" -> Automatic       (*< The background color to use. *)
+};
+ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
+    Module[{background, backgrounds = <||>, rules, inputColorCounts, outputColorCounts, index},
+        
+        (* Fail-fast checks to decide whether to check whether the outputs are pattern
+           fills of the inputs. *)
+        index = 0;
+        AllTrue[
+            examples,
+            Function[{example},
+                And[
+                    (* The input image is not large. (width <= 8 and height <= 8) *)
+                    ImageWidth[example["Input"]] <= 8,
+                    ImageHeight[example["Input"]] <= 8,
+                    (* It should be the case that either/both the output width is at least
+                       1.5x the input width or the output height is at least 1.5x the
+                       input width, since the input is just a pattern that is being applied
+                       a number of times. *)
+                    Or[
+                        ImageWidth[example["Output"]] >= ImageWidth[example["Input"]] * 1.5,
+                        ImageHeight[example["Output"]] >= ImageHeight[example["Input"]] * 1.5
+                    ],
+                    (* The colors used in the input and output are the same. *)
+                    index++;
+                    background = backgrounds[index] =
+                        Replace[
+                            OptionValue["Background"],
+                            Automatic :> (
+                                ReturnIfFailure@
+                                ARCInferBackgroundColor[example["Input"]]
+                            )
+                        ];
+                    inputColorCounts = KeyDrop[
+                        KeySort[Counts[Flatten[example["Input"][[1]]]]],
+                        background
+                    ];
+                    outputColorCounts = KeyDrop[
+                        KeySort[Counts[Flatten[example["Output"][[1]]]]],
+                        background
+                    ];
+                    Keys[inputColorCounts] === Keys[outputColorCounts],
+                    (* The proportions of colors used in the input and output scenes have each
+                       color proportion within 30%. *)
+                    inputColorProportions = N[inputColorCounts / Total[inputColorCounts]];
+                    outputColorProportions = N[outputColorCounts / Total[outputColorCounts]];
+                    AllTrue[
+                        Values[N[inputColorProportions / outputColorProportions]],
+                        Function[{colorProportion},
+                            0.7 < colorProportion < 1.3
+                        ]
+                    ]
+                ]
+            ]
+        ] // Replace[False :> Return[False, Module]];
+        
+        rules = MapIndexed[
+            Function[{example, exampleIndex},
+                background = backgrounds[First[exampleIndex]];
+                Replace[
+                    ARCCheckForRepeatingPattern[
+                        Replace[example["Input"], background -> -1, {3}],
+                        Replace[example["Output"], background -> -1, {3}]
+                    ],
+                    {
+                        rule_Association :> KeyDrop[rule, "Pattern"],
+                        False :> Return[False, Module]
+                    }
+                ]
+            ],
+            examples
+        ];
+        
+        (* If all inputs found the same rule, then return it. *)
+        If [MatchQ[DeleteDuplicates[rules], {_}],
+            Return[
+                rules[[1]],
+                Module
+            ]
+        ];
+        
+        False
+    ]
+
+ARCCheckForRepeatingPattern[ARCScene[patternImage_], ARCScene[image_]] :=
+    Module[{subImagePositions, firstDerivative, firstDerivatives, trajectory, rule},
+        
+        (* Produce a pattern that replaces the background color with a Blank[] so that
+           we can find instances of the pattern without the background color pixels
+           causing issues. *)
+        patternForPatternImage = Replace[
+            patternImage,
+            $nonImageColor -> _,
+            {2}
+        ];
+        
+        (* Find all of the instances of the pattern image within the larger image. *)
+        subImagePositions = Replace[
+            ReturnIfFailure[
+                (*ResourceFunction["FindSubmatrix"][*)
+                FindSubmatrix[
+                    image,
+                    patternForPatternImage,
+                    "Positions"
+                ]
+            ],
+            (* If we didn't find any instances, or only found one, then abort. *)
+            {} | {_} :> Return[False, Module]
+        ];
+        
+        (*Echo[subImagePositions];*)
+        
+        (* If one of the ends of the sequence starts at an X or Y value of one, favor that
+           as the start. e.g. feca6190 *)
+        If [Or[
+                And[
+                    MatchQ[Last[subImagePositions], {_, 1}],
+                    !MatchQ[First[subImagePositions], {_, 1}]
+                ],
+                And[
+                    MatchQ[Last[subImagePositions], {1, _}],
+                    !MatchQ[First[subImagePositions], {1, _}]
+                ]
+            ],
+            subImagePositions = Reverse[subImagePositions]
+        ];
+        
+        (* Calculate the "first derivative" along the sequence of positions found. *)
+        firstDerivative = Function[{pair},
+            pair[[2]] - pair[[1]]
+        ] /@ Partition[subImagePositions, 2, 1];
+        
+        firstDerivatives = DeleteDuplicates[firstDerivative];
+        
+        (* Have we found a constant first derivative along the sequence of positions? *)
+        If [Length[firstDerivatives] === 1,
+            trajectory = First[firstDerivatives]
+            ,
+            Return[False, Module]
+        ];
+        
+        (* A candidate rule to consider. *)
+        rule = <|
+            "Type" -> "PatternFill",
+            "Pattern" -> ARCScene[patternImage],
+            "Start" -> First[subImagePositions],
+            "Trajectory" -> trajectory
+        |>;
+        
+        (* Try applying the rule to see if it produces the full image. *)
+        output = ConstantArray[
+            $nonImageColor,
+            {ImageHeight[image], ImageWidth[image]}
+        ];
+        
+        output = ReturnIfFailure[ARCApplyPatternFill[output, rule]];
+        
+        If [output === image,
+            rule
+            ,
+            False
+        ]
+    ]
+
+(*!
+    \function ARCApplyPatternFill
+    
+    \calltable
+        ARCApplyPatternFill[image, patternFill] '' Applies a pattern fill to the given image.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCApplyPatternFill]
+    
+    \maintainer danielb
+*)
+Clear[ARCApplyPatternFill];
+ARCApplyPatternFill[imageIn_List, patternFill_Association] :=
+    Module[
+        {
+            image = imageIn,
+            trajectory = patternFill["Trajectory"],
+            position = patternFill["Start"],
+            scene,
+            patternObject
+        },
+        
+        If [Or[
+                !MatchQ[trajectory, {_Integer, _Integer}],
+                trajectory === {0, 0}
+            ],
+            ReturnFailure[
+                "InvalidTrajectory",
+                "The pattern fill trajectory is invalid.",
+                "Trajectory" -> trajectory
+            ]
+        ];
+        
+        scene = <|
+            "Position" -> {1, 1},
+            "Y" -> 1,
+            "X" -> 1,
+            "Width" -> ImageWidth[image],
+            "Height" -> ImageHeight[image]
+        |>;
+        
+        patternObject = <|
+            "Image" -> patternFill["Pattern"],
+            "Position" -> TODO,
+            "Y" -> TODO,
+            "X" -> TODO,
+            "Width" -> ImageWidth[patternFill["Pattern"]],
+            "Height" -> ImageHeight[patternFill["Pattern"]]
+        |>;
+        
+        While[
+            ARCOverlapQ[
+                patternObject = Sett[
+                    patternObject,
+                    {
+                        "Position" -> position,
+                        "Y" -> position[[1]],
+                        "X" -> position[[2]]
+                    }
+                ],
+                scene
+            ],
+            image = ARCDrawSubImage[image, patternObject];
+            position += trajectory
+        ];
+        
+        image
+    ]
+
+(*!
+    \function ARCOverlapQ
+    
+    \calltable
+        ARCOverlapQ[object1, object2] '' Returns True if the two objects overlap wrt their bounding boxes.
+    
+    Examples:
+    
+    ARCOverlapQ[object1, object2] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCOverlapQ];
+ARCOverlapQ[object1_Association, object2_Association] :=
+    And[
+        ARCVerticalOverlapQ[object1, object2],
+        ARCHorizontalOverlapQ[object1, object2]
     ]
 
 End[]
