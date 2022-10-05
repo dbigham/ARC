@@ -561,6 +561,10 @@ ARCApplyPatternFill::usage = "ARCApplyPatternFill  "
 
 ARCOverlapQ::usage = "ARCOverlapQ  "
 
+ARCSceneObject::usage = "ARCSceneObject  "
+
+SingleUniqueValueQ::usage = "SingleUniqueValueQ  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -1077,46 +1081,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         
         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "ZOrder"][objects]];*)
         
-        res = <|
-            "Background" -> background,
-            "Width" -> ImageWidth[scene[[1]]],
-            "Height" -> ImageHeight[scene[[1]]],
-            With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> _Association]] &]},
-                If [MatchQ[grids, {_}],
-                    (* There is a single grid in the scene. *)
-                    "Grid" -> KeyDrop[grids[[1, "GridOrDivider"]], {"Type", "Orientation"}]
-                    ,
-                    Nothing
-                ]
-            ],
-            "Objects" -> objects,
-            "Scene" -> scene,
-            (* e.g. d0f5fe59 *)
-            "ObjectCount" -> Length[objects],
-            KeyTake[
-                ARCObjectFromAllPixels[scene, background],
-                {
-                    "Colors",
-                    "Color",
-                    "ColorCount",
-                    "MostUsedColor",
-                    "SecondMostUsedColor",
-                    "YMiddle",
-                    "XMiddle",
-                    "Length",
-                    "PrimarySizeDimension",
-                    "AspectRatio",
-                    "Area",
-                    "FilledArea",
-                    "FilledProportion",
-                    "SurfacePixelCount",
-                    "VerticalLineSymmetry",
-                    "HorizontalLineSymmetry",
-                    "VerticalAndHorizontalLineSymmetry",
-                    "HollowCount"
-                }
-            ]
-        |>;
+        res = ARCSceneObject[scene, background, objects];
         
         (*If [ListQ[OptionValue["SubdivideInput"]],
             ARCEcho2[res];
@@ -4030,7 +3995,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             denoiseResult,
             (* The parsed examples using the standard parsing approach, if computed. *)
             parsedExamples,
-            backgroundDetails
+            backgroundDetails,
+            semiParsedExamples,
+            thisBackground
         },
         
         If [$memoization === None,
@@ -4095,23 +4062,44 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         ];
         
         If [TrueQ[OptionValue["CheckForPatternFill"]],
+            
+            semiParsedExamples = MapIndexed[
+                Function[{example, index},
+                    thisBackground = ARCInferBackgroundColor[example["Input"]];
+                    <|
+                        "Input" -> Append[
+                            ARCSceneObject[
+                                example["Input"],
+                                thisBackground,
+                                Missing[]
+                            ],
+                            "Background" -> thisBackground
+                        ]
+                    |>
+                ],
+                examples
+            ];
+            
+            (*ARCEcho2["semiParsedExamples" -> semiParsedExamples];*)
+            
             Replace[
                 ARCCheckForRepeatingPattern[
                     examples,
-                    "Background" -> OptionValue["Background"]
+                    "Background" -> OptionValue["Background"],
+                    "SemiParsedExamples" -> semiParsedExamples
                 ],
                 rule_Association :> (
                     Replace[
                         {
-                            ARCGeneralizeValue[
-                                ImageWidth[#["Input"]] & /@ examples,
+                            ARCGeneralizeConclusionValueNonRecursive[
+                                "Width",
                                 ImageWidth[#["Output"]] & /@ examples,
-                                ObjectValue["InputScene", "Width"]
+                                semiParsedExamples
                             ],
-                            ARCGeneralizeValue[
-                                ImageHeight[#["Input"]] & /@ examples,
+                            ARCGeneralizeConclusionValueNonRecursive[
+                                "Height",
                                 ImageHeight[#["Output"]] & /@ examples,
-                                ObjectValue["InputScene", "Height"]
+                                semiParsedExamples
                             ]
                         },
                         {
@@ -4937,7 +4925,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ARCLogScope["ARCFindRules"]@
             ARCFindRules[examples, objectMappings, referenceableInputObjects];
         
-        (* HERE10 *)
         (*Throw["HERE"];*)
         
         If [And[
@@ -5939,13 +5926,14 @@ Replace2[exprIn_, temporaryAssociationSymbol_, args___] :=
     \maintainer danielb
 *)
 Clear[ARCApplyRules];
-ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
+ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
     Module[
         {
+            rules = rulesIn,
             scene = sceneIn,
             parsedScene,
             objects,
-            ruleList = rules["Rules"],
+            ruleList = rulesIn["Rules"],
             addObjects,
             outputScene,
             renderedScene,
@@ -5966,8 +5954,38 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             height,
             outputImage,
             outputWidth,
-            outputHeight
+            outputHeight,
+            background,
+            semiParsedScene
         },
+        
+        (* Compute any dynamic expressions in the top-level rules association. For example,
+           the Width of the output scene might be a dynamic expression of some InputScene
+           attribute. *)
+        If [!FreeQ[KeyDrop[rules, "Rules"], ObjectValue["InputScene", ___]],
+            
+            background = ARCInferBackgroundColor[scene];
+            
+            semiParsedScene =
+                ReturnIfFailure@
+                ARCSceneObject[
+                    scene,
+                    background,
+                    Missing[]
+                ];
+            
+            rules =
+                ReturnIfFailure@
+                ResolveValues[
+                    rules,
+                    <||>,
+                    semiParsedScene,
+                    "ObjectsPattern" -> "InputScene",
+                    "Activate" -> True
+                ];
+        ];
+        
+        ruleList = rules["Rules"];
         
         If [!ListQ[ruleList] && !AssociationQ[ruleList],
             ReturnFailure[
@@ -5978,28 +5996,14 @@ ARCApplyRules[sceneIn_ARCScene, rules_Association] :=
             ]
         ];
         
+        (*ARCEcho2[rules];*)
+        
         If [SpecifiedQ[rules["Width"]],
-            outputWidth =
-                ToIntegerIfNoDecimal@
-                Activate[
-                    Replace[
-                        rules["Width"],
-                        ObjectValue["InputScene", "Width"] :> ImageWidth[sceneIn],
-                        {0, Infinity}
-                    ]
-                ]
+            outputWidth = ToIntegerIfNoDecimal[rules["Width"]]
         ];
         
         If [SpecifiedQ[rules["Height"]],
-            outputHeight =
-                ToIntegerIfNoDecimal@
-                Activate[
-                    Replace[
-                        rules["Height"],
-                        ObjectValue["InputScene", "Height"] :> ImageHeight[sceneIn],
-                        {0, Infinity}
-                    ]
-                ]
+            outputHeight = ToIntegerIfNoDecimal[rules["Height"]]
         ];
         
         Switch[
@@ -8947,6 +8951,32 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
             ]
     ]
 
+ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, examples_List] :=
+    Replace[
+        ARCGeneralizeConclusionValueNonRecursive[
+            {property},
+            Automatic,
+            MapIndexed[
+                Function[{propertyValue, index},
+                    <|
+                        "Value" -> propertyValue,
+                        "Example" -> First[index]
+                    |>
+                ],
+                values
+            ],
+            (* Referenceable objects. *)
+            <|
+                Object["InputScene"] -> <||>
+            |>,
+            examples
+        ],
+        {
+            HoldPattern[Rule][_, value_] :> value,
+            _ :> Missing["NotInferrable", property]
+        }
+    ]
+
 (*!
     \function arcGeneralizeConclusionValueHelper
     
@@ -9351,7 +9381,9 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
             transposedObjects,
             matchingProperties,
             values2,
-            objects = objectsIn
+            objects = objectsIn,
+            matchingPropertiesUsingAddition,
+            matchingPropertiesUsingMultiplication
         },
         
         (* If any of the items aren't actually associations but lists/groups of associations,
@@ -9404,9 +9436,9 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                 ]
         ];
         
-        (* What properties of these objects, if we use some math, appear to be usable
+        (* What properties of these objects, if we use addition, appear to be usable
            to infer these values? *)
-        matchingPropertiesUsingMath = Select[
+        matchingPropertiesUsingAddition = Select[
             transposedObjects,
             And[
                 AllTrue[values, NumberQ],
@@ -9415,8 +9447,24 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                          always be the same. e.g. relative-components *)
                 Length[values] === Length[#],
                 And[
-                    Length[differences = DeleteDuplicates[values - #]] === 1,
-                    differences =!= {0}
+                    SingleUniqueValueQ[differences = values - #],
+                    !MatchQ[differences[[1]], 0 | 0.]
+                ]
+            ] &
+        ];
+        
+        (* What properties of these objects, if we use multiplication, appear to be usable
+           to infer these values? *)
+        matchingPropertiesUsingMultiplication = Select[
+            transposedObjects,
+            And[
+                AllTrue[values, NumberQ],
+                AllTrue[#, NumberQ],
+                Length[values] === Length[#],
+                FreeQ[#, 0 | 0., {1}],
+                And[
+                    SingleUniqueValueQ[factors = values / #],
+                    !MatchQ[factors[[1]], 1 | 1.]
                 ]
             ] &
         ];
@@ -9427,9 +9475,15 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                 OptionValue["RelativePosition"]
             ];
         
-        matchingPropertiesUsingMath =
+        matchingPropertiesUsingAddition =
             ARCPruneMatchingPropertiesForRelativePositions[
-                matchingPropertiesUsingMath,
+                matchingPropertiesUsingAddition,
+                OptionValue["RelativePosition"]
+            ];
+        
+        matchingPropertiesUsingMultiplication =
+            ARCPruneMatchingPropertiesForRelativePositions[
+                matchingPropertiesUsingMultiplication,
                 OptionValue["RelativePosition"]
             ];
         
@@ -9438,7 +9492,7 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                 (* TODO: What to do if there are multiple properties that could
                          be used? *)
                 First[Keys[matchingProperties]],
-            Length[matchingPropertiesUsingMath] > 0,
+            Length[matchingPropertiesUsingAddition] > 0,
                 (* NOTE: As of Aug 18 2022, this function is called with one referenceable object
                          after another, and the first one that has a suitable property results in
                          that property being used. Related to that is that when we form the list
@@ -9446,14 +9500,14 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                          since we feel it's more likely that a property of a component will yield
                          the best property to use. (it feels "closer" to the thing we're trying
                          to infer) This has interplay though with `matchingProperties` vs
-                         `matchingPropertiesUsingMath` in that even if there is a referenceable
+                         `matchingPropertiesUsingAddition` in that even if there is a referenceable
                          object with a property that doesn't need math, we might choose a
                          property that _does_ need math given how to iterate over objects
                          and choose the first usable property of the first visited object.
                          It could easily be the case that that isn't desirable. *)
                 (* TODO: What to do if there are multiple properties that could
                          be used? *)
-                With[{property = First[Keys[matchingPropertiesUsingMath]]},
+                With[{property = First[Keys[matchingPropertiesUsingAddition]]},
                     Inactive[Plus][
                         ObjectValue[
                             (* The caller is responsible for filling in the object reference
@@ -9471,6 +9525,30 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                                 ]
                             ];
                             difference
+                        ]
+                    ]
+                ],
+            Length[matchingPropertiesUsingMultiplication] > 0,
+                (* TODO: What to do if there are multiple properties that could
+                         be used? *)
+                With[{property = First[Keys[matchingPropertiesUsingMultiplication]]},
+                    Inactive[Times][
+                        ObjectValue[
+                            (* The caller is responsible for filling in the object reference
+                               pattern here. e.g. referenceable-components *)
+                            TODO,
+                            property
+                        ],
+                        With[{factor = values[[1]] / transposedObjects[[property, 1]]},
+                            If [factor === 1.,
+                                (* If we have one set of values being integers, and the other
+                                   being Reals, then this can happen. *)
+                                Return[
+                                    property,
+                                    Module
+                                ]
+                            ];
+                            factor
                         ]
                     ]
                 ],
@@ -9516,8 +9594,6 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
 Clear[ARCFindPropertyToInferImageValues];
 ARCFindPropertyToInferImageValues[propertyPath_List, objects_List, values_List] :=
     Module[{transformations},
-        
-        (* HERE11 *)
         
         (* Before we do an expensive comparison of the images with various potential transforms
            of those images, first check to ensure the colors of the images are at least
@@ -9712,7 +9788,8 @@ AssociationTranspose[assocsIn_] :=
 Clear[ResolveValues];
 Options[ResolveValues] =
 {
-    "Activate" -> False     (*< If there are an Inactive parts of the resultant expression, should we activate them? *)
+    "ObjectsPattern" -> _,      (*< Can be specified to be something like "InputScene" to restrict which ObjectValues we'll resolve. *)
+    "Activate" -> False         (*< If there are an Inactive parts of the resultant expression, should we activate them? *)
 };
 ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[]] :=
     Module[{resolvedObject, propertyValue, head},
@@ -9720,7 +9797,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
             expr,
             {
                 (* Resolve an object's value. *)
-                (objectOrClassValueHead:(ObjectValue | ClassValue))[pattern_, property_] :> (
+                (objectOrClassValueHead:(ObjectValue | ClassValue))[pattern: OptionValue["ObjectsPattern"], property_] :> (
                     
                     head = None;
                     
@@ -13421,6 +13498,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 3}],
             "ImplementationTime" -> Quantity[2, "Hours"],
             "CodeLength" -> 25228,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "feca6190",
+            "Timestamp" -> DateObject[{2022, 10, 4}],
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            "CodeLength" -> 25526,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -24972,10 +25057,21 @@ ARCCheckForSceneRepairUsingImputationQ[examples_List] :=
 Clear[ARCCheckForRepeatingPattern];
 Options[ARCCheckForRepeatingPattern] =
 {
-    "Background" -> Automatic       (*< The background color to use. *)
+    "Background" -> Automatic,          (*< The background color to use. *)
+    "SemiParsedExamples" -> Automatic   (*< If the work to form scene objects has already been done, that can be passed in to avoid duplicate work. *)
 };
 ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
-    Module[{background, backgrounds = <||>, rules, inputColorCounts, outputColorCounts, index},
+    Module[
+        {
+            background,
+            backgrounds = <||>,
+            rules,
+            inputColorCounts,
+            outputColorCounts,
+            index,
+            rule,
+            semiParsedExamples = OptionValue["SemiParsedExamples"]
+        },
         
         (* Fail-fast checks to decide whether to check whether the outputs are pattern
            fills of the inputs. *)
@@ -25001,8 +25097,12 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
                         Replace[
                             OptionValue["Background"],
                             Automatic :> (
-                                ReturnIfFailure@
-                                ARCInferBackgroundColor[example["Input"]]
+                                If [ListQ[semiParsedExamples],
+                                    semiParsedExamples[[index, "Input", "Background"]]
+                                    ,
+                                    ReturnIfFailure@
+                                    ARCInferBackgroundColor[example["Input"]]
+                                ]
                             )
                         ];
                     inputColorCounts = KeyDrop[
@@ -25032,6 +25132,7 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
             Function[{example, exampleIndex},
                 background = backgrounds[First[exampleIndex]];
                 Replace[
+                    ReturnIfFailure@
                     ARCCheckForRepeatingPattern[
                         Replace[example["Input"], background -> -1, {3}],
                         Replace[example["Output"], background -> -1, {3}]
@@ -25045,19 +25146,99 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
             examples
         ];
         
+        (*ARCEcho2[rules];*)
+        
         (* If all inputs found the same rule, then return it. *)
-        If [MatchQ[DeleteDuplicates[rules], {_}],
+        If [SingleUniqueValueQ[rules],
             Return[
                 rules[[1]],
                 Module
             ]
         ];
         
-        False
+        (* TODO: For each property of the rules, if they don't have consistent values,
+                 try inferring their value from scene properties. *)
+        
+        If [!ListQ[semiParsedExamples],
+            semiParsedExamples = MapIndexed[
+                Function[{example, index},
+                    <|
+                        "Input" -> ARCSceneObject[
+                            example["Input"],
+                            backgrounds[First[index]],
+                            Missing[]
+                        ]
+                    |>
+                ],
+                examples
+            ]
+        ];
+        
+        (*ARCEcho2[examples2];*)
+        
+        rule = <||>;
+        
+        (* Try to produce dynamic expressions for propety values that aren't constant. *)
+        Function[{property},
+            If [SingleUniqueValueQ[rules[[All, property]]],
+                (* This property has a predictable constant value. *)
+                rule[property] = rules[[1, property]]
+                ,
+                (* This propety's value varies, so we'll try to produce a dynamic expression
+                   that can be used to compute its value. *)
+                (*Echo[property -> rules[[All, property]]];*)
+                rule[property] = Replace[
+                    ARCGeneralizeConclusionValueNonRecursive[
+                        property,
+                        rules[[All, property]],
+                        semiParsedExamples
+                    ],
+                    _Missing :> Return[False, Module]
+                ]
+            ]
+        ] /@ DeleteDuplicates[Flatten[Keys[rules]]];
+        
+        (*ARCEcho2[rule];*)
+        
+        rule
     ]
 
-ARCCheckForRepeatingPattern[ARCScene[patternImage_], ARCScene[image_]] :=
-    Module[{subImagePositions, firstDerivative, firstDerivatives, trajectory, rule},
+ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
+    Module[{patternImage = patternImageIn, subImagePositions, firstDerivative, firstDerivatives, trajectory, rule},
+        
+        (* Crop the pattern if there are outer portions that are purely the background
+           color. *)
+        (* But wait, if like feca6190 example 2 the pattern has empty space to the left
+           and right, then the output image should have empty space (whether within the
+           scene or outside of the scene) in those locations, so perhaps we don't want
+           to prune empty space here. And more importantly, if we prune the space on
+           the left for feca6190, it would mean that the "Start" location is no longer
+           consistant. For the moment we'll deal with this by not pruning on the top
+           and on the left, but this will need more thought to support cases where
+           the start location is anchored to the left or bottom of the scene where
+           the pattern has empty space on that side. *)
+        (* Left *)
+        (*While[
+            MatchQ[patternImage[[All, 1]], {Repeated[Verbatim[$nonImageColor]]}],
+            patternImage = patternImage[[All, 2 ;; -1]]
+        ];*)
+        (* Right *)
+        While[
+            MatchQ[patternImage[[All, -1]], {Repeated[Verbatim[$nonImageColor]]}],
+            patternImage = patternImage[[All, 1 ;; -2]]
+        ];
+        (* Top *)
+        (*While[
+            MatchQ[patternImage[[1]], {Repeated[Verbatim[$nonImageColor]]}],
+            patternImage = patternImage[[2 ;; -1]]
+        ];*)
+        (* Bottom *)
+        While[
+            MatchQ[patternImage[[-1]], {Repeated[Verbatim[$nonImageColor]]}],
+            patternImage = patternImage[[1 ;; -2]]
+        ];
+        
+        (*ARCEcho2[ARCScene[patternImage]];*)
         
         (* Produce a pattern that replaces the background color with a Blank[] so that
            we can find instances of the pattern without the background color pixels
@@ -25117,9 +25298,13 @@ ARCCheckForRepeatingPattern[ARCScene[patternImage_], ARCScene[image_]] :=
         rule = <|
             "Type" -> "PatternFill",
             "Pattern" -> ARCScene[patternImage],
-            "Start" -> First[subImagePositions],
-            "Trajectory" -> trajectory
+            "StartY" -> First[subImagePositions][[1]],
+            "StartX" -> First[subImagePositions][[2]],
+            "TrajectoryY" -> trajectory[[1]],
+            "TrajectoryX" -> trajectory[[2]]
         |>;
+        
+        (*ARCEcho2[rule];*)
         
         (* Try applying the rule to see if it produces the full image. *)
         output = ConstantArray[
@@ -25129,10 +25314,29 @@ ARCCheckForRepeatingPattern[ARCScene[patternImage_], ARCScene[image_]] :=
         
         output = ReturnIfFailure[ARCApplyPatternFill[output, rule]];
         
+        (*ARCEcho2[ARCScene[output]];**)
+        
         If [output === image,
             rule
             ,
-            False
+            (* If the rule didn't work, check if it works in the opposite direction. *)
+            rule["StartY"] = Last[subImagePositions][[1]];
+            rule["StartX"] = Last[subImagePositions][[2]];
+            trajectory = trajectory * -1;
+            rule["TrajectoryY"] = trajectory[[1]];
+            rule["TrajectoryX"] = trajectory[[2]];
+            (*ARCEcho2[rule];*)
+            output = ConstantArray[
+                $nonImageColor,
+                {ImageHeight[image], ImageWidth[image]}
+            ];
+            output = ReturnIfFailure[ARCApplyPatternFill[output, rule]];
+            (*ARCEcho2[ARCScene[output]];*)
+            If [output === image,
+                rule
+                ,
+                False
+            ]
         ]
     ]
 
@@ -25157,8 +25361,8 @@ ARCApplyPatternFill[imageIn_List, patternFill_Association] :=
     Module[
         {
             image = imageIn,
-            trajectory = patternFill["Trajectory"],
-            position = patternFill["Start"],
+            trajectory = {patternFill["TrajectoryY"], patternFill["TrajectoryX"]},
+            position = {patternFill["StartY"], patternFill["StartX"]},
             scene,
             patternObject
         },
@@ -25228,6 +25432,93 @@ ARCOverlapQ[object1_Association, object2_Association] :=
         ARCVerticalOverlapQ[object1, object2],
         ARCHorizontalOverlapQ[object1, object2]
     ]
+
+(*!
+    \function ARCSceneObject
+    
+    \calltable
+        ARCSceneObject[image, background, objects] '' Produces an object for the scene itself.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSceneObject]
+    
+    \maintainer danielb
+*)
+Clear[ARCSceneObject];
+ARCSceneObject[image_ARCScene, background_, objects_] :=
+    Module[{},
+        <|
+            "Background" -> background,
+            "Width" -> ImageWidth[image],
+            "Height" -> ImageHeight[image],
+            With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> _Association]] &]},
+                If [MatchQ[grids, {_}],
+                    (* There is a single grid in the scene. *)
+                    "Grid" -> KeyDrop[grids[[1, "GridOrDivider"]], {"Type", "Orientation"}]
+                    ,
+                    Nothing
+                ]
+            ],
+            "Scene" -> image,
+            If [!MissingQ[objects],
+                Sequence @@ {
+                    "Objects" -> objects,
+                    (* e.g. d0f5fe59 *)
+                    "ObjectCount" -> Length[objects]
+                }
+                ,
+                Nothing
+            ],
+            KeyTake[
+                ARCObjectFromAllPixels[image, background],
+                {
+                    "Colors",
+                    "Color",
+                    "ColorCount",
+                    "MostUsedColor",
+                    "SecondMostUsedColor",
+                    "YMiddle",
+                    "XMiddle",
+                    "Length",
+                    "PrimarySizeDimension",
+                    "AspectRatio",
+                    "Area",
+                    "FilledArea",
+                    "FilledProportion",
+                    "SurfacePixelCount",
+                    "VerticalLineSymmetry",
+                    "HorizontalLineSymmetry",
+                    "VerticalAndHorizontalLineSymmetry",
+                    "HollowCount"
+                }
+            ]
+        |>
+    ]
+
+(*!
+    \function SingleUniqueValueQ
+    
+    \calltable
+        SingleUniqueValueQ[list] '' Given a list, returns True if the list only contains a single unique value.
+    
+    Examples:
+    
+    SingleUniqueValueQ[{1, 1, 1}] === True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`SingleUniqueValueQ]
+    
+    \maintainer danielb
+*)
+Clear[SingleUniqueValueQ];
+SingleUniqueValueQ[list_List] :=
+    MatchQ[list, {Repeated[value_]}]
 
 End[]
 

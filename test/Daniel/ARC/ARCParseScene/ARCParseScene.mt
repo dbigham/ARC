@@ -25,7 +25,7 @@ Test[
         "Background" -> 0,
         "Width" -> 3,
         "Height" -> 3,
-        "ObjectCount" -> 1,
+        "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}],
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -41,7 +41,7 @@ Test[
                     {3, 2},
                     {3, 3}
                 },
-                "Shape" -> <|"Name" -> "Square", "Filled" -> True|>,
+                "Shape" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}],
                 "Shapes" -> {
                     <|"Image" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]|>,
                     <|
@@ -93,6 +93,47 @@ Test[
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 1, 1, 1, 1, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 1, 1, 1, 1, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 1, 1, 1, 1, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 1, 1, 1, 1, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+                                {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+                                {2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                    |>,
                     <|"Name" -> "Square"|>,
                     <|"Name" -> "Rectangle"|>,
                     <|"Name" -> "Square", "Filled" -> True|>,
@@ -100,7 +141,11 @@ Test[
                 },
                 "Colors" -> {1, 2, 8},
                 "Position" -> {1, 1},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[
+                    {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}}
+                ],
                 "ColorCount" -> 3,
+                "MostUsedColor" -> 2,
                 "Y" -> 1,
                 "X" -> 1,
                 "YInverse" -> 3,
@@ -202,6 +247,287 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        }
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "L"|>,
                             <|
                                 "Name" -> "L",
@@ -215,7 +541,11 @@ Test[
                         "Colors" -> {2},
                         "Color" -> 2,
                         "Position" -> {1, 1},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {{10, 10, 10}, {10, -1, -1}, {10, -1, -1}}
+                        ],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 2,
                         "Y" -> 1,
                         "X" -> 1,
                         "YInverse" -> 3,
@@ -263,6 +593,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -277,7 +630,9 @@ Test[
                         "Colors" -> {1},
                         "Color" -> 1,
                         "Position" -> {2, 2},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 1,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 2,
@@ -298,9 +653,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
@@ -362,6 +717,38 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, -1, -1, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, -1, -1, -1, 10, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, -1, 10, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, -1, 10, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, -1, 10, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, -1, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "L"|>,
                             <|
                                 "Name" -> "L",
@@ -375,7 +762,9 @@ Test[
                         "Colors" -> {8},
                         "Color" -> 8,
                         "Position" -> {2, 2},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{-1, 10}, {10, 10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 8,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 2,
@@ -402,6 +791,7 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "SecondMostUsedColor" -> 8,
                 "ImageUseCount" -> 1,
                 "ShapeUseCount" -> 1,
                 "GeneralShapeUseCount" -> 1,
@@ -449,6 +839,10 @@ Test[
                 "SurfacePixelCount.InverseRank" -> 1,
                 "ColorCount.Rank" -> 1,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 1,
+                "MostUsedColor.InverseRank" -> 1,
+                "SecondMostUsedColor.Rank" -> 1,
+                "SecondMostUsedColor.InverseRank" -> 1,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 1,
@@ -457,7 +851,24 @@ Test[
                 "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
-        "Scene" -> Daniel`ARC`ARCScene[{{2, 2, 2}, {2, 1, 8}, {2, 8, 8}}]
+        "ObjectCount" -> 1,
+        "Colors" -> {1, 2, 8},
+        "ColorCount" -> 3,
+        "MostUsedColor" -> 2,
+        "SecondMostUsedColor" -> 8,
+        "YMiddle" -> 2,
+        "XMiddle" -> 2,
+        "Length" -> 3,
+        "PrimarySizeDimension" -> "None",
+        "AspectRatio" -> 1,
+        "Area" -> 9,
+        "FilledArea" -> 9,
+        "FilledProportion" -> 1.,
+        "SurfacePixelCount" -> 8,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCParseScene-20220717-RTEVHR"
@@ -478,7 +889,19 @@ Test[
         "Background" -> 0,
         "Width" -> 9,
         "Height" -> 9,
-        "ObjectCount" -> 2,
+        "Scene" -> Daniel`ARC`ARCScene[
+            {
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 4, 0, 4, 0, 0, 0, 0, 0},
+                {0, 0, 2, 0, 0, 0, 0, 0, 0},
+                {0, 4, 0, 4, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 7, 0, 0},
+                {0, 0, 0, 0, 0, 7, 1, 7, 0},
+                {0, 0, 0, 0, 0, 0, 7, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0}
+            }
+        ],
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -517,11 +940,56 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {-1, -1, -1, -1, 2, 2, 2, 2, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 2, 2, 2, 2, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 2, 2, 2, 2, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 2, 2, 2, 2, -1, -1, -1, -1},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4},
+                                {4, 4, 4, 4, -1, -1, -1, -1, 4, 4, 4, 4}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {-1, -1, -1, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4},
+                                {4, 4, 4, 4, 4, -1, -1, -1, -1, -1, 4, 4, 4, 4, 4}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
                     |>
                 },
                 "Colors" -> {2, 4},
                 "Position" -> {3, 2},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[
+                    {{10, -1, 10}, {-1, 10, -1}, {10, -1, 10}}
+                ],
                 "ColorCount" -> 2,
+                "MostUsedColor" -> 4,
                 "Y" -> 3,
                 "X" -> 2,
                 "YInverse" -> 7,
@@ -542,9 +1010,9 @@ Test[
                 "FilledArea" -> 5,
                 "FilledProportion" -> 0.5555555555555556,
                 "SurfacePixelCount" -> 5,
-                "VerticalLineSymmetry" -> False,
-                "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False,
+                "VerticalLineSymmetry" -> True,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "Components" -> {
                     <|
@@ -567,6 +1035,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -581,7 +1072,9 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {3, 2},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 4,
                         "Y" -> 3,
                         "X" -> 2,
                         "YInverse" -> 7,
@@ -602,9 +1095,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
@@ -629,6 +1122,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -643,7 +1159,9 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {3, 4},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 4,
                         "Y" -> 3,
                         "X" -> 4,
                         "YInverse" -> 7,
@@ -664,9 +1182,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 2
@@ -691,6 +1209,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -705,7 +1246,9 @@ Test[
                         "Colors" -> {2},
                         "Color" -> 2,
                         "Position" -> {4, 3},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 2,
                         "Y" -> 4,
                         "X" -> 3,
                         "YInverse" -> 6,
@@ -726,9 +1269,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
@@ -753,6 +1296,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -767,7 +1333,9 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {5, 2},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 4,
                         "Y" -> 5,
                         "X" -> 2,
                         "YInverse" -> 5,
@@ -788,9 +1356,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 2,
                         "XRelative" -> 0
@@ -815,6 +1383,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -829,7 +1420,9 @@ Test[
                         "Colors" -> {4},
                         "Color" -> 4,
                         "Position" -> {5, 4},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 4,
                         "Y" -> 5,
                         "X" -> 4,
                         "YInverse" -> 5,
@@ -850,14 +1443,15 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 2,
                         "XRelative" -> 2
                     |>
                 },
+                "SecondMostUsedColor" -> 2,
                 "ImageUseCount" -> 1,
                 "ShapeUseCount" -> 1,
                 "GeneralShapeUseCount" -> 1,
@@ -905,6 +1499,10 @@ Test[
                 "SurfacePixelCount.InverseRank" -> 2,
                 "ColorCount.Rank" -> 1,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 2,
+                "MostUsedColor.InverseRank" -> 1,
+                "SecondMostUsedColor.Rank" -> 1,
+                "SecondMostUsedColor.InverseRank" -> 2,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 1,
@@ -949,11 +1547,56 @@ Test[
                             }
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, 7, 7, 7, 7, -1, -1, -1, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7},
+                                {7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1},
+                                {-1, -1, -1, -1, -1, 7, 7, 7, 7, 7, -1, -1, -1, -1, -1}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
                     |>
                 },
                 "Colors" -> {1, 7},
                 "Position" -> {6, 6},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[
+                    {{-1, 10, -1}, {10, 10, 10}, {-1, 10, -1}}
+                ],
                 "ColorCount" -> 2,
+                "MostUsedColor" -> 7,
                 "Y" -> 6,
                 "X" -> 6,
                 "YInverse" -> 4,
@@ -974,9 +1617,9 @@ Test[
                 "FilledArea" -> 5,
                 "FilledProportion" -> 0.5555555555555556,
                 "SurfacePixelCount" -> 4,
-                "VerticalLineSymmetry" -> False,
-                "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False,
+                "VerticalLineSymmetry" -> True,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "Components" -> {
                     <|
@@ -1023,12 +1666,297 @@ Test[
                                     "Type" -> "Scaled",
                                     "Factor" -> 0.3333333333333333
                                 |>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, -1, -1, -1, -1, 10, 10, 10, 10},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1},
+                                        {-1, -1, -1, -1, 10, 10, 10, 10, -1, -1, -1, -1}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        },
+                                        {
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            10,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1,
+                                            -1
+                                        }
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
                             |>
                         },
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {6, 6},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {{-1, 10, -1}, {10, -1, 10}, {-1, 10, -1}}
+                        ],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 7,
                         "Y" -> 6,
                         "X" -> 6,
                         "YInverse" -> 4,
@@ -1049,9 +1977,9 @@ Test[
                         "FilledArea" -> 4,
                         "FilledProportion" -> 0.4444444444444444,
                         "SurfacePixelCount" -> 4,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
@@ -1076,6 +2004,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1090,7 +2041,9 @@ Test[
                         "Colors" -> {1},
                         "Color" -> 1,
                         "Position" -> {7, 7},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 1,
                         "Y" -> 7,
                         "X" -> 7,
                         "YInverse" -> 3,
@@ -1111,14 +2064,15 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 1,
                         "XRelative" -> 1
                     |>
                 },
+                "SecondMostUsedColor" -> 1,
                 "ImageUseCount" -> 1,
                 "ShapeUseCount" -> 1,
                 "GeneralShapeUseCount" -> 1,
@@ -1166,6 +2120,10 @@ Test[
                 "SurfacePixelCount.InverseRank" -> 1,
                 "ColorCount.Rank" -> 1,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 1,
+                "MostUsedColor.InverseRank" -> 2,
+                "SecondMostUsedColor.Rank" -> 2,
+                "SecondMostUsedColor.InverseRank" -> 1,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 1,
@@ -1174,19 +2132,22 @@ Test[
                 "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
-        "Scene" -> Daniel`ARC`ARCScene[
-            {
-                {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 4, 0, 4, 0, 0, 0, 0, 0},
-                {0, 0, 2, 0, 0, 0, 0, 0, 0},
-                {0, 4, 0, 4, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 7, 0, 0},
-                {0, 0, 0, 0, 0, 7, 1, 7, 0},
-                {0, 0, 0, 0, 0, 0, 7, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0}
-            }
-        ]
+        "ObjectCount" -> 2,
+        "Colors" -> {1, 2, 4, 7},
+        "ColorCount" -> 4,
+        "YMiddle" -> 5,
+        "XMiddle" -> 5,
+        "Length" -> 9,
+        "PrimarySizeDimension" -> "None",
+        "AspectRatio" -> 1,
+        "Area" -> 81,
+        "FilledArea" -> 10,
+        "FilledProportion" -> 0.12345679012345678,
+        "SurfacePixelCount" -> 9,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 0
     |>
     ,
     TestID -> "ARCParseScene-20220718-W0VVO9"
@@ -1207,7 +2168,20 @@ Test[
         "Background" -> 0,
         "Width" -> 10,
         "Height" -> 10,
-        "ObjectCount" -> 6,
+        "Scene" -> Daniel`ARC`ARCScene[
+            {
+                {7, 0, 0, 0, 0, 0, 0, 0, 7, 7},
+                {0, 5, 5, 5, 5, 5, 0, 0, 0, 0},
+                {0, 5, 0, 0, 5, 5, 0, 6, 6, 0},
+                {0, 5, 0, 0, 5, 5, 0, 0, 0, 0},
+                {0, 5, 5, 5, 5, 5, 0, 0, 0, 0},
+                {0, 5, 5, 5, 5, 5, 0, 0, 7, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 7, 5, 5, 5, 5, 5},
+                {0, 8, 8, 0, 0, 5, 5, 0, 0, 5},
+                {0, 8, 8, 0, 0, 5, 5, 5, 5, 5}
+            }
+        ],
         "Objects" -> {
             <|
                 "UUID" -> 0,
@@ -1551,7 +2525,18 @@ Test[
                 },
                 "Colors" -> {5, 7},
                 "Position" -> {1, 1},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, -1, -1, -1, -1, -1},
+                        {-1, 10, 10, 10, 10, 10},
+                        {-1, 10, -1, -1, 10, 10},
+                        {-1, 10, -1, -1, 10, 10},
+                        {-1, 10, 10, 10, 10, 10},
+                        {-1, 10, 10, 10, 10, 10}
+                    }
+                ],
                 "ColorCount" -> 2,
+                "MostUsedColor" -> 5,
                 "Y" -> 1,
                 "X" -> 1,
                 "YInverse" -> 10,
@@ -1595,6 +2580,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -1609,7 +2617,9 @@ Test[
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {1, 1},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 7,
                         "Y" -> 1,
                         "X" -> 1,
                         "YInverse" -> 10,
@@ -1630,9 +2640,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
@@ -1671,7 +2681,15 @@ Test[
                             {6, 5},
                             {6, 6}
                         },
-                        "Shape" -> <|"Name" -> "Square"|>,
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10},
+                                {10, -1, -1, 10, 10},
+                                {10, -1, -1, 10, 10},
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10}
+                            }
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -2032,7 +3050,17 @@ Test[
                         "Colors" -> {5},
                         "Color" -> 5,
                         "Position" -> {2, 2},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10},
+                                {10, -1, -1, 10, 10},
+                                {10, -1, -1, 10, 10},
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10}
+                            }
+                        ],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 5,
                         "Y" -> 2,
                         "X" -> 2,
                         "YInverse" -> 9,
@@ -2061,6 +3089,7 @@ Test[
                         "XRelative" -> 1
                     |>
                 },
+                "SecondMostUsedColor" -> 7,
                 "ImageUseCount" -> 1,
                 "ShapeUseCount" -> 1,
                 "GeneralShapeUseCount" -> 1,
@@ -2104,6 +3133,10 @@ Test[
                 "SurfacePixelCount.InverseRank" -> 5,
                 "ColorCount.Rank" -> 1,
                 "ColorCount.InverseRank" -> 2,
+                "MostUsedColor.Rank" -> 4,
+                "MostUsedColor.InverseRank" -> 1,
+                "SecondMostUsedColor.Rank" -> 1,
+                "SecondMostUsedColor.InverseRank" -> 1,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 2,
@@ -2140,6 +3173,29 @@ Test[
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                    |>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Rectangle"|>,
                     <|"Name" -> "Line", "Angle" -> 0|>,
@@ -2148,7 +3204,9 @@ Test[
                 "Colors" -> {7},
                 "Color" -> 7,
                 "Position" -> {1, 9},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}}],
                 "ColorCount" -> 1,
+                "MostUsedColor" -> 7,
                 "Y" -> 1,
                 "X" -> 9,
                 "YInverse" -> 10,
@@ -2169,8 +3227,8 @@ Test[
                 "FilledProportion" -> 1.,
                 "SurfacePixelCount" -> 2,
                 "VerticalLineSymmetry" -> True,
-                "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
                 "ImageUseCount" -> 1,
@@ -2220,6 +3278,8 @@ Test[
                 "ColorUseCount.InverseRank" -> 3,
                 "ColorCount.Rank" -> 2,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 2,
+                "MostUsedColor.InverseRank" -> 3,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 1,
@@ -2256,6 +3316,29 @@ Test[
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                    |>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Rectangle"|>,
                     <|"Name" -> "Line", "Angle" -> 0|>,
@@ -2264,7 +3347,9 @@ Test[
                 "Colors" -> {6},
                 "Color" -> 6,
                 "Position" -> {3, 8},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}}],
                 "ColorCount" -> 1,
+                "MostUsedColor" -> 6,
                 "Y" -> 3,
                 "X" -> 8,
                 "YInverse" -> 8,
@@ -2285,8 +3370,8 @@ Test[
                 "FilledProportion" -> 1.,
                 "SurfacePixelCount" -> 2,
                 "VerticalLineSymmetry" -> True,
-                "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 2,
                 "ImageUseCount" -> 1,
@@ -2336,6 +3421,8 @@ Test[
                 "ColorUseCount.InverseRank" -> 1,
                 "ColorCount.Rank" -> 2,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 3,
+                "MostUsedColor.InverseRank" -> 2,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 1,
@@ -2360,6 +3447,29 @@ Test[
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10},
+                                {10, 10, 10, 10},
+                                {10, 10, 10, 10},
+                                {10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                    |>,
                     <|"Name" -> "Pixel"|>,
                     <|"Name" -> "Line"|>,
                     <|"Name" -> "Square"|>,
@@ -2374,7 +3484,9 @@ Test[
                 "Colors" -> {7},
                 "Color" -> 7,
                 "Position" -> {6, 9},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                 "ColorCount" -> 1,
+                "MostUsedColor" -> 7,
                 "Y" -> 6,
                 "X" -> 9,
                 "YInverse" -> 5,
@@ -2395,9 +3507,9 @@ Test[
                 "FilledArea" -> 1,
                 "FilledProportion" -> 1.,
                 "SurfacePixelCount" -> 1,
-                "VerticalLineSymmetry" -> False,
-                "HorizontalLineSymmetry" -> False,
-                "VerticalAndHorizontalLineSymmetry" -> False,
+                "VerticalLineSymmetry" -> True,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
                 "HollowCount" -> 0,
                 "ColorUseCount" -> 5,
                 "ImageUseCount" -> 1,
@@ -2449,6 +3561,8 @@ Test[
                 "ColorUseCount.InverseRank" -> 3,
                 "ColorCount.Rank" -> 2,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 2,
+                "MostUsedColor.InverseRank" -> 3,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 2,
@@ -2619,7 +3733,15 @@ Test[
                 },
                 "Colors" -> {5, 7},
                 "Position" -> {8, 5},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[
+                    {
+                        {10, 10, 10, 10, 10, 10},
+                        {-1, 10, 10, -1, -1, 10},
+                        {-1, 10, 10, 10, 10, 10}
+                    }
+                ],
                 "ColorCount" -> 2,
+                "MostUsedColor" -> 5,
                 "Y" -> 8,
                 "X" -> 5,
                 "YInverse" -> 3,
@@ -2664,6 +3786,29 @@ Test[
                                     "Factor" -> 0.3333333333333333
                                 |>
                             |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10},
+                                        {10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                            |>,
+                            <|
+                                "Image" -> Daniel`ARC`ARCScene[
+                                    {
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10},
+                                        {10, 10, 10, 10, 10}
+                                    }
+                                ],
+                                "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                            |>,
                             <|"Name" -> "Pixel"|>,
                             <|"Name" -> "Line"|>,
                             <|"Name" -> "Square"|>,
@@ -2678,7 +3823,9 @@ Test[
                         "Colors" -> {7},
                         "Color" -> 7,
                         "Position" -> {8, 5},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[{{10}}],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 7,
                         "Y" -> 8,
                         "X" -> 5,
                         "YInverse" -> 3,
@@ -2699,9 +3846,9 @@ Test[
                         "FilledArea" -> 1,
                         "FilledProportion" -> 1.,
                         "SurfacePixelCount" -> 1,
-                        "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
-                        "VerticalAndHorizontalLineSymmetry" -> False,
+                        "VerticalLineSymmetry" -> True,
+                        "HorizontalLineSymmetry" -> True,
+                        "VerticalAndHorizontalLineSymmetry" -> True,
                         "HollowCount" -> 0,
                         "YRelative" -> 0,
                         "XRelative" -> 0
@@ -2726,7 +3873,13 @@ Test[
                             {10, 9},
                             {10, 10}
                         },
-                        "Shape" -> <|"Name" -> "Rectangle"|>,
+                        "Shape" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10},
+                                {10, 10, -1, -1, 10},
+                                {10, 10, 10, 10, 10}
+                            }
+                        ],
                         "Shapes" -> {
                             <|
                                 "Image" -> Daniel`ARC`ARCScene[
@@ -2962,7 +4115,15 @@ Test[
                         "Colors" -> {5},
                         "Color" -> 5,
                         "Position" -> {8, 6},
+                        "MonochromeImage" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10},
+                                {10, 10, -1, -1, 10},
+                                {10, 10, 10, 10, 10}
+                            }
+                        ],
                         "ColorCount" -> 1,
+                        "MostUsedColor" -> 5,
                         "Y" -> 8,
                         "X" -> 6,
                         "YInverse" -> 3,
@@ -2984,13 +4145,14 @@ Test[
                         "FilledProportion" -> 0.8666666666666667,
                         "SurfacePixelCount" -> 12,
                         "VerticalLineSymmetry" -> False,
-                        "HorizontalLineSymmetry" -> False,
+                        "HorizontalLineSymmetry" -> True,
                         "VerticalAndHorizontalLineSymmetry" -> False,
                         "HollowCount" -> 1,
                         "YRelative" -> 0,
                         "XRelative" -> 1
                     |>
                 },
+                "SecondMostUsedColor" -> 7,
                 "ImageUseCount" -> 1,
                 "ShapeUseCount" -> 1,
                 "GeneralShapeUseCount" -> 1,
@@ -3036,6 +4198,10 @@ Test[
                 "SurfacePixelCount.InverseRank" -> 4,
                 "ColorCount.Rank" -> 1,
                 "ColorCount.InverseRank" -> 2,
+                "MostUsedColor.Rank" -> 4,
+                "MostUsedColor.InverseRank" -> 1,
+                "SecondMostUsedColor.Rank" -> 1,
+                "SecondMostUsedColor.InverseRank" -> 1,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 2,
@@ -3078,6 +4244,38 @@ Test[
                         ],
                         "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.3333333333333333|>
                     |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.25|>
+                    |>,
+                    <|
+                        "Image" -> Daniel`ARC`ARCScene[
+                            {
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+                                {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
+                            }
+                        ],
+                        "Transform" -> <|"Type" -> "Scaled", "Factor" -> 0.2|>
+                    |>,
                     <|"Name" -> "Square"|>,
                     <|"Name" -> "Rectangle"|>,
                     <|"Name" -> "Square", "Filled" -> True|>,
@@ -3086,7 +4284,9 @@ Test[
                 "Colors" -> {8},
                 "Color" -> 8,
                 "Position" -> {9, 2},
+                "MonochromeImage" -> Daniel`ARC`ARCScene[{{10, 10}, {10, 10}}],
                 "ColorCount" -> 1,
+                "MostUsedColor" -> 8,
                 "Y" -> 9,
                 "X" -> 2,
                 "YInverse" -> 2,
@@ -3155,6 +4355,8 @@ Test[
                 "ColorUseCount.InverseRank" -> 2,
                 "ColorCount.Rank" -> 2,
                 "ColorCount.InverseRank" -> 1,
+                "MostUsedColor.Rank" -> 1,
+                "MostUsedColor.InverseRank" -> 4,
                 "ImageUseCount.Rank" -> 1,
                 "ImageUseCount.InverseRank" -> 1,
                 "ShapeUseCount.Rank" -> 2,
@@ -3163,20 +4365,22 @@ Test[
                 "GeneralShapeUseCount.InverseRank" -> 1
             |>
         },
-        "Scene" -> Daniel`ARC`ARCScene[
-            {
-                {7, 0, 0, 0, 0, 0, 0, 0, 7, 7},
-                {0, 5, 5, 5, 5, 5, 0, 0, 0, 0},
-                {0, 5, 0, 0, 5, 5, 0, 6, 6, 0},
-                {0, 5, 0, 0, 5, 5, 0, 0, 0, 0},
-                {0, 5, 5, 5, 5, 5, 0, 0, 0, 0},
-                {0, 5, 5, 5, 5, 5, 0, 0, 7, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 7, 5, 5, 5, 5, 5},
-                {0, 8, 8, 0, 0, 5, 5, 0, 0, 5},
-                {0, 8, 8, 0, 0, 5, 5, 5, 5, 5}
-            }
-        ]
+        "ObjectCount" -> 6,
+        "Colors" -> {5, 6, 7, 8},
+        "ColorCount" -> 4,
+        "MostUsedColor" -> 5,
+        "SecondMostUsedColor" -> 7,
+        "Length" -> 10,
+        "PrimarySizeDimension" -> "None",
+        "AspectRatio" -> 1,
+        "Area" -> 100,
+        "FilledArea" -> 45,
+        "FilledProportion" -> 0.45,
+        "SurfacePixelCount" -> 30,
+        "VerticalLineSymmetry" -> False,
+        "HorizontalLineSymmetry" -> False,
+        "VerticalAndHorizontalLineSymmetry" -> False,
+        "HollowCount" -> 2
     |>
     ,
     TestID -> "ARCParseScene-20220718-9SB5XL"

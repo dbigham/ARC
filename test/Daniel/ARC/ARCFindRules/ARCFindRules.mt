@@ -3418,15 +3418,45 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d13f3404"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d13f3404"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
-        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
-        "Height" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Height"]*2],
-        "Rules" -> <|"Type" -> "PatternFill", "Start" -> {1, 1}, "Trajectory" -> {1, 1}|>
+        "Width" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputScene", "Width"], 3],
+        "Height" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputScene", "Width"], 3],
+        "Rules" -> <|
+            "Type" -> "PatternFill",
+            "StartY" -> 1,
+            "StartX" -> 1,
+            "TrajectoryY" -> 1,
+            "TrajectoryX" -> 1
+        |>
     |>
     ,
     TestID -> "ARCFindRules-20221003-KLSKL1"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "feca6190"]["Train"]]
+    ]
+    ,
+    <|
+        "Width" -> Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "ColorCount"], 5],
+        "Height" -> Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "ColorCount"], 5],
+        "Rules" -> <|
+            "Type" -> "PatternFill",
+            "StartY" -> Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "ColorCount"], 5],
+            "StartX" -> 1,
+            "TrajectoryY" -> -1,
+            "TrajectoryX" -> 1
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20221004-Z4I7W9"
 ]
