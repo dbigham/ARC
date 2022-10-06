@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    101569,       2487]
-NotebookOptionsPosition[     85902,       2157]
-NotebookOutlinePosition[     91512,       2295]
-CellTagsIndexPosition[     91469,       2292]
+NotebookDataLength[    107983,       2646]
+NotebookOptionsPosition[     91702,       2304]
+NotebookOutlinePosition[     97312,       2442]
+CellTagsIndexPosition[     97269,       2439]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCTransformScore", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[977]:=",ExpressionUUID->"a98f1b3a-7821-4d25-ab1d-169662d7f11c"],
+  "In[667]:=",ExpressionUUID->"a98f1b3a-7821-4d25-ab1d-169662d7f11c"],
 
 Cell[CellGroupData[{
 
@@ -2151,6 +2151,153 @@ Cell[BoxData["\<\"-1.4384430978086482\"\>"], "Output",
    3.8724557231832657`*^9}, {3.8724557935131917`*^9, 3.8724558205294304`*^9}},
  CellLabel->
   "Out[930]=",ExpressionUUID->"909c4eb5-a759-4870-9e81-47a7313b892a"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Times", "Subsection",
+ CellChangeTimes->{{3.8718290847750587`*^9, 3.871829087198405*^9}, {
+  3.8724549890669575`*^9, 3.872454993146945*^9}, {3.8739671457929797`*^9, 
+  3.8739671464638996`*^9}, {3.8739672259908648`*^9, 
+  3.8739672263415785`*^9}},ExpressionUUID->"aa528695-2f65-4334-b980-\
+068a550eed5d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCTransformScore-20221005-5GARZ7", 
+              Daniel`ARC`ARCTransformScore, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623], 72515290, "SubTest" -> None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> "ARCTransformScore-20221005-5GARZ7"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCTransformScore-20221005-5GARZ7", Daniel`ARC`ARCTransformScore, 
+            
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623], "CellID" -> 72515290, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCTransformScore-20221005-5GARZ7", Daniel`ARC`ARCTransformScore, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCTransformScore-20221005-5GARZ7"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221051043277623}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.873967471910228*^9},ExpressionUUID->"bb352ba3-400c-4af3-835f-\
+94a27b47ce28"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"ARCTransformScore", "[", "\n", "\t", 
+  RowBox[{"<|", "\n", "\t\t", 
+   RowBox[{
+    RowBox[{"\"\<Shape\>\"", " ", "->", " ", 
+     RowBox[{"<|", "\n", "\t\t\t", 
+      RowBox[{
+       RowBox[{"\"\<Name\>\"", " ", "->", " ", "\"\<Line\>\""}], ",", "\n", 
+       "\t\t\t", 
+       RowBox[{"\"\<Angle\>\"", " ", "->", " ", 
+        RowBox[{
+         RowBox[{"Inactive", "[", "Times", "]"}], "[", "\n", "\t\t\t\t", 
+         RowBox[{
+          RowBox[{"ObjectValue", "[", 
+           RowBox[{
+            RowBox[{"<|", 
+             RowBox[{
+              RowBox[{"\"\<Colors\>\"", " ", "->", " ", 
+               RowBox[{"{", "}"}]}], ",", " ", 
+              RowBox[{
+              "\"\<Context\>\"", " ", "->", " ", "\"\<Component\>\""}]}], 
+             "|>"}], ",", " ", "\"\<Y2\>\""}], "]"}], ",", "\n", "\t\t\t\t", 
+          "45"}], "\n", "\t\t\t", "]"}]}]}], "\n", "\t\t", "|>"}]}], ",", 
+    "\n", "\t\t", 
+    RowBox[{"\"\<Color\>\"", " ", "->", " ", "5"}]}], "\n", "\t", "|>"}], 
+  "\n", "]"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{3.873967471911239*^9},
+ CellLabel->"In[701]:=",
+ CellID->72515290,
+ "TestId" -> 
+ "ARCTransformScore-20221005-5GARZ7",ExpressionUUID->"b350d0c3-cb41-4e78-b898-\
+d8c5d923912e"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"-", "2.360399820922308`"}]], "Output",
+ CellChangeTimes->{{3.8739671548904953`*^9, 3.873967232416583*^9}, 
+   3.873967326245928*^9, 3.873967422298321*^9, 3.8739674979466324`*^9, 
+   3.8739679417545943`*^9, 3.873967983928952*^9},
+ CellLabel->
+  "Out[702]=",ExpressionUUID->"2f71b36f-2144-43e4-b511-5b53d6119643"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]
@@ -2486,6 +2633,18 @@ Cell[84289, 2117, 1192, 26, 90, "Code",ExpressionUUID->"a8467f09-419b-4f39-8cb3-
  CellID->42182762]
 }, Open  ]],
 Cell[85496, 2146, 366, 6, 33, "Output",ExpressionUUID->"909c4eb5-a759-4870-9e81-47a7313b892a"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[85899, 2157, 309, 5, 38, "Subsection",ExpressionUUID->"aa528695-2f65-4334-b980-068a550eed5d"],
+Cell[CellGroupData[{
+Cell[86233, 2166, 3701, 87, 52, "TestUI",ExpressionUUID->"bb352ba3-400c-4af3-835f-94a27b47ce28",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[89937, 2255, 1375, 35, 252, "Code",ExpressionUUID->"b350d0c3-cb41-4e78-b898-d8c5d923912e",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->72515290]
+}, Open  ]],
+Cell[91327, 2293, 335, 6, 33, "Output",ExpressionUUID->"2f71b36f-2144-43e4-b511-5b53d6119643"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]

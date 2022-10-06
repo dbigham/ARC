@@ -2425,19 +2425,24 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSimplifyRules[
-        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a416b8f3"]["Train"]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            Daniel`ARC`ARCSimplifyRules[
+                Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a416b8f3"]["Train"]]
+            ]
+        ]
     ]
     ,
     <|
-        "SceneAsSingleObject" -> True,
-        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
-        "Rules" -> {
-            {
-                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>,
-                <|"SceneAsSingleObject" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>
-            }
-        }
+        "Width" -> Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "Width"], 2],
+        "Height" -> Daniel`ARC`ObjectValue["InputScene", "Height"],
+        "Rules" -> <|
+            "Type" -> "PatternFill",
+            "StartY" -> 1,
+            "StartX" -> 1,
+            "TrajectoryY" -> 0,
+            "TrajectoryX" -> Daniel`ARC`ObjectValue["InputScene", "Width"]
+        |>
     |>
     ,
     TestID -> "ARCFindRules-20220909-RONLH4"
@@ -3459,4 +3464,55 @@ Test[
     |>
     ,
     TestID -> "ARCFindRules-20221004-Z4I7W9"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "4938f0c2"]["Train"]]
+    ]
+    ,
+    {
+        <|"VerticalLineSymmetry" -> True|> -> <|"Same" -> True|>,
+        <|"VerticalLineSymmetry" -> False|> -> <|
+            "Transform" -> <|
+                "Type" -> "AddComponents",
+                "Components" -> {
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Flip", "Direction" -> "Horizontal"|>
+                        ],
+                        "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "XInverse" -> 1|>|>
+                    |>,
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                        ],
+                        "Position" -> <|"RelativePosition" -> <|"YInverse" -> 1, "X" -> 0|>|>
+                    |>,
+                    <|
+                        "Image" -> Inactive[Daniel`ARC`Transform][
+                            Daniel`ARC`ObjectValue[
+                                <|"Colors" -> {2}, "Context" -> "Component"|>,
+                                "Image"
+                            ],
+                            <|"Type" -> "Rotation", "Angle" -> 180|>
+                        ],
+                        "Position" -> <|
+                            "RelativePosition" -> <|"YInverse" -> 1, "XInverse" -> 1|>
+                        |>
+                    |>
+                }
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20221004-FWFWZT"
 ]

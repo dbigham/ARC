@@ -11,7 +11,11 @@
 *)
 
 Test[
-    Daniel`ARC`ARCRemoveExtendedMetadataFromConclusion[<|"a" -> 1, "Examples" -> 2|>]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCRemoveExtendedMetadataFromConclusion[
+            <|"a" -> 1, "Examples" -> {1, 2}, "ExampleCount" -> 2|>
+        ]
+    ]
     ,
     <|"a" -> 1|>
     ,

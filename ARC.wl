@@ -2032,7 +2032,7 @@ $properties = <|
         "Type2" -> "PositionDimensionValue"
     |>,
     "PrimarySizeDimension" -> <|
-        "Type" -> "Integer",
+        "Type" -> "SizeDimension",
         "Type2" -> "SizeDimension"
     |>,
     "AspectRatio" -> <|
@@ -4588,7 +4588,27 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         ];
         
         If [TrueQ[OptionValue["SettleForOneExamplePerRule"]],
-            If [!TrueQ[workingRulesFound[]] && $MinimumExamplesPerRule > 1,
+            (* TODO: I wonder if instead of having a second pass, we should allow
+                     single-example rules in general, and just make sure we're
+                     scoring them appropriately such that they get dropped appropriately
+                     without needing to take a big performance penalty re-doing things.
+                     The penalty is substantially worse with cases like 6e02f1e3
+                     which currently require trying single-example mode even when
+                     we have found a working rule set. *)
+            If [And[
+                    $MinimumExamplesPerRule > 1,
+                    Or[
+                        !TrueQ[foundRulesQ = workingRulesFound[]](*,
+                        (* e.g. 6e02f1e3 *)
+                        Replace[
+                            (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2.5,
+                            True :> (
+                                (*Echo["HERE" -> $file -> existingRulesScore];*)
+                                True
+                            )
+                        ]*)
+                    ]
+                ],
                 (* Try again, this time allowing rules to be formed with only 1 example.
                    e.g. 0d3d703e *)
                 Block[{$MinimumExamplesPerRule = 1},
@@ -4596,17 +4616,32 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ARCLogScope["ARCFindRules:OneExamplePerRule"]@
                         ARCFindRules[
                             examples,
-                            "CheckForImputation" -> False,
-                            "CheckForPatternFill" -> False,
+                            "CheckForImputation" -> !TrueQ[foundRulesQ],
+                            "CheckForPatternFill" -> !TrueQ[foundRulesQ],
                             opts
                         ];
-                    foundRulesQ = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
-                    If [foundRulesQ, res = res2];
+                    foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                    If [foundRules2Q,
+                        If [And[
+                                TrueQ[ARCWorkingQ[examples, res2]],
+                                Or[
+                                    !TrueQ[workingRulesFound[]],
+                                    (* e.g. 6e02f1e3 *)
+                                    (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore > 0.05
+                                ]
+                            ],
+                            (*Echo["HERE2" -> $file -> {existingRulesScore, newRulesScore, newRulesScore - existingRulesScore}];*)
+                            foundRulesQ = True;
+                            res = res2
+                        ]
+                    ]
                 ]
             ]
         ];
         
         ReturnIfFailure[res];
+        
+        (*ARCRuleSetScore[res["Rules"]];*)
         
         If [!AssociationQ[res],
             res = <||>
@@ -5974,6 +6009,9 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
                     Missing[]
                 ];
             
+            (* TODO: If the rules subdivide the input scene into multiple sub-scenes, then
+                     resolving InputScene values within the "Rules" key is probably not
+                     appropriate here, so perhaps we should avoid that key-value here. *)
             rules =
                 ReturnIfFailure@
                 ResolveValues[
@@ -5984,6 +6022,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
                     "Activate" -> True
                 ];
         ];
+        
+        (*ARCEcho2[rules];*)
         
         ruleList = rules["Rules"];
         
@@ -6006,6 +6046,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
             outputHeight = ToIntegerIfNoDecimal[rules["Height"]]
         ];
         
+        (*Echo[{outputWidth, outputHeight}];*)
+        
         Switch[
             ruleList,
             KeyValuePattern[{"Type" -> "PatternFill"}],
@@ -6014,7 +6056,7 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
                     ARCApplyPatternFill[
                         ConstantArray[
                             0,
-                            {outputWidth, outputHeight}
+                            {outputHeight, outputWidth}
                         ],
                         Append[
                             ruleList,
@@ -9455,19 +9497,31 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
         
         (* What properties of these objects, if we use multiplication, appear to be usable
            to infer these values? *)
-        matchingPropertiesUsingMultiplication = Select[
-            transposedObjects,
-            And[
-                AllTrue[values, NumberQ],
-                AllTrue[#, NumberQ],
-                Length[values] === Length[#],
-                FreeQ[#, 0 | 0., {1}],
-                And[
-                    SingleUniqueValueQ[factors = values / #],
-                    !MatchQ[factors[[1]], 1 | 1.]
+        (* Disallow color to be treated as an integer here since that doesn't make semantic
+           sense. We should probably also disallow addition above, but will avoid changing
+           that as of Oct 5 2022 since it could in theory break things making use of it.
+           (But long term we should probably disallow that too) Ideally we'd use $properties
+           to check if "Type" is "Integer", but that might break things so will hold off
+           for the moment.
+           e.g. aabf363d gets "Color" -> Inactive[Times][ObjectValue["InputObject", "Color"], 2] *)
+        matchingPropertiesUsingMultiplication =
+            If [Last[propertyPath] =!= "Color",
+                Select[
+                    transposedObjects,
+                    And[
+                        AllTrue[values, NumberQ],
+                        AllTrue[#, NumberQ],
+                        Length[values] === Length[#],
+                        FreeQ[#, 0 | 0., {1}],
+                        And[
+                            SingleUniqueValueQ[factors = values / #],
+                            !MatchQ[factors[[1]], 1 | 1.]
+                        ]
+                    ] &
                 ]
-            ] &
-        ];
+                ,
+                <||>
+            ];
         
         matchingProperties =
             ARCPruneMatchingPropertiesForRelativePositions[
@@ -11436,9 +11490,16 @@ ARCTransformScore[transformIn_] :=
                 _ -> Alternatives[
                     _ObjectValue,
                     _ClassValue,
-                    Inactive[Plus][_ObjectValue, _]
+                    (* Instead of Plus | Times, should we just say _? *)
+                    Inactive[Plus | Times][_ObjectValue, _]
                 ]
             ] :> (
+                If [MatchQ[assoc, KeyValuePattern[_ -> Inactive[Times][___]]],
+                    (* As of Oct 5 2022, we've only ever found one parse that makes use
+                       of Times, and already we have one unwanted parse making use of
+                       it (6e02f1e3), so we'll downscore it. *)
+                    score -= 0.5
+                ];
                 KeyValueMap[
                     Function[{key, rhs},
                         Replace[
@@ -11469,7 +11530,11 @@ ARCTransformScore[transformIn_] :=
                                 0,
                             $properties[key, "Type2"] === $properties[objectValueProperty, "Type2"],
                                 -0.5,
-                            StringEndsQ[objectValueProperty, "Count"],
+                            And[
+                                (* Since we could have something like Inactive[First]["Colors"]. *)
+                                StringQ[objectValueProperty],
+                                StringEndsQ[objectValueProperty, "Count"]
+                            ],
                                 (* If the property is a count property, then although it doesn't
                                    match the type of property we're trying to infer, a count is a
                                    pretty generic thing, so it feels a bit more plausible that
@@ -11477,7 +11542,9 @@ ARCTransformScore[transformIn_] :=
                                    e.g. d0f5fe59 *)
                                 -0.75,
                             True,
-                                -1
+                                (* We are inferring a property using the value of another property
+                                   where the types don't match. This in general is not good/likely. *)
+                                -1.1
                         ];
                         If [And[
                                 AssociationQ[objectValueCondition],
@@ -11486,8 +11553,9 @@ ARCTransformScore[transformIn_] :=
                             (* If we can use a component to infer something, that seems
                                better in general because it's more contextual.
                                ARCChooseBestTransform-20220827-APSTJD
-                               e.g. referenceable-components *)
-                            score += 0.7
+                               e.g. referenceable-components
+                               Example of an unwanted parse: 6e02f1e3 *)
+                            score += 0.5
                         ];
                     ],
                     Select[assoc, !FreeQ[#, _ObjectValue | _ClassValue] &]
@@ -13506,6 +13574,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 4}],
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             "CodeLength" -> 25526,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "4938f0c2",
+            "Timestamp" -> DateObject[{2022, 10, 4}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 25527,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -17117,26 +17193,59 @@ ARCScoreRuleSets[ruleSets_List] :=
 *)
 Clear[ARCRuleSetScore];
 ARCRuleSetScore[ruleSet_List] :=
-    Module[{pattern, conclusion},
-        Total[
+    Module[{pattern, conclusion, score},
+        
+        score = Total[
             Function[{rule},
-                If [MatchQ[rule, _Rule],
-                    pattern = rule[[1]];
-                    conclusion = ARCRemoveExtendedMetadataFromConclusion[rule[[2]]];
-                    SqrtButKeepSign@
-                    Plus[
-                        SquareButKeepSign@
-                        ReturnIfFailure@
-                        ARCConditionsScore[pattern],
-                        SquareButKeepSign@
-                        ReturnIfFailure@
-                        ARCTransformScore[conclusion]
-                    ]
-                    ,
-                    -(ARCExpressionComplexity[rule] ^ 2)
+                (*EchoIndented[rule];*)
+                Which[
+                    MatchQ[rule, {Repeated[KeyValuePattern["Rules" -> _]]}],
+                        (* For example, a set of rules for a grid subdivision, where we
+                           have a different set of rules for each grid cell. *)
+                        Total[ARCRuleSetScore /@ rule],
+                    MatchQ[rule, _Rule],
+                        pattern = rule[[1]];
+                        conclusion = ARCRemoveExtendedMetadataFromConclusion[rule[[2]]];
+                        SqrtButKeepSign@
+                        Plus[
+                            SquareButKeepSign@
+                            ReturnIfFailure@
+                            ARCConditionsScore[pattern],
+                            SquareButKeepSign@
+                            ReturnIfFailure@
+                            ARCTransformScore[conclusion],
+                            SquareButKeepSign@
+                            If [rule[[2, "ExampleCount"]] === 1,
+                                (* If a rule is used in only one examle, it implies there is
+                                a very high risk that it is nonsense, especially if it was
+                                used just once in that example. *)
+                                If [rule[[2, "UseCount"]] === 1,
+                                    -1.5
+                                    ,
+                                    -1
+                                ]
+                                ,
+                                0
+                            ]
+                        ],
+                    True,
+                        -(ARCExpressionComplexity[rule] ^ 2)
                 ]
             ] /@ ruleSet
-        ]
+        ];
+        
+        (* If all rules are used in just one example, it implies that no general set of rules
+           were found, but rather we only produced a "rule" to map from an input
+           to its precise output image. *)
+        If [MatchQ[ruleSet, {Repeated[Rule[_, KeyValuePattern["ExampleCount" -> 1]]]}],
+            If [MatchQ[ruleSet, {Repeated[Rule[_, KeyValuePattern["UseCount" -> 1]]]}],
+                score -= 10
+                ,
+                score -= 8
+            ]
+        ];
+        
+        score
     ]
 
 ARCRuleSetScore[rules_Association] :=
@@ -19081,15 +19190,21 @@ ARCObjectImageShape[image_ARCScene, colors : _List | Automatic : Automatic, mono
 *)
 Clear[ARCRemoveExtendedMetadataFromConclusion];
 ARCRemoveExtendedMetadataFromConclusion[conclusion_Association] :=
-    KeyDrop[
+    Replace[
         conclusion,
-        {
-            "Examples",
-            "ExampleCount",
-            "UseCount",
-            "InputObjects",
-            "RotationNormalization"
-        }
+        assoc: KeyValuePattern["ExampleCount" -> _] :> (
+            KeyDrop[
+                assoc,
+                {
+                    "Examples",
+                    "ExampleCount",
+                    "UseCount",
+                    "InputObjects",
+                    "RotationNormalization"
+                }
+            ]
+        ),
+        {0, Infinity}
     ]
 
 (*!

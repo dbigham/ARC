@@ -23,7 +23,7 @@ Test[
         ]
     ]
     ,
-    -0.7804536101718726
+    -0.7804360307061233
     ,
     TestID -> "ARCTransformScore-20220804-R5DIE5"
 ]
@@ -41,7 +41,7 @@ Test[
         ]
     ]
     ,
-    -1.2604536101718726
+    -1.2604360307061233
     ,
     TestID -> "ARCTransformScore-20220804-P26PZ7"
 ]
@@ -59,7 +59,7 @@ Test[
         ]
     ]
     ,
-    -1.8004536101718727
+    -1.8004360307061231
     ,
     TestID -> "ARCTransformScore-20220804-XKHR3Z"
 ]
@@ -89,7 +89,7 @@ Test[
         ]
     ]
     ,
-    -1.5609072203437453
+    -1.5608720614122467
     ,
     TestID -> "ARCTransformScore-20220818-PBN4K1"
 ]
@@ -146,7 +146,7 @@ Test[
         ]
     ]
     ,
-    -0.6506225774829856
+    -0.6505984917856644
     ,
     TestID -> "ARCTransformScore-20220905-TREZ4Z"
 ]
@@ -204,33 +204,66 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|"Color" -> Daniel`ARC`ClassValue[<|"Colors" -> Except[{5}]|>, "Color"]|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|"Color" -> Daniel`ARC`ClassValue[<|"Colors" -> Except[{5}]|>, "Color"]|>
+        ]
     ]
     ,
-    -0.6602629759044045
+    -0.6602527710129968
     ,
     TestID -> "ARCTransformScore-20220917-WMF8CB"
 ]
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|"Color" -> Daniel`ARC`ClassValue[<|"XMiddle.Rank" -> 1|>, "Color"]|>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|"Color" -> Daniel`ARC`ClassValue[<|"XMiddle.Rank" -> 1|>, "Color"]|>
+        ]
     ]
     ,
-    -1.0689698078707184
+    -0.9768716547085453
     ,
     TestID -> "ARCTransformScore-20220917-9MWWQA"
 ]
 
 Test[
-    Daniel`ARC`ARCTransformScore[
-        <|
-            "Color" -> Daniel`ARC`ClassValue[<|"FilledProportion.InverseRank" -> 2|>, "Color"]
-        |>
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "Color" -> Daniel`ARC`ClassValue[
+                    <|"FilledProportion.InverseRank" -> 2|>,
+                    "Color"
+                ]
+            |>
+        ]
     ]
     ,
-    -1.4384430978086482
+    -1.3273074238334235
     ,
     TestID -> "ARCTransformScore-20220917-PW5Q7G"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "Shape" -> <|
+                    "Name" -> "Line",
+                    "Angle" -> Inactive[Times][
+                        Daniel`ARC`ObjectValue[
+                            <|"Colors" -> {}, "Context" -> "Component"|>,
+                            "Y2"
+                        ],
+                        45
+                    ]
+                |>,
+                "Color" -> 5
+            |>
+        ]
+    ]
+    ,
+    -2.360399820922308
+    ,
+    TestID -> "ARCTransformScore-20221005-5GARZ7"
 ]
