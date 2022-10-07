@@ -8,10 +8,20 @@ https://github.com/fchollet/ARC
 
 ## Percentage of Tasks Passing
 
-* Training tasks: 148 / 400 (37%)
+* Training tasks: 148 / 400 (37%)\
+  ![Percentage of Training Tasks Passing](TrainingTasksProgressBar.png?raw=true)
   * Implemented: 74
   * Passing via generalization: 74
-* Evaluation tasks: 56 / 400 (14%)
+* Evaluation tasks: 56 / 400 (14%)\
+  ![Percentage of Evaluation Tasks Passing](EvaluationTasksProgressBar.png?raw=true)
+
+## Progress over Time
+
+![Graph of Progress](Progress.png?raw=true)
+
+## Comparison with Kaggle Competitors
+
+![Comparison with Kaggle Competitors](ComparisonWithKaggleCompetitors.png?raw=true)
 
 ## Tasks Implemented
 

@@ -565,6 +565,10 @@ ARCSceneObject::usage = "ARCSceneObject  "
 
 SingleUniqueValueQ::usage = "SingleUniqueValueQ  "
 
+ARCProgressGraph::usage = "ARCProgressGraph  "
+
+ARCComparisonWithKaggleCompetitors::usage = "ARCComparisonWithKaggleCompetitors  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -606,6 +610,7 @@ ProcessLog = EntityLink`Logging`ProcessLog;
 EntityRepository = EntityLink`EntityRepository;
 EntityRepositorySet = EntityLink`EntityRepositorySet;
 EchoTiming2 = Utility`EchoTiming2;
+ReapList = Utility`ReapList;
 
 (* For the purposes of using LogScope. *)
 initializeEntityRepository[] :=
@@ -13971,15 +13976,43 @@ ARCImplementedTasksMarkdown[] :=
             }]
         ];
         
+        Export[
+            FileNameJoin[{$arcDirectory, "TrainingTasksProgressBar.png"}],
+            ProgressIndicator[trainingPercentage / 100],
+            "PNG"
+        ];
+        
+        Export[
+            FileNameJoin[{$arcDirectory, "EvaluationTasksProgressBar.png"}],
+            ProgressIndicator[evaluationPercentage / 100],
+            "PNG"
+        ];
+        
+        Export[
+            FileNameJoin[{$arcDirectory, "ComparisonWithKaggleCompetitors.png"}],
+            ARCComparisonWithKaggleCompetitors[evaluationPercentage],
+            "PNG"
+        ];
+        
         StringRiffle[
             Flatten@
             {
                 "## Percentage of Tasks Passing",
                 "",
-                "* Training tasks: " <> ToString[trainingTasksImplementedCount] <> " / 400 (" <> ToString[trainingPercentage] <> "%)",
+                "* Training tasks: " <> ToString[trainingTasksImplementedCount] <> " / 400 (" <> ToString[trainingPercentage] <> "%)\\",
+                "  ![Percentage of Training Tasks Passing](TrainingTasksProgressBar.png?raw=true)",
                 "  * Implemented: " <> ToString[Length[implementedARCTrainingTasks]],
                 "  * Passing via generalization: " <> ToString[Length[arcTrainingTasksPassingDueToGeneralization]],
-                "* Evaluation tasks: " <> ToString[Length[arcEvaluationTasksPassingDueToGeneralization]] <> " / 400 (" <> ToString[evaluationPercentage] <> "%)",
+                "* Evaluation tasks: " <> ToString[Length[arcEvaluationTasksPassingDueToGeneralization]] <> " / 400 (" <> ToString[evaluationPercentage] <> "%)\\",
+                "  ![Percentage of Evaluation Tasks Passing](EvaluationTasksProgressBar.png?raw=true)",
+                "",
+                "## Progress over Time",
+                "",
+                "![Graph of Progress](Progress.png?raw=true)",
+                "",
+                "## Comparison with Kaggle Competitors",
+                "",
+                "![Comparison with Kaggle Competitors](ComparisonWithKaggleCompetitors.png?raw=true)",
                 "",
                 "## Tasks Implemented",
                 "",
@@ -19285,6 +19318,13 @@ ARCHollowCount[image_List] :=
 Clear[ARCUpdateReadme];
 ARCUpdateReadme[] :=
     Module[{},
+        
+        Export[
+            FileNameJoin[{$arcDirectory, "Progress.png"}],
+            ARCProgressGraph[],
+            "PNG"
+        ];
+        
         StringReplaceInFiles[
             "## Percentage of Tasks Passing" ~~ ___ -> ReturnIfFailure[ARCImplementedTasksMarkdown[]],
             {FileNameJoin[{FileNameDrop[FindFile["ARC`"], -1], "README.md"}]}
@@ -25694,6 +25734,100 @@ ARCSceneObject[image_ARCScene, background_, objects_] :=
 Clear[SingleUniqueValueQ];
 SingleUniqueValueQ[list_List] :=
     MatchQ[list, {Repeated[value_]}]
+
+(*!
+    \function ARCProgressGraph
+    
+    \calltable
+        ARCProgressGraph[] '' Produces a graph showing progress over time on getting tasks passing.
+    
+    \maintainer danielb
+*)
+Clear[ARCProgressGraph];
+ARCProgressGraph[] :=
+    Module[
+        {
+            taskLog,
+            min,
+            max,
+            tasksComplete,
+            dataForTotals = {},
+            dataForGeneralization = {}
+        },
+    
+        taskLog = ARCTaskLog[];
+        
+        min = Min[DeleteMissing[taskLog[[All, "Timestamp"]]]];
+        max = Max[DeleteMissing[taskLog[[All, "Timestamp"]]]];
+        
+        Function[{date},
+            tasksComplete = Select[
+                DeleteCases[taskLog, KeyValuePattern["PersonalExample" -> True]],
+                Or[
+                    MissingQ[#["Timestamp"]],
+                    #["Timestamp"] <= date
+                ] &
+            ];
+            AppendTo[
+                dataForTotals,
+                date -> Length[tasksComplete] + Length[Flatten[DeleteCases[tasksComplete[[All, "NewEvaluationSuccesses"]], _Missing | _Integer]]]
+            ];
+            AppendTo[
+                dataForGeneralization,
+                date -> Length[Cases[tasksComplete, KeyValuePattern["GeneralizedSuccess" -> True]]] + Length[Flatten[DeleteCases[tasksComplete[[All, "NewEvaluationSuccesses"]], _Missing | _Integer]]]
+            ];
+        ] /@ DateRange[min, max];
+        
+        DateListPlot[
+            {List @@@ dataForTotals, List @@@ dataForGeneralization},
+            PlotLabel -> "Tasks Passing",
+            PlotLabels -> {"Tasks passing", "Tasks passing via generalization"},
+            ImageSize -> 700
+        ]
+    ]
+
+(*!
+    \function ARCComparisonWithKaggleCompetitors
+    
+    \calltable
+        ARCComparisonWithKaggleCompetitors[] '' Produces a graph to show current pass rates relative to Kaggle 2020 competitors.
+    
+    \maintainer danielb
+*)
+Clear[ARCComparisonWithKaggleCompetitors];
+ARCComparisonWithKaggleCompetitors[evaluationPercentage_] :=
+    Module[{kaggleRankings},
+        
+        kaggleRankings = {
+            "1. icecuber" -> 0.794,
+            "2. Alejandro & Roderic & Yuji" -> 0.813,
+            "3. Vlad & Ilia" -> 0.813,
+            "4. After all, probing is...?" -> 0.813,
+            "5. alijs" -> 0.823,
+            "6. Zoltan" -> 0.823,
+            "7. Alvor" -> 0.833,
+            Style["Me", Red] -> (1 - (evaluationPercentage / 100)),
+            "8. -" -> 0.862,
+            "9. Deep magicians" -> 0.862,
+            "10. Puzzlemaster" -> 0.862,
+            "11. hhiraguchi" -> 0.892,
+            "12. Bac Nguyen" -> 0.892,
+            "13. [ods.ai] Aganov" -> 0.901,
+            "14. Anton Chikin" -> 0.911,
+            "15. pigzz" -> 0.921
+        };
+        
+        kaggleRankings = Function[{item},
+            ReplacePart[item, 2 -> 1 - item[[2]]]
+        ] /@ kaggleRankings;
+        
+        ListPlot[
+            Association @@ Reverse[kaggleRankings],
+            PlotRange -> {0, 0.21},
+            ImageSize -> 600,
+            PlotLabel -> Row[{"Comparison with Kaggle 2020 Competitors\n", Style["(Using evaluation pass rate as proxy)", FontSize -> 10]}]
+        ]
+    ]
 
 End[]
 
