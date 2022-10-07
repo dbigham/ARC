@@ -13584,6 +13584,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 25527,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "8eb1be9a",
+            "Timestamp" -> DateObject[{2022, 10, 7}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 25682,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -13898,7 +13906,10 @@ ARCImplementedTasksMarkdown[] :=
             implementedPersonallyCreatedTrainingTasks,
             arcTrainingTasksPassingDueToGeneralization,
             arcEvaluationTasksPassingDueToGeneralization,
-            value
+            value,
+            trainingTasksImplementedCount,
+            trainingPercentage,
+            evaluationPercentage
         },
         
         taskLog = ARCTaskLog[];
@@ -13935,10 +13946,10 @@ ARCImplementedTasksMarkdown[] :=
         Echo[
             Rule[
                 Row[{
-                    value = Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization],
+                    trainingTasksImplementedCount = Length[implementedARCTrainingTasks] + Length[arcTrainingTasksPassingDueToGeneralization],
                     " (",
                     Quantity[
-                        N[value / 400 * 100],
+                        trainingPercentage = ToIntegerIfNoDecimal[Round[trainingTasksImplementedCount / 400 * 100, 0.1]],
                         "Percent"
                     ],
                     ")"
@@ -13953,7 +13964,7 @@ ARCImplementedTasksMarkdown[] :=
                 value = Length[arcEvaluationTasksPassingDueToGeneralization],
                 " (",
                 Quantity[
-                    N[value / 400 * 100],
+                    evaluationPercentage = ToIntegerIfNoDecimal[Round[value / 400 * 100, 0.1]],
                     "Percent"
                 ],
                 ")"
@@ -13963,6 +13974,13 @@ ARCImplementedTasksMarkdown[] :=
         StringRiffle[
             Flatten@
             {
+                "## Percentage of Tasks Passing",
+                "",
+                "* Training tasks: " <> ToString[trainingTasksImplementedCount] <> " / 400 (" <> ToString[trainingPercentage] <> "%)",
+                "  * Implemented: " <> ToString[Length[implementedARCTrainingTasks]],
+                "  * Passing via generalization: " <> ToString[Length[arcTrainingTasksPassingDueToGeneralization]],
+                "* Evaluation tasks: " <> ToString[Length[arcEvaluationTasksPassingDueToGeneralization]] <> " / 400 (" <> ToString[evaluationPercentage] <> "%)",
+                "",
                 "## Tasks Implemented",
                 "",
                 "### Core ARC Training Tasks (" <> ToString[Length[implementedARCTrainingTasks]] <> ")",
@@ -19268,7 +19286,7 @@ Clear[ARCUpdateReadme];
 ARCUpdateReadme[] :=
     Module[{},
         StringReplaceInFiles[
-            "## Tasks Implemented" ~~ ___ -> ReturnIfFailure[ARCImplementedTasksMarkdown[]],
+            "## Percentage of Tasks Passing" ~~ ___ -> ReturnIfFailure[ARCImplementedTasksMarkdown[]],
             {FileNameJoin[{FileNameDrop[FindFile["ARC`"], -1], "README.md"}]}
         ];
     ]
@@ -25195,16 +25213,22 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
             examples,
             Function[{example},
                 And[
+                    (* Disabled these conditions since they aren't compatible with examples like
+                       8eb1be9a. *)
                     (* The input image is not large. (width <= 8 and height <= 8) *)
-                    ImageWidth[example["Input"]] <= 8,
-                    ImageHeight[example["Input"]] <= 8,
+                    (*ImageWidth[example["Input"]] <= 8,
+                    ImageHeight[example["Input"]] <= 8,*)
                     (* It should be the case that either/both the output width is at least
                        1.5x the input width or the output height is at least 1.5x the
                        input width, since the input is just a pattern that is being applied
                        a number of times. *)
-                    Or[
+                    (*Or[
                         ImageWidth[example["Output"]] >= ImageWidth[example["Input"]] * 1.5,
                         ImageHeight[example["Output"]] >= ImageHeight[example["Input"]] * 1.5
+                    ],*)
+                    Or[
+                        ImageWidth[example["Output"]] >= ImageWidth[example["Input"]],
+                        ImageHeight[example["Output"]] >= ImageHeight[example["Input"]]
                     ],
                     (* The colors used in the input and output are the same. *)
                     index++;
@@ -25319,7 +25343,16 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
     ]
 
 ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
-    Module[{patternImage = patternImageIn, subImagePositions, firstDerivative, firstDerivatives, trajectory, rule},
+    Module[
+        {
+            patternImage = patternImageIn,
+            subImagePositions,
+            firstDerivative,
+            firstDerivatives,
+            trajectory,
+            rule,
+            originalRule
+        },
         
         (* Crop the pattern if there are outer portions that are purely the background
            color. *)
@@ -25402,6 +25435,8 @@ ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
         
         firstDerivatives = DeleteDuplicates[firstDerivative];
         
+        (*Echo[firstDerivatives];*)
+        
         (* Have we found a constant first derivative along the sequence of positions? *)
         If [Length[firstDerivatives] === 1,
             trajectory = First[firstDerivatives]
@@ -25410,7 +25445,7 @@ ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
         ];
         
         (* A candidate rule to consider. *)
-        rule = <|
+        rule = originalRule = <|
             "Type" -> "PatternFill",
             "Pattern" -> ARCScene[patternImage],
             "StartY" -> First[subImagePositions][[1]],
@@ -25429,7 +25464,7 @@ ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
         
         output = ReturnIfFailure[ARCApplyPatternFill[output, rule]];
         
-        (*ARCEcho2[ARCScene[output]];**)
+        (*ARCEcho2[ARCScene[output]];*)
         
         If [output === image,
             rule
@@ -25440,6 +25475,21 @@ ARCCheckForRepeatingPattern[ARCScene[patternImageIn_], ARCScene[image_]] :=
             trajectory = trajectory * -1;
             rule["TrajectoryY"] = trajectory[[1]];
             rule["TrajectoryX"] = trajectory[[2]];
+            (*ARCEcho2[rule];*)
+            output = ConstantArray[
+                $nonImageColor,
+                {ImageHeight[image], ImageWidth[image]}
+            ];
+            output = ReturnIfFailure[ARCApplyPatternFill[output, rule]];
+            (*ARCEcho2[ARCScene[output]];*)
+        ];
+        
+        If [output === image,
+            rule
+            ,
+            (* If the rule didn't work, check if we need to apply it in both directions. *)
+            rule = originalRule;
+            rule["Bidirectional"] = True;
             (*ARCEcho2[rule];*)
             output = ConstantArray[
                 $nonImageColor,
@@ -25477,7 +25527,8 @@ ARCApplyPatternFill[imageIn_List, patternFill_Association] :=
         {
             image = imageIn,
             trajectory = {patternFill["TrajectoryY"], patternFill["TrajectoryX"]},
-            position = {patternFill["StartY"], patternFill["StartX"]},
+            startPosition = {patternFill["StartY"], patternFill["StartX"]},
+            position,
             scene,
             patternObject
         },
@@ -25510,21 +25561,30 @@ ARCApplyPatternFill[imageIn_List, patternFill_Association] :=
             "Height" -> ImageHeight[patternFill["Pattern"]]
         |>;
         
-        While[
-            ARCOverlapQ[
-                patternObject = Sett[
-                    patternObject,
-                    {
-                        "Position" -> position,
-                        "Y" -> position[[1]],
-                        "X" -> position[[2]]
-                    }
+        Function[{directionModifier},
+            trajectory *= directionModifier;
+            position = startPosition;
+            While[
+                ARCOverlapQ[
+                    patternObject = Sett[
+                        patternObject,
+                        {
+                            "Position" -> position,
+                            "Y" -> position[[1]],
+                            "X" -> position[[2]]
+                        }
+                    ],
+                    scene
                 ],
-                scene
-            ],
-            image = ARCDrawSubImage[image, patternObject];
-            position += trajectory
-        ];
+                image = ARCDrawSubImage[image, patternObject];
+                position += trajectory
+            ]
+        ] /@
+            If [TrueQ[patternFill["Bidirectional"]],
+                {1, -1}
+                ,
+                {1}
+            ];
         
         image
     ]
