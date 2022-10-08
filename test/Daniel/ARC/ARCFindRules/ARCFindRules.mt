@@ -3537,3 +3537,46 @@ Test[
     ,
     TestID -> "ARCFindRules-20221007-2JC2L9"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "eb281b96"]["Train"]]
+    ]
+    ,
+    <|
+        "Width" -> Daniel`ARC`ObjectValue["InputScene", "Width"],
+        "Height" -> Inactive[Plus][
+            Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "Height"], 4],
+            -3
+        ],
+        "Rules" -> <|
+            "Type" -> "PatternFill",
+            "List" -> {
+                <|
+                    "StartY" -> 1,
+                    "StartX" -> 1,
+                    "TrajectoryY" -> Inactive[Plus][
+                        Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "Height"], 2],
+                        -2
+                    ],
+                    "TrajectoryX" -> 0
+                |>,
+                <|
+                    "StartY" -> Inactive[Plus][
+                        Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "Height"], 3],
+                        -2
+                    ],
+                    "StartX" -> 1,
+                    "TrajectoryY" -> Inactive[Plus][
+                        Inactive[Times][Daniel`ARC`ObjectValue["InputScene", "Height"], -2],
+                        2
+                    ],
+                    "TrajectoryX" -> 0,
+                    "Transform" -> <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                |>
+            }
+        |>
+    |>
+    ,
+    TestID -> "ARCFindRules-20221008-TI6M0X"
+]
