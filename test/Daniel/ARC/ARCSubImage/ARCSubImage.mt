@@ -44,3 +44,11 @@ Test[
     ,
     TestID -> "ARCSubImage-20220929-ZXMTY0"
 ]
+
+Test[
+    Daniel`ARC`ARCSubImage[{{1, 2}, {4, 5}}, 1, 2, 2, 3]
+    ,
+    {{2, -2}, {5, -2}}
+    ,
+    TestID -> "ARCSubImage-20221008-XNOKT1"
+]
