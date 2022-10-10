@@ -7181,7 +7181,7 @@ Options[ARCRenderScene] =
     "OutputWidthSpecified" -> False,    (*< Does the rule set specify what the width of the output scene should be? *)
     "OutputHeightSpecified" -> False    (*< Does the rule set specify what the width of the output scene should be? *)
 };
-ARCRenderScene[scene_Association, OptionsPattern[]] :=
+ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
     Module[{sceneWidth, sceneHeight, output, objects, image, posX, posY},
         
         objects =
@@ -14432,6 +14432,9 @@ ARCInferObjectImage[
     ] :=
     Module[{borderColor = Missing[], interiorColor = Missing[]},
         
+        ReturnFailureIfMissing[width];
+        ReturnFailureIfMissing[height];
+        
         If [IntegerQ[shape["Border", "Color"]],
             borderColor = shape["Border", "Color"]
         ];
@@ -14519,11 +14522,13 @@ ARCInferObjectImage[
         Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
         Which[
             width == 1,
+                ReturnFailureIfMissing[height];
                 Table[
                     {color},
                     {height}
                 ],
             height == 1,
+                ReturnFailureIfMissing[width];
                 {
                     Table[
                         color,
@@ -14531,6 +14536,8 @@ ARCInferObjectImage[
                     ]
                 },
             shape["Angle"] === 45,
+                ReturnFailureIfMissing[width];
+                ReturnFailureIfMissing[height];
                 Function[{y},
                     Flatten[
                         {
@@ -14542,6 +14549,8 @@ ARCInferObjectImage[
                     ]
                 ] /@ Range[height],
             shape["Angle"] === 135,
+                ReturnFailureIfMissing[width];
+                ReturnFailureIfMissing[height];
                 Function[{y},
                     Flatten[
                         {
@@ -14587,6 +14596,8 @@ ARCInferObjectImage[
             width = heightIn;
             height = widthIn;
         ];
+        ReturnFailureIfMissing[width];
+        ReturnFailureIfMissing[height];
         ARCScene@
         Function[ARCApplyImageTransforms[#, shape["Transform"]]]@
         {
@@ -14626,6 +14637,8 @@ ARCInferObjectImage[
             width = heightIn;
             height = widthIn;
         ];
+        ReturnFailureIfMissing[width];
+        ReturnFailureIfMissing[height];
         ARCScene@
         ReturnIfFailure@
         Function[ARCApplyImageTransforms[#, shape["Transform"]]][
@@ -24679,7 +24692,10 @@ ARCCheckForImputation[imageIn_List, patch_Association] :=
         (*EchoIndented[colorsInDisagreement];*)
         
         corruptionColor = Replace[
-            Intersection @@ DeleteCases[colorsInDisagreement, {}],
+            Intersection @@ Replace[
+                DeleteCases[colorsInDisagreement, {}],
+                {} :> Return[False, Module]
+            ],
             {
                 {c_} :> c,
                 (* A universal corruption color wasn't found. This currently assumes a
