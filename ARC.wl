@@ -4035,7 +4035,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                        when I ran them locally, so adding them here experimentally. *)
                     "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" |
                     (* Added Oct 8 2022 *)
-                    "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d"
+                    "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d" |
+                    (* Added Oct 10 2022 *)
+                    "363442ee" | "9dfd6313"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -4301,6 +4303,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                                 (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0.5
                             ]
                         ],
+                        (*ARCEcho2[ARCRulesForOutput[res]];*)
                         foundRulesQ = True;
                         res = res2
                     ]
@@ -5330,7 +5333,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"Width"}
+                        {"Shape"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -13628,8 +13631,8 @@ ARCTaskLog[] :=
             "NewEvaluationSuccesses" -> {}
         |>,*)
         (* Crazy rules. *)
-        (* Stopped working Oct 2 2022. *)
-        (*<|
+        (* Stopped working Oct 2 2022, but then started working again Oct 10. *)
+        <|
             "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "d10ecb37",
             "Timestamp" -> DateObject[{2022, 9, 30}],
@@ -13637,7 +13640,7 @@ ARCTaskLog[] :=
             "CodeLength" -> 23993,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>,*)
+        |>,
         <|
             "ExampleImplemented" -> "bda2d7a6",
             "Timestamp" -> DateObject[{2022, 10, 1}],
@@ -13751,6 +13754,16 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 8}],
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             "CodeLength" -> 26628,
+            "NewGeneralizedSuccesses" -> {},
+            (* Not sure when this started passing, but it does make use of linear equations.. *)
+            "NewEvaluationSuccesses" -> {"770cc55f"}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "b8cdaf2b",
+            "Timestamp" -> DateObject[{2022, 10, 10}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 26805,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -24663,7 +24676,7 @@ ARCCheckForImputation[imageIn_List, patch_Association] :=
                    in all examples, this position was corrupted, so we didn't have any
                    patches that showed us how to infer it. *)
                 other_ :> (
-                    EchoIndented["UniversalCorruptionColorNotFound2" -> other];
+                    EchoIndented["UniversalCorruptionColorNotFound2" -> other -> $file];
                     Return[False, Module]
                 )
             }

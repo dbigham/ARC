@@ -386,9 +386,13 @@ Test[
 ]
 
 Test[
-    With[
-        {examples = Daniel`ARC`ARCParseFile["8eb1be9a"]["Train"]},
-        Daniel`ARC`ARCCheckForRepeatingPattern[examples]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        DevTools`TestingTools`SlowTest[
+            With[
+                {examples = Daniel`ARC`ARCParseFile["8eb1be9a"]["Train"]},
+                Daniel`ARC`ARCCheckForRepeatingPattern[examples]
+            ]
+        ]
     ]
     ,
     <|
@@ -397,7 +401,6 @@ Test[
         "StartX" -> 1,
         "TrajectoryY" -> 3,
         "TrajectoryX" -> 0,
-        "Wrapped" -> False,
         "Bidirectional" -> True
     |>
     ,
