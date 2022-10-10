@@ -4332,17 +4332,30 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
                 TrueQ[OptionValue["AllowSubdividing"]]
             ],
-            If [!TrueQ[workingRulesFound[]],
+            (* Previously we weren't trying this parsing mode unless we were unable to find
+               working rules above, but inputs like 272f95fa are producing a bad rule set
+               above as of Oct 10 2022, so we want to consider whether the following can
+               find a better rule set. And if an input and output are both grids of the
+               same size, then it makes sense that we'd actually want to favor this
+               style of rule set. *)
+            (*If [!TrueQ[workingRulesFound[]],*)
                 res2 =
                     ARCLogScope["ARCFindRulesForGridSubdivision"]@
                     ARCFindRulesForGridSubdivision[parsedExamples];
-                (*ARCEcho2[res2];*)
+                (*ARCEcho[ARCSimplifyRules[res2]];*)
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
-                If [foundRulesQ2,
+                If [And[
+                        foundRulesQ2,
+                        TrueQ[ARCWorkingQ[examples, res2]],
+                        Or[
+                            !TrueQ[workingRulesFound[]],
+                            ARCRuleSetScore[res2["Rules"]] > ARCRuleSetScore[res["Rules"]]
+                        ]
+                    ],
                     foundRulesQ = True;
                     res = res2
                 ]
-            ]
+            (*)*)
         ];
         
         (* If inputs have a grid structure, and the output width and height (in pixels) always
@@ -4622,7 +4635,14 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         opts
                     ];
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
-                If [foundRulesQ2,
+                If [And[
+                        foundRulesQ2,
+                        TrueQ[ARCWorkingQ[examples, res2]],
+                        Or[
+                            !TrueQ[workingRulesFound[]],
+                            ARCRuleSetScore[res2["Rules"]] > ARCRuleSetScore[res["Rules"]]
+                        ]
+                    ],
                     foundRulesQ = True;
                     res = res2
                 ]
@@ -17396,6 +17416,15 @@ ARCRuleSetScore[ruleSet_List] :=
                                 0
                             ]
                         ],
+                    MatchQ[
+                        rule,
+                        KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "AddObjects"]]
+                    ],
+                        SqrtButKeepSign[
+                            Total[
+                                SquareButKeepSign[ARCTransformScore[#]] & /@ rule["Transform", "Objects"]
+                            ]
+                        ],
                     True,
                         -(ARCExpressionComplexity[rule] ^ 2)
                 ]
@@ -25460,9 +25489,7 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
                     (* There needs to be more than one color if including the background as a
                        color. i.e. We don't want a solid rectangle. *)
                     Length[inputColorCounts] >= 2,
-                    (* We need at least one non-background color. *)
                     inputColorCounts = KeyDrop[inputColorCounts, background];
-                    Length[inputColorCounts] >= 1,
                     outputColorCounts = KeyDrop[
                         KeySort[Counts[Flatten[example["Output"][[1]]]]],
                         background
