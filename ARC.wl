@@ -4323,8 +4323,6 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
-        (* HERE10 *)
-        
         (* If both inputs and outputs have a shared grid structure, we can try subdividing
            the input/output scenes into their individual grid cells. *)
         If [And[
@@ -10050,7 +10048,15 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                 res,
                 (* Curiously Activate[...] doesn't seem to work. *)
                 {
-                    Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]],
+                    Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]]
+                },
+                {0, Infinity},
+                Heads -> True
+            ];
+            res = Replace[
+                res,
+                (* Curiously Activate[...] doesn't seem to work. *)
+                {
                     Inactive[h_] :> h
                 },
                 {0, Infinity},
@@ -25700,10 +25706,17 @@ ARCCheckForRepeatingPattern[ARCScene[patternImage_], ARCScene[image_]] :=
                             transformedImage,
                             ARCScene[image]
                         ],
-                        res_Association :> Append[
-                            res,
-                            "Transforms" -> transforms
-                        ]
+                        {
+                            (* This transform is actually a complete pattern fill, so we can
+                               return that. *)
+                            res: KeyValuePattern["Type" -> "PatternFill"] :>
+                                Return[res, Module],
+                            (* Partial result. *)
+                            res_Association :> Append[
+                                res,
+                                "Transforms" -> transforms
+                            ]
+                        }
                     ]
                 ],
                 possibleTransforms
