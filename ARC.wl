@@ -10055,7 +10055,15 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                 res,
                 (* Curiously Activate[...] doesn't seem to work. *)
                 {
-                    e: Inactive[h_][args___] :> ARCHandleComputedInteger[h[args], e]
+                    e: Inactive[h_][args___] :>
+                        With[{value = h[args]},
+                            If [MatchQ[value, _Integer | _Real | _Rational],
+                                ReturnIfFailure@
+                                ARCHandleComputedInteger[value, e]
+                                ,
+                                value
+                            ]
+                        ]
                 },
                 {0, Infinity},
                 Heads -> True
@@ -14191,10 +14199,13 @@ ARCImplementedTasksMarkdown[] :=
                 "",
                 "![Graph of Progress](Progress.png?raw=true)",
                 "",
-                "## Comparison with Kaggle Competitors",
+                (* After reading some Kaggle forum posts, I am hearing that people's scores on the
+                   test set are sometimes dramatically lower than their scores on the evaluation
+                   set, so this doesn't seem like a meaningful comparison. *)
+                (*"## Comparison with Kaggle Competitors",
                 "",
                 "![Comparison with Kaggle Competitors](ComparisonWithKaggleCompetitors.png?raw=true)",
-                "",
+                "",*)
                 "## Tasks Implemented",
                 "",
                 "### Core ARC Training Tasks (" <> ToString[Length[implementedARCTrainingTasks]] <> ")",
@@ -26901,13 +26912,15 @@ ARCConstantScore[value_] :=
 *)
 Clear[ARCHandleComputedInteger];
 ARCHandleComputedInteger[value_, inactiveExpression_] :=
-    Replace[
-        ToIntegerIfNoDecimal[Round[value, 0.001]],
-        thisValue_Real :> ReturnFailure[
-            "NumericFailure",
-            "An expression produced a Real number, which is not currently supported.",
-            "Expression" -> inactiveExpression,
-            "EvaluationResult" -> thisValue
+    Module[{},
+        Replace[
+            ToIntegerIfNoDecimal[Round[value, 0.001]],
+            thisValue_Real :> ReturnFailure[
+                "NumericFailure",
+                "An expression produced a Real number, which is not currently supported.",
+                "Expression" -> inactiveExpression,
+                "EvaluationResult" -> thisValue
+            ]
         ]
     ]
 

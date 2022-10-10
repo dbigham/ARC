@@ -19,10 +19,6 @@ https://github.com/fchollet/ARC
 
 ![Graph of Progress](Progress.png?raw=true)
 
-## Comparison with Kaggle Competitors
-
-![Comparison with Kaggle Competitors](ComparisonWithKaggleCompetitors.png?raw=true)
-
 ## Tasks Implemented
 
 ### Core ARC Training Tasks (76)
