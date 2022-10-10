@@ -583,6 +583,8 @@ ARCSubImageMatchQ::usage = "ARCSubImageMatchQ  "
 
 ARCConstantScore::usage = "ARCConstantScore  "
 
+ARCHandleComputedInteger::usage = "ARCHandleComputedInteger  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -10053,7 +10055,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                 res,
                 (* Curiously Activate[...] doesn't seem to work. *)
                 {
-                    Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]]
+                    e: Inactive[h_][args___] :> ARCHandleComputedInteger[h[args], e]
                 },
                 {0, Infinity},
                 Heads -> True
@@ -26862,6 +26864,34 @@ ARCConstantScore[value_] :=
                     other :> value
                 }
             ]
+        ]
+    ]
+
+(*!
+    \function ARCHandleComputedInteger
+    
+    \calltable
+        ARCHandleComputedInteger[value, inactiveExpression] '' Given an integer value that was computed, do potential rounding to get rid of unwanted Real form, etc.
+    
+    Examples:
+    
+    ARCHandleComputedInteger[0.99999, Inactive[Plus][0, 1]] === 1
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCHandleComputedInteger]
+    
+    \maintainer danielb
+*)
+Clear[ARCHandleComputedInteger];
+ARCHandleComputedInteger[value_, inactiveExpression_] :=
+    Replace[
+        ToIntegerIfNoDecimal[Round[value, 0.001]],
+        thisValue_Real :> ReturnFailure[
+            "NumericFailure",
+            "An expression produced a Real number, which is not currently supported.",
+            "Expression" -> inactiveExpression,
+            "EvaluationResult" -> thisValue
         ]
     ]
 
