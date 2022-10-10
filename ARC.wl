@@ -4355,7 +4355,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     foundRulesQ = True;
                     res = res2
                 ]
-            (*)*)
+            (*]*)
         ];
         
         (* If inputs have a grid structure, and the output width and height (in pixels) always
@@ -4634,6 +4634,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         "CheckForImputation" -> False,
                         opts
                     ];
+                (*ARCEcho[ARCSimplifyRules[res2]];*)
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List | _Association]];
                 If [And[
                         foundRulesQ2,
@@ -10048,7 +10049,11 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
             res = Replace[
                 res,
                 (* Curiously Activate[...] doesn't seem to work. *)
-                Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]], {0, Infinity},
+                {
+                    Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]],
+                    Inactive[h_] :> h
+                },
+                {0, Infinity},
                 Heads -> True
             ]
         ];
