@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     70482,       1446]
-NotebookOptionsPosition[     63258,       1277]
-NotebookOutlinePosition[     68747,       1412]
-CellTagsIndexPosition[     68704,       1409]
+NotebookDataLength[     70553,       1451]
+NotebookOptionsPosition[     63287,       1280]
+NotebookOutlinePosition[     68818,       1417]
+CellTagsIndexPosition[     68775,       1414]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCFindLinearModel", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[115]:=",ExpressionUUID->"69890fdf-b7a4-4c1a-802c-c1f902c17584"],
+  "In[1293]:=",ExpressionUUID->"69890fdf-b7a4-4c1a-802c-c1f902c17584"],
 
 Cell[CellGroupData[{
 
@@ -102,6 +102,7 @@ DynamicOutputSectionVariable202210811197737, "ImageSize" -> {Full, {0,
                OptionValue[
                DevTools`NotebookTools`DynamicOutputSection, {}, 
                 "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          
           If[
            TrueQ[
             OptionValue[
@@ -112,7 +113,7 @@ DynamicOutputSectionVariable202210811197737, "ImageSize" -> {Full, {0,
 DynamicOutputSectionVariable202210811197737 = "", ImageSize -> {100, 33}]}]}, 
          Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
+  ImageSizeCache->{840., {21.3544921875, 26.6455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`DynamicOutputSectionVariable202210811197737}\
 ]], "TestUI",
@@ -244,6 +245,7 @@ DynamicOutputSectionVariable202210811204764, "ImageSize" -> {Full, {0,
                OptionValue[
                DevTools`NotebookTools`DynamicOutputSection, {}, 
                 "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          
           If[
            TrueQ[
             OptionValue[
@@ -254,7 +256,7 @@ DynamicOutputSectionVariable202210811204764, "ImageSize" -> {Full, {0,
 DynamicOutputSectionVariable202210811204764 = "", ImageSize -> {100, 33}]}]}, 
          Spacings -> {0, 1}, Alignment -> {Left, Top}]], 
        Apply[Sequence, {}]]}], StandardForm],
-  ImageSizeCache->{833., {21.8544921875, 27.1455078125}},
+  ImageSizeCache->{833., {21.3544921875, 26.6455078125}},
   TrackedSymbols:>{
    DevTools`NotebookTools`Private`DynamicOutputSectionVariable202210811204764}\
 ]], "TestUI",
@@ -462,7 +464,8 @@ Cell[BoxData[
     TypeSystem`NestedGrid`PackagePrivate`$vPos$$ = 1, 
     TypeSystem`NestedGrid`PackagePrivate`$hPos$$ = 1, 
     TypeSystem`NestedGrid`PackagePrivate`$grid$$ = 
-    DynamicModule[{TypeSystem`NestedGrid`PackagePrivate`renderedGrid = Deploy[
+    DynamicModule[{
+     TypeSystem`NestedGrid`PackagePrivate`renderedGrid = Deploy[
         Style[
          Grid[{{
             Item[
@@ -777,7 +780,8 @@ Cell[BoxData[
                     GrayLevel[0.5, 0.4]], ImageSize -> Large, 
                   Method -> {
                    "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> 
-                    True, "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+                    True, "CoordinatesToolOptions" -> {
+                    "DisplayFunction" -> ({
                     Identity[
                     Part[#, 1]], 
                     Identity[
@@ -1106,8 +1110,7 @@ lastPathIsLeafHeader, TypeSystem`NestedGrid`PackagePrivate`headerHidden$ = And[
                     TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
                     TypeSystem`NestedGrid`PackagePrivate`lastPath$, 
                     "Descending"]], MenuEvaluator -> Automatic], Nothing], 
-                    If[
-                    TypeSystem`NestedGrid`PackagePrivate`sortDirection$ =!= 
+                    If[TypeSystem`NestedGrid`PackagePrivate`sortDirection$ =!= 
                     None, 
                     MenuItem["Unsort", 
                     KernelExecute[
@@ -1278,6 +1281,7 @@ lastPathIsLeafHeader, TypeSystem`NestedGrid`PackagePrivate`headerHidden$ = And[
 Evaluator->"Local",
 WindowSize->{958, 980},
 WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+Visible->True,
 DockedCells->{
   Cell[
    BoxData[
@@ -1396,6 +1400,7 @@ TaggingRules->{
    "ARCFindLinearModel", "Type" -> "Function", 
     "GenerateNotebookArgs" -> {"Function" -> Daniel`ARC`ARCFindLinearModel}, 
     "ReturnNotebook" -> True}},
+InputAutoReplacements->{},
 FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"f09a792d-d512-4b90-91e9-27a5acd4b3b8"
@@ -1413,39 +1418,39 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 90, 0, 98, "Title",ExpressionUUID->"7b20e286-9446-4583-a46e-0620026116ff"],
-Cell[673, 24, 253, 6, 54, "Code",ExpressionUUID->"69890fdf-b7a4-4c1a-802c-c1f902c17584",
+Cell[673, 24, 254, 6, 54, "Code",ExpressionUUID->"69890fdf-b7a4-4c1a-802c-c1f902c17584",
  InitializationCell->False],
 Cell[CellGroupData[{
-Cell[951, 34, 79, 0, 67, "Section",ExpressionUUID->"d132c1af-4853-4575-87a9-e6ed89d3e7c0"],
+Cell[952, 34, 79, 0, 67, "Section",ExpressionUUID->"d132c1af-4853-4575-87a9-e6ed89d3e7c0"],
 Cell[CellGroupData[{
-Cell[1055, 38, 3661, 84, 52, "TestUI",ExpressionUUID->"17cd4ec8-745c-4ac1-be28-35b203676bce",
+Cell[1056, 38, 3672, 85, 50, "TestUI",ExpressionUUID->"17cd4ec8-745c-4ac1-be28-35b203676bce",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4719, 124, 1199, 30, 180, "Code",ExpressionUUID->"e661af9c-0c6d-44af-a0c7-4a9fe040c612",
+Cell[4731, 125, 1199, 30, 180, "Code",ExpressionUUID->"e661af9c-0c6d-44af-a0c7-4a9fe040c612",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->59486516]
 }, Open  ]],
-Cell[5933, 157, 607, 12, 33, "Output",ExpressionUUID->"ea8a52e9-01fc-4dec-9ce0-a46b6fe0af23"],
+Cell[5945, 158, 607, 12, 33, "Output",ExpressionUUID->"ea8a52e9-01fc-4dec-9ce0-a46b6fe0af23"],
 Cell[CellGroupData[{
-Cell[6565, 173, 166, 3, 54, "Subsection",ExpressionUUID->"379db9a0-7666-4c3b-a97b-16f243f74414"],
+Cell[6577, 174, 166, 3, 54, "Subsection",ExpressionUUID->"379db9a0-7666-4c3b-a97b-16f243f74414"],
 Cell[CellGroupData[{
-Cell[6756, 180, 3666, 85, 52, "TestUI",ExpressionUUID->"37669545-1b66-4f93-96d3-965831e9d333",
+Cell[6768, 181, 3677, 86, 50, "TestUI",ExpressionUUID->"37669545-1b66-4f93-96d3-965831e9d333",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[10425, 267, 1224, 30, 180, "Code",ExpressionUUID->"2cc037ae-53cd-4721-a6d5-8155024d7cd5",
+Cell[10448, 269, 1224, 30, 180, "Code",ExpressionUUID->"2cc037ae-53cd-4721-a6d5-8155024d7cd5",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->80638907]
 }, Open  ]],
-Cell[11664, 300, 180, 3, 33, "Output",ExpressionUUID->"8fff7bee-94e4-442b-9ac7-62325c1511ae"]
+Cell[11687, 302, 180, 3, 33, "Output",ExpressionUUID->"8fff7bee-94e4-442b-9ac7-62325c1511ae"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[11893, 309, 155, 3, 67, "Section",ExpressionUUID->"246e07ee-5e94-4e68-9544-6b98b2bb37e8"],
-Cell[12051, 314, 1321, 31, 216, "Code",ExpressionUUID->"3411a992-20e4-4e23-a65d-3e1f4839808c",
+Cell[11916, 311, 155, 3, 67, "Section",ExpressionUUID->"246e07ee-5e94-4e68-9544-6b98b2bb37e8"],
+Cell[12074, 316, 1321, 31, 216, "Code",ExpressionUUID->"3411a992-20e4-4e23-a65d-3e1f4839808c",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->78513176],
-Cell[13375, 347, 49855, 926, 349, "Output",ExpressionUUID->"0147fdc2-a208-4161-9048-3f6ea14b089a"]
+Cell[13398, 349, 49861, 927, 349, "Output",ExpressionUUID->"0147fdc2-a208-4161-9048-3f6ea14b089a"]
 }, Open  ]]
 }, Open  ]]
 }

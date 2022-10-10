@@ -4323,17 +4323,20 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* HERE10 *)
+        
         (* If both inputs and outputs have a shared grid structure, we can try subdividing
            the input/output scenes into their individual grid cells. *)
         If [And[
                 ListQ[parsedExamples],
                 ARCAllExamplesUseGridInInputAndOutput[parsedExamples],
-                 TrueQ[OptionValue["AllowSubdividing"]]
+                TrueQ[OptionValue["AllowSubdividing"]]
             ],
             If [!TrueQ[workingRulesFound[]],
                 res2 =
                     ARCLogScope["ARCFindRulesForGridSubdivision"]@
                     ARCFindRulesForGridSubdivision[parsedExamples];
+                (*ARCEcho2[res2];*)
                 foundRulesQ2 = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 If [foundRulesQ2,
                     foundRulesQ = True;
@@ -9301,7 +9304,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             property
         },
         
-        $debugProperty = "TurnDegrees";
+        $debugProperty = "Width";
         
         theseExamples =
             If [examples =!= {},
@@ -9534,14 +9537,14 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
         
         matchingProperties = Select[
             transposedObjects,
-            # === values &
+            # == values &
         ];
         
         (*If [And[
-                Last[propertyPath] === "Color",
-                OptionValue["Reference"] === Object[<|"Width.Rank" -> 1|>]
+                Last[propertyPath] === "Width",
+                OptionValue["Reference"] === Object["InputScene"]
             ],
-            ARCEcho2["transposedObjects" -> transposedObjects["Color"]];
+            ARCEcho2["transposedObjects" -> transposedObjects["FilledArea"]];
             ARCEcho2["matchingProperties" -> matchingProperties];
         ];*)
         
@@ -9701,7 +9704,7 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
             And[
                 numberQ,
                 Last[propertyPath] =!= "Color",
-                linearModel = ARCFindLinearModel[values, transposedObjects];
+                linearModel = ARCFindLinearModel[Global`a = values, Global`b = transposedObjects];
                 AssociationQ[linearModel]
             ],
                 Inactive[Plus][
@@ -10025,7 +10028,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
             res = Replace[
                 res,
                 (* Curiously Activate[...] doesn't seem to work. *)
-                Inactive[h_] :> h, {0, Infinity},
+                Inactive[h_][args___] :> ToIntegerIfNoDecimal[h[args]], {0, Infinity},
                 Heads -> True
             ]
         ];
@@ -23674,6 +23677,20 @@ ARCInferObjectPropertiesForRendering[objectIn_Association, scene_Association] :=
             ]
         ];
         
+        If [MissingQ[object["Y"]],
+            Which[
+                !MissingQ[object["YInverse"]],
+                    object["Y"] = scene["Height"] - object["YInverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[object["X"]],
+            Which[
+                !MissingQ[object["XInverse"]],
+                    object["X"] = scene["Width"] - object["XInverse"] + 1
+            ]
+        ];
+        
         If [MissingQ[object["Width"]],
             Which[
                 !MissingQ[object["X"]] && !MissingQ[object["X2"]],
@@ -23746,6 +23763,27 @@ ARCInferObjectPropertiesForRendering[objectIn_Association, scene_Association] :=
                     object["X"] = object["X2"] - object["Width"] + 1
             ]
         ];
+        
+        (* In 272f95fa, I'm noticing that something is causing XInverse to get the value
+           7. instead of 7, and Y to get the value 4.000006, so I'll add some code here to
+           ensure values like that get turned into integers. *)
+        Function[{property},
+            If [MatchQ[object[property], _Real],
+                object[property] =
+                    ToIntegerIfNoDecimal @ Round[object[property], 0.001]
+            ]
+        ] /@ {
+            "Y",
+            "Y2",
+            "YInverse",
+            "Y2Inverse",
+            "Height",
+            "X",
+            "X2",
+            "XInverse",
+            "X2Inverse",
+            "Width"
+        };
         
         object
     ]
@@ -25418,10 +25456,13 @@ ARCCheckForRepeatingPattern[examples_List, OptionsPattern[]] :=
                                 ]
                             )
                         ];
-                    inputColorCounts = KeyDrop[
-                        KeySort[Counts[Flatten[example["Input"][[1]]]]],
-                        background
-                    ];
+                    inputColorCounts = KeySort[Counts[Flatten[example["Input"][[1]]]]];
+                    (* There needs to be more than one color if including the background as a
+                       color. i.e. We don't want a solid rectangle. *)
+                    Length[inputColorCounts] >= 2,
+                    (* We need at least one non-background color. *)
+                    inputColorCounts = KeyDrop[inputColorCounts, background];
+                    Length[inputColorCounts] >= 1,
                     outputColorCounts = KeyDrop[
                         KeySort[Counts[Flatten[example["Output"][[1]]]]],
                         background
@@ -26488,7 +26529,7 @@ ARCFlattenRepeatedPatternSets[repeatedPatternSets_List] :=
 *)
 Clear[ARCFindLinearModel];
 ARCFindLinearModel[values_List, transposedObjectsIn_Association] :=
-    Module[{transposedObjects, model},
+    Module[{transposedObjects, model, x},
         
         (* Select only properties with numeric values. *)
         transposedObjects = Select[
