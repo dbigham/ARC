@@ -11622,14 +11622,22 @@ ARCTransformScore[transformIn_] :=
                     _ObjectValue,
                     _ClassValue,
                     (* Instead of Plus | Times, should we just say _? *)
-                    Inactive[Plus | Times][_ObjectValue, _]
+                    Inactive[Plus | Times][_ObjectValue, _],
+                    Inactive[Plus][Inactive[Times][_ObjectValue, _], _]
                 ]
             ] :> (
-                If [MatchQ[assoc, KeyValuePattern[_ -> Inactive[Times][___]]],
-                    (* As of Oct 5 2022, we've only ever found one parse that makes use
-                       of Times, and already we have one unwanted parse making use of
-                       it (6e02f1e3), so we'll downscore it. *)
-                    score -= 0.5
+                Which[
+                    MatchQ[assoc, KeyValuePattern[_ -> Inactive[Times][___]]],
+                        (* As of Oct 5 2022, we've only ever found one parse that makes use
+                           of Times, and already we have one unwanted parse making use of
+                           it (6e02f1e3), so we'll downscore it. *)
+                        score -= 0.5,
+                    MatchQ[assoc, KeyValuePattern[_ -> Inactive[Plus][Inactive[Times][___]]]],
+                        (* It seems like it would be fairly rare that a linear equation would
+                           be needed, so we'll downscore it. That said, I don't think we have
+                           any examples where it _needs_ to be downscored, so we won't downscore
+                           it very much right now. *)
+                        score -= 0.25
                 ];
                 KeyValueMap[
                     Function[{key, rhs},
