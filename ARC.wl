@@ -4033,7 +4033,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     "6773b310" | "0d3d703e" | "3194b014" |
                     (* These started failing Oct 1 in training test runs, but didn't fail
                        when I ran them locally, so adding them here experimentally. *)
-                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7"
+                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" |
+                    (* Added Oct 8 2022 *)
+                    "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -6124,7 +6126,7 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association] :=
                     ARCScene@
                     ARCApplyPatternFill[
                         ConstantArray[
-                            0,
+                            background,
                             {outputHeight, outputWidth}
                         ],
                         Append[
@@ -24667,6 +24669,23 @@ ARCSubImage[image_List, y1In_Integer, x1In_Integer, y2In_Integer, x2In_Integer] 
                 {y2In - y1In + 1, x2In - x1In + 1}
             ];
             
+            If [!ARCOverlapQ[
+                    <|
+                        "Y" -> y1In,
+                        "X" -> x1In,
+                        "Width" -> x2In - x1In + 1,
+                        "Height" -> y2In - y1In + 1
+                    |>,
+                    <|
+                        "Y" -> 1,
+                        "X" -> 1,
+                        "Width" -> ImageWidth[image],
+                        "Height" -> ImageHeight[image]
+                    |>
+                ],
+                Return[res, Module]
+            ];
+            
             y1 = Min[Max[y1In, 1], height];
             x1 = Min[Max[x1In, 1], width];
             y2 = Min[Max[y2In, 1], height];
@@ -26211,13 +26230,21 @@ ARCComparisonWithKaggleCompetitors[evaluationPercentage_] :=
     Module[{kaggleRankings},
         
         kaggleRankings = {
+            (* 20.6% *)
             "1. icecuber" -> 0.794,
+            (* 18.7% *)
             "2. Alejandro & Roderic & Yuji" -> 0.813,
+            (* 18.7% *)
             "3. Vlad & Ilia" -> 0.813,
+            (* 18.7% *)
             "4. After all, probing is...?" -> 0.813,
+            (* 17.7% *)
             "5. alijs" -> 0.823,
+            (* 17.7% *)
             "6. Zoltan" -> 0.823,
+            (* 16.7% *)
             "7. Alvor" -> 0.833,
+            (* 14.2% *)
             Style["Me", Red] -> (1 - (evaluationPercentage / 100)),
             "8. -" -> 0.862,
             "9. Deep magicians" -> 0.862,
