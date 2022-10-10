@@ -581,6 +581,8 @@ ARCCheckForWrappedRepeatedPattern::usage = "ARCCheckForWrappedRepeatedPattern  "
 
 ARCSubImageMatchQ::usage = "ARCSubImageMatchQ  "
 
+ARCConstantScore::usage = "ARCConstantScore  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -4223,7 +4225,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         ];
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
-        (*ARCEcho[ARCSimplifyRules[res["Rules"]]];*)
+        (*ARCEcho[ARCSimplifyRules[res["Rules"]]];
+        Throw["HERE"];*)
         
         If [And[
                 MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | False],
@@ -4291,7 +4294,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     arcFindRulesHelper[examples, "SingleObject" -> True, opts];
                 foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
                 
-                (*ARCEcho2[ARCRulesForOutput[res2]];*)
+                (*ARCEcho2[ARCSimplifyRules[res2]];*)
                 
                 If [foundRules2Q,
                     If [And[
@@ -4303,7 +4306,6 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                                 (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0.5
                             ]
                         ],
-                        (*ARCEcho2[ARCRulesForOutput[res]];*)
                         foundRulesQ = True;
                         res = res2
                     ]
@@ -5333,7 +5335,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {"Shape"}
+                        {"Shape", "FilledArea"}
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -11635,21 +11637,29 @@ ARCTransformScore[transformIn_] :=
                     Inactive[Plus][Inactive[Times][_ObjectValue, _], _]
                 ]
             ] :> (
-                Which[
-                    MatchQ[assoc, KeyValuePattern[_ -> Inactive[Times][___]]],
-                        (* As of Oct 5 2022, we've only ever found one parse that makes use
-                           of Times, and already we have one unwanted parse making use of
-                           it (6e02f1e3), so we'll downscore it. *)
-                        score -= 0.5,
-                    MatchQ[assoc, KeyValuePattern[_ -> Inactive[Plus][Inactive[Times][___]]]],
-                        (* It seems like it would be fairly rare that a linear equation would
-                           be needed, so we'll downscore it. That said, I don't think we have
-                           any examples where it _needs_ to be downscored, so we won't downscore
-                           it very much right now. *)
-                        score -= 0.25
-                ];
                 KeyValueMap[
                     Function[{key, rhs},
+                        
+                        Replace[
+                            rhs,
+                            {
+                                Inactive[Times][_, value_] :> (
+                                    (* As of Oct 5 2022, we've only ever found one parse that makes use
+                                       of Times, and already we have one unwanted parse making use of
+                                       it (6e02f1e3), so we'll downscore it. *)
+                                    score += ARCConstantScore[value];
+                                    score -= 0.5
+                                ),
+                                Inactive[Plus][Inactive[Times][_, value1_], value2_] :> (
+                                    score += ARCConstantScore[value1];
+                                    score += ARCConstantScore[value2];
+                                    (* It seems like it would be fairly rare that a linear equation would
+                                       be needed, so we'll downscore it. e.g. 44d8ac46 *)
+                                    score -= 0.5
+                                )
+                            }
+                        ];
+                        
                         Replace[
                             rhs,
                             (ObjectValue | ClassValue)[condition_, property_, ___] :> (
@@ -17697,7 +17707,7 @@ ARCChooseBestRuleSet[ruleSets_List] :=
             ReturnIfFailure@
             ARCScoreRuleSets[ruleSets];
         
-        (*ARCEcho[scored];*)
+        (*ARCEcho2[scored];*)
         
         Normal[scored][[1, 1]]
     ]
@@ -26809,6 +26819,50 @@ ARCSubImageMatchQ[image_List, y1_Integer, x1_Integer, y2_Integer, x2_Integer, su
                     1
                 ]
         )
+    ]
+
+(*!
+    \function ARCConstantScore
+    
+    \calltable
+        ARCConstantScore[value] '' Given a constant value, returns a score for it.
+    
+    Examples:
+    
+    ARCConstantScore[1] === 0
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCConstantScore]
+    
+    \maintainer danielb
+*)
+Clear[ARCConstantScore];
+
+ARCConstantScore[0 | 1] := 0
+ARCConstantScore[2] := -0.1
+ARCConstantScore[3] := -0.2
+ARCConstantScore[4 | 5] := -0.3
+ARCConstantScore[6 | 7] := -0.4
+ARCConstantScore[8 | 9 | 10] := -0.5
+
+ARCConstantScore[value_Integer /; value < 100] :=
+    -0.5 - (Abs[value] / 100) * 0.5
+
+ARCConstantScore[value_] :=
+    Module[{},
+        -0.25 * 2 ^ StringLength[
+            ToString@
+            Replace[
+                Rationalize[value],
+                {
+                    Rational[numerator_, denominator_] :> (
+                        Max[numerator, denominator]
+                    ),
+                    other :> value
+                }
+            ]
+        ]
     ]
 
 End[]
