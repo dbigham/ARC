@@ -301,3 +301,48 @@ Test[
     ,
     TestID -> "ARCInferObjectImage-20220924-DQ9YLS"
 ]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 135, "Fill" -> {1, 2, 3}|>,
+            "Width" -> 3,
+            "Height" -> 3
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{1, -1, -1}, {-1, 2, -1}, {-1, -1, 3}}]
+    ,
+    TestID -> "ARCInferObjectImage-20221010-42PBX6"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 45, "Fill" -> {1, 2, 3}|>,
+            "Width" -> 3,
+            "Height" -> 3
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{-1, -1, 3}, {-1, 2, -1}, {1, -1, -1}}]
+    ,
+    TestID -> "ARCInferObjectImage-20221010-VLP7EN"
+]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shape" -> <|"Name" -> "Line", "Angle" -> 0, "Fill" -> {1, 2, 3}|>,
+            "Width" -> 3,
+            "Height" -> 1
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{1, 2, 3}}]
+    ,
+    TestID -> "ARCInferObjectImage-20221010-39OX58"
+]

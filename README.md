@@ -8,10 +8,10 @@ https://github.com/fchollet/ARC
 
 ## Percentage of Tasks Passing
 
-* Training tasks: 152 / 400 (38%)\
+* Training tasks: 154 / 400 (38.5%)\
   ![Percentage of Training Tasks Passing](TrainingTasksProgressBar.png?raw=true)
-  * Implemented: 76
-  * Passing via generalization: 76
+  * Implemented: 77
+  * Passing via generalization: 77
 * Evaluation tasks: 58 / 400 (14.5%)\
   ![Percentage of Evaluation Tasks Passing](EvaluationTasksProgressBar.png?raw=true)
 
@@ -21,7 +21,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (76)
+### Core ARC Training Tasks (77)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -99,6 +99,7 @@ https://github.com/fchollet/ARC
 * [8eb1be9a](TaskNotes/8eb1be9a/notes.md)
 * [eb281b96](TaskNotes/eb281b96/notes.md)
 * [91413438](TaskNotes/91413438/notes.md)
+* [a5f85a15](TaskNotes/a5f85a15/notes.md)
 
 ### Personally Created Training Tasks (15)
 
@@ -120,7 +121,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (76)
+### Training Tasks (77)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -200,6 +201,7 @@ The following ARC training tasks started passing after some different task was i
 * d10ecb37
 * [2dc579da](TaskNotes/2dc579da/notes.md)
 * [b8cdaf2b](TaskNotes/b8cdaf2b/notes.md)
+* [1190e5a7](TaskNotes/1190e5a7/notes.md)
 
 ### Evaluation Tasks (58)
 

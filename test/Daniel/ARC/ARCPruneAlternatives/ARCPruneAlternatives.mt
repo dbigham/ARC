@@ -110,3 +110,30 @@ Test[
     ,
     TestID -> "ARCPruneAlternatives-20220811-6PKT59"
 ]
+
+Test[
+    Daniel`ARC`ARCPruneAlternatives[
+        {<|"Name" -> "Line"|>, <|"Name" -> "Line", "Angle" -> 135, "Fill" -> {2, 4}|>},
+        "Shapes",
+        "Most" -> "Specific"
+    ]
+    ,
+    {<|"Name" -> "Line", "Angle" -> 135, "Fill" -> {2, 4}|>}
+    ,
+    TestID -> "ARCPruneAlternatives-20221010-MQKGWV"
+]
+
+Test[
+    Daniel`ARC`ARCPruneAlternatives[
+        {
+            <|"Name" -> "Line"|>,
+            <|"Name" -> "Line", "Angle" -> 135, "Fill" -> {2, 4} | {2, 4, 2}|>
+        },
+        "Shapes",
+        "Most" -> "Specific"
+    ]
+    ,
+    {<|"Name" -> "Line", "Angle" -> 135, "Fill" -> {2, 4} | {2, 4, 2}|>}
+    ,
+    TestID -> "ARCPruneAlternatives-20221010-4Q0LIB"
+]

@@ -3608,3 +3608,21 @@ Test[
     ,
     TestID -> "ARCFindRules-20221008-K3GJ6I"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "a5f85a15"]["Train"]]
+    ]
+    ,
+    {
+        <||> -> <|
+            "Shape" -> <|
+                "Name" -> "Line",
+                "Angle" -> 135,
+                "Fill" -> {Daniel`ARC`ObjectValue[<|"X" -> 1|>, "Color"], 4}
+            |>
+        |>
+    }
+    ,
+    TestID -> "ARCFindRules-20221011-N2JMIN"
+]

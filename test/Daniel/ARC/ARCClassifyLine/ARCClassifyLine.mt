@@ -56,3 +56,19 @@ Test[
     ,
     TestID -> "ARCClassifyLine-20220827-IFL8DR"
 ]
+
+Test[
+    Daniel`ARC`ARCClassifyLine[{{1, 2, 1, 2}}]
+    ,
+    <|"Name" -> "Line", "Angle" -> 0, "Fill" -> {1, 2}|>
+    ,
+    TestID -> "ARCClassifyLine-20221010-DJB2NX"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyLine[{{1, 2, 1}}]
+    ,
+    <|"Name" -> "Line", "Angle" -> 0, "Fill" -> {1, 2} | {1, 2, 1}|>
+    ,
+    TestID -> "ARCClassifyLine-20221010-71BZDR"
+]
