@@ -595,6 +595,8 @@ ARCFindPropertyToInferListValues::usage = "ARCFindPropertyToInferListValues  "
 
 $ResolveObjectAmbiguityArbitrarily::usage = "$ResolveObjectAmbiguityArbitrarily  "
 
+ARCCheckForColorMapping::usage = "ARCCheckForColorMapping  "
+
 Begin["`Private`"]
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
@@ -3542,6 +3544,22 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                     ]
                 ]
             ],
+            (* Before we treat this as AddComponents, check if this is instead a ColorMapping. *)
+            Replace[
+                ARCCheckForColorMapping[
+                    object,
+                    mappedToObject
+                ],
+                colorMapping_Association :> (
+                    Return[
+                        object -> Join[
+                            mappedToObject,
+                            colorMapping
+                        ],
+                        Module
+                    ]
+                )
+            ];
             (* We've found a composite object with a component that matches the object.
                We add an AddComponents transform key. *)
             Return[
@@ -4105,11 +4123,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
-                55
-                ,
-                (* UNDOME: We'll try doing a parallel run with this increased to see if there
-                   are any tasks that can actually pass given more time. *)
                 180
+                ,
+                55
             ],
             "Seconds"
         ]
@@ -6908,6 +6924,18 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "Delete"], objectIn_Association, objectOut_Association, scene_Association] :=
     Nothing
 
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "ColorMapping"], objectIn_Association, objectOut_Association, scene_Association] :=
+    Sett[
+        objectOut,
+        {
+            "Image" -> Replace[
+                objectIn["Image"],
+                Rule @@@ value["Mapping"],
+                {3}
+            ]
+        }
+    ]
+
 ARCApplyConclusion[key:"Transform", value:KeyValuePattern["Type" -> "RemoveEmptySpace"], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
@@ -8557,6 +8585,11 @@ getTransformTypes[] := <|
             "Objects" -> <|
                 ARCObjectMinimalPropertySetsAndSubProperties["AddObjects" -> True]
             |>
+        }
+    |>,
+    "ColorMapping" -> <|
+        "MinimalPropertySets" -> {
+            {"Mapping"}
         }
     |>
 |>;
@@ -13985,6 +14018,14 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 13}],
             "ImplementationTime" -> Quantity[1, "Hours"],
             "CodeLength" -> 27431,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "6d75e8bb",
+            "Timestamp" -> DateObject[{2022, 10, 14}],
+            "ImplementationTime" -> Quantity[0.5, "Hours"],
+            "CodeLength" -> 27616,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -27498,6 +27539,78 @@ ARCFindPropertyToInferListValues[propertyPath_, transposedObjects_Association, v
             ,
             (* Lists aren't a consistant size. Not currently supported. *)
             Missing["NotFound"]
+        ]
+    ]
+
+(*!
+    \function ARCCheckForColorMapping
+    
+    \calltable
+        ARCCheckForColorMapping[object1, object2] '' Checks whether object1's image can be mapped to object2's image by applying a color map.
+    
+    e.g. 6d75e8bb
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCCheckForColorMapping]
+    
+    \maintainer danielb
+*)
+Clear[ARCCheckForColorMapping];
+ARCCheckForColorMapping[object1_Association, object2_Association] :=
+    Module[{},
+        Replace[
+            ARCCheckForColorMapping[
+                object1[["Image", 1]],
+                object2[["Image", 1]]
+            ],
+            mapping_List :> <|
+                "Transform" -> <|
+                    "Type" -> "ColorMapping",
+                    "Mapping" -> mapping
+                |>
+            |>
+        ]
+    ]
+
+ARCCheckForColorMapping[image1_List, image2_List] :=
+    Module[{mapping},
+        
+        mapping = GroupBy[
+            DeleteDuplicates@
+            Flatten[
+                Transpose[
+                    {image1, image2},
+                    {3, 1, 2}
+                ],
+                1
+            ],
+            First -> Last
+        ];
+        
+        If [And[
+                (* We'll only concern ourselves with cases where there are multiple colors,
+                   otherwise we'd just have a change of the object's entire color, which we
+                   can just treat as "Color" -> newColor. *)
+                Length[mapping] > 1,
+                (* All colors in the input map to exactly one color in the output. *)
+                MatchQ[Length /@ Values[mapping], {Repeated[1]}],
+                (* We need at least one color getting changed to another color. *)
+                mapping = First /@ mapping;
+                mapping = Normal[mapping];
+                mapping = DeleteCases[mapping, HoldPattern[Rule][c_, c_]];
+                Length[mapping] >= 1
+            ],
+            (* We've found a color mapping. We'll represent this a list of lists, since
+               our rule finding code has support for "list values" but not yet support
+               for associations or "rule values". *)
+            List @@@ mapping
+            ,
+            False
         ]
     ]
 

@@ -3626,3 +3626,13 @@ Test[
     ,
     TestID -> "ARCFindRules-20221011-N2JMIN"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "6d75e8bb"]["Train"]]
+    ]
+    ,
+    {<||> -> <|"Transform" -> <|"Type" -> "ColorMapping", "Mapping" -> {{-1, 2}}|>|>}
+    ,
+    TestID -> "ARCFindRules-20221014-RVMNV8"
+]
