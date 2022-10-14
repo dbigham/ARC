@@ -3520,8 +3520,26 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                 (* If the input object doesn't have a Fill pattern, but the output object does,
                    then don't form AddComponents. e.g. 97999447 *)
                 !And[
-                    !MatchQ[object["Shape"], KeyValuePattern["Fill" -> _List]],
-                    MatchQ[mappedToObject["Shape"], KeyValuePattern["Fill" -> _List]]
+                    !And[
+                        MatchQ[
+                            object["Shape"],
+                            KeyValuePattern[
+                                "Fill" ->
+                                (* But require that the pattern be relatively short, and further
+                                   below, we also require the pattern not be one less than the
+                                   length of the line, otherwise you can have a situation where
+                                   there's a pixel followed by a line followed by another pixel,
+                                   and that would get treated as a "pattern" which isn't what
+                                   we'd want. e.g. 253bf280 *)
+                                {Repeated[_, {2, 3}]}
+                            ]
+                        ],
+                        object["Length"] >= Length[object["Shape", "Fill"]] + 2
+                    ],
+                    And[
+                        MatchQ[mappedToObject["Shape"], KeyValuePattern["Fill" -> {Repeated[_, {2, 3}]}]],
+                        mappedToObject["Length"] >= Length[mappedToObject["Shape", "Fill"]] + 2
+                    ]
                 ]
             ],
             (* We've found a composite object with a component that matches the object.
@@ -18294,7 +18312,46 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
                 (* Don't allow pixels to be the occluding object, since that would mean
                    that patterned lines would end up getting interpreted as an occluded
                    line. e.g. 97999447 *)
-                !ShapeQ[nextObject, "Pixel"],
+                Or[
+                    !ShapeQ[nextObject, "Pixel"],
+                    (* But if the pixel has a line on both sides which are at a 90 degree angle
+                       to the current line being followed, then we will allow the pixel to act
+                       as an occluding object. e.g. bdad9b1f *)
+                    And[
+                        MatchQ[direction, {0, 1} | {0, -1}],
+                        MatchQ[
+                            objectsByUUID[objectsByPixelPosition[nextPosition + {-1, 0}]]["Shape"],
+                            Alternatives[
+                                KeyValuePattern[{"Name" -> "Line", "Angle" -> 90}],
+                                KeyValuePattern["Name" -> "Pixel"]
+                            ]
+                        ],
+                        MatchQ[
+                            objectsByUUID[objectsByPixelPosition[nextPosition + {1, 0}]]["Shape"],
+                            Alternatives[
+                                KeyValuePattern[{"Name" -> "Line", "Angle" -> 90}],
+                                KeyValuePattern["Name" -> "Pixel"]
+                            ]
+                        ]
+                    ],
+                    And[
+                        MatchQ[direction, {1, 0} | {-1, 0}],
+                        MatchQ[
+                            objectsByUUID[objectsByPixelPosition[nextPosition + {0, 1}]]["Shape"],
+                            Alternatives[
+                                KeyValuePattern[{"Name" -> "Line", "Angle" -> 0}],
+                                KeyValuePattern["Name" -> "Pixel"]
+                            ]
+                        ],
+                        MatchQ[
+                            objectsByUUID[objectsByPixelPosition[nextPosition + {0, -1}]]["Shape"],
+                            Alternatives[
+                                KeyValuePattern[{"Name" -> "Line", "Angle" -> 0}],
+                                KeyValuePattern["Name" -> "Pixel"]
+                            ]
+                        ]
+                    ]
+                ],
                 Switch[
                     direction,
                     {-1 | 1, 0},
