@@ -27208,17 +27208,23 @@ ARCConstantScore[value_] :=
 *)
 Clear[ARCHandleComputedInteger];
 ARCHandleComputedInteger[value_, inactiveExpression_] :=
-    Module[{},
-        Replace[
-            ToIntegerIfNoDecimal[Round[value, 0.001]],
-            thisValue_Real :> ReturnFailure[
+    (*Module[{},
+        Replace[*)
+            ToIntegerIfNoDecimal[Round[value, 0.001]]
+            
+            (* We were disallowing real numbers, but this is actually required for 770cc55f.
+               I think we want to disallow real numbers from the outer-most dynamic
+               expression, but if there are nested expressions, such as within a linear
+               equation, it's fine for a sub-result to be a real number. At the moment,
+               I'm unsure on how to detect that this is the outer-most part of the expression. *)
+            (*thisValue_Real :> ReturnFailure[
                 "NumericFailure",
                 "An expression produced a Real number, which is not currently supported.",
                 "Expression" -> inactiveExpression,
                 "EvaluationResult" -> thisValue
             ]
         ]
-    ]
+    ]*)
 
 (*!
     \function ARCInferLineFill
