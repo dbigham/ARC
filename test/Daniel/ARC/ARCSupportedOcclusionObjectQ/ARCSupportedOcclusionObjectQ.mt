@@ -37,3 +37,13 @@ Test[
     ,
     TestID -> "ARCSupportedOcclusionObjectQ-20220829-V6S76J"
 ]
+
+Test[
+    Daniel`ARC`ARCSupportedOcclusionObjectQ[
+        <|"Shape" -> <|"Name" -> "Line", "Fill" -> {1, 2}|>|>
+    ]
+    ,
+    False
+    ,
+    TestID -> "ARCSupportedOcclusionObjectQ-20221013-BW87FI"
+]

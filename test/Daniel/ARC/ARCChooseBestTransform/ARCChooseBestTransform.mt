@@ -194,3 +194,24 @@ Test[
     ,
     TestID -> "ARCChooseBestTransform-20220917-5877CF"
 ]
+
+Test[
+    Daniel`ARC`ARCChooseBestTransform[
+        {
+            "Shape" -> <|
+                "Name" -> "Line",
+                "Angle" -> 0,
+                "Fill" -> {Daniel`ARC`ObjectValue["InputObject", "Color"], 5}
+            |>,
+            "Shapes" -> {<|"Name" -> "Rectangle", "Filled" -> True|>}
+        }
+    ]
+    ,
+    "Shape" -> <|
+        "Name" -> "Line",
+        "Angle" -> 0,
+        "Fill" -> {Daniel`ARC`ObjectValue["InputObject", "Color"], 5}
+    |>
+    ,
+    TestID -> "ARCChooseBestTransform-20221011-ABQ0YS"
+]

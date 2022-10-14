@@ -3280,7 +3280,8 @@ Options[ARCFindObjectMapping] =
     "FormMultiColorCompositeObjects" -> True,       (*< Whether connected single-color objects should be combined to form multi-color composite objects. Only applies to some down values. *)
     "SingleObject" -> Automatic,                    (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "FollowDiagonals" -> Automatic,                 (*< Should diagonally adjacent pixels form a single object? *)
-    "CheckForGridsAndDividers" -> Automatic         (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
+    "CheckForGridsAndDividers" -> Automatic,        (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
+    "FindOcclusions" -> True                        (*< Whether we should consider possible occlusions when interpreting the scene. *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -3514,7 +3515,15 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             ]
         ];
         
-        If [SpecifiedQ[mappedToObject],
+        If [And[
+                SpecifiedQ[mappedToObject],
+                (* If the input object doesn't have a Fill pattern, but the output object does,
+                   then don't form AddComponents. e.g. 97999447 *)
+                !And[
+                    !MatchQ[object["Shape"], KeyValuePattern["Fill" -> _List]],
+                    MatchQ[mappedToObject["Shape"], KeyValuePattern["Fill" -> _List]]
+                ]
+            ],
             (* We've found a composite object with a component that matches the object.
                We add an AddComponents transform key. *)
             Return[
@@ -4070,13 +4079,19 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     (* Added Oct 8 2022 *)
                     "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d" |
                     (* Added Oct 10 2022 *)
-                    "363442ee" | "9dfd6313"
+                    "363442ee" | "9dfd6313" |
+                    (* Added Oct 13 2022: I'm finding it odd that these are running in 11 to 18
+                       seconds when run in a single kernel, but over 55 seconds when run in
+                       parallel. That's a pretty big mutliple. (More than 3x!) *)
+                    "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
-                180
-                ,
                 55
+                ,
+                (* UNDOME: We'll try doing a parallel run with this increased to see if there
+                   are any tasks that can actually pass given more time. *)
+                180
             ],
             "Seconds"
         ]
@@ -4845,12 +4860,36 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                         If [OptionValue["FormMultiColorCompositeObjects"] =!= Automatic,
                             "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"]
                             ,
-                            Nothing
+                            If [MatchQ[
+                                    Flatten[examples[[All, "Input", "Objects"]]][[All, "Shape"]],
+                                    {Repeated[KeyValuePattern["Name" -> "Pixel"]]}
+                                ],
+                                (* If all of the input objects we've seen are pixels, then we'll
+                                   avoid forming multi-color objects if we see one in the test
+                                   scene, since the chances are they would be two pixels that
+                                   should be treated as separate objects. e.g. 97999447 *)
+                                "FormMultiColorCompositeObjects" -> False
+                                ,
+                                Nothing
+                            ]
                         ],
                         If [OptionValue["FollowDiagonals"] =!= Automatic,
                             "FollowDiagonals" -> OptionValue["FollowDiagonals"]
                             ,
-                            Nothing
+                            If [MatchQ[
+                                    Flatten[examples[[All, "Input", "Objects"]]][[All, "Shape"]],
+                                    {Repeated[KeyValuePattern["Name" -> "Pixel"]]}
+                                ],
+                                (* If all of the input objects we've seen are pixels, then we'll
+                                   avoid following diagonals if we see one in the test
+                                   scene, since the chances are they would be two pixels that
+                                   should be treated as separate objects. I'm adding this heuristic
+                                   while working on 97999447, although it's not required by
+                                   that task to get tings working. *)
+                                "FollowDiagonals" -> False
+                                ,
+                                Nothing
+                            ]
                         ],
                         If [OptionValue["CheckForGridsAndDividers"] === False,
                             "CheckForGridsAndDividers" -> False
@@ -11857,6 +11896,15 @@ ARCTransformScore[transformIn_] :=
             }
         ];
         
+        (* If a transform specifies a fill, we're give it some preference, so that if we're
+           trying to decide between inferring "Shapes" vs "Shape", for example, it is
+           better to make an inference that gives us more information.
+           ARCChooseBestTransform-20221011-ABQ0YS
+           e.g. 97999447 *)
+        If [!FreeQ[transform, KeyValuePattern["Fill" -> _List]],
+            score += 0.5
+        ];
+        
         If [score === 0,
             Which[
                 MatchQ[transform, KeyValuePattern[{"Type" -> "Move", "Offset" -> _}]],
@@ -13913,6 +13961,14 @@ ARCTaskLog[] :=
             "CodeLength" -> 27358,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "97999447",
+            "Timestamp" -> DateObject[{2022, 10, 13}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 27431,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     }
 
@@ -14304,11 +14360,11 @@ ARCImplementedTasksMarkdown[] :=
             "PNG"
         ];
         
-        Export[
+        (*Export[
             FileNameJoin[{$arcDirectory, "ComparisonWithKaggleCompetitors.png"}],
             ARCComparisonWithKaggleCompetitors[evaluationPercentage],
             "PNG"
-        ];
+        ];*)
         
         StringRiffle[
             Flatten@
@@ -18235,6 +18291,10 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
         If [And[
                 !MissingQ[nextObject],
                 AssociationQ[nextObject = objectsByUUID[nextObject]],
+                (* Don't allow pixels to be the occluding object, since that would mean
+                   that patterned lines would end up getting interpreted as an occluded
+                   line. e.g. 97999447 *)
+                !ShapeQ[nextObject, "Pixel"],
                 Switch[
                     direction,
                     {-1 | 1, 0},
@@ -19142,12 +19202,22 @@ ARCRemoveEmptySpace[sceneIn_ARCScene, backgroundColor_, OptionsPattern[]] :=
 Clear[ARCSupportedOcclusionObjectQ];
 ARCSupportedOcclusionObjectQ[object_Association] :=
     Or[
-        ShapeQ[object, "Line" | "Pixel"],
+        ShapeQ[object, "Pixel"],
         MatchQ[
             object["Shape"],
             KeyValuePattern[
                 {"Name" -> "Rectangle" | "Square", "Filled" -> True}
             ]
+        ],
+        And[
+            ShapeQ[object, "Line"],
+            (* If a line has a relatively compact pattern, then we won't try to find
+               occlusions, since it may interpret pixels within that pattern as being
+               occlusions. e.g. 97999447 *)
+            (* Although, as it turns out, we can't really do this filtering here, since
+               we call ARCFindOcclusions on single-color shapes currently, so there aren't
+               any patterend lines. *)
+            !MatchQ[object["Shape", "Fill"], {_, _} | {_, _, _} | {_, _, _, _}]
         ]
     ]
 
