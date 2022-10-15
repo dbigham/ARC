@@ -597,11 +597,24 @@ $ResolveObjectAmbiguityArbitrarily::usage = "$ResolveObjectAmbiguityArbitrarily 
 
 ARCCheckForColorMapping::usage = "ARCCheckForColorMapping  "
 
+ARCParallelInitialize::usage = "ARCParallelInitialize  "
+
+ARCTestInputSet::usage = "ARCTestInputSet  "
+
+ARCFiles::usage = "ARCFiles  "
+
+ARCParallelTestNotebook::usage = "ARCParallelTestNotebook  "
+
+$ARCEchoTimeLimitExceeded::usage = "$ARCEchoTimeLimitExceeded  "
+
 Begin["`Private`"]
+
 
 Utility`Reload`SetupReloadFunction["Daniel`ARC`"];
 
 $MinimumExamplesPerRule = 2;
+
+$ARCEchoTimeLimitExceeded = True;
 
 $memoization = None;
 
@@ -639,6 +652,8 @@ EntityRepository = EntityLink`EntityRepository;
 EntityRepositorySet = EntityLink`EntityRepositorySet;
 EchoTiming2 = Utility`EchoTiming2;
 ReapList = Utility`ReapList;
+ToProfileTimeQuantity = Utility`Profiling`ToProfileTimeQuantity;
+FailureTagMatchQ = Utility`FailureTagMatchQ;
 
 (* For the purposes of using LogScope. *)
 initializeEntityRepository[] :=
@@ -5137,6 +5152,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         ARCLog["ReferenceableOutputObjects" -> Length[referenceableOutputObjects]];
         
+        (* HERER *)
         (*ARCEcho[SimplifyObjects[referenceableInputObjects]];*)
         
         (*ARCEcho[SimplifyObjects[examples]];*)
@@ -5293,6 +5309,19 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ],
                 objectMappings
             ];
+        
+        (* HERE10 *)
+        (*If [Length[
+                DeleteDuplicates@
+                Select[
+                    preRules,
+                    !TrueQ[
+                        #[[2, "Same"]]
+                    ] &
+                ][[All, 2, "Example"]]
+            ] === Length[examples],
+            Echo[$file]
+        ];*)
         
         (*ARCEcho2[preRules];*)
         (*ARCEcho2[preRules[[All, 2]]];*)
@@ -7653,6 +7682,7 @@ ARCWorkingQ[file_String, opts:OptionsPattern[]] :=
         $generatorCalls = {};
         Module[{},
             MatchQ[
+                ReturnIfFailure@
                 ARCTest[file, opts],
                 KeyValuePattern["PassPercentage" -> 1. | 1]
             ]
@@ -7663,6 +7693,7 @@ ARCWorkingQ[examples_List, rules_Association, opts:OptionsPattern[]] :=
     ARCMemoized@
     Module[{},
         MatchQ[
+            ReturnIfFailure@
             ARCTestRules[examples, rules, opts],
             KeyValuePattern["PassPercentage" -> 1. | 1]
         ]
@@ -12591,7 +12622,8 @@ ARCObjectImageFromComponents[object_Association] :=
 *)
 Clear[ARCTaskLog];
 ARCTaskLog[] :=
-    {
+Module[{tasks},
+    tasks = {
         <|
             (* When I finished implementing ExampleImplemented. *)
             "Timestamp" -> Missing["NotRecorded"],
@@ -12606,7 +12638,12 @@ ARCTaskLog[] :=
             (* The number of lines of code I've now written. *)
             "CodeLength" -> Missing["NotRecorded"],
             (* Which task/example I just implemented. *)
-            "ExampleImplemented" -> "0ca9ddb6"
+            "ExampleImplemented" -> "0ca9ddb6",
+            (* Some tasks seem to fail during a parallel run, but don't fail when run from a single
+               non-parallel kernel. *)
+            "FailsOnlyDuringParallelTest" -> False,
+            (* Specifies that this task is known to be failing. *)
+            "KnownFailure" -> False
         |>,
         <|
             "Runtime" -> Quantity[1.5, "Minutes"],
@@ -12952,7 +12989,8 @@ ARCTaskLog[] :=
             "ExampleImplemented" -> "1f876c06",
             "ImplementationTime" -> Quantity[6.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"56ff96f3"},
-            "NewEvaluationSuccesses" -> {"e21a174a"}
+            "NewEvaluationSuccesses" -> {"e21a174a"},
+            "FailsOnlyDuringParallelTest" -> True
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -13153,7 +13191,11 @@ ARCTaskLog[] :=
             "Runtime" -> Quantity[20, "Minutes"],
             "CodeLength" -> 14763,
             "ExampleImplemented" -> "6e02f1e3",
-            "ImplementationTime" -> Quantity[2.5, "Hours"]
+            "ImplementationTime" -> Quantity[2.5, "Hours"],
+            (* Requires running single-example mode even when we have a working rule set,
+               which slows things down substantially. For now we'll leave that disabled
+               and just live with this failing. *)
+            "KnownFailure" -> True
         |>,
         <|
             "Timestamp" -> DateObject[{2022, 9, 3}],
@@ -13656,7 +13698,8 @@ ARCTaskLog[] :=
             "NewGeneralizedSuccesses" -> {},
             (* I'm not actually sure when these started passing since I haven't been running
                the evaluation test set each time. *)
-            "NewEvaluationSuccesses" -> {"0bb8deee", "9110e3c5", "9a4bb226", "ca8de6ea", "cd3c21df"}
+            "NewEvaluationSuccesses" -> {"0bb8deee", "9110e3c5", "9a4bb226", "ca8de6ea", "cd3c21df"},
+            "FailsOnlyDuringParallelTest" -> True
         |>,
         <|
             "EvaluationTask" -> True,
@@ -13720,7 +13763,8 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 23193,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "NewEvaluationSuccesses" -> {},
+            "KnownFailure" -> True
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -14000,7 +14044,8 @@ ARCTaskLog[] :=
             "ImplementationTime" -> Quantity[3.5, "Hours"],
             "CodeLength" -> 27358,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "NewEvaluationSuccesses" -> {},
+            "FailsOnlyDuringParallelTest" -> True
         |>,
         (* Bad rules that happen to pass. I think what caused this to start passing
            is the new ResolveObjectAmbiguityArbitrarily option. *)
@@ -14026,12 +14071,41 @@ ARCTaskLog[] :=
             "Timestamp" -> DateObject[{2022, 10, 14}],
             "ImplementationTime" -> Quantity[0.5, "Hours"],
             "CodeLength" -> 27616,
+            "NewGeneralizedSuccesses" -> {"3aa6fb7a", "60b61512"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "3aa6fb7a",
+            "Timestamp" -> DateObject[{2022, 10, 14}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 27954,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "60b61512",
+            "Timestamp" -> DateObject[{2022, 10, 14}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 27962,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
-    }
-
-(* ADD NEW SUCCESSES HERE *)
+    };
+    
+    (* ADD NEW SUCCESSES HERE *)
+    
+    AssociationApply[
+        tasks,
+        <|
+            "ExampleImplemented" -> Function[ToLowerCase[#]],
+            "NewGeneralizedSuccesses" -> Function[ToLowerCase /@ #],
+            "NewEvaluationSuccesses" -> Function[ToLowerCase /@ #]
+        |>,
+        "AddKeys" -> False
+    ]
+]
 
 (*!
     \function ARCTaskMarkdown
@@ -23630,7 +23704,7 @@ ARCTimeConstrained[expr_, maxTime_Quantity] :=
                 maxTime
             ],
             $Aborted :> (
-                If [StringQ[$file],
+                If [StringQ[$file] && TrueQ[$ARCEchoTimeLimitExceeded],
                     Echo["ARCTimeConstrained" -> $file -> maxTime]
                 ];
                 ReturnFailure[
@@ -25052,7 +25126,9 @@ ARCCheckForImputation[imageIn_List, patch_Association] :=
                    in all examples, this position was corrupted, so we didn't have any
                    patches that showed us how to infer it. *)
                 other_ :> (
-                    EchoIndented["UniversalCorruptionColorNotFound2" -> other -> $file];
+                    If [!TrueQ[$testRun],
+                        EchoIndented["UniversalCorruptionColorNotFound2" -> other -> $file]
+                    ];
                     Return[False, Module]
                 )
             }
@@ -27563,17 +27639,21 @@ ARCFindPropertyToInferListValues[propertyPath_, transposedObjects_Association, v
 Clear[ARCCheckForColorMapping];
 ARCCheckForColorMapping[object1_Association, object2_Association] :=
     Module[{},
-        Replace[
-            ARCCheckForColorMapping[
-                object1[["Image", 1]],
-                object2[["Image", 1]]
-            ],
-            mapping_List :> <|
-                "Transform" -> <|
-                    "Type" -> "ColorMapping",
-                    "Mapping" -> mapping
+        If [object1["Width"] =!= object2["Width"] || object1["Height"] =!= object2["Height"],
+            False
+            ,
+            Replace[
+                ARCCheckForColorMapping[
+                    object1[["Image", 1]],
+                    object2[["Image", 1]]
+                ],
+                mapping_List :> <|
+                    "Transform" -> <|
+                        "Type" -> "ColorMapping",
+                        "Mapping" -> mapping
+                    |>
                 |>
-            |>
+            ]
         ]
     ]
 
@@ -27611,6 +27691,301 @@ ARCCheckForColorMapping[image1_List, image2_List] :=
             List @@@ mapping
             ,
             False
+        ]
+    ]
+
+(*!
+    \function ARCParallelInitialize
+    
+    \calltable
+        ARCParallelInitialize[] '' Initializes parallel kernels for ARC testing.
+    
+    \maintainer danielb
+*)
+Clear[ARCParallelInitialize];
+ARCParallelInitialize[] :=
+    Module[{parallelKernelCount = 13},
+        If [Length[ParallelKernels[]] =!= parallelKernelCount,
+            
+            (* Launch the parallel kernels. *)
+            ReturnIfFailure@
+            LaunchKernels[parallelKernelCount];
+            
+            (* Initialize the parallel kernels. *)
+            With[{$DropboxDir = Global`$DropboxDir, $WyattDir = DevTools`$WyattDir},
+                ReturnIfFailure@
+                MonitorBlueBox["Initializing parallel kernels..."]@
+                ParallelEvaluate[
+                    Quiet[
+                        AppendTo[$Path, FileNameJoin[{$DropboxDir, "PersonalWL", "danielb", "src"}]];
+                        AppendTo[$Path, FileNameJoin[{$WyattDir, "Backend", "src", "wl"}]];
+                        Daniel`ARC`Private`$disableARCLogScopes = True;
+                        Daniel`ARC`$ARCEchoTimeLimitExceeded = False;
+                        Daniel`ARC`Private`$testRun = True;
+                        Get["Daniel`ARC`"];
+                        ARCMXGet[];
+                        ReloadARC[],
+                        {
+                            General::shdw,
+                            (* In M13, Wyatt's TypeOf symbol results in this message I think. *)
+                            General::wrsym
+                        }
+                    ]
+                ];
+            ]
+            ,
+            (* The parallel kernels are already launched, so just reload ARC. *)
+            ReturnIfFailure@
+            MonitorBlueBox["Reloading ARC on parallel kernels..."]@
+            ParallelEvaluate[
+                ReloadARC[];
+                Daniel`ARC`Private`$disableARCLogScopes = True;
+                Daniel`ARC`$ARCEchoTimeLimitExceeded = False;
+                Daniel`ARC`Private`$testRun = True;
+            ];
+        ]
+    ]
+
+(*!
+    \function ARCTestInputSet
+    
+    \calltable
+        ARCTestInputSet[inputSet] '' Tests a named set of inputs and returns metrics.
+    
+    Examples:
+    
+    See function notebook
+    
+    \maintainer danielb
+*)
+Clear[ARCTestInputSet];
+Options[ARCTestInputSet] =
+{
+    "Parallel" -> False                 (*< Should the tests be run using ParallelMap? *)
+};
+ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
+    Block[{$testRun = True},
+    Module[
+        {
+            files,
+            mapFunction,
+            taskLookup,
+            res,
+            taskDetails,
+            thisResult,
+            thisRuntime,
+            evaluationInputsWorking
+        },
+        
+        mapFunction =
+            If [TrueQ[OptionValue["Parallel"]],
+                
+                ReturnIfFailure@
+                ARCParallelInitialize[];
+                
+                ParallelMap
+                ,
+                Map
+            ];
+        
+        (* The files to test. *)
+        files =
+            FileBaseName /@
+            ReturnFailureIfMissing@
+            ARCFiles[inputSetName];
+        
+        (*files = {"eb281b96", "3631a71a", "9ecd008a"};*)
+        (*files = {"00576224"};*)
+        
+        taskLookup = AssociationThread[
+            ARCTaskLog[][[All, "ExampleImplemented"]],
+            ARCTaskLog[]
+        ];
+        
+        If [inputSetName === "Evaluation",
+            
+            evaluationInputsWorking = Flatten[
+                DeleteMissing[
+                    ARCTaskLog[][[All, "NewEvaluationSuccesses"]]
+                ]
+            ];
+            
+            Function[{evaluationFile},
+                taskLookup[evaluationFile] = <|
+                    "Evaluation" -> True
+                |>
+            ] /@ evaluationInputsWorking
+        ];
+        
+        res =
+            With[{taskLookup = taskLookup},
+                AbsoluteTiming@
+                mapFunction[
+                    Function[{file},
+                        messagesQ = False;
+                        taskDetails = Lookup[taskLookup, file, <||>];
+                        thisRuntime = Null;
+                        file -> <|
+                            "File" -> file,
+                            Quiet[
+                                Replace[
+                                    AbsoluteTiming@
+                                    Check[
+                                        thisResult = ARCWorkingQ[file],
+                                        messagesQ = True;
+                                        thisResult
+                                    ],
+                                    {seconds_, result_} :> (
+                                        thisRuntime =
+                                            ToProfileTimeQuantity@
+                                            Quantity[seconds, "Seconds"];
+                                        "Result" -> TrueQ[result]
+                                    )
+                                ],
+                                General::shdw
+                            ],
+                            Which[
+                                TrueQ[taskDetails["KnownFailure"]],
+                                    If [!TrueQ[thisResult],
+                                        "KnownFailure" -> True
+                                        ,
+                                        "Fixed:KnownFailure" -> True
+                                    ],
+                                TrueQ[taskDetails["FailsOnlyDuringParallelTest"]],
+                                    If [!TrueQ[thisResult],
+                                        "FailsOnlyDuringParallelTest" -> True
+                                        ,
+                                        "Fixed:FailsOnlyDuringParallelTest" -> True
+                                    ],
+                                True,
+                                    If [!TrueQ[thisResult],
+                                        If [taskDetails =!= <||>,
+                                            <|
+                                                If [FailureTagMatchQ[thisResult, "TimeLimitExceeded"],
+                                                    "NewFailure:TimeLimitExceeded" -> True
+                                                    ,
+                                                    "NewFailure" -> True
+                                                ]
+                                            |>
+                                            ,
+                                            Nothing
+                                        ]
+                                        ,
+                                        (* Success *)
+                                        If [taskDetails === <||>,
+                                            "NewSuccess" -> True
+                                            ,
+                                            Nothing
+                                        ]
+                                    ]
+                            ],
+                            If [TrueQ[messagesQ],
+                                "Messages" -> True
+                                ,
+                                Nothing
+                            ],
+                            "Runtime" -> thisRuntime,
+                            If [taskDetails =!= <||>,
+                                "TaskDetails" -> KeyDrop[taskDetails, "ExampleImplemented"]
+                                ,
+                                Nothing
+                            ]
+                        |>
+                    ],
+                    files,
+                    If [TrueQ[OptionValue["Parallel"]],
+                        DistributedContexts -> {}
+                        ,
+                        Sequence @@ {}
+                    ]
+                ]
+            ];
+        
+        runtime =
+            ToProfileTimeQuantity@
+            Quantity[res[[1]], "Seconds"];
+        
+        res = Association[res[[2]]];
+        
+        <|
+            "Timestamp" -> Now,
+            "Runtime" -> runtime,
+            "InputSet" -> inputSetName,
+            Sequence @@ (
+                Function[{key},
+                    Replace[
+                        Cases[res, KeyValuePattern[key -> True]],
+                        {
+                            list: {__} :> (
+                                key -> list[[All, "File"]]
+                            ),
+                            _ :> Nothing
+                        }
+                    ]
+                ] /@ {
+                    "NewSuccess",
+                    "Fixed:KnownFailure",
+                    "Fixed:FailsOnlyDuringParallelTest",
+                    "NewFailure",
+                    "NewFailure:TimeLimitExceeded",
+                    "Messages"
+                }
+            ),
+            "Tasks" -> res
+        |>
+    ]
+    ]
+
+(*!
+    \function ARCFiles
+    
+    \calltable
+        ARCFiles[name] '' Gets a named set of training/test files.
+    
+    Examples:
+    
+    ARCFiles[name] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCFiles];
+ARCFiles["Training"] := ARCTrainingFiles[]
+ARCFiles["Evaluation"] := ARCEvaluationFiles[]
+ARCFiles[name_String] := Missing["UnknownFileSet"]
+
+(*!
+    \function ARCParallelTestNotebook
+    
+    \calltable
+        ARCParallelTestNotebook[] '' Opens the parallel testing notebook.
+    
+    \maintainer danielb
+*)
+Clear[ARCParallelTestNotebook];
+ARCParallelTestNotebook[] :=
+    Module[{},
+        
+        ReturnIfFailure@
+        StartProcess[
+            {
+                "C:\\Program Files\\Wolfram Research\\Mathematica\\13.1\\Mathematica.exe",
+                "-sl",
+                "\"" <> FileNameJoin[{Global`$DropboxDir, "Notebooks", "ARC Parallel Test", "ARC Parallel Test.nb"}] <> "\""
+            }
+        ];
+        
+        TimeConstrained[
+            While[
+                FailureQ[
+                    ResourceFunction["Win32AlignWindow"][
+                        StringStartsQ["ARC Parallel Test"],
+                        Right,
+                        "Screen" -> 2
+                    ]
+                ],
+                Pause[0.2]
+            ],
+            Quantity[10, "Seconds"]
         ]
     ]
 
