@@ -109,3 +109,32 @@ Test[
     ,
     TestID -> "ARCRuleToPattern-20220906-YCJSGP"
 ]
+
+Test[
+    Daniel`ARC`ARCRuleToPattern[<|"A" -> "B", "Except" -> <|"C" -> "D"|>|>]
+    ,
+    Except[KeyValuePattern[{"C" -> "D"}], KeyValuePattern[{"A" -> "B"}]]
+    ,
+    TestID -> "ARCRuleToPattern-20221016-BKO3A9"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCRuleToPattern[<|"Within" -> Daniel`ARC`Object[<|"Colors" -> {5}|>]|>]
+    ]
+    ,
+    Condition[
+        Daniel`ARC`Private`assoc:KeyValuePattern[{}],
+        MatchQ[
+            Daniel`ARC`ARCSelectMatchingObjectsForRelationship[
+                "Within",
+                Daniel`ARC`Object[<|"Colors" -> {5}|>],
+                {Daniel`ARC`Private`assoc},
+                Daniel`ARC`Private`$objects
+            ],
+            {_}
+        ]
+    ]
+    ,
+    TestID -> "ARCRuleToPattern-20221016-DLU522"
+]

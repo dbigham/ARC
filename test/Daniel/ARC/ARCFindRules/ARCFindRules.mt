@@ -3636,3 +3636,26 @@ Test[
     ,
     TestID -> "ARCFindRules-20221014-RVMNV8"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "63613498"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|
+                "MonochromeImage" -> Daniel`ARC`ObjectValue[
+                    <|"Within" -> Daniel`ARC`Object[<|"Colors" -> {5}|>]|>,
+                    "MonochromeImage"
+                ],
+                "Except" -> <|"Within" -> Daniel`ARC`Object[<|"Colors" -> {5}|>]|>
+            |> -> <|
+                "Color" -> 5
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221017-QK38XC"
+]

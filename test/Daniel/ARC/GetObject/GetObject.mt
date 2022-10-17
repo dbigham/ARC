@@ -130,3 +130,25 @@ Test[
     ,
     TestID -> "GetObject-20220917-JPWP37"
 ]
+
+Test[
+    Daniel`ARC`GetObject[
+        Daniel`ARC`Object[<|"Within" -> Daniel`ARC`Object[<|"Color" -> "Gray"|>]|>],
+        <|
+            "Objects" -> {
+                <|
+                    "Colors" -> {"Gray"},
+                    "Color" -> "Gray",
+                    "Position" -> {1, 1},
+                    "Width" -> 10,
+                    "Height" -> 10
+                |>,
+                <|"Colors" -> {"Blue"}, "Position" -> {5, 5}, "Width" -> 1, "Height" -> 1|>
+            }
+        |>
+    ]
+    ,
+    <|"Colors" -> {"Blue"}, "Position" -> {5, 5}, "Width" -> 1, "Height" -> 1|>
+    ,
+    TestID -> "GetObject-20221016-IFL46N"
+]
