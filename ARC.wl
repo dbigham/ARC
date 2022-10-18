@@ -14220,6 +14220,15 @@ Module[{tasks},
             "CodeLength" -> 28581,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "3618c87e",
+            "Timestamp" -> DateObject[{2022, 10, 18}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 28570,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -18307,7 +18316,7 @@ PropertyConditionQuality[property_String] :=
                     listPosition = Lookup[
                         $propertyListPositions,
                         property,
-                        If [MatchQ[property, "Type" | "Components" | "Except"],
+                        If [MatchQ[property, "Type" | "Components" | "Except" | "Within"],
                             (* Not really a core property, but can occur in outputs.
                                e.g. "Type" -> "Group" *)
                             1
@@ -27865,12 +27874,13 @@ ARCParallelInitialize[] :=
                     Quiet[
                         AppendTo[$Path, FileNameJoin[{$DropboxDir, "PersonalWL", "danielb", "src"}]];
                         AppendTo[$Path, FileNameJoin[{$WyattDir, "Backend", "src", "wl"}]];
+                        Get["Daniel`ARC`"];
+                        ARCMXGet[];
+                        ReloadARC[];
                         Daniel`ARC`Private`$disableARCLogScopes = True;
                         Daniel`ARC`$ARCEchoTimeLimitExceeded = False;
                         Daniel`ARC`Private`$testRun = True;
-                        Get["Daniel`ARC`"];
-                        ARCMXGet[];
-                        ReloadARC[],
+                        ,
                         {
                             General::shdw,
                             (* In M13, Wyatt's TypeOf symbol results in this message I think. *)
