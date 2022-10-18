@@ -11,7 +11,7 @@
 *)
 
 Test[
-    DevTools`ERP`NormalizeOutput[
+    ERPTesting`NormalizeOutput[
         Module[
             {parsedScene, object},
             parsedScene = Daniel`ARC`ARCParseScene[

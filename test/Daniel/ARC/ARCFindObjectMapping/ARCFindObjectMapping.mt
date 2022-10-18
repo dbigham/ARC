@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train", 1]
                     ]
@@ -216,7 +216,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "0ca9ddb6"]["Train", 2]
                     ]
@@ -385,7 +385,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "3c9b0459"]["Train", 1]
                     ]
@@ -412,7 +412,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "1caeab9d"]["Train", 1]
                     ]
@@ -493,7 +493,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "jnohuorzh"]["Train", 1]
                     ]
@@ -545,7 +545,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "25d487eb"]["Train", 1]
                     ]
@@ -596,7 +596,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 KeyTake[
                     Daniel`ARC`SimplifyObjects[
                         Daniel`ARC`ARCFindObjectMapping[
@@ -629,7 +629,7 @@ Test[
 
 Test[
     Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCFindObjectMapping[
                 Daniel`ARC`ARCParseFile[file = "746b3537"]["Train", 1],
                 "FormMultiColorCompositeObjects" -> False
@@ -657,7 +657,7 @@ Test[
 
 Test[
     Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCFindObjectMapping[
                 Daniel`ARC`ARCParseFile[file = "1A2E2828"]["Train", 1],
                 "FormMultiColorCompositeObjects" -> False
@@ -709,7 +709,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "ed36ccf7"]["Train", 2],
                         "SingleObject" -> True
@@ -737,7 +737,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "c59eb873"]["Train", 1]
                     ]
@@ -773,7 +773,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCFindObjectMapping[
                         Daniel`ARC`ARCParseFile[file = "surface-pixel-count"]["Train", 1]
                     ]
@@ -806,7 +806,7 @@ Test[
 
 Test[
     Daniel`ARC`SimplifyObjects[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCFindObjectMapping[
                 Daniel`ARC`ARCParseFile[file = "ff28f65a"]["Train", 3],
                 "SingleObject" -> True

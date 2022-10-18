@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCObjectFromAllPixels[
                     Daniel`ARC`ARCParseFile["ed36ccf7"]["Train", 2, "Input"],
                     0
@@ -114,7 +114,7 @@ Test[
 
 Test[
     Daniel`ARC`SimplifyObjects["ExtraKeys" -> "PixelPositions"][
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCObjectFromAllPixels[
                 Daniel`ARC`ARCParseFile["ed36ccf7"]["Train", 2, "Input"],
                 0,

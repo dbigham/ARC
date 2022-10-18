@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Length[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     With[
                         {parsedFile = Daniel`ARC`ARCParseFile["0ca9ddb6"]},
                         Daniel`ARC`ARCParseInputAndOutputScenes[
@@ -37,7 +37,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     With[
                         {parsedFile = Daniel`ARC`ARCParseFile["25d8a9c8"]},
                         Daniel`ARC`ARCParseInputAndOutputScenes[
@@ -71,7 +71,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     With[
                         {parsedFile = Daniel`ARC`ARCParseFile["25d8a9c8"]},
                         Daniel`ARC`ARCParseInputAndOutputScenes[

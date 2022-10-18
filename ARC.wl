@@ -615,6 +615,8 @@ ARCSelectMatchingObjectsForRelationship::usage = "ARCSelectMatchingObjectsForRel
 
 ARCReferenceForObjectSet::usage = "ARCReferenceForObjectSet  "
 
+ARCReplaceObjectsWithUUIDReference::usage = "ARCReplaceObjectsWithUUIDReference  "
+
 Begin["`Private`"]
 
 
@@ -4310,6 +4312,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         (*ReturnIfDifferingInputAndOutputSize[examples];*)
         
+        (* HERE FIND *)
+        
         (* NOTE: We don't want to ReturnIfFailure here, since there may be cases where we are
                  unable to find rules when forming composite objects, but if we try again
                  without forming composite objects below, it may work. This also brings to mind
@@ -6721,20 +6725,32 @@ ARCApplyRules[objectIn_Association, rulesIn_List, inputScene_Association, output
         
         (*ARCEcho[ARCSimplifyRules[rules]];*)
         
-        rules = Replace[
-            ResolveValues[
-                rules,
-                <||>,
-                inputScene
-            ],
-            (* If any conditions refer to objects which have been resolved from the scene,
-               prune them to just have their UUID so that if we echo rules, things won't be
-               too verbose. *)
-            object: KeyValuePattern["UUID" -> _] :> KeyTake[object, "UUID"],
-            {0, Infinity}
-        ];
+        (* If any of the rule patterns involve object references, then resolve those
+           references. e.g. 63613498 *)
+        rules =
+            Function[{rule},
+                Replace[
+                    rule,
+                    HoldPattern[Rule][pattern_, conclusion_] :> Rule[
+                        (* If any conditions refer to objects which have been resolved from the scene,
+                           prune them to just have their UUID so that if we echo rules, things won't be
+                           too verbose. *)
+                        ARCReplaceObjectsWithUUIDReference[
+                            ReturnIfFailure@
+                            ResolveValues[
+                                pattern,
+                                <||>,
+                                inputScene
+                            ]
+                        ]
+                        ,
+                        conclusion
+                    ]
+                ]
+            ] /@ rules;
         
         (*ARCEcho[ARCSimplifyRules[rules]];*)
+        (*Throw["HERE"];*)
         
         (* We need to set $objects since ARCRuleToPattern makes use of that for some
            Conditions, such as checking relationship. ($relationships) *)
@@ -6752,6 +6768,8 @@ ARCApplyRules[objectIn_Association, rulesIn_List, inputScene_Association, output
                 ] &
             ]
         ];
+        
+        (*ARCEcho[ARCSimplifyRules[matchingRules]];*)
         
         If [MatchQ[matchingRules, {_, __}],
             (* If there are multiple matching rules, we want to apply the most specific
@@ -15641,12 +15659,19 @@ ARCRuleToPattern[pattern_ -> _] :=
 
 ARCRuleToPattern[<||>] := _
 
+ARCRuleToPattern[HoldPattern[Alternatives][alternatives___]] :=
+    Alternatives @@ (ARCRuleToPattern /@ {alternatives})
+
 ARCRuleToPattern[pattern_] :=
     Module[{res, pattern2, conditions},
         
         res = Replace[
             pattern2 = Replace[
-                Normal[KeyDrop[pattern, Join[{"Except"}, $getObjectKeysToDrop]]],
+                Replace[
+                    pattern,
+                    patternAssoc_Association :>
+                        Normal[KeyDrop[patternAssoc, Join[{"Except"}, $getObjectKeysToDrop]]]
+                ],
                 {
                     HoldPattern[Rule]["Shapes", shape_] :> (
                         (* We want the object to have this shape as one of its shapes. *)
@@ -15667,7 +15692,10 @@ ARCRuleToPattern[pattern_] :=
                     ] /@ propertiesWithMissingValues
                 ]
             ];
-            If [(relationshipConditions = KeyTake[pattern, $relationshipNames]) =!= <||>,
+            If [And[
+                    AssociationQ[pattern],
+                    (relationshipConditions = KeyTake[pattern, $relationshipNames]) =!= <||>
+                ],
                 KeyValueMap[
                     Function[{relationshipName, relatedObjectReference},
                         AppendTo[
@@ -15717,7 +15745,7 @@ ARCRuleToPattern[pattern_] :=
             {0, Infinity}
         ];
         
-        If [!MissingQ[pattern["Except"]],
+        If [AssociationQ[pattern] && !MissingQ[pattern["Except"]],
             Except[
                 ARCRuleToPattern[pattern["Except"]],
                 res
@@ -28516,6 +28544,22 @@ ARCReferenceForObjectSet[objectsToReference_List, objectsNotToReference_List, re
             
             Missing["NotFound"]
         ]
+    ]
+
+(*!
+    \function ARCReplaceObjectsWithUUIDReference
+    
+    \calltable
+        ARCReplaceObjectsWithUUIDReference[expr] '' Given an expression, looks for objects and leaves just their UUID key-value as a reference.
+    
+    \maintainer danielb
+*)
+Clear[ARCReplaceObjectsWithUUIDReference];
+ARCReplaceObjectsWithUUIDReference[expr_] :=
+    Replace[
+        expr,
+        object: KeyValuePattern["UUID" -> _] :> KeyTake[object, "UUID"],
+        {0, Infinity}
     ]
 
 End[]

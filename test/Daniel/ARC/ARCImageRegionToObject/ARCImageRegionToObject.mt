@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCImageRegionToObject[
                     <|
                         "Color" -> 2,
@@ -127,7 +127,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCImageRegionToObject[
                     <|
                         "Color" -> 2,
@@ -243,7 +243,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCImageRegionToObject[
                     <|
                         "Color" -> 2,
@@ -320,7 +320,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCImageRegionToObject[
                     <|
                         "Color" -> 2,

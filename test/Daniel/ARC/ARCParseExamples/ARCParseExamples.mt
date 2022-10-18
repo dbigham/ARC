@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseExamples[file = "0ca9ddb6"][[1 ;; 1]]
                 ]
             ]

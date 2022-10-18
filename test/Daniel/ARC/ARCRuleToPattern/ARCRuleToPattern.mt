@@ -49,7 +49,7 @@ Test[
 ]
 
 Test[
-    DevTools`ERP`NormalizeOutput[
+    ERPTesting`NormalizeOutput[
         Daniel`ARC`ARCRuleToPattern[
             <|
                 "Width" -> 1,
@@ -79,7 +79,7 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             With[
                 {
                     pattern = Daniel`ARC`ARCRuleToPattern[

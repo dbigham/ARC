@@ -16,7 +16,7 @@ Test[
             Function[
                 Replace[
                     #1,
-                    assoc_Association :> DevTools`ERP`NormalizeOutput[assoc],
+                    assoc_Association :> ERPTesting`NormalizeOutput[assoc],
                     {1, Infinity},
                     Heads -> True
                 ]

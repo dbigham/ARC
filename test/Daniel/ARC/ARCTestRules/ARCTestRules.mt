@@ -14,10 +14,10 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Utility`BlockUUID[
-                DevTools`ERP`NormalizeOutput["Key" -> "TestIndex"][
-                    DevTools`ERP`NormalizeOutput["Key" -> "AbsoluteTimeUsed"][
-                        DevTools`ERP`NormalizeOutput["Key" -> "CPUTimeUsed"][
-                            DevTools`ERP`NormalizeOutput["Key" -> "MemoryUsed"][
+                ERPTesting`NormalizeOutput["Key" -> "TestIndex"][
+                    ERPTesting`NormalizeOutput["Key" -> "AbsoluteTimeUsed"][
+                        ERPTesting`NormalizeOutput["Key" -> "CPUTimeUsed"][
+                            ERPTesting`NormalizeOutput["Key" -> "MemoryUsed"][
                                 With[
                                     {
                                         examples = Daniel`ARC`ARCParseFile[file = "0ca9ddb6"][

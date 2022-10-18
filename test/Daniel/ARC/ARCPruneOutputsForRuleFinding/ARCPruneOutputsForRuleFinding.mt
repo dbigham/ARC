@@ -13,8 +13,8 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
-                DevTools`ERP`NormalizeOutput["Key" -> "OutputComponentUUID"][
+            ERPTesting`NormalizeOutput[
+                ERPTesting`NormalizeOutput["Key" -> "OutputComponentUUID"][
                     Daniel`ARC`ARCPruneOutputsForRuleFinding[
                         Utility`ReturnIfFailure[
                             Daniel`ARC`ARCFindObjectMapping[

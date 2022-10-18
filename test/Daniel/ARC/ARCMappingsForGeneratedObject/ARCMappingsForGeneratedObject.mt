@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            res = DevTools`ERP`NormalizeOutput[
+            res = ERPTesting`NormalizeOutput[
                 Module[
                     {parsedScene, object},
                     parsedScene = Daniel`ARC`ARCParseScene[

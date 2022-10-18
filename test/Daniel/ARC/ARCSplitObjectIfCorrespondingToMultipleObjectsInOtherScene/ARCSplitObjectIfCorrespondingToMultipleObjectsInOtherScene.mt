@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
                     <|
                         "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",
@@ -201,7 +201,7 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCSplitObjectIfCorrespondingToMultipleObjectsInOtherScene[
                 <|
                     "UUID" -> "09ce3815-e6e9-416b-81e4-6e66d5ed0270",

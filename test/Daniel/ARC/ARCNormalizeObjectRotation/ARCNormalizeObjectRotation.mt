@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCNormalizeObjectRotation[
                     Utility`Sett[
                         Daniel`ARC`ARCImageRegionToObject[

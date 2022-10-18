@@ -13,7 +13,7 @@
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCParseScene[
                     Daniel`ARC`ARCParseFile["9565186b"]["Train", 1, "Input"]
                 ]
@@ -877,7 +877,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCParseScene[
                     Daniel`ARC`ARCParseFile["0ca9ddb6"]["Train", 1, "Output"]
                 ]
@@ -2156,7 +2156,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCParseScene[
                     Daniel`ARC`ARCParseFile["228f6490"]["Train", 1, "Input"]
                 ]
@@ -4389,7 +4389,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Daniel`ARC`ARCParseScene[
                     Daniel`ARC`ARCParseFile["9565186b"]["Train", 1, "Input"],
                     "FormMultiColorCompositeObjects" -> False
@@ -4839,7 +4839,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseScene[
                         Daniel`ARC`ARCParseFile["b60334d2"]["Test", 1, "Output"]
                     ]
@@ -4893,7 +4893,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseScene[
                         Daniel`ARC`ARCParseFile["321b1fc6"]["Train", 2, "Input"]
                     ]
@@ -4948,7 +4948,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseScene[
                         Daniel`ARC`ARCParseFile["ihiz27k2n"]["Train", 1, "Output"]
                     ]
@@ -4991,7 +4991,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects["ExtraKeys" -> "ZOrder"][
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseScene[
                         Daniel`ARC`ARCParseFile["178fcbfb"]["Train", 1, "Output"]
                     ]
@@ -5044,7 +5044,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects["ExtraKeys" -> {"PixelPositions", "FilledArea"}][
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCParseScene[
                         Daniel`ARC`ARCParseFile["ed36ccf7"]["Train", 2, "Input"],
                         "SingleObject" -> True
@@ -5076,7 +5076,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Module[
                     {res},
                     res = Daniel`ARC`SimplifyObjects["ExtraKeys" -> "GridPosition"][
@@ -5696,7 +5696,7 @@ Test[
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
-            DevTools`ERP`NormalizeOutput[
+            ERPTesting`NormalizeOutput[
                 Module[
                     {res},
                     res = Daniel`ARC`SimplifyObjects["ExtraKeys" -> "GridPosition"][

@@ -14,7 +14,7 @@ Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
         DevTools`TestingTools`SlowTest[
             Daniel`ARC`SimplifyObjects[
-                DevTools`ERP`NormalizeOutput[
+                ERPTesting`NormalizeOutput[
                     Daniel`ARC`ARCMakeObjectsForSubImages[
                         <|
                             "UUID" -> "f3922cf7-30b2-4899-afb2-2d67e0ab35bd",
@@ -147,7 +147,7 @@ Test[
 
 Test[
     Utility`ReplaceAssociationsWithUnevaluatedAssociations[
-        DevTools`ERP`NormalizeOutput[
+        ERPTesting`NormalizeOutput[
             Daniel`ARC`ARCMakeObjectsForSubImages[
                 <|
                     "UUID" -> "f3922cf7-30b2-4899-afb2-2d67e0ab35bd",
