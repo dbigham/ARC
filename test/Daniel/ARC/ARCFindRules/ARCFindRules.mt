@@ -3659,3 +3659,65 @@ Test[
     ,
     TestID -> "ARCFindRules-20221017-QK38XC"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "29c11459"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "MapComponents",
+                    "Rules" -> {
+                        <|"X.Rank" -> 2|> -> <|
+                            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                            "X2" -> 5
+                        |>,
+                        <|"X.Rank" -> 1|> -> <|
+                            "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                            "X" -> 7
+                        |>,
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Image" -> Daniel`ARC`ARCScene[{{5}}],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y"],
+                                        "X" -> 6
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>
+            |>
+        },
+        "Groups" -> {
+            <|
+                "X" -> 1,
+                "X2" -> 11,
+                "Width" -> 11,
+                "Height" -> 1,
+                "Components" -> {
+                    Repeated[
+                        <|"Shape" -> <|"Name" -> "Pixel"|>, "Y" -> "Same"|>,
+                        {2}
+                    ]
+                },
+                "ZOrder" -> 0,
+                "XMiddle" -> 6,
+                "FilledArea" -> 2,
+                "SurfacePixelCount" -> 2,
+                "VerticalLineSymmetry" -> False,
+                "HollowCount" -> 0
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221019-4FY74X"
+]

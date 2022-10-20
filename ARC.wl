@@ -617,6 +617,8 @@ ARCReferenceForObjectSet::usage = "ARCReferenceForObjectSet  "
 
 ARCReplaceObjectsWithUUIDReference::usage = "ARCReplaceObjectsWithUUIDReference  "
 
+ARCParallelTest::usage = "ARCParallelTest  "
+
 Begin["`Private`"]
 
 
@@ -3471,7 +3473,7 @@ ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[
         
         mapping =
             ReturnIfFailure@
-            ARCGroupByOutputObject[mapping, outputObjects, input["Background"], input["Width"], input["Height"]];
+            ARCGroupByOutputObject[mapping, input, output];
         
         ReturnIfNotMissing@
         ARCConsiderMappingObjectsByColor[inputObjects, outputObjects, output, mapping];
@@ -5202,6 +5204,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho2[objectMappings];*)
         (*ARCEcho[objectMappings];*)
         
+        (* HERE11 *)
+        
         res =
             ARCLogScope["ARCFindRules"]@
             ARCFindRules[examples, objectMappings, referenceableInputObjects];
@@ -5313,6 +5317,8 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
             ruleFindings,
             groups
         },
+        
+        (* HERE13 *)
         
         (* Form rules for removed/deleted objects. i.e. Objects that we weren't able to
            map. *)
@@ -6881,16 +6887,26 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                             key,
                             value,
                             Function[{object2, key2, value2},
-                                ReturnIfFailure@
-                                ARCApplyConclusion[
-                                    key2,
+                                Block[
+                                    {
+                                        $inputScene = inputScene,
+                                        (* MapComponents transforms may use Object["Parent"] to
+                                           refer to the input composite object. *)
+                                        $parent = object2
+                                    },
                                     ReturnIfFailure@
-                                    ResolveValues[value2, object2, inputScene, "Activate" -> True],
-                                    object2,
-                                    objectOut,
-                                    (* Do we only need to pass the output scene here, or is the input
-                                       scene sometimes needed as well? *)
-                                    outputScene
+                                    ARCApplyConclusion[
+                                        key2,
+                                        ReturnIfFailure@
+                                        ResolveValues[value2, object2, inputScene, "Activate" -> True],
+                                        object2,
+                                        objectOut,
+                                        (* Do we only need to pass the output scene here, or is the input
+                                           scene sometimes needed as well? As of Oct 2022, it does look like
+                                           the input scene is sometimes needed as well, such as for
+                                           MapComponents. For now we'll pass it via a Block above. *)
+                                        outputScene
+                                    ]
                                 ]
                             ],
                             object
@@ -7101,6 +7117,16 @@ ARCApplyConclusion[key:"Y", y_Integer, objectIn_Association, objectOut_Associati
                     "Position" -> ReplacePart[objectOut["Position"], 1 -> y]
                     ,
                     Nothing
+                ],
+                Replace[
+                    Lookup[objectOut, "Y2", objectIn["Y2"]],
+                    {
+                        y2: Except[_Missing] :> (
+                            (* Analogous to how 29c11459 updates X which increases width.*)
+                            "Height" -> (y2 - y + 1)
+                        ),
+                        _ :> Nothing
+                    }
                 ]
             }
         ]
@@ -7131,6 +7157,18 @@ ARCApplyConclusion[key:"X", x_Integer, objectIn_Association, objectOut_Associati
                     "Position" -> ReplacePart[objectOut["Position"], 2 -> x]
                     ,
                     Nothing
+                ],
+                Replace[
+                    Lookup[objectOut, "X2", objectIn["X2"]],
+                    {
+                        x2: Except[_Missing] :> (
+                            (* e.g. 29c11459
+                               Updates X but doesn't update X2, and the implication is that
+                               its width should increase. *)
+                            "Width" -> (x2 - x + 1)
+                        ),
+                        _ :> Nothing
+                    }
                 ]
             }
         ]
@@ -7363,6 +7401,70 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "AddCompone
              ARCConstructObject[component, "Parent" -> objectIn, "Scene" -> scene]
         ] /@ finalObject["Components"];
         (*ARCEcho2[finalObject["Components"]];*)
+        ARCObjectImageFromComponents[finalObject]
+    ]
+
+ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "MapComponents"}], objectIn_Association, objectOut_Association, outputScene_Association] :=
+    Module[{finalObject = objectIn, ruleList, objects, addObjects},
+        
+        ruleList = value["Rules"];
+        
+        objects =
+            Lookup[objectIn, "Components", {KeyTake[objectIn, {"Image", "Position"}]}];
+        
+        addObjects = FirstCase[
+            ruleList,
+            KeyValuePattern["Transform" -> KeyValuePattern["Type" -> "AddObjects"]]
+        ];
+        
+        If [!MissingQ[addObjects],
+            ruleList = DeleteCases[ruleList, addObjects]
+        ];
+        
+        (* Set $parent so that Object["Parent"] can be resolved if used. *)
+        Block[{$parent = objectIn},
+            objects =
+                Function[{object},
+                    ReturnIfFailure@
+                    ARCApplyRules[object, ruleList, $inputScene, outputScene]
+                ] /@ objects;
+            
+            If [!MissingQ[addObjects],
+                (* Add objects which don't correspond with objects from the input. *)
+                objects = Join[
+                    objects,
+                    Function[{object},
+                        ReturnIfFailure@
+                        ARCConstructObject[
+                            object,
+                            "Scene" -> outputScene
+                        ]
+                    ] /@
+                        ReturnIfFailure@
+                        ResolveValues[
+                            addObjects["Transform", "Objects"],
+                            <||>,
+                            $inputScene,
+                            "Activate" -> True
+                        ]
+                ]
+            ]
+        ];
+        
+        (*ARCEcho2[objects];*)
+        
+        (* HERE14 *)
+        
+        finalObject["Components"] = objects;
+        finalObject["Components"] = Function[{component},
+             ReturnIfFailure@
+             ARCConstructObject[component, "Parent" -> objectIn, "Scene" -> outputScene]
+        ] /@ finalObject["Components"];
+        
+        (*ARCEcho2[finalObject["Components"]];*)
+        
+        (*Throw["HERE"];*)
+        
         ARCObjectImageFromComponents[finalObject]
     ]
 
@@ -8152,6 +8254,19 @@ GetObject[object: _Association | _String, parsedScene_Association, opts:OptionsP
         object === "Object",
             (* Single object in scene. *)
             parsedScene[["Objects", 1]],
+        object === "Parent",
+            (* Refers to the parent composite object when forming rules for MapComponents
+               transforms. e.g. 29c11459 *)
+            (* HERE15 *)
+            If [SpecifiedQ[$parent],
+                (* When within ARCApplyRules, we define $parent. *)
+                $parent
+                ,
+                (* When finding rules, we set this property on the 'scene' so that we can
+                   look up the parent here. *)
+                ReturnFailureIfMissing@
+                parsedScene["Parent"]
+            ],
         (* Note that `object` can be a string, so we explicitly check first that it's an
            association prior to checking its Context value. *)
         AssociationQ[object] && object["Context"] === "Component",
@@ -8789,7 +8904,11 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
             referenceableComponents = <||>,
             referenceableObjects = referenceableInputObjects,
             transformType,
-            transformDetails
+            transformDetails,
+            ruleFindings,
+            additionalRules,
+            allObjects,
+            examples2
         },
         
         (* HERE1 *)
@@ -8831,6 +8950,87 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
                 MatchQ[#, KeyValuePattern["Transform" -> type_]] &
             ],
                 transformType = conclusions[[1, "Transform", "Type"]];
+                
+                If [transformType === "MapComponents",
+                    
+                    (* Create synthetic 'examples' to represent each of the mappings from
+                       the components of an input object to the components of an output
+                       object. *)
+                    examples2 = MapIndexed[
+                        Function[{conclusion, index},
+                            Join[
+                                Sett[
+                                    examples[[conclusion["Example"]]],
+                                    (* Set this new property on the input scene so that "Parent"
+                                       can be used as a referenceable object to refer to the
+                                       parent component object from the input. *)
+                                    {"Input", "Parent"} -> conclusion["Input"]
+                                ],
+                                <|
+                                    "ObjectMapping" -> conclusion["Transform", "Mapping"]
+                                |>
+                            ]
+                        ],
+                        conclusions
+                    ];
+                    
+                    (*ARCEcho2[examples2[[All, "ObjectMapping"]]];*)
+                    (*ARCEcho2[examples2];*)
+                    (*Throw["HERE"];*)
+                    
+                    (* Recurse into ARCFindRules to try to find rules that can map from the
+                       input composite objects to output composite objects. *)
+                    {ruleSets, ruleFindings, additionalRules} =
+                        ReturnIfFailure@
+                        ARCFindRules[
+                            examples2,
+                            examples2[[All, "ObjectMapping"]],
+                            Prepend[
+                                referenceableInputObjects,
+                                Object["Parent"] -> <||>
+                            ]
+                        ];
+                    
+                    (* HERE12 *)
+                    
+                    If [Length[ruleSets] > 0,
+                        (*ARCEcho[ARCSimplifyRules[ruleSets]];*)
+                        (* TODO: At the moment I'm not sure how to produce this allObjects
+                                 list in the context of MapComponents, so we'll just pass
+                                 Missing[] in for this value to ARCCleanRules, which will
+                                 mean that its Except rules formation step will get
+                                 skipped. *)
+                        allObjects = Missing[];
+                        Replace[
+                            ReturnIfFailure@
+                            ARCChooseBestRuleSet[
+                                ReturnIfFailure[ARCCleanRules[#, allObjects]] & /@ ruleSets
+                            ],
+                            {
+                                res2: Except[KeyValuePattern["Rules" -> _List]] :> ReturnFailure[
+                                    "InvalidRuleResult",
+                                    "After attempting to choose the best rule set, we got something that isn't an association.",
+                                    "Result" -> res2
+                                ],
+                                res2_ :> Return[
+                                    <|
+                                        "Transform" -> <|
+                                            "Type" -> "MapComponents",
+                                            "Rules" -> Join[
+                                                res2["Rules"],
+                                                additionalRules
+                                            ]
+                                        |>
+                                    |>,
+                                    Module
+                                ]
+                            }
+                        ]
+                    ];
+                    
+                    Return[Missing["NotFound"], Module]
+                ];
+                
                 conclusions = Function[{conclusion},
                     Prepend[
                         KeyDrop[conclusion, "Transform"],
@@ -12338,24 +12538,11 @@ ARCNotebook[fileIn_String] :=
     \function ARCGroupByOutputObject
     
     \calltable
-        ARCGroupByOutputObject[mapping] '' Given a mapping from input objects to output objects, if there are any many-to-one mappings, form groups for them in the LHS.
+        ARCGroupByOutputObject[mapping, inputScene, outputScene] '' Given a mapping from input objects to output objects, if there are any many-to-one mappings, form groups for them in the LHS.
     
     Examples:
     
-    ARCGroupByOutputObject[
-        <|
-            <|"UUID" -> 1|> -> <|"UUID" -> 3|>,
-            <|"UUID" -> 2|> -> <|"UUID" -> 3|>,
-            <|"UUID" -> 4|> -> <|"UUID" -> 5|>
-        |>
-    ]
-    
-    ===
-    
-    {
-        <|"Type" -> "Group", "Components" -> {<|"UUID" -> 1|>, <|"UUID" -> 2|>}|> -> <|"UUID" -> 3|>,
-        <|"UUID" -> 4|> -> <|"UUID" -> 5|>
-    }
+    See function notebook
     
     Unit tests:
     
@@ -12364,15 +12551,15 @@ ARCNotebook[fileIn_String] :=
     \maintainer danielb
 *)
 Clear[ARCGroupByOutputObject];
-ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_, sceneWidth_Integer, sceneHeight_Integer] :=
-    Module[{outputObjectsByUUID, outputObjectsByUUID2, mapping2, outputObject},
+ARCGroupByOutputObject[mapping_Association, inputScene_Association, outputScene_Association] :=
+    Module[{outputObjectsByUUID, outputObjectsByUUID2, outputComponentLookup, mapping2, outputObject},
         
         outputObjectsByUUID = ObjectsByAttribute[Values[mapping], "UUID"];
         
         (* If there's a many-to-one mapping, the multiple output RHSs will have their
            Position property set to a RelativePosition which will not be consistent,
            so we need to map back to the original output object in that case. *)
-        outputObjectsByUUID2 = ObjectsByAttribute[outputObjects, "UUID"];
+        outputObjectsByUUID2 = ObjectsByAttribute[outputScene["Objects"], "UUID"];
         
         XARCEcho[mapping];
         
@@ -12398,8 +12585,8 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
                     Rule[
                         group = ARCSetGroupProperties[
                             lhsGroup,
-                            sceneWidth,
-                            sceneHeight
+                            inputScene["Width"],
+                            inputScene["Height"]
                         ],
                         outputObject = outputObjectsByUUID2[outputObjectUUID];
                         If [!MatchQ[outputObject["Components"], {__}],
@@ -12407,30 +12594,62 @@ ARCGroupByOutputObject[mapping_Association, outputObjects_List, backgroundColor_
                                multiple input objects with a single non-composite output object. *)
                             outputObject
                             ,
-                            (* The output object has components, so for now we'll treat this as
-                               AddComponents. *)
-                            ARCAddComponentsTransform[
-                                group,
-                                outputObject;
-                                If [!MissingQ[outputObject["Components"]],
-                                    outputObject
-                                    ,
-                                    Sett[outputObject, "Components" -> {outputObject}]
-                                ],
-                                (* The output objects that correspond with input objects. *)
-                                If [!MissingQ[outputObject["Components"]],
-                                    Values@
-                                    KeyTake[
-                                        ObjectsByAttribute[outputObject["Components"], "UUID"],
-                                        lhsGroup[[All, "OutputComponentUUID"]]
+                            outputComponentLookup = ObjectsByAttribute[outputObject["Components"], "UUID"];
+                            
+                            (* Are all of the input components unchanged as output components? *)
+                            If [AllTrue[
+                                    group["Components"],
+                                    Function[{inputComponent},
+                                        ARCSameQ[
+                                            inputComponent,
+                                            outputComponentLookup[inputComponent["OutputComponentUUID"]]
+                                        ]
                                     ]
-                                    ,
-                                    {outputObject}
                                 ],
-                                <|
-                                    "Width" -> sceneWidth,
-                                    "Height" -> sceneHeight
-                                |>
+                                (* Since all of the input components are unchanged as
+                                   output components, we can treat this as an "AddComponents"
+                                   transform. *)
+                                ARCAddComponentsTransform[
+                                    group,
+                                    If [!MissingQ[outputObject["Components"]],
+                                        outputObject
+                                        ,
+                                        Sett[outputObject, "Components" -> {outputObject}]
+                                    ],
+                                    (* The output objects that correspond with input objects. *)
+                                    If [!MissingQ[outputObject["Components"]],
+                                        Values@
+                                        KeyTake[
+                                            ObjectsByAttribute[outputObject["Components"], "UUID"],
+                                            lhsGroup[[All, "OutputComponentUUID"]]
+                                        ]
+                                        ,
+                                        {outputObject}
+                                    ],
+                                    inputScene
+                                ]
+                                ,
+                                (* At least some of the input components end up getting modified
+                                   in the output, so we'll treat this as a MapComponents
+                                   transform. *)
+                                Sett[
+                                    outputObject,
+                                    "Transform" -> <|
+                                        "Type" -> "MapComponents",
+                                        "Mapping" ->
+                                            (* TODO: Currently we're throwing away the assumed
+                                                     mapping from input components to output
+                                                     components. We could enhance ARCFindObjectMapping
+                                                     to pay attention to whether
+                                                     OutputComponentUUID is already set/known,
+                                                     and if so, respect that known mapping. *)
+                                            ReturnIfFailure@
+                                            ARCFindObjectMapping[
+                                                Sett[inputScene, "Objects" -> group["Components"]],
+                                                Sett[outputScene, "Objects" -> outputObject["Components"]]
+                                            ]
+                                    |>
+                                ]
                             ]
                         ]
                     ]
@@ -12688,6 +12907,10 @@ ARCObjectImageFromComponents[object_Association] :=
                                 "Object" -> object
                             ];
                             x - object["X"]
+                        },
+                        _Missing :> {
+                            ReturnFailureIfMissing[component["Y"]] - object["Y"],
+                            ReturnFailureIfMissing[component["X"]] - object["X"]
                         }
                     }
                 ]
@@ -12948,7 +13171,16 @@ Module[{tasks},
             "CodeLengthComment" -> "Also includes in-progress work for 25d487eb.",
             "ExampleImplemented" -> "referenceable-components",
             "ImplementationTime" -> Quantity[6, "Hours"],
-            "NewGeneralizedSuccesses" -> {"5521c0d9", "6c434453", "6e82a1ae", "aabf363d"}
+            "NewGeneralizedSuccesses" -> {"5521c0d9", "6c434453", "6e82a1ae", "aabf363d"},
+            (* When I implemented 63613498, I needed to allow it to try the
+               FormMultiColorCompositeObjects -> False parsing mode even if working rules
+               were found when forming multi-color objects, and then choosing the rules
+               with the higher score. But that sadly breaks this input because it chooses
+               rules that work for the training examples but not the test example.
+               I haven't fought with it yet -- I could probably narrow the gap in scores,
+               but the margin (-0.55 vs -0.266) feels too wide to be successful at scoring
+               unless we come up with a breakthrough idea. *)
+            "KnownFailure" -> True
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -14229,6 +14461,23 @@ Module[{tasks},
             "CodeLength" -> 28570,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "29c11459",
+            "Timestamp" -> DateObject[{2022, 10, 19}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 28909,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "8d510a79",
+            "Timestamp" -> DateObject[{2022, 10, 19}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 28917,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -14393,7 +14642,7 @@ ARCTaskMarkdown[nameIn_String] :=
     \maintainer danielb
 *)
 Clear[ARCCleanRules];
-ARCCleanRules[rulesIn_List, objects_List] :=
+ARCCleanRules[rulesIn_List, objects_] :=
     Module[{rules = rulesIn, condition, conclusion},
         
         rules = Replace[
@@ -14476,7 +14725,9 @@ ARCCleanRules[rulesIn_List, objects_List] :=
         
         (* We now also call this deeper in ARCFindRules, so not sure if we also need to call
            it here. *)
-        rules = ARCFormExceptRules[rules, objects];
+        If [!MissingQ[objects],
+            rules = ARCFormExceptRules[rules, objects]
+        ];
         
         ARCSortRules[rules]
     ]
@@ -15991,7 +16242,7 @@ ARCObjectWithComponent[objects_List, component_Association] :=
     \function ARCGetMatchingComponent
     
     \calltable
-        ARCGetMatchingComponent[object, component] '' Returns the component from the given object that matches the given component, or Missing if not found.
+        ARCGetMatchingComponent[compositeObject, object] '' Returns the component from the given object that matches the given component, or Missing if not found.
     
     Examples:
     
@@ -16004,10 +16255,24 @@ ARCObjectWithComponent[objects_List, component_Association] :=
     \maintainer danielb
 *)
 Clear[ARCGetMatchingComponent];
-ARCGetMatchingComponent[object_Association, component_Association] :=
+ARCGetMatchingComponent[compositeObject_Association, object_Association] :=
     SelectFirst[
-        object["Components"],
-        ARCSameQ[#, component] &
+        compositeObject["Components"],
+        Function[{component},
+            Or[
+                (* The object has the same position and monochrome shape/image as the component. *)
+                And[
+                    object["Position"] === component["Position"],
+                    object["MonochromeImage"] === component["MonochromeImage"]
+                ],
+                (* The object is the same color as the component and is within the component.
+                   e.g. 29c11459 *)
+                And[
+                    object["Color"] === component["Color"],
+                    ObjectWithinQ[object, component]
+                ]
+            ]
+        ]
     ]
 
 (*!
@@ -19025,7 +19290,29 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                 pattern,
                 {
                     "Width",
-                    "Height"
+                    "Height",
+                    "FilledArea",
+                    "SurfacePixelCount",
+                    "ColorUseCount",
+                    "Width.Rank",
+                    "Width.InverseRank",
+                    "Height.Rank",
+                    "Height.InverseRank",
+                    "Length.Rank",
+                    "Length.InverseRank",
+                    "AspectRatio.Rank",
+                    "AspectRatio.InverseRank",
+                    "Area.Rank",
+                    "Area.InverseRank",
+                    "FilledArea.Rank",
+                    "FilledArea.InverseRank",
+                    "FilledProportion.Rank",
+                    "FilledProportion.InverseRank",
+                    "SurfacePixelCount.Rank",
+                    "SurfacePixelCount.InverseRank",
+                    "ColorUseCount.Rank",
+                    "ColorUseCount.InverseRank",
+                    "ZOrder"
                 }
             ];
             If [!MissingQ[patternIn["X"]],
@@ -27917,7 +28204,10 @@ ARCParallelInitialize[] :=
 Clear[ARCTestInputSet];
 Options[ARCTestInputSet] =
 {
-    "Parallel" -> False                 (*< Should the tests be run using ParallelMap? *)
+    "Parallel" -> False,                        (*< Should the tests be run using ParallelMap? *)
+    "EchoSummary" -> False,                     (*< Echo the summary? *)
+    "Files" -> All,                             (*< An explicit list of inputs can be provided. *)
+    "IncludePersonalExamples" -> Automatic      (*< When testing "Training" inputs, should we include personally created training examples? *)
 };
 ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
     Block[{$testRun = True},
@@ -27946,9 +28236,24 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
         
         (* The files to test. *)
         files =
-            FileBaseName /@
-            ReturnFailureIfMissing@
-            ARCFiles[inputSetName];
+            If [ListQ[OptionValue["Files"]],
+                OptionValue["Files"]
+                ,
+                Join[
+                    FileBaseName /@
+                    ReturnFailureIfMissing@
+                    ARCFiles[inputSetName]
+                    ,
+                    If [inputSetName === "Training" && TrueQ[OptionValue["IncludePersonalExamples"]],
+                        Select[
+                            ARCTaskLog[],
+                            TrueQ[#["PersonalExample"]] &
+                        ][[All, "ExampleImplemented"]]
+                        ,
+                        {}
+                    ]
+                ]
+            ];
         
         (*files = {"eb281b96", "3631a71a", "9ecd008a"};*)
         (*files = {"00576224"};*)
@@ -28063,7 +28368,7 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
         
         res = Association[res[[2]]];
         
-        <|
+        res = <|
             "Timestamp" -> Now,
             "Runtime" -> runtime,
             "InputSet" -> inputSetName,
@@ -28088,7 +28393,24 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                 }
             ),
             "Tasks" -> res
-        |>
+        |>;
+        
+        If [TrueQ[OptionValue["EchoSummary"]],
+            EchoIndented@
+            KeyTake[
+                res,
+                {
+                    "NewSuccess",
+                    "Fixed:KnownFailure",
+                    "Fixed:FailsOnlyDuringParallelTest",
+                    "NewFailure",
+                    "NewFailure:TimeLimitExceeded",
+                    "Runtime"
+                }
+            ]
+        ];
+        
+        res
     ]
     ]
 
@@ -28570,6 +28892,31 @@ ARCReplaceObjectsWithUUIDReference[expr_] :=
         expr,
         object: KeyValuePattern["UUID" -> _] :> KeyTake[object, "UUID"],
         {0, Infinity}
+    ]
+
+(*!
+    \function ARCParallelTest
+    
+    \calltable
+        ARCParallelTest[inputSetName] '' Runs a parallel test.
+    
+    Examples:
+    
+    ARCParallelTest["Training"]
+    
+    ARCParallelTest["Evaluation"]
+    
+    \maintainer danielb
+*)
+Clear[ARCParallelTest];
+Options[ARCParallelTest] = Options[ARCTestInputSet];
+ARCParallelTest[inputSetName_String, opts:OptionsPattern[]] :=
+    Module[{},
+        (* So that we load dependencies on EntityLink, etc. when running this in a
+           second kernel. *)
+        ReturnIfFailure[ARCMXGet[]];
+        ReturnIfFailure[ReloadARC[]];
+        ARCTestInputSet[inputSetName, opts, "Parallel" -> True, "EchoSummary" -> True]
     ]
 
 End[]

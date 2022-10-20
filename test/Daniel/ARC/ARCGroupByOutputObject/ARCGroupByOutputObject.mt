@@ -67,10 +67,15 @@ Test[
                                 "UUID" -> 5
                             |>
                         |>,
-                        {<|"UUID" -> 3, "MyKey" -> 1|>, <|"UUID" -> 5, "MyKey" -> 2|>},
-                        0,
-                        10,
-                        10
+                        <|"Width" -> 10, "Height" -> 10|>,
+                        <|
+                            "Width" -> 10,
+                            "Height" -> 10,
+                            "Objects" -> {
+                                <|"UUID" -> 3, "MyKey" -> 1|>,
+                                <|"UUID" -> 5, "MyKey" -> 2|>
+                            }
+                        |>
                     ]
                 ]
             ]
@@ -117,8 +122,10 @@ Test[
                     "X" -> 10
                 |>
             },
+            "MonochromeImage" -> Daniel`ARC`ARCScene[{{10, -1, -1, -1, -1, -1, -1, 10}}],
             "Color" -> 8,
             "ColorCount" -> 1,
+            "MostUsedColor" -> 8,
             "YInverse" -> 7,
             "XInverse" -> 8,
             "Y2Inverse" -> 7,
@@ -133,8 +140,8 @@ Test[
             "FilledProportion" -> 0.25,
             "SurfacePixelCount" -> 2,
             "VerticalLineSymmetry" -> True,
-            "HorizontalLineSymmetry" -> False,
-            "VerticalAndHorizontalLineSymmetry" -> False,
+            "HorizontalLineSymmetry" -> True,
+            "VerticalAndHorizontalLineSymmetry" -> True,
             "HollowCount" -> 0
         |> -> <|
             "UUID" -> 0,
