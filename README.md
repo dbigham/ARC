@@ -8,10 +8,10 @@ https://github.com/fchollet/ARC
 
 ## Percentage of Tasks Passing
 
-* Training tasks: 162 / 400 (40.5%)\
+* Training tasks: 163 / 400 (40.8%)\
   ![Percentage of Training Tasks Passing](TrainingTasksProgressBar.png?raw=true)
   * Implemented: 81
-  * Passing via generalization: 81
+  * Passing via generalization: 82
 * Evaluation tasks: 58 / 400 (14.5%)\
   ![Percentage of Evaluation Tasks Passing](EvaluationTasksProgressBar.png?raw=true)
 
@@ -125,7 +125,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Passing via Generalization
 
-### Training Tasks (81)
+### Training Tasks (82)
 
 The following ARC training tasks started passing after some different task was implemented.
 
@@ -210,6 +210,7 @@ The following ARC training tasks started passing after some different task was i
 * [60b61512](TaskNotes/60b61512/notes.md)
 * 3618c87e
 * [8d510a79](TaskNotes/8d510a79/notes.md)
+* [9565186b](TaskNotes/9565186b/notes.md)
 
 ### Evaluation Tasks (58)
 

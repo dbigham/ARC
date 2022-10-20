@@ -20,7 +20,7 @@ Test[
         ]
     ]
     ,
-    -0.19689732620149433
+    -0.3786104442449456
     ,
     TestID -> "ARCRuleSetScore-20220825-YKR23C"
 ]
@@ -61,7 +61,7 @@ Test[
         ]
     ]
     ,
-    -2.7056574575108066
+    -3.424366120997786
     ,
     TestID -> "ARCRuleSetScore-20221005-WC2JWK"
 ]
@@ -164,4 +164,54 @@ Test[
     5.3280708480932555
     ,
     TestID -> "ARCRuleSetScore-20221005-UT0GIB"
+]
+
+Test[
+    Daniel`ARC`ARCRuleSetScore[
+        {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "ColorMapping",
+                    "Mapping" -> {
+                        {
+                            Inactive[Plus][
+                                Inactive[Times][
+                                    Daniel`ARC`ObjectValue["Object", "YInverse"],
+                                    1.5
+                                ],
+                                0.5
+                            ],
+                            Inactive[Plus][
+                                Inactive[Times][
+                                    Daniel`ARC`ObjectValue["Object", "YInverse"],
+                                    -1.5
+                                ],
+                                12.5
+                            ]
+                        },
+                        {
+                            Inactive[Plus][
+                                Inactive[Times][
+                                    Daniel`ARC`ObjectValue["Object", "YInverse"],
+                                    -1.5
+                                ],
+                                12.5
+                            ],
+                            Inactive[Plus][
+                                Inactive[Times][
+                                    Daniel`ARC`ObjectValue["Object", "YInverse"],
+                                    1.5
+                                ],
+                                0.5
+                            ]
+                        }
+                    }
+                |>
+            |>
+        }
+    ]
+    ,
+    -14.693454324970693
+    ,
+    TestID -> "ARCRuleSetScore-20221020-UCKXYG"
 ]
