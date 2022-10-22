@@ -3544,7 +3544,7 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                     (* e.g. 29C11459 *)
                     "ExactMatch" -> False
                 ];
-            matchingComponents = <|object -> matchingComponent|>;
+            matchingComponents = <|object -> matchingComponent|>
             ,
             (* Our object is composite, so we check if one or more of our object's components are
                part of another composite object. *)
@@ -16566,7 +16566,10 @@ ARCGetMatchingComponent[compositeObject_Association, object_Association, Options
                     (* The object has the same position and monochrome shape/image as the component. *)
                     And[
                         object["Position"] === component["Position"],
-                        object["MonochromeImage"] === component["MonochromeImage"]
+                        object["MonochromeImage"] === component["MonochromeImage"],
+                        (* If two pixels happen to overlap, and they're not the same color,
+                           it feels quite risky assuming they map to each other. e.g. ca8de6ea *)
+                        !ShapeQ[object, "Pixel"]
                     ]
                 ],
                 SelectFirst[
