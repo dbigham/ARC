@@ -7058,6 +7058,9 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
             ARCRemoveExtendedMetadataFromConclusion[conclusion]
         ];
         
+        (* Ensure we didn't produce an non-Integer values for properties that need integers. *)
+        ReturnFailureIfBadValues[finalObject];
+        
         (* If this isn't a named "transform" but rather is just setting one or more
            property values of the object, then we want to be sure to keep properties
            if the conclusion didn't specify them. For example, in 178fcbfb-easier,
@@ -7541,6 +7544,7 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "AddCompone
              ARCConstructObject[component, "Parent" -> objectIn, "Scene" -> scene]
         ] /@ finalObject["Components"];
         (*ARCEcho2[finalObject["Components"]];*)
+        ReturnFailureIfBadValues[finalObject];
         ARCObjectImageFromComponents[finalObject]
     ]
 
@@ -7614,6 +7618,8 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "MapCompone
         (*ARCEcho2[finalObject["Components"]];*)
         
         (*Throw["HERE"];*)
+        
+        ReturnFailureIfBadValues[finalObject];
         
         ARCObjectImageFromComponents[finalObject]
     ]
@@ -28562,7 +28568,6 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
             thisRuntime,
             evaluationInputsWorking,
             aggregationKeys,
-            messagesQ,
             resultDetails,
             messages
         },
@@ -28627,24 +28632,19 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                 AbsoluteTiming@
                 mapFunction[
                     Function[{file},
-                        messagesQ = False;
                         taskDetails = Lookup[taskLookup, file, <||>];
                         thisRuntime = Null;
-                        Echo[file];
+                        (*Echo[file];*)
                         file -> <|
                             "File" -> file,
                             Quiet[
                                 Replace[
-                                    AbsoluteTiming@
-                                    Check[
+                                    AbsoluteTiming[
                                         resultDetails =
                                             StackComplete@
                                             ResultDetails[ARCWorkingQ[file]];
                                         messages = resultDetails["Messages"];
-                                        thisResult = resultDetails["Result"];
-                                        ,
-                                        messagesQ = True;
-                                        thisResult
+                                        thisResult = resultDetails["Result"]
                                     ],
                                     {seconds_, result_} :> (
                                         thisRuntime =
@@ -28690,14 +28690,10 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                                         ]
                                     ]
                             ],
-                            If [TrueQ[messagesQ] || ListQ[messages],
+                            If [ListQ[messages],
                                 <|
                                     "Messages" -> True,
-                                    If [!MissingQ[messages],
-                                        "MessagesDetails" -> messages
-                                        ,
-                                        Nothing
-                                    ]
+                                    "MessagesDetails" -> messages
                                 |>
                                 ,
                                 Nothing
@@ -29348,6 +29344,79 @@ ARCComponentTransform[inputObject_Association, outputObject_Association, matchin
         
         res
     ]
+
+(*!
+    \function ReturnFailureIfBadValues
+    
+    \calltable
+        ReturnFailureIfBadValues[object] '' Ensure we didn't produce an non-Integer values for properties that need integers.
+    
+    See: Wyatt["ERPPROJECT-7631"]
+    
+    Examples:
+    
+    Module[{}, ReturnFailureIfBadValues[<|"Y" -> 0.5|>]]
+    
+    ===
+    
+    Failure[
+        "IntegerExpected",
+        <|
+            "MessageTemplate" -> "The property Y is expected to have an integer value.",
+            "MessageParameters" -> <||>,
+            "Value" -> 0.5
+        |>
+    ]
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ReturnFailureIfBadValues]
+    
+    \maintainer danielb
+*)
+Clear[ReturnFailureIfBadValues];
+ReturnFailureIfBadValues[object_] :=
+    (
+        Replace[
+            object,
+            assoc_Association :> (
+                KeyValueMap[
+                    Function[{propertyName, value},
+                        If [And[
+                                MatchQ[
+                                    propertyName,
+                                    Alternatives[
+                                        "Y",
+                                        "X",
+                                        "YInverse",
+                                        "XInverse",
+                                        "Y2",
+                                        "X2",
+                                        "Y2Inverse",
+                                        "X2Inverse",
+                                        "Width",
+                                        "Height",
+                                        "Color"
+                                    ]
+                                ],
+                                MatchQ[
+                                    value,
+                                    _Real | _Rational
+                                ]
+                            ],
+                            ReturnFailure[
+                                "IntegerExpected",
+                                "The property " <> propertyName <> " is expected to have an integer value.",
+                                "Value" -> value
+                            ]
+                        ]
+                    ],
+                    assoc
+                ]
+            ),
+            {0, Infinity}
+        ];
+    )
 
 End[]
 
