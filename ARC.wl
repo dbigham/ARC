@@ -4389,6 +4389,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         (*Echo[Now - $startTime];
         ARCEcho[ARCSimplifyRules[res["Rules"]]];
         Echo[workingRulesFound[]];
+        Return[ARCRulesForOutput[res], Module];
         Throw["HERE"];*)
         
         If [And[
@@ -5546,15 +5547,15 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                                 Length[
                                     mappedInputObjects =
                                         (* The DeleteDuplicates is needed for cases like Shapes that
-                                        might produce multiple rules that apply to the same input
-                                        object. (which yes, isn't ideal) *)
+                                           might produce multiple rules that apply to the same input
+                                           object. (which yes, isn't ideal) *)
                                         DeleteDuplicates@
                                         Flatten[rules[[All, 2, "InputObjects"]]]
                                 ],
                                 Length[inputObjectsNeedingMapping]
                             ],
                             (* The rules formed using this property handle the mapping of every input
-                            object in every training example. *)
+                               object in every training example. *)
                             groups =
                                 ReturnIfFailure@
                                 ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[
@@ -5563,7 +5564,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                                 ];
                             
                             (* ARCReplaceRulePatternsWithGroupPatternsIfAppropriate can return Missing,
-                            so we check for that before adding this to our list of rules. *)
+                               so we check for that before adding this to our list of rules. *)
                             If [!MissingQ[rules],
                                 AppendTo[
                                     ruleSets,
@@ -5579,7 +5580,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                             ]
                             ,
                             (* The rules formed using this property do not handle the mapping of every
-                            input object across all training example. *)
+                               input object across all training example. *)
                             If [rules =!= {},
                                 property -> <|
                                     "MappedInputObjects" -> mappedInputObjects,
@@ -5602,7 +5603,11 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        {None}
+                        If [TrueQ[$mapComponents],
+                            {"X2.Rank"}
+                            ,
+                            {None}
+                        ]
                         (*{"Area.Rank", "Shapes"}*)
                         (*{"Width.Rank", "Width.InverseRank", "Image"}*)
                         ,
@@ -6739,6 +6744,10 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 ]
         ];
         
+        (*ARCEcho2[rules["Groups"]];
+        ARCEcho2[objects];
+        Throw["HERE"];*)
+        
         (*Global`rules = ruleList;
         Global`object = objects[[1]];*)
         
@@ -7553,6 +7562,19 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "MapCompone
         
         (* Set $parent so that Object["Parent"] can be resolved if used. *)
         Block[{$parent = objectIn},
+            
+            If [MatchQ[value["Groups"], {__}],
+                
+                objects =
+                    ReturnIfFailure@
+                    ARCFormGroupsWhenApplyingRules[
+                        objects,
+                        value["Groups"],
+                        $inputScene["Width"],
+                        $inputScene["Height"]
+                    ]
+            ];
+            
             objects =
                 Function[{object},
                     ReturnIfFailure@
@@ -8737,8 +8759,8 @@ ARCEcho2[expr_] :=
 Clear[ARCObjectMinimalPropertySetsAndSubProperties];
 Options[ARCObjectMinimalPropertySetsAndSubProperties] =
 {
-    "Component" -> False,   (*< Should be set to True in the context of AddComponents. *)
-    "AddObjects" -> False   (*< Should be set to True in the context of AddObjects. *)
+    "AddComponents" -> False,       (*< Should be set to True in the context of AddComponents. *)
+    "AddObjects" -> False           (*< Should be set to True in the context of AddObjects. *)
 };
 ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
     (* $transformTypes *)
@@ -8771,7 +8793,7 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                             }
                         ],
                         If [And[
-                                !TrueQ[OptionValue["Component"]],
+                                !TrueQ[OptionValue["AddComponents"]],
                                 (* I don't think we want this condition here, but adding it for the
                                    moment during refactoring to minimize changes. Although, I tried
                                    removing this and 31aa019c broke. *)
@@ -8811,7 +8833,7 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                             ]
                     ],
                     Sequence @@
-                    If [TrueQ[OptionValue["Component"]],
+                    If [TrueQ[OptionValue["AddComponents"]],
                         {
                             "Position",
                             "Width",
@@ -8823,30 +8845,48 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                             "Y" | "YInverse",
                             Alternatives[
                                 "Width",
-                                "X2" /;
-                                    (* If the object is moving, then we'll disallow X2 to be
-                                       a property we pay attention to, since if X2 is saying
-                                       constant, then we won't have anything to tell us that
-                                       the object is not only moving but also getting resized.
-                                       Instead, we should use the "Width" property. (above)
+                                <|
+                                    "Name" -> "X2",
+                                    (* See X2Inverse for comment. e.g. 29c11459 *)
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar},
+                                        MissingQ[conclusionSoFar["X"]]
+                                    ]
+                                |>,
+                                <|
+                                    "Name" -> "X2Inverse",
+                                    (* If the values for this property are unchanged from the
+                                       input objects, is it OK to leave the property unspecified
+                                       in the rule's conclusion? An example of where we don't want
+                                       to do this is if say the X value of the object is changing,
+                                       where we want to be sure to explicitly specify X2 even if
+                                       it isn't changing, otherwise it would be ambiguous whether
+                                       the object is just moving, or moving and being resized.
                                        e.g. 29c11459 *)
-                                    MissingQ[#["X"]],
-                                "X2Inverse" /;
-                                    MissingQ[#["X"]]
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar},
+                                        MissingQ[conclusionSoFar["X"]]
+                                    ]
+                                |>
                             ],
                             Alternatives[
                                 "Height",
-                                "Y2" /;
-                                    (* See comment for "X2" above. *)
-                                    MissingQ[#["Y"]],
-                                "Y2Inverse" /;
-                                    MissingQ[#["Y"]]
+                                <|
+                                    "Name" -> "Y2",
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar},
+                                        MissingQ[conclusionSoFar["Y"]]
+                                    ]
+                                |>,
+                                <|
+                                    "Name" -> "Y2Inverse",
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar},
+                                        MissingQ[conclusionSoFar["Y"]]
+                                    ]
+                                |>
                             ],
                             "ZOrder"
                         }
                     ]
                 },
-                If [TrueQ[OptionValue["Component"]],
+                If [TrueQ[OptionValue["AddComponents"]],
                     (* e.g. 25d487eb *)
                     {
                         "Outward",
@@ -8991,7 +9031,7 @@ getTransformTypes[] := <|
         },
         "SubProperties" -> {
             "Components" -> <|
-                ARCObjectMinimalPropertySetsAndSubProperties["Component" -> True]
+                ARCObjectMinimalPropertySetsAndSubProperties["AddComponents" -> True]
             |>
         }
     |>,
@@ -9161,13 +9201,16 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
                                         "Result" -> res2
                                     ],
                                     res2_ :> Return[
+                                        (*ARCEcho[ARCSimplifyRules[res2]];*)
+                                        (*ARCEcho[ARCSimplifyRules[res2["Groups"]]];*)
                                         <|
                                             "Transform" -> <|
                                                 "Type" -> "MapComponents",
                                                 "Rules" -> Join[
                                                     res2["Rules"],
                                                     additionalRules
-                                                ]
+                                                ],
+                                                KeyTake[res2, "Groups"]
                                             |>
                                         |>,
                                         Module
@@ -9350,7 +9393,11 @@ ToPosition[expr_, parentObject_ : Null] :=
     \maintainer danielb
 *)
 Clear[ARCGeneralizeConclusionValue];
-ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List] :=
+Options[ARCGeneralizeConclusionValue] =
+{
+    "AllowUnspecifiedIfUnchanged" -> True           (*< If the values for this property are unchanged from the input objects, is it OK to leave the property unspecified in the rule's conclusion? An example of where we don't want to do this is if say the X value of the object is changing, where we want to be sure to explicitly specify X2 even if it isn't changing, otherwise it would be ambiguous whether the object is just moving, or moving and being resized. e.g. 29c11459 *)
+};
+ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List, OptionsPattern[]] :=
     (* HERE2 *)
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     ARCMemoized[
@@ -9429,7 +9476,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                    did, ARCApplyConclusion wouldn't know to take the input property
                    value and stuff it down into this nested location. *)
                 Length[propertyPath] === 1,
-                conclusions[[All, "Input", property]] === values
+                conclusions[[All, "Input", property]] === values,
+                TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]]
             ],
             Return[Nothing, Module]
         ];
@@ -9492,7 +9540,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                                referenceable objects can be expensive, so we want to avoid
                                doing that unless it's helpful in a context. *)
                             "OnlyCheckIfValuesMatchInputObjects" -> True
-                        ] === Nothing
+                        ] === Nothing,
+                        TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]]
                     ],
                     (* But actually, its value is always the same as the input's value,
                        so we don't need to include this property in our rule's conclusion. *)
@@ -9850,7 +9899,10 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                             HoldPattern[Condition][
                                 propertyName: _String | Missing[_String],
                                 condition_
-                             ] :> propertyName -> <|"Condition" -> Hold[condition]|>
+                             ] :> propertyName -> <|"Condition" -> Hold[condition]|>,
+                             assoc_Association :> (
+                                assoc["Name"] -> KeyDrop[assoc, "Name"]
+                             )
                         },
                         {1}
                     ];
@@ -9861,69 +9913,83 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                         KeyValueMap[
                             Function[{subPropertyName, subPropertyAttributes},
                                 
-                                conditionNotMetQ = False;
-                                
-                                If [!MissingQ[subPropertyAttributes["Condition"]],
-                                    If [!TrueQ[
-                                            ReleaseHold@
-                                            Replace[
-                                                subPropertyAttributes["Condition"],
-                                                # -> conclusionsSoFar, {0, Infinity},
-                                                Heads -> True
-                                            ]
-                                        ],
-                                        (* This property has a condition specified that must be
-                                           true for it to apply, and that condition evaluated to
-                                           false, so we'll have to abort the use of this property. *)
-                                        conditionNotMetQ = True
-                                    ]
-                                ];
-                                
-                                Which[
-                                    TrueQ[conditionNotMetQ],
-                                        Missing[subPropertyName, "ConditionNotMet"],
-                                    MatchQ[subPropertyName, Missing[_String]],
-                                        (* We're OK with this property simply being unspecified
-                                           in the conclusions. If so, we don't need to specify
-                                           this property in the final rule's conclusion. *)
-                                        With[{propertyName = subPropertyName[[1]]},
-                                            If [MatchQ[
-                                                    conclusions[[All, "Value", propertyName]],
-                                                    {Repeated[_Missing]}
-                                                ],
-                                                (* We don't need to specify this property since
-                                                it's always missing. *)
-                                                Return[{}, Module]
-                                                ,
-                                                (* The values aren't always missing, so we do
-                                                need to specify this property. *)
-                                                Nothing
-                                            ]
-                                        ],
-                                    True,
-                                        (* Try to generalize the values for this property. *)
-                                        Replace[
-                                            ReturnIfFailure@
-                                            ARCGeneralizeConclusionValue[
-                                                Append[propertyPath, subPropertyName],
-                                                (* Property attributes *)
-                                                subPropertyAttributes,
-                                                AssociationApply[
-                                                    conclusions,
-                                                    <|
-                                                        "Value" -> Function[
-                                                            #[subPropertyName]
-                                                        ]
-                                                    |>
-                                                ],
-                                                referenceableInputObjects,
-                                                examples
+                                If [False && subPropertyName === "X2",
+                                    ARCDebug
+                                    ,
+                                    Identity
+                                ][
+                                    conditionNotMetQ = False;
+                                    
+                                    If [!MissingQ[subPropertyAttributes["Condition"]],
+                                        If [!TrueQ[
+                                                ReleaseHold@
+                                                Replace[
+                                                    subPropertyAttributes["Condition"],
+                                                    # -> conclusionsSoFar, {0, Infinity},
+                                                    Heads -> True
+                                                ]
                                             ],
-                                            (* If one of the minimal property sets is so good that it
-                                            doesn't even need to be specified in the conclusion,
-                                            then use it without considering other property sets. *)
-                                            Nothing :> Return[{Nothing}, Module]
+                                            (* This property has a condition specified that must be
+                                               true for it to apply, and that condition evaluated to
+                                               false, so we'll have to abort the use of this property. *)
+                                            conditionNotMetQ = True
                                         ]
+                                    ];
+                                    
+                                    Which[
+                                        TrueQ[conditionNotMetQ],
+                                            Missing[subPropertyName, "ConditionNotMet"],
+                                        MatchQ[subPropertyName, Missing[_String]],
+                                            (* We're OK with this property simply being unspecified
+                                               in the conclusions. If so, we don't need to specify
+                                               this property in the final rule's conclusion. *)
+                                            With[{propertyName = subPropertyName[[1]]},
+                                                If [MatchQ[
+                                                        conclusions[[All, "Value", propertyName]],
+                                                        {Repeated[_Missing]}
+                                                    ],
+                                                    (* We don't need to specify this property since
+                                                       it's always missing. *)
+                                                    Return[{}, Module]
+                                                    ,
+                                                    (* The values aren't always missing, so we do
+                                                       need to specify this property. *)
+                                                    Nothing
+                                                ]
+                                            ],
+                                        True,
+                                            (* Try to generalize the values for this property. *)
+                                            Replace[
+                                                ReturnIfFailure@
+                                                ARCEcho3@
+                                                ARCGeneralizeConclusionValue[
+                                                    Append[propertyPath, subPropertyName],
+                                                    (* Property attributes *)
+                                                    subPropertyAttributes,
+                                                    AssociationApply[
+                                                        conclusions,
+                                                        <|
+                                                            "Value" -> Function[
+                                                                #[subPropertyName]
+                                                            ]
+                                                        |>
+                                                    ],
+                                                    referenceableInputObjects,
+                                                    examples,
+                                                    "AllowUnspecifiedIfUnchanged" -> ARCEcho3 @ Replace[
+                                                        subPropertyAttributes["AllowUnspecifiedIfUnchanged"],
+                                                        {
+                                                            func_Function :> func[conclusionsSoFar],
+                                                            Except[True | False] :> True
+                                                        }
+                                                    ]
+                                                ],
+                                                (* If one of the minimal property sets is so good that it
+                                                   doesn't even need to be specified in the conclusion,
+                                                   then use it without considering other property sets. *)
+                                                Nothing :> Return[{Nothing}, Module]
+                                            ]
+                                    ]
                                 ]
                             ],
                             subPropertyAlternatives
@@ -16017,6 +16083,15 @@ ARCReplaceRulePatternsWithGroupPatternsIfAppropriate[rules_List, inputObjects_Li
                     
                     group =
                     If [AnyTrue[matchingObjects, #["Type"] === "Group" &],
+                        
+                        (* The OutputComponentUUID key is used during rule finding, so needs
+                           to be dropped here to ensure it doesn't end up in a group pattern. *)
+                        matchingObjects = Replace[
+                            matchingObjects,
+                            assoc: KeyValuePattern["OutputComponentUUID" -> _] :> KeyDrop[assoc, "OutputComponentUUID"],
+                            Infinity
+                        ];
+                        
                         (* All of these objects are groups, so we want to replace this rule pattern
                            with a group specification. *)
                         Replace[
@@ -16344,19 +16419,30 @@ ARCFormGroupsWhenApplyingRules[objectsIn_List, groups_List, sceneWidth_Integer, 
         (* Do any rules involve groups? *)
         If [groups =!= {},
             
+            groupSizes =
+                DeleteDuplicates@
+                Cases[
+                    groups,
+                    HoldPattern[Repeated][_, {groupSize_}] :> groupSize,
+                    Infinity
+                ];
+            
             (* Some rules involve groups, so we'll try forming groups. *)
             
             possibleGroups =
-                Function[{groupOfInputs},
-                    ARCSetGroupProperties[
-                        groupOfInputs,
-                        sceneWidth,
-                        sceneHeight
-                    ]
-                ] /@ Subsets[objects, {2}];
+                Flatten[
+                    Function[{groupSize},
+                        Function[{groupOfInputs},
+                            ARCSetGroupProperties[
+                                groupOfInputs,
+                                sceneWidth,
+                                sceneHeight
+                            ]
+                        ] /@ Subsets[objects, {groupSize}]
+                    ] /@ groupSizes,
+                    1
+                ];
             
-            (* For now, we'll just try forming groups of two. *)
-            (*ARCEcho[possibleGroups[[23]]];*)
             objectGroups = Flatten[
                 Function[{group},
                     With[{pattern = ARCRuleToPattern[group]},
@@ -16451,20 +16537,33 @@ ARCGetMatchingComponent[compositeObject_Association, object_Association, Options
     SelectFirst[
         compositeObject["Components"],
         Function[{component},
-            If [TrueQ[OptionValue["ExactMatch"]],
-                ARCSameQ[component, object]
-                ,
-                Or[
+            ARCSameQ[component, object]
+        ],
+        If [TrueQ["ExactMatch"],
+            Missing["NotFound"]
+            ,
+            (* Look for an inexact match. *)
+            SelectFirst[
+                compositeObject["Components"],
+                Function[{component},
                     (* The object has the same position and monochrome shape/image as the component. *)
                     And[
                         object["Position"] === component["Position"],
                         object["MonochromeImage"] === component["MonochromeImage"]
-                    ],
-                    (* The object is the same color as the component and is within the component.
-                       e.g. 29c11459 *)
-                    And[
-                        object["Color"] === component["Color"],
-                        ObjectWithinQ[object, component]
+                    ]
+                ],
+                SelectFirst[
+                    compositeObject["Components"],
+                    Function[{component},
+                        (* The object is the same color as the component and is within the component.
+                           e.g. 29c11459 *)
+                        (* TODO: This feels too liberal because the objects might not actually
+                                 have any overlapping PixelPositions, such as the pixel being
+                                 within the rectangle in 00dbd492. *)
+                        And[
+                            object["Color"] === component["Color"],
+                            ObjectWithinQ[object, component]
+                        ]
                     ]
                 ]
             ]
@@ -28417,7 +28516,8 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
             taskDetails,
             thisResult,
             thisRuntime,
-            evaluationInputsWorking
+            evaluationInputsWorking,
+            aggregationKeys
         },
         
         mapFunction =
@@ -28580,14 +28680,16 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                             _ :> Nothing
                         }
                     ]
-                ] /@ {
-                    "NewSuccess",
-                    "Fixed:KnownFailure",
-                    "Fixed:FailsOnlyDuringParallelTest",
-                    "NewFailure",
-                    "NewFailure:TimeLimitExceeded",
-                    "Messages"
-                }
+                ] /@ (
+                    aggregationKeys = {
+                        "NewSuccess",
+                        "Fixed:KnownFailure",
+                        "Fixed:FailsOnlyDuringParallelTest",
+                        "NewFailure",
+                        "NewFailure:TimeLimitExceeded",
+                        "Messages"
+                    }
+                )
             ),
             "Tasks" -> res
         |>;
@@ -28597,11 +28699,7 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
             KeyTake[
                 res,
                 {
-                    "NewSuccess",
-                    "Fixed:KnownFailure",
-                    "Fixed:FailsOnlyDuringParallelTest",
-                    "NewFailure",
-                    "NewFailure:TimeLimitExceeded",
+                    Sequence @@ aggregationKeys,
                     "Runtime"
                 }
             ]
@@ -29127,6 +29225,8 @@ ARCParallelTest[inputSetName_String, opts:OptionsPattern[]] :=
 Clear[ARCComponentTransform];
 ARCComponentTransform[inputObject_Association, outputObject_Association, matchingComponents_Association, inputScene_Association, outputScene_Association] :=
     Module[{inputComponents, outputComponents, res},
+        
+        (*ARCEcho2[inputObject];*)
         
         (*ARCEcho2[matchingComponents];*)
         
