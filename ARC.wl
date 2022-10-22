@@ -9539,7 +9539,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                                we set this, because trying to generalize values using
                                referenceable objects can be expensive, so we want to avoid
                                doing that unless it's helpful in a context. *)
-                            "OnlyCheckIfValuesMatchInputObjects" -> True
+                            "OnlyCheckIfValuesMatchInputObjects" -> True,
+                            "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"]
                         ] === Nothing,
                         TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]]
                     ],
@@ -9669,7 +9670,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                 propertyAttributes,
                 conclusions,
                 referenceableObjects,
-                examples
+                examples,
+                "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"]
             ]
             ,
             Missing["NotFound"]
@@ -9695,7 +9697,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
 Clear[ARCGeneralizeConclusionValueNonRecursive];
 Options[ARCGeneralizeConclusionValueNonRecursive] =
 {
-    "OnlyCheckIfValuesMatchInputObjects" -> False   (*< If True, we will only check if the values match the corresponding values in the input objects. *)
+    "OnlyCheckIfValuesMatchInputObjects" -> False,  (*< If True, we will only check if the values match the corresponding values in the input objects. *)
+    "AllowUnspecifiedIfUnchanged" -> True           (*< If the values for this property are unchanged from the input objects, is it OK to leave the property unspecified in the rule's conclusion? An example of where we don't want to do this is if say the X value of the object is changing, where we want to be sure to explicitly specify X2 even if it isn't changing, otherwise it would be ambiguous whether the object is just moving, or moving and being resized. e.g. 29c11459 *)
 };
 ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List, OptionsPattern[]] :=
     Module[
@@ -9760,7 +9763,7 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                        sub-properties actually change from the values they have
                        in the inputs. If not, we can actually just drop this key
                        from our rule conclusion. *)
-                    values === inputObjectValues,
+                    values === inputObjectValues && TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]],
                         Return[Nothing, Module],
                     TrueQ[OptionValue["OnlyCheckIfValuesMatchInputObjects"]],
                         (* Now that we've had a chance (above) to check if these values are the
@@ -22647,7 +22650,7 @@ ARCFindRulesForGridSubdivision[examples_List] :=
             Function[{column},
                 subRules =
                     Block[{$findingRulesForSubdivision = True},
-                        (*If [row === 1 && column === 2,
+                        (*If [row === 2 && column === 1,
                             Global`examples = sceneMappings[{row, column}]
                         ];*)
                         ARCFindRules[
