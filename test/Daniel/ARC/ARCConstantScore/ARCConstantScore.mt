@@ -109,31 +109,39 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCConstantScore[N[1/2]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConstantScore[N[1/2]]
+    ]
     ,
-    -0.5
+    -0.1
     ,
     TestID -> "ARCConstantScore-20221010-RA78NS"
 ]
 
 Test[
-    Daniel`ARC`ARCConstantScore[N[1/3]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConstantScore[N[1/3]]
+    ]
     ,
-    -0.5
+    -0.2
     ,
     TestID -> "ARCConstantScore-20221010-V6DAZN"
 ]
 
 Test[
-    Daniel`ARC`ARCConstantScore[N[1/10]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConstantScore[N[1/10]]
+    ]
     ,
-    -1.
+    -0.5
     ,
     TestID -> "ARCConstantScore-20221010-0PO8MG"
 ]
 
 Test[
-    Daniel`ARC`ARCConstantScore[N[1/100]]
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCConstantScore[N[1/100]]
+    ]
     ,
     -2.
     ,

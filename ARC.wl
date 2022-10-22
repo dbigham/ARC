@@ -4389,8 +4389,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         (*Echo[Now - $startTime];
         ARCEcho[ARCSimplifyRules[res["Rules"]]];
         Echo[workingRulesFound[]];
-        Return[ARCRulesForOutput[res], Module];
         Throw["HERE"];*)
+        (*Return[ARCRulesForOutput[res], Module];*)
         
         If [And[
                 MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | False],
@@ -12494,19 +12494,22 @@ ARCTransformScore[key_, rhs_] :=
         Replace[
             rhs,
             {
-                Inactive[Times][_, value_] :> (
-                    (* As of Oct 5 2022, we've only ever found one parse that makes use
-                        of Times, and already we have one unwanted parse making use of
-                        it (6e02f1e3), so we'll downscore it. *)
-                    score += ARCConstantScore[value];
-                    score -= 0.5
-                ),
                 Inactive[Plus][Inactive[Times][_, value1_], value2_] :> (
                     score += ARCConstantScore[value1];
                     score += ARCConstantScore[value2];
                     (* It seems like it would be fairly rare that a linear equation would
-                        be needed, so we'll downscore it. e.g. 44d8ac46 *)
-                    score -= 0.5
+                       be needed, so we'll downscore it. e.g. 44d8ac46 *)
+                    score -= 0.3
+                ),
+                Inactive[Plus][_, value_] :> (
+                    score += ARCConstantScore[value]
+                ),
+                Inactive[Times][_, value_] :> (
+                    (* As of Oct 5 2022, we've only ever found one parse that makes use
+                       of Times, and already we have one unwanted parse making use of
+                       it (6e02f1e3), so we'll downscore it. *)
+                    score += ARCConstantScore[value];
+                    score -= 0.3
                 )
             }
         ];
@@ -14619,9 +14622,11 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 8}],
             "ImplementationTime" -> Quantity[2.5, "Hours"],
             "CodeLength" -> 26628,
-            "NewGeneralizedSuccesses" -> {},
+            "NewGeneralizedSuccesses" -> {}
             (* Not sure when this started passing, but it does make use of linear equations.. *)
-            "NewEvaluationSuccesses" -> {"770cc55f"}
+            (* Broke Oct 21 2022, but not really sure what caused it to break.
+               Tried to fix with scoring, but wasn't clear how to. Gave up for now. *)
+            (*"NewEvaluationSuccesses" -> {"770cc55f"}*)
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -14708,7 +14713,7 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 19}],
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 28909,
-            "NewGeneralizedSuccesses" -> {},
+            "NewGeneralizedSuccesses" -> {"af902bf9"},
             "NewEvaluationSuccesses" -> {}
         |>,
         <|
@@ -14726,6 +14731,15 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 20}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 29187,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "af902bf9",
+            "Timestamp" -> DateObject[{2022, 10, 22}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 29310,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -18563,7 +18577,16 @@ ARCRuleSetScore[ruleSet_List] :=
                     MatchQ[rule, {Repeated[KeyValuePattern["Rules" -> _]]}],
                         (* For example, a set of rules for a grid subdivision, where we
                            have a different set of rules for each grid cell. *)
-                        Total[ARCRuleSetScore /@ rule],
+                        Plus[
+                            (* I'm finding that in some cases grid subdivision rules seem
+                               to get an overly good score despite being larger and more
+                               complex than their non-grid competitors. e.g. 770cc55f
+                               To try to deal with this, I'm going to mix in a proportion
+                               of ARCExpressionComplexity here, which will cause the large
+                               size of a grid interpretation to hurt its score. *)
+                            0.1 * -(ARCExpressionComplexity[rule] ^ 2),
+                            0.9 * Total[ARCRuleSetScore /@ rule]
+                        ],
                     MatchQ[rule, _Rule],
                         pattern = rule[[1]];
                         conclusion = ARCRemoveExtendedMetadataFromConclusion[rule[[2]]];
@@ -28029,20 +28052,20 @@ ARCConstantScore[8 | 9 | 10] := -0.5
 ARCConstantScore[value_Integer /; value < 100] :=
     -0.5 - (Abs[value] / 100) * 0.5
 
+ARCConstantScore[value_Integer /; value >= 100] :=
+    -0.25 * 2 ^ StringLength[ToString[value]]
+
 ARCConstantScore[value_] :=
-    Module[{},
-        -0.25 * 2 ^ StringLength[
-            ToString@
-            Replace[
-                Rationalize[value],
-                {
-                    Rational[numerator_, denominator_] :> (
-                        Max[numerator, denominator]
-                    ),
-                    other :> value
-                }
-            ]
-        ]
+    Replace[
+        Rationalize[value],
+        {
+            Rational[numerator_, denominator_] :> (
+                ARCConstantScore[
+                    ToIntegerIfNoDecimal[Max[Abs[numerator], Abs[denominator]]]
+                ]
+            ),
+            other_ :> -0.25 * 2 ^ StringLength[ToString[value]]
+        }
     ]
 
 (*!

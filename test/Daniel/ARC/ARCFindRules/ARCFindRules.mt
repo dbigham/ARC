@@ -3721,3 +3721,53 @@ Test[
     ,
     TestID -> "ARCFindRules-20221019-4FY74X"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "af902bf9"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "AddComponents",
+                    "Components" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                            "Color" -> 2,
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 1|>|>,
+                            "Width" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue["InputObject", "Width"],
+                                -2
+                            ],
+                            "Height" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue["InputObject", "Height"],
+                                -2
+                            ]
+                        |>
+                    }
+                |>
+            |>
+        },
+        "Groups" -> {
+            <|
+                "Components" -> {
+                    Repeated[<|"Image" -> Daniel`ARC`ARCScene[{{4}}]|>, {4}]
+                },
+                "Color" -> 4,
+                "ZOrder" -> 0,
+                "FilledArea" -> 4,
+                "SurfacePixelCount" -> 4,
+                "VerticalLineSymmetry" -> True,
+                "HorizontalLineSymmetry" -> True,
+                "VerticalAndHorizontalLineSymmetry" -> True,
+                "HollowCount" -> 0
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221022-68Y8Y3"
+]
