@@ -12834,7 +12834,8 @@ ARCGroupByOutputObject[mapping_Association, inputScene_Association, outputScene_
                             lhsGroup,
                             inputScene["Width"],
                             inputScene["Height"]
-                        ],
+                        ]
+                        ,
                         outputObject = outputObjectsByUUID2[outputObjectUUID];
                         If [!MatchQ[outputObject["Components"], {__}],
                             (* The output object doesn't have components, so we are replacing
@@ -12847,9 +12848,19 @@ ARCGroupByOutputObject[mapping_Association, inputScene_Association, outputScene_
                             If [AllTrue[
                                     group["Components"],
                                     Function[{inputComponent},
-                                        ARCSameQ[
-                                            inputComponent,
-                                            outputComponentLookup[inputComponent["OutputComponentUUID"]]
+                                        outputComponent = outputComponentLookup[inputComponent["OutputComponentUUID"]];
+                                        And[
+                                            (* We've finding some strange behavior with 5daaa586 where
+                                               multiple input objects are mapped to the output object,
+                                               but they don't have OutputComponentUUID set, so the
+                                               above returns Missing. Until we figure out why that
+                                               is happening, we'll protect against it here to avoid
+                                               an unevluated call to ARCSameQ. *)
+                                            AssociationQ[outputComponent],
+                                            ARCSameQ[
+                                                inputComponent,
+                                                outputComponent
+                                            ]
                                         ]
                                     ]
                                 ],
@@ -20777,7 +20788,11 @@ ARCImageScalings[image_List, OptionsPattern[]] :=
         Function[{factor},
             scaledImage = Null;
             If [Or[
-                    factor >= 1,
+                    And[
+                        factor >= 1,
+                        width * factor <= 30,
+                        height * factor <= 30
+                    ],
                     And[
                         factor < 1,
                         width * factor >= 1,
@@ -28546,7 +28561,10 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
             thisResult,
             thisRuntime,
             evaluationInputsWorking,
-            aggregationKeys
+            aggregationKeys,
+            messagesQ,
+            resultDetails,
+            messages
         },
         
         mapFunction =
@@ -28612,13 +28630,19 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                         messagesQ = False;
                         taskDetails = Lookup[taskLookup, file, <||>];
                         thisRuntime = Null;
+                        Echo[file];
                         file -> <|
                             "File" -> file,
                             Quiet[
                                 Replace[
                                     AbsoluteTiming@
                                     Check[
-                                        thisResult = ARCWorkingQ[file],
+                                        resultDetails =
+                                            StackComplete@
+                                            ResultDetails[ARCWorkingQ[file]];
+                                        messages = resultDetails["Messages"];
+                                        thisResult = resultDetails["Result"];
+                                        ,
                                         messagesQ = True;
                                         thisResult
                                     ],
@@ -28666,8 +28690,15 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                                         ]
                                     ]
                             ],
-                            If [TrueQ[messagesQ],
-                                "Messages" -> True
+                            If [TrueQ[messagesQ] || ListQ[messages],
+                                <|
+                                    "Messages" -> True,
+                                    If [!MissingQ[messages],
+                                        "MessagesDetails" -> messages
+                                        ,
+                                        Nothing
+                                    ]
+                                |>
                                 ,
                                 Nothing
                             ],
