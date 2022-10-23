@@ -3312,7 +3312,8 @@ Options[ARCFindObjectMapping] =
     "SingleObject" -> Automatic,                    (*< Should all non-background pixels be treated as part of a single object, even if they are non-contiguous? *)
     "FollowDiagonals" -> Automatic,                 (*< Should diagonally adjacent pixels form a single object? *)
     "CheckForGridsAndDividers" -> Automatic,        (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
-    "FindOcclusions" -> True                        (*< Whether we should consider possible occlusions when interpreting the scene. *)
+    "FindOcclusions" -> True,                       (*< Whether we should consider possible occlusions when interpreting the scene. *)
+    "NoMappings" -> False                           (*< If True, we will treat the inputObject as not mapping to any of the components of the output object. *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -3498,6 +3499,13 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             removeEmptySpaceQ,
             objectWithSamePixels
         },
+        
+        If [TrueQ[OptionValue["NoMappings"]],
+            Return[
+                object -> Missing["NotFound"],
+                Module
+            ]
+        ];
         
         (* Look for an exact match. *)
         Replace[
@@ -3775,7 +3783,27 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         Replace[
             objectWithSamePixels,
             mappedToObject: Except[_Missing] :> Return[
-                object -> mappedToObject,
+                object -> (
+                    If [ListQ[mappedToObject["Components"]],
+                        (* The output object has components, so we can add a MapComponents
+                           transform. *)
+                        ReturnIfFailure@
+                        ARCComponentTransform[
+                            object,
+                            mappedToObject,
+                            (* No matching components. *)
+                            <||>,
+                            inputScene,
+                            outputScene,
+                            (* For now, since b6afb2da produces uwanted mappings here, we'll
+                               just ask that no mappings be created in these cases, and can
+                               revisit this as needed. *)
+                            "NoMappings" -> True
+                        ]
+                        ,
+                        mappedToObject
+                    ]
+                ),
                 Module
             ]
         ];
@@ -4195,7 +4223,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     (* Added Oct 13 2022: I'm finding it odd that these are running in 11 to 18
                        seconds when run in a single kernel, but over 55 seconds when run in
                        parallel. That's a pretty big mutliple. (More than 3x!) *)
-                    "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5"
+                    "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5" |
+                    (* Oct 22 2022 *)
+                    "d10ecb37" | "b6afb2da"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -4785,8 +4815,13 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ListQ[parsedExamples],
                 !TrueQ[workingRulesFound[]],
                 And[
-                    AllTrue[parsedExamples[[All, "Input", "Width"]], Function[Between[#, {2, 8}]]],
-                    AllTrue[parsedExamples[[All, "Input", "Height"]], Function[Between[#, {2, 8}]]]
+                    (* Originally we had only enabled this for inputs with a maximum width/height
+                       of 8, with the thinking that it would typically be quite small inputs where
+                       you didn't want to follow diagonals, but b6afb2da is an example where it's
+                       helpful (currently required) to not follow diagonals, and it has a size of
+                       10, so I will increase the max size from 8 to 16. *)
+                    AllTrue[parsedExamples[[All, "Input", "Width"]], Function[Between[#, {2, 16}]]],
+                    AllTrue[parsedExamples[[All, "Input", "Height"]], Function[Between[#, {2, 16}]]]
                 ]
             ],
             res2 =
@@ -6111,16 +6146,44 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                     KeyValuePattern[{"Image" -> _, "Shape" -> _, "Shapes" -> _}]
                 ]
             ],
-                (* This pattern has multiple possible conclusions, but before we discard it,
-                   we should see whether it's possible to generalize those conclusions. *)
+                (* These conclusions aren't all identical, so we check whether they can be
+                   generalized. *)
                 conclusionList = Flatten[Values[groupedByConclusion]];
                 conclusion =
-                    ReturnIfFailure@
                     ARCGeneralizeConclusions[
                         KeyDrop[conclusionList, "Output"],
                         referenceableInputObjects,
                         examples
                     ];
+                
+                (* If we couldn't find rules, but the transforms are of type MapComponents,
+                   then we should try finding rules again by discarding the MapComponents
+                   and treating the mappings as simple property updates, such as the
+                   Image changing. Note that it would be ideal to not duplicate the
+                   code from above that populates some of the variables here used.
+                   e.g. 321b1fc6 *)
+                If [And[
+                        MissingQ[conclusion] || FailureQ[conclusion],
+                        conclusionTransformTypes === {"MapComponents"}
+                    ],
+                    conclusionGroup2 =
+                        Function[{conclusion},
+                            KeyDrop[conclusion, "Transform"]
+                        ] /@ conclusionGroup;
+                    groupedByConclusion2 = GroupBy[
+                        conclusionGroup2,
+                        Function[KeyDrop[#, {"Example", "Input", "Output"}]]
+                    ];
+                    conclusionList2 = Flatten[Values[groupedByConclusion2]];
+                    conclusion =
+                        ReturnIfFailure@
+                        ARCGeneralizeConclusions[
+                            KeyDrop[conclusionList2, "Output"],
+                            referenceableInputObjects,
+                            examples
+                        ]
+                ];
+                
                 If [And[
                         MissingQ[conclusion],
                         (* For the moment we'll only look for generated objects when we've been
@@ -14789,6 +14852,14 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 22}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 29310,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "b6afb2da",
+            "Timestamp" -> DateObject[{2022, 10, 22}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 29550,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -29316,12 +29387,14 @@ ARCReplaceObjectsWithUUIDReference[expr_] :=
 Clear[ARCParallelTest];
 Options[ARCParallelTest] = Options[ARCTestInputSet];
 ARCParallelTest[inputSetName_String, opts:OptionsPattern[]] :=
-    Module[{},
+    Module[{res},
         (* So that we load dependencies on EntityLink, etc. when running this in a
            second kernel. *)
         ReturnIfFailure[ARCMXGet[]];
         ReturnIfFailure[ReloadARC[]];
-        ARCTestInputSet[inputSetName, opts, "Parallel" -> True, "EchoSummary" -> True]
+        res = ARCTestInputSet[inputSetName, opts, "Parallel" -> True, "EchoSummary" -> True];
+        Speak["Done"];
+        res
     ]
 
 (*!
@@ -29333,7 +29406,11 @@ ARCParallelTest[inputSetName_String, opts:OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCComponentTransform];
-ARCComponentTransform[inputObject_Association, outputObject_Association, matchingComponents_Association, inputScene_Association, outputScene_Association] :=
+Options[ARCComponentTransform] =
+{
+    "NoMappings" -> False       (*< If True, we will treat the inputObject as not mapping to any of the components of the output object. *)
+};
+ARCComponentTransform[inputObject_Association, outputObject_Association, matchingComponents_Association, inputScene_Association, outputScene_Association, OptionsPattern[]] :=
     Module[{inputComponents, outputComponents, res},
         
         (*ARCEcho2[inputObject];*)
@@ -29388,7 +29465,8 @@ ARCComponentTransform[inputObject_Association, outputObject_Association, matchin
                         ReturnIfFailure@
                         ARCFindObjectMapping[
                             Sett[inputScene, "Objects" -> inputComponents],
-                            Sett[outputScene, "Objects" -> outputComponents]
+                            Sett[outputScene, "Objects" -> outputComponents],
+                            "NoMappings" -> OptionValue["NoMappings"]
                         ]
                 |>
             ]

@@ -3771,3 +3771,149 @@ Test[
     ,
     TestID -> "ARCFindRules-20221022-68Y8Y3"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b6afb2da"]["Train"]]
+    ]
+    ,
+    <|
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "MapComponents",
+                    "Rules" -> {
+                        <||> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+                        <|
+                            "Transform" -> <|
+                                "Type" -> "AddObjects",
+                                "Objects" -> {
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Color" -> 1,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X"],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y"],
+                                        "Width" -> 1,
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                                        "Color" -> 4,
+                                        "X" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X"],
+                                            1
+                                        ],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y"],
+                                        "X2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X2"],
+                                            -1
+                                        ],
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Color" -> 1,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X2"],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y"],
+                                        "Width" -> 1,
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                                        "Color" -> 4,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X"],
+                                        "Y" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y"],
+                                            1
+                                        ],
+                                        "Width" -> 1,
+                                        "Y2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                            -1
+                                        ],
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                                        "Color" -> 2,
+                                        "X" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X"],
+                                            1
+                                        ],
+                                        "Y" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y"],
+                                            1
+                                        ],
+                                        "X2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X2"],
+                                            -1
+                                        ],
+                                        "Y2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                            -1
+                                        ],
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                                        "Color" -> 4,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X2"],
+                                        "Y" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y"],
+                                            1
+                                        ],
+                                        "Width" -> 1,
+                                        "Y2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                            -1
+                                        ],
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Color" -> 1,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X"],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                        "Width" -> 1,
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Line", "Angle" -> 0|>,
+                                        "Color" -> 4,
+                                        "X" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X"],
+                                            1
+                                        ],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                        "X2" -> Inactive[Plus][
+                                            Daniel`ARC`ObjectValue["Parent", "X2"],
+                                            -1
+                                        ],
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>,
+                                    <|
+                                        "Shape" -> <|"Name" -> "Pixel"|>,
+                                        "Color" -> 1,
+                                        "X" -> Daniel`ARC`ObjectValue["Parent", "X2"],
+                                        "Y" -> Daniel`ARC`ObjectValue["Parent", "Y2"],
+                                        "Width" -> 1,
+                                        "Height" -> 1,
+                                        "ZOrder" -> 0
+                                    |>
+                                }
+                            |>
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221022-MLA34O"
+]
