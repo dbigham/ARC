@@ -3917,3 +3917,16 @@ Test[
     ,
     TestID -> "ARCFindRules-20221022-MLA34O"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "963e52fc"]["Train"]]
+    ]
+    ,
+    <|
+        "Width" -> Inactive[Daniel`ARC`ObjectValue["InputScene", "Width"]*2],
+        "Rules" -> {<||> -> <|"X2Inverse" -> 1|>}
+    |>
+    ,
+    TestID -> "ARCFindRules-20221023-HWMCYT"
+]

@@ -346,3 +346,22 @@ Test[
     ,
     TestID -> "ARCInferObjectImage-20221010-39OX58"
 ]
+
+Test[
+    Daniel`ARC`ARCInferObjectImage[
+        <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Fill" -> <|"Pattern" -> {{2, 2}, {8, 8}}, "Orientation" -> "Vertical"|>
+            |>,
+            "Width" -> 2,
+            "Height" -> 6
+        |>,
+        <||>
+    ]
+    ,
+    Daniel`ARC`ARCScene[{{2, 2}, {8, 8}, {2, 2}, {8, 8}, {2, 2}, {8, 8}}]
+    ,
+    TestID -> "ARCInferObjectImage-20221023-N80B9K"
+]

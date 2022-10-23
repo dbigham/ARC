@@ -61,3 +61,27 @@ Test[
     ,
     TestID -> "ARCToColorList-20221010-FFNW5E"
 ]
+
+Test[
+    Daniel`ARC`ARCToColorList[
+        <|
+            "Image" -> Daniel`ARC`ARCScene[{{2, 2}, {8, 8}, {2, 2}, {8, 8}, {2, 2}, {8, 8}}],
+            "Shape" -> <|"Name" -> "Rectangle"|>,
+            "Width" -> 2,
+            "Height" -> 6
+        |>
+    ]
+    ,
+    Alternatives[
+        <|
+            "List" -> {{2, 2}, {8, 8}, {2, 2}, {8, 8}, {2, 2}, {8, 8}},
+            "Orientation" -> "Vertical"
+        |>,
+        <|
+            "List" -> {{2, 8, 2, 8, 2, 8}, {2, 8, 2, 8, 2, 8}},
+            "Orientation" -> "Horizontal"
+        |>
+    ]
+    ,
+    TestID -> "ARCToColorList-20221023-PJ8PQI"
+]

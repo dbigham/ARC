@@ -138,3 +138,23 @@ Test[
     ,
     TestID -> "ARCClassifyRectange-20220904-XQGS7F"
 ]
+
+Test[
+    Daniel`ARC`ARCClassifyRectange[{{2, 8, 2, 8, 2, 8}, {2, 8, 2, 8, 2, 8}}]
+    ,
+    <|"Name" -> "Rectangle", "Filled" -> True, "Fill" -> {{2, 2}, {8, 8}}|>
+    ,
+    TestID -> "ARCClassifyRectange-20221023-7UIQR7"
+]
+
+Test[
+    Daniel`ARC`ARCClassifyRectange[{{2, 2}, {8, 8}, {2, 2}, {8, 8}, {2, 2}, {8, 8}}]
+    ,
+    <|
+        "Name" -> "Rectangle",
+        "Filled" -> True,
+        "Fill" -> <|"Pattern" -> {{2, 2}, {8, 8}}, "Orientation" -> "Vertical"|>
+    |>
+    ,
+    TestID -> "ARCClassifyRectange-20221023-7QQ68V"
+]
