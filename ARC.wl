@@ -627,6 +627,12 @@ ARCConclusionsSoFarMatchQ::usage = "ARCConclusionsSoFarMatchQ  "
 
 ARCPropertyUnchangingInConclusionsQ::usage = "ARCPropertyUnchangingInConclusionsQ  "
 
+ARCSubImagesForOcclusionDetection::usage = "ARCSubImagesForOcclusionDetection  "
+
+ARCFixOcclusionsForSubImages::usage = "ARCFixOcclusionsForSubImages  "
+
+ReturnFailureIfBadValues::usage = "ReturnFailureIfBadValues  "
+
 Begin["`Private`"]
 
 
@@ -1133,6 +1139,23 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                                 opts
                             ]
                         ] /@ objects
+                    ];
+                    
+                    (* TODO: Any opportunities for memoization here? *)
+                    If [TrueQ[OptionValue["FindOcclusions"]],
+                        objects =
+                            ReturnIfFailure@
+                            ARCFixOcclusionsForSubImages[
+                                ReturnIfFailure@
+                                ARCSubImagesForOcclusionDetection[notableSubImages],
+                                <|
+                                    "Background" -> background,
+                                    "Scene" -> scene,
+                                    "Objects" -> objects,
+                                    "Width" -> ImageWidth[scene],
+                                    "Height" -> ImageHeight[scene]
+                                |>
+                            ]
                     ]
                 ];
             
@@ -5304,8 +5327,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* HEREF *)
         
-        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Shape"][examples[[All, "ObjectMapping"]]]];
+        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
         Throw["HEREF"];*)
+        
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Shape"][examples[[All, "ObjectMapping"]]]];*)
         
         (*ARCEcho[examples[[1, "ObjectMapping"]]];
         Throw["HERE"];*)
@@ -7806,8 +7831,10 @@ ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
         sceneWidth = scene["Width"];
         sceneHeight = scene["Height"];
         
+        (* HERE10 *)
+        
         (* Detect whether we need to make the output image wider or taller. e.g. d631b094 *)
-        If [Or[
+        (*If [Or[
                 !TrueQ[OptionValue["OutputWidthSpecified"]],
                 !TrueQ[OptionValue["OutputHeightSpecified"]]
             ],
@@ -7852,7 +7879,7 @@ ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
                 ];
                 
             ] /@ objects
-        ];
+        ];*)
         
         (* Empty output image using background color. *)
         output =
@@ -13041,6 +13068,9 @@ ARCGroupByOutputObject[mapping_Association, inputScene_Association, outputScene_
                         ]
                         ,
                         outputObject = outputObjectsByUUID2[outputObjectUUID];
+                        (*ARCEcho2[
+                            "HERE" -> Length[Select[Values[mapping], #["UUID"] === outputObject["UUID"] &]] -> outputObject
+                        ];*)
                         If [!MatchQ[outputObject["Components"], {__}],
                             (* The output object doesn't have components, so we are replacing
                                multiple input objects with a single non-composite output object. *)
@@ -14983,6 +15013,23 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 23}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 29898,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "d364b489",
+            "Timestamp" -> DateObject[{2022, 10, 23}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 30200,
+            "NewGeneralizedSuccesses" -> {"dc1df850"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "dc1df850",
+            "Timestamp" -> DateObject[{2022, 10, 23}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 30207,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -29898,6 +29945,268 @@ ARCPropertyUnchangingInConclusionsQ[conclusions_List, property_] :=
         Function[{conclusion},
             conclusion["Input", property] === conclusion["Output", property]
         ]
+    ]
+
+(*!
+    \function ARCSubImagesForOcclusionDetection
+    
+    \calltable
+        ARCSubImagesForOcclusionDetection[images] '' Given a list of notable images seen, produces parts of them to be checked for to detect possible occlusions.
+    
+    TODO: We don't yet support occlusions from opposite sides at the same time wrt
+          Left + Right or Top + Bottom. (we do support Left + Top, Left + Bottom, etc.)
+    
+    See: Wyatt["ERPPROJECT-7631"]
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCSubImagesForOcclusionDetection]
+    
+    \maintainer danielb
+*)
+Clear[ARCSubImagesForOcclusionDetection];
+ARCSubImagesForOcclusionDetection[notableImages_List] :=
+    Module[{images, res},
+        
+        images = Select[
+            notableImages,
+            And[
+                #["Count"] >= 2,
+                Between[ImageWidth[#["Image"]], {3, 4}],
+                Between[ImageHeight[#["Image"]], {3, 4}]
+            ] &
+        ][[All, "Image"]];
+        
+        res = Flatten[
+            Function[{image},
+                ARCSubImagesForOcclusionDetection["Helper", image]
+            ] /@ images,
+            1
+        ];
+        
+        (* We'll drop sub-images that are ambiguous. *)
+        First /@
+        Select[
+            GroupBy[res, First -> Last],
+            Function[Length[#] === 1]
+        ]
+    ]
+
+ARCSubImagesForOcclusionDetection["Helper", notableImage_List] :=
+    Module[
+        {
+            imageWidth,
+            imageHeight,
+            minSubWidthDifference,
+            minSubHeightDifference,
+            minArea,
+            directionY,
+            directionX,
+            startY,
+            startX,
+            rangeX,
+            yFromTo,
+            xFromTo,
+            subImage,
+            res,
+            alreadyProcessed = <||>
+        },
+        
+        imageWidth = ImageWidth[notableImage];
+        imageHeight = ImageHeight[notableImage];
+        
+        minSubWidthDifference = imageWidth - 1;
+        minSubHeightDifference =  imageHeight - 1;
+        
+        minArea = imageWidth * imageHeight - 1;
+        
+        res = Flatten[
+            Function[{orientation},
+                directionY = orientation["DirectionY"];
+                directionX = orientation["DirectionX"];
+                startY = Replace[orientation["StartY"], -1 :> imageHeight];
+                startX = Replace[orientation["StartX"], -1 :> imageWidth];
+                rangeX = Range[startX, startX + directionX * minSubWidthDifference, directionX];
+                Function[{otherY},
+                    yFromTo = Sort[{startY, otherY}];
+                    Function[{otherX},
+                        xFromTo = Sort[{startX, otherX}];
+                        (* There must be at least three pixels of area in the sub-image.
+                           i.e. At least 2x2 or 1x3 or 3x1. *)
+                        If [And[
+                                Between[
+                                    (xFromTo[[2]] - xFromTo[[1]] + 1) * (yFromTo[[2]] - yFromTo[[1]] + 1),
+                                    {3, minArea}
+                                ],
+                                !TrueQ[alreadyProcessed[{yFromTo, xFromTo}]]
+                            ],
+                            alreadyProcessed[{yFromTo, xFromTo}] = True;
+                            subImage = notableImage[[
+                                Span @@ yFromTo,
+                                Span @@ xFromTo
+                            ]];
+                            (* There must be at least 2 non-background-color pixels. *)
+                            If [Length[DeleteCases[Flatten[subImage], $nonImageColor]] >= 2,
+                                Rule[
+                                    ARCScene@
+                                    notableImage[[
+                                        Span @@ yFromTo,
+                                        Span @@ xFromTo
+                                    ]],
+                                    <|
+                                        "FullImage" -> ARCScene[notableImage],
+                                        "Y" -> yFromTo[[1]],
+                                        "Y2" -> yFromTo[[2]],
+                                        "X" -> xFromTo[[1]],
+                                        "X2" -> xFromTo[[2]]
+                                    |>
+                                ]
+                                ,
+                                Nothing
+                            ]
+                            ,
+                            Nothing
+                        ]
+                    ] /@ rangeX
+                ] /@ Range[startY, startY + directionY * minSubHeightDifference, directionY]
+            ] /@ {
+                <|
+                    "StartY" -> 1,
+                    "StartX" -> 1,
+                    "DirectionY" -> 1,
+                    "DirectionX" -> 1
+                |>,
+                <|
+                    "StartY" -> -1,
+                    "StartX" -> 1,
+                    "DirectionY" -> -1,
+                    "DirectionX" -> 1
+                |>,
+                <|
+                    "StartY" -> 1,
+                    "StartX" -> -1,
+                    "DirectionY" -> 1,
+                    "DirectionX" -> -1
+                |>,
+                <|
+                    "StartY" -> -1,
+                    "StartX" -> -1,
+                    "DirectionY" -> -1,
+                    "DirectionX" -> -1
+                |>
+            },
+            2
+        ];
+        
+        res
+    ]
+
+(*!
+    \function ARCFixOcclusionsForSubImages
+    
+    \calltable
+        ARCFixOcclusionsForSubImages[subImages, parsedScene] '' Given sub-images to watch out for, updates objects if they appear to be larger images that have been occluded.
+    
+    See: Wyatt["ERPPROJECT-7631"]
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFixOcclusionsForSubImages]
+    
+    \maintainer danielb
+*)
+Clear[ARCFixOcclusionsForSubImages];
+ARCFixOcclusionsForSubImages[subImages_Association, parsedScene_Association] :=
+    Module[{scene, extendRight, extendLeft, extendBelow, extendUp, y, y2, x, x2},
+        
+        (* The scene with background pixels changed to $nonImageColor. *)
+        scene = Replace[
+            parsedScene["Scene"][[1]],
+            parsedScene["Background"] -> $nonImageColor,
+            {2}
+        ];
+        
+        Function[{object},
+            If [!MissingQ[possibleOcclusion = subImages[object["Image"]]],
+                (* We have a possible occlusion to investigate. *)
+                object["Image"] -> possibleOcclusion;
+                extendRight = ImageWidth[possibleOcclusion["FullImage"]] - possibleOcclusion["X2"];
+                extendLeft = possibleOcclusion["X"] - 1;
+                extendBelow = ImageHeight[possibleOcclusion["FullImage"]] - possibleOcclusion["Y2"];
+                extendUp = possibleOcclusion["Y"] - 1;
+                
+                y = object["Y"] - extendUp;
+                y2 = object["Y2"] + extendBelow;
+                x = object["X"] - extendLeft;
+                x2 = object["X2"] + extendRight;
+                
+                (*ARCEcho2[object];*)
+                
+                If [!FreeQ[
+                        Transpose[
+                            {
+                                possibleOcclusion["FullImage"][[1]],
+                                ARCSubImage[scene, y, x, y2, x2]
+                            },
+                            {3, 1, 2}
+                        ],
+                        (* Any non-background-color pixel in the full image can't be the
+                           background color in the actual scene. If not, that implies that
+                           either:
+                           - The pixel colors agree.
+                           - The pixel color in the actual scene is out-of-scene.
+                           - The pixel color in the actual scene is part of another object, so is possibly occluded by that object. *)
+                        {Except[$nonImageColor], $nonImageColor}
+                    ],
+                    (* Looking at the pixels in the output scene suggests that this is not
+                       an occlusion. *)
+                    object
+                    ,
+                    (* It looks like we have found an occlusion. *)
+                    Replace[
+                        ReturnIfFailure@
+                        Replace[
+                            ARCMemoized@
+                            ARCParseScene[
+                                possibleOcclusion["FullImage"],
+                                $nonImageColor
+                                (* NOTE: We're not passing along the ARCParseScene options that
+                                        were provided to our caller, which we probably (?) should
+                                        be. e.g. FollowDiagonals *)
+                            ],
+                            (* We're using ARCMemoized above and it seems that results in objects
+                               with duplicate UUIDs, so we need to create new UUIDs. *)
+                            assoc: KeyValuePattern["UUID" -> _] :> Append[assoc, "UUID" -> CreateUUID[]],
+                            {1, Infinity}
+                        ],
+                        {
+                            {singleObject_} :> ARCRepositionObject[
+                                singleObject,
+                                {y, x},
+                                parsedScene["Width"],
+                                parsedScene["Height"]
+                            ],
+                            parseSceneResult_ :> ReturnFailure[
+                                "ARCFixOcclusionsForSubImagesFailure",
+                                "A failure occurred fixing a suspected occlusion.",
+                                "ParseSceneResult" -> parseSceneResult
+                            ]
+                        }
+                    ]
+                ]
+                ,
+                (* No potential occlusions were found. *)
+                object
+            ]
+        ] /@ parsedScene["Objects"]
     ]
 
 End[]

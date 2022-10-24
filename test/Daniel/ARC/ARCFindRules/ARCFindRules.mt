@@ -3930,3 +3930,41 @@ Test[
     ,
     TestID -> "ARCFindRules-20221023-HWMCYT"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d364b489"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "Transform" -> <|
+                    "Type" -> "AddComponents",
+                    "Components" -> {
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{2}}],
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> -1, "X" -> 0|>|>
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{7}}],
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> -1|>|>
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{6}}],
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 0, "X" -> 1|>|>
+                        |>,
+                        <|
+                            "Image" -> Daniel`ARC`ARCScene[{{8}}],
+                            "Position" -> <|"RelativePosition" -> <|"Y" -> 1, "X" -> 0|>|>
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221023-M4PSAD"
+]
