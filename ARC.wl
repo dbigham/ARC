@@ -1142,7 +1142,16 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     ];
                     
                     (* TODO: Any opportunities for memoization here? *)
-                    If [TrueQ[OptionValue["FindOcclusions"]],
+                    If [And[
+                            TrueQ[OptionValue["FindOcclusions"]],
+                            (* If we aren't even wanting to form multi-color objects, then
+                               we'll avoid trying to detect occlusions for now since
+                               with examples like 88a10436, that results in it using
+                               a multi-color notable object to form a multi-color
+                               object. That said, if we're in non-multi-color mode,
+                               shouldn't all of the notable images be single color? *)
+                            TrueQ[OptionValue["FormMultiColorCompositeObjects"]]
+                        ],
                         objects =
                             ReturnIfFailure@
                             ARCFixOcclusionsForSubImages[
@@ -1181,6 +1190,62 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
         
         res
     ]
+    ]
+
+ARCParseScene[scene_ARCScene, rules_Association, opts:OptionsPattern[]] :=
+    Module[{},
+        ReturnIfFailure@
+        ARCParseScene[
+            scene,
+            opts,
+            If [TrueQ[rules["SceneAsSingleObject"]],
+                "SingleObject" -> True
+                ,
+                Sequence @@ {}
+            ],
+            If [rules["FormMultiColorCompositeObjects"] === False,
+                "FormMultiColorCompositeObjects" -> False
+                ,
+                Sequence @@ {}
+            ],
+            If [!MissingQ[rules["FollowDiagonals"]],
+                "FollowDiagonals" -> rules["FollowDiagonals"]
+                ,
+                Sequence @@ {}
+            ],
+            If [ListQ[rules["SubdivideInput"]],
+                "SubdivideInput" -> rules["SubdivideInput"]
+                ,
+                Sequence @@ {}
+            ],
+            If [!MissingQ[rules["CheckForGridsAndDividers"]],
+                "CheckForGridsAndDividers" -> rules["CheckForGridsAndDividers"]
+                ,
+                Sequence @@ {}
+            ],
+            (* If none of the rules involved ZOrder/occluded objects, then don't consider
+                occlusions when parsing the scene for applying rules, since there are cases
+                where this can result in invalid scene interpretation.
+                e.g. 90c28cc7 *)
+            "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]],
+            Which[
+                !MissingQ[rules["Background"]],
+                    (* e.g. bda2d7a6 *)
+                    "Background" -> rules["Background"],
+                (* If there's a single rule and it's a ColorMapping rule, then we'll
+                    avoid non-black backgrounds for now. For example, the test example
+                    for c8f0f002. A more sophisticated thing to do might to avoid
+                    using a background color that is equal to the FROM color of the
+                    color mapping. *)
+                And[
+                    Length[rules["Rules"]] === 1,
+                    !FreeQ[rules["Rules"], KeyValuePattern["Type" -> "ColorMapping"]]
+                ],
+                    "Background" -> 0,
+                True,
+                    Sequence @@ {}
+            ]
+        ]
     ]
 
 ARCParseScene[scene_ARCScene, backgroundColor_, opts:OptionsPattern[]] :=
@@ -4473,7 +4538,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         foundRulesQ = MatchQ[res, KeyValuePattern["Rules" -> _List]];
         
         (*Echo[Now - $startTime];
-        ARCEcho[ARCSimplifyRules[res["Rules"]]];
+        ARCEcho[ARCSimplifyRules[ARCRulesForOutput[res]]];
         Echo[workingRulesFound[]];
         Throw["HERE"];*)
         (*Return[ARCRulesForOutput[res], Module];*)
@@ -4558,6 +4623,10 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 ]
             ]
         ];
+        
+        (*ARCEcho[ARCSimplifyRules[ARCRulesForOutput[res]]];
+        Echo[workingRulesFound[]];
+        Throw["HERE"];*)
         
         If [And[
                 OptionValue["SingleObject"] =!= False,
@@ -5187,34 +5256,47 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     
                     (*ARCEcho2[ARCSimplifyRules[KeyDrop[rulesResult, {"Examples", "ObjectMappings"}]]];*)
                     
-                    If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
-                        rulesResult = Prepend[
-                            rulesResult,
-                            "RemoveEmptySpace" -> True
+                    If [!ARCSameOutputSizeQ[examples, {"Width", "Height"}],
+                        
+                        outputDimensionsInferrable =
+                            And[
+                                Or[
+                                    ARCSameOutputSizeQ[examples, {"Width"}],
+                                    SpecifiedQ[
+                                        rulesResult["Width"] =
+                                            ReturnIfFailure@
+                                            ARCGeneralizeConclusionValueNonRecursive[
+                                                "Width",
+                                                ImageWidth[#["Output", "Scene"]] & /@ examples,
+                                                examples,
+                                                referenceableInputObjects
+                                            ]
+                                    ]
+                                ],
+                                Or[
+                                    ARCSameOutputSizeQ[examples, {"Height"}],
+                                    SpecifiedQ[
+                                        rulesResult["Height"] =
+                                            ReturnIfFailure@
+                                            ARCGeneralizeConclusionValueNonRecursive[
+                                                "Height",
+                                                ImageHeight[#["Output", "Scene"]] & /@ examples,
+                                                examples,
+                                                referenceableInputObjects
+                                            ]
+                                    ]
+                                ]
+                            ];
+                        
+                        If [!TrueQ[outputDimensionsInferrable],
+                            rulesResults = KeyDrop[rulesResult, {"Width", "Height"}];
+                            If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
+                                rulesResult = Prepend[
+                                    rulesResult,
+                                    "RemoveEmptySpace" -> True
+                                ]
+                            ]
                         ]
-                        ,
-                        (* If we're not removing empty space, but inputs and outputs are
-                           different sizes, then we should now consider whether we could
-                           infer the width and height of outputs, even if it is smaller. *)
-                        widthExpression = ARCGeneralizeValue[
-                            examples[[All, "Input", "Width"]],
-                            examples[[All, "Output", "Width"]],
-                            ObjectValue["InputScene", "Width"]
-                        ];
-                        
-                        heightExpression = ARCGeneralizeValue[
-                            examples[[All, "Input", "Height"]],
-                            examples[[All, "Output", "Height"]],
-                            ObjectValue["InputScene", "Height"]
-                        ];
-                        
-                        If [SpecifiedQ[widthExpression],
-                            rulesResult["Width"] = widthExpression
-                        ];
-                        
-                        If [SpecifiedQ[heightExpression],
-                            rulesResult["Height"] = heightExpression
-                        ];
                     ];
                     
                     rulesResult
@@ -6495,7 +6577,7 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
         {
             rules = rulesIn,
             scene = sceneIn,
-            parsedScene,
+            parsedScene = Null,
             objects,
             ruleList = rulesIn["Rules"],
             addObjects,
@@ -6519,40 +6601,39 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             outputImage,
             outputWidth,
             outputHeight,
-            background,
-            semiParsedScene
+            background
         },
         (* Compute any dynamic expressions in the top-level rules association. For example,
            the Width of the output scene might be a dynamic expression of some InputScene
            attribute. *)
-        If [!FreeQ[KeyDrop[rules, "Rules"], ObjectValue["InputScene", ___]],
+        If [!FreeQ[KeyDrop[rules, "Rules"], _ObjectValue | _Object],
             
-            
-            background = ARCInferBackgroundColor[scene];
-            
-            semiParsedScene =
+            parsedScene =
                 ReturnIfFailure@
-                ARCSceneObject[
-                    scene,
-                    background,
-                    Missing[]
-                ];
+                ARCParseScene[scene, rules];
+            
+            background = parsedScene["Background"];
             
             (* TODO: If the rules subdivide the input scene into multiple sub-scenes, then
                      resolving InputScene values within the "Rules" key is probably not
                      appropriate here, so perhaps we should avoid that key-value here. *)
-            rules =
-                ReturnIfFailure@
-                ResolveValues[
-                    rules,
-                    <||>,
-                    semiParsedScene,
-                    "ObjectsPattern" -> "InputScene",
-                    "Activate" -> True
-                ];
+            Function[{property},
+                If [SpecifiedQ[rules[property]],
+                    rules[property] =
+                        ReturnIfFailure@
+                        ResolveValues[
+                            rules[property],
+                            <||>,
+                            parsedScene,
+                            "ObjectsPattern" -> Except["InputObject"],
+                            "Activate" -> True
+                        ]
+                ]
+            ] /@ {"Width", "Height"};
         ];
         
-        (*ARCEcho2[rules];*)
+        (*ARCEcho2[rules];
+        Throw["HERE"];*)
         
         ruleList = rules["Rules"];
         
@@ -6653,58 +6734,11 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
         ];
         
-        parsedScene =
-            ReturnIfFailure@
-            ARCParseScene[
-                scene,
-                If [TrueQ[rules["SceneAsSingleObject"]],
-                    "SingleObject" -> True
-                    ,
-                    Sequence @@ {}
-                ],
-                If [rules["FormMultiColorCompositeObjects"] === False,
-                    "FormMultiColorCompositeObjects" -> False
-                    ,
-                    Sequence @@ {}
-                ],
-                If [!MissingQ[rules["FollowDiagonals"]],
-                    "FollowDiagonals" -> rules["FollowDiagonals"]
-                    ,
-                    Sequence @@ {}
-                ],
-                If [ListQ[rules["SubdivideInput"]],
-                    "SubdivideInput" -> rules["SubdivideInput"]
-                    ,
-                    Sequence @@ {}
-                ],
-                If [!MissingQ[rules["CheckForGridsAndDividers"]],
-                    "CheckForGridsAndDividers" -> rules["CheckForGridsAndDividers"]
-                    ,
-                    Sequence @@ {}
-                ],
-                (* If none of the rules involved ZOrder/occluded objects, then don't consider
-                   occlusions when parsing the scene for applying rules, since there are cases
-                   where this can result in invalid scene interpretation.
-                   e.g. 90c28cc7 *)
-                "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]],
-                Which[
-                    !MissingQ[rules["Background"]],
-                        (* e.g. bda2d7a6 *)
-                        "Background" -> rules["Background"],
-                    (* If there's a single rule and it's a ColorMapping rule, then we'll
-                       avoid non-black backgrounds for now. For example, the test example
-                       for c8f0f002. A more sophisticated thing to do might to avoid
-                       using a background color that is equal to the FROM color of the
-                       color mapping. *)
-                    And[
-                        Length[rules["Rules"]] === 1,
-                        !FreeQ[rules["Rules"], KeyValuePattern["Type" -> "ColorMapping"]]
-                    ],
-                        "Background" -> 0,
-                    True,
-                        Sequence @@ {}
-                ]
-            ];
+        If [parsedScene === Null,
+            parsedScene =
+                ReturnIfFailure@
+                ARCParseScene[scene, rules]
+        ];
         
         objects = parsedScene["Objects"];
         
@@ -7831,55 +7865,58 @@ ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
         sceneWidth = scene["Width"];
         sceneHeight = scene["Height"];
         
-        (* HERE10 *)
-        
         (* Detect whether we need to make the output image wider or taller. e.g. d631b094 *)
-        (*If [Or[
-                !TrueQ[OptionValue["OutputWidthSpecified"]],
-                !TrueQ[OptionValue["OutputHeightSpecified"]]
-            ],
-            Function[{object},
-                
-                If [ListQ[object["Position"]],
-                    posY = object["Position"][[1]];
-                    posX = object["Position"][[2]];
-                    ,
-                    posY = object["Y"];
-                    posX = object["X"];
-                ];
-                
-                If [MissingQ[object["Image"]],
-                    ReturnFailure[
-                        "ARCRenderSceneFailure",
-                        "An object is missing its Image.",
-                        "Object" -> object
-                    ]
-                ];
-                
-                image = object["Image"][[1]];
-                
-                If [And[
-                        posY + ImageHeight[image] - 1 > sceneHeight,
-                        !TrueQ[OptionValue["OutputHeightSpecified"]]
-                    ],
-                    (* This object requires that the output scene be taller, so we'll make it
-                       taller. *)
-                    sceneHeight = posY + ImageHeight[image] - 1;
-                    (*Echo["sceneHeight expansion" -> sceneHeight];*)
-                ];
-                
-                If [And[
-                        posX + ImageWidth[image] - 1 > sceneWidth,
-                        !TrueQ[OptionValue["OutputWidthSpecified"]]
-                    ],
-                    (* This object requires that the output scene be wider, so we'll make it
-                       wider. e.g. d631b094 *)
-                    sceneWidth = posX + ImageWidth[image] - 1;
-                    (*Echo["sceneWidth expansion" -> sceneWidth];*)
-                ];
-                
-            ] /@ objects
-        ];*)
+        (* Disabled Oct 23 2022 since for inputs like d364b489, we don't want to auto-expand the
+           output size. Potentially though we should still auto-expand the output size unless
+           we detect that out-of-scene occlusions are involved. *)
+        If [False,
+            If [Or[
+                    !TrueQ[OptionValue["OutputWidthSpecified"]],
+                    !TrueQ[OptionValue["OutputHeightSpecified"]]
+                ],
+                Function[{object},
+                    
+                    If [ListQ[object["Position"]],
+                        posY = object["Position"][[1]];
+                        posX = object["Position"][[2]];
+                        ,
+                        posY = object["Y"];
+                        posX = object["X"];
+                    ];
+                    
+                    If [MissingQ[object["Image"]],
+                        ReturnFailure[
+                            "ARCRenderSceneFailure",
+                            "An object is missing its Image.",
+                            "Object" -> object
+                        ]
+                    ];
+                    
+                    image = object["Image"][[1]];
+                    
+                    If [And[
+                            posY + ImageHeight[image] - 1 > sceneHeight,
+                            !TrueQ[OptionValue["OutputHeightSpecified"]]
+                        ],
+                        (* This object requires that the output scene be taller, so we'll make it
+                        taller. *)
+                        sceneHeight = posY + ImageHeight[image] - 1;
+                        (*Echo["sceneHeight expansion" -> sceneHeight];*)
+                    ];
+                    
+                    If [And[
+                            posX + ImageWidth[image] - 1 > sceneWidth,
+                            !TrueQ[OptionValue["OutputWidthSpecified"]]
+                        ],
+                        (* This object requires that the output scene be wider, so we'll make it
+                        wider. e.g. d631b094 *)
+                        sceneWidth = posX + ImageWidth[image] - 1;
+                        (*Echo["sceneWidth expansion" -> sceneWidth];*)
+                    ];
+                    
+                ] /@ objects
+            ]
+        ];
         
         (* Empty output image using background color. *)
         output =
@@ -8344,7 +8381,7 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                     Function[{value},
                         {
                             countsForValue = #[value] & /@ valueCounts;
-                            (*If [property === "Color",
+                            (*If [property === "FilledArea.Rank",
                                 Echo[property -> value -> countsForValue]
                             ];*)
                             Which[
@@ -10000,15 +10037,16 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
             ]
     ]
 
-ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, examples_List] :=
+ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, examples_List, referenceableInputObjects_Association : <||>] :=
     ARCGeneralizeConclusionValueNonRecursive[
         property,
         values,
         None,
-        examples
+        examples,
+        referenceableInputObjects
     ]
 
-ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, inputObjects: _List | None, examples_List] :=
+ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, inputObjects: _List | None, examples_List, referenceableInputObjects_Association : <||>] :=
     Replace[
         ARCGeneralizeConclusionValueNonRecursive[
             {property},
@@ -10028,9 +10066,12 @@ ARCGeneralizeConclusionValueNonRecursive[property_String, values_List, inputObje
                 values
             ],
             (* Referenceable objects. *)
-            <|
-                Object["InputScene"] -> <||>
-            |>,
+            Join[
+                <|
+                    Object["InputScene"] -> <||>
+                |>,
+                referenceableInputObjects
+            ],
             examples
         ],
         {
@@ -10378,8 +10419,8 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                 ];
                 
                 (*If [reference === Object["InputScene"],
-                    Echo["valuesToInfer" -> valuesToInfer];
-                    ARCEcho[
+                    ARCEcho3["valuesToInfer" -> valuesToInfer];
+                    ARCEcho3[
                         KeyTake[objects, {"ObjectCount"}]
                     ]
                 ];*)
@@ -30136,6 +30177,9 @@ ARCFixOcclusionsForSubImages[subImages_Association, parsedScene_Association] :=
         
         Function[{object},
             If [!MissingQ[possibleOcclusion = subImages[object["Image"]]],
+                
+                (*ARCEcho2[object["Image"] -> possibleOcclusion];*)
+                
                 (* We have a possible occlusion to investigate. *)
                 object["Image"] -> possibleOcclusion;
                 extendRight = ImageWidth[possibleOcclusion["FullImage"]] - possibleOcclusion["X2"];
@@ -30207,6 +30251,38 @@ ARCFixOcclusionsForSubImages[subImages_Association, parsedScene_Association] :=
                 object
             ]
         ] /@ parsedScene["Objects"]
+    ]
+
+(*!
+    \function ARCSameOutputSizeQ
+    
+    \calltable
+        ARCSameOutputSizeQ[examples] '' Returns True if the inputs and outputs always have the same size.
+    
+    See: Wyatt["ERPPROJECT-7631"]
+    
+    Examples:
+    
+    ARCSameOutputSizeQ[examples] === TODO
+    
+    \maintainer danielb
+*)
+Clear[ARCSameOutputSizeQ];
+ARCSameOutputSizeQ[examples_List, properties_List] :=
+    AllTrue[
+        examples,
+        Function[{example},
+            And[
+                Or[
+                    !MemberQ[properties, "Width"],
+                    example["Input", "Width"] === example["Output", "Width"]
+                ],
+                Or[
+                    !MemberQ[properties, "Height"],
+                    example["Input", "Height"] === example["Output", "Height"]
+                ]
+            ]
+        ]
     ]
 
 End[]
