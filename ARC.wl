@@ -2483,6 +2483,9 @@ ARCClassifyRectange[image_List] :=
                     ARCInferLineFill[<|"Image" -> ARCScene[image], "Shape" -> shape|>],
                     {
                         fill: _List | _Association :> (
+                            (*Echo[
+                                ARCScene[image] -> fill
+                            ];*)
                             Append[
                                 KeyDrop[shape, "Renderable"],
                                 "Fill" -> fill
@@ -15746,7 +15749,7 @@ ARCInferObjectImage[
         If [!MissingQ[shape["Fill"]],
             (* ARCInferObjectImage-20221023-N80B9K *)
             Return[
-                ARCRenderFilledRectangle[width, height, shape["Fill"]],
+                ARCRenderFilledRectangle[width, height, shape["Fill"], color],
                 Module
             ]
         ];
@@ -28499,17 +28502,31 @@ ARCHandleComputedInteger[value_, inactiveExpression_] :=
 *)
 Clear[ARCInferLineFill];
 ARCInferLineFill[object_Association] :=
-    Module[{res, returnResult},
+    Module[{res, returnResult, colors},
         
-        returnResult[result_] :=
+        returnResult[resultIn_] :=
             (
-                If [MatchQ[result["Orientation"], _Missing | "Horizontal"],
-                    Return[result["Result"], Module]
+                res = resultIn;
+                
+                (* If a pattern consists of a single non-background color, then we'll
+                   convert it to a monochrome image. This is useful so that if there
+                   are multiple objects that have the same shape and different color,
+                   we will be able to see that their shape is equivalent. *)
+                If [Length[colors = ARCImageColors[object["Image"]]] === 1,
+                    res["Result"] = Replace[
+                        res["Result"],
+                        First[colors] -> 10,
+                        {1, 2}
+                    ]
+                ];
+                
+                If [MatchQ[res["Orientation"], _Missing | "Horizontal"],
+                    Return[res["Result"], Module]
                     ,
                     Return[
                         <|
-                            "Pattern" -> result["Result"],
-                            "Orientation" -> result["Orientation"]
+                            "Pattern" -> res["Result"],
+                            "Orientation" -> res["Orientation"]
                         |>,
                         Module
                     ]
@@ -29883,7 +29900,7 @@ ReturnFailureIfBadValues[object_] :=
     \maintainer danielb
 *)
 Clear[ARCRenderFilledRectangle];
-ARCRenderFilledRectangle[width_Integer, height_Integer, fillIn_] :=
+ARCRenderFilledRectangle[width_Integer, height_Integer, fillIn_, color_] :=
     Module[{fill, primaryDimensionSize, pattern, image},
         
         fill = Replace[fillIn, list_List :> <|"Pattern" -> list|>];
@@ -29896,6 +29913,16 @@ ARCRenderFilledRectangle[width_Integer, height_Integer, fillIn_] :=
             ];
         
         pattern = fill["Pattern"];
+        
+        If [!MissingQ[color],
+            (* If the pattern is colorless, then use the color of the object to produce
+               a colored image. *)
+            pattern = Replace[
+                pattern,
+                10 -> color,
+                {1, 2}
+            ]
+        ];
         
         image =
             Flatten[

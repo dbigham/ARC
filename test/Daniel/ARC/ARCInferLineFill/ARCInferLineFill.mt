@@ -108,3 +108,20 @@ Test[
     ,
     TestID -> "ARCInferLineFill-20221023-FBQVW1"
 ]
+
+Test[
+    Daniel`ARC`ARCInferLineFill[
+        <|
+            "Image" -> Daniel`ARC`ARCScene[
+                {{1, -1, 1}, {-1, 1, -1}, {1, -1, 1}, {-1, 1, -1}, {1, -1, 1}, {-1, 1, -1}}
+            ],
+            "Shape" -> <|"Name" -> "Rectangle"|>,
+            "Width" -> 2,
+            "Height" -> 6
+        |>
+    ]
+    ,
+    <|"Pattern" -> {{10, -1, 10}, {-1, 10, -1}}, "Orientation" -> "Vertical"|>
+    ,
+    TestID -> "ARCInferLineFill-20221024-LOAXTX"
+]
