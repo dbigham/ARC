@@ -633,6 +633,8 @@ ARCFixOcclusionsForSubImages::usage = "ARCFixOcclusionsForSubImages  "
 
 ReturnFailureIfBadValues::usage = "ReturnFailureIfBadValues  "
 
+ARCSameOutputSizeQ::usage = "ARCSameOutputSizeQ  "
+
 Begin["`Private`"]
 
 
@@ -1142,6 +1144,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     ];
                     
                     (* TODO: Any opportunities for memoization here? *)
+                    (* HERE13 *)
                     If [And[
                             TrueQ[OptionValue["FindOcclusions"]],
                             (* If we aren't even wanting to form multi-color objects, then
@@ -1150,7 +1153,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                                a multi-color notable object to form a multi-color
                                object. That said, if we're in non-multi-color mode,
                                shouldn't all of the notable images be single color? *)
-                            TrueQ[OptionValue["FormMultiColorCompositeObjects"]]
+                            OptionValue["FormMultiColorCompositeObjects"] =!= False
                         ],
                         objects =
                             ReturnIfFailure@
@@ -1164,7 +1167,8 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                                     "Width" -> ImageWidth[scene],
                                     "Height" -> ImageHeight[scene]
                                 |>
-                            ]
+                            ];
+                        (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Components"][objects]];*)
                     ]
                 ];
             
@@ -3450,7 +3454,8 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
                 opts
             ];
         
-        (*ARCEcho2[parsedScenes["Output"]];*)
+        (* HERE11 *)
+        ARCEcho2[parsedScenes["Output"]];
         
         ARCFindObjectMapping[
             parsedScenes["Input"],
@@ -5259,45 +5264,55 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     
                     (*ARCEcho2[ARCSimplifyRules[KeyDrop[rulesResult, {"Examples", "ObjectMappings"}]]];*)
                     
+                    (* HERE10 *)
+                    
                     If [!ARCSameOutputSizeQ[examples, {"Width", "Height"}],
                         
-                        outputDimensionsInferrable =
-                            And[
-                                Or[
-                                    ARCSameOutputSizeQ[examples, {"Width"}],
-                                    SpecifiedQ[
-                                        rulesResult["Width"] =
-                                            ReturnIfFailure@
-                                            ARCGeneralizeConclusionValueNonRecursive[
-                                                "Width",
-                                                ImageWidth[#["Output", "Scene"]] & /@ examples,
-                                                examples,
-                                                referenceableInputObjects
-                                            ]
+                        (* Note that we've seen multiple examples where RemoveEmptySpace seems
+                           to be more robust than trying to infer the output scene width and
+                           height, so we try that first. e.g. 4be741c5, 8efcae92, 72ca375d *)
+                        If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
+                            rulesResult = Prepend[
+                                rulesResult,
+                                "RemoveEmptySpace" -> True
+                            ]
+                            ,
+                            outputDimensionsInferrable =
+                                And[
+                                    Or[
+                                        ARCSameOutputSizeQ[examples, {"Width"}],
+                                        SpecifiedQ[
+                                            rulesResult["Width"] =
+                                                ReturnIfFailure@
+                                                ARCGeneralizeConclusionValueNonRecursive[
+                                                    "Width",
+                                                    ImageWidth[#["Output", "Scene"]] & /@ examples,
+                                                    examples,
+                                                    referenceableInputObjects
+                                                ]
+                                        ]
+                                    ],
+                                    Or[
+                                        ARCSameOutputSizeQ[examples, {"Height"}],
+                                        SpecifiedQ[
+                                            rulesResult["Height"] =
+                                                ReturnIfFailure@
+                                                ARCGeneralizeConclusionValueNonRecursive[
+                                                    "Height",
+                                                    ImageHeight[#["Output", "Scene"]] & /@ examples,
+                                                    examples,
+                                                    referenceableInputObjects
+                                                ]
+                                        ]
                                     ]
-                                ],
-                                Or[
-                                    ARCSameOutputSizeQ[examples, {"Height"}],
-                                    SpecifiedQ[
-                                        rulesResult["Height"] =
-                                            ReturnIfFailure@
-                                            ARCGeneralizeConclusionValueNonRecursive[
-                                                "Height",
-                                                ImageHeight[#["Output", "Scene"]] & /@ examples,
-                                                examples,
-                                                referenceableInputObjects
-                                            ]
-                                    ]
-                                ]
-                            ];
+                                ];
                         
-                        If [!TrueQ[outputDimensionsInferrable],
-                            rulesResults = KeyDrop[rulesResult, {"Width", "Height"}];
-                            If [TrueQ[ARCRemoveEmptySpaceQ[rulesResult, examples]],
-                                rulesResult = Prepend[
-                                    rulesResult,
-                                    "RemoveEmptySpace" -> True
-                                ]
+                            If [!TrueQ[outputDimensionsInferrable],
+                                (* We're in a bad spot here since the output sizes are different
+                                   than the input sizes, but RemoveEmptySpace didn't seem to
+                                   work and we weren't able to infer the output width and
+                                   height. *)
+                                rulesResults = KeyDrop[rulesResult, {"Width", "Height"}]
                             ]
                         ]
                     ];
@@ -6609,7 +6624,14 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
         (* Compute any dynamic expressions in the top-level rules association. For example,
            the Width of the output scene might be a dynamic expression of some InputScene
            attribute. *)
-        If [!FreeQ[KeyDrop[rules, "Rules"], _ObjectValue | _Object],
+        If [Or[
+                !FreeQ[KeyDrop[rules, "Rules"], _ObjectValue | _Object],
+                !FreeQ[rules["Rules"], ObjectValue["InputScene", ___]]
+            ],
+            
+            If [TrueQ[rules["Denoise"]],
+                scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
+            ];
             
             parsedScene =
                 ReturnIfFailure@
@@ -6633,6 +6655,20 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                         ]
                 ]
             ] /@ {"Width", "Height"};
+        ];
+        
+        If [!FreeQ[rules["Rules"], ObjectValue["InputScene", ___]],
+            (* Some of the rules refer to InputScene, so we'll need to resolve those now
+               incase they are used by PatternFill rules, etc. e.g. 91413438v *)
+            rules["Rules"] =
+                ReturnIfFailure@
+                ResolveValues[
+                    rules["Rules"],
+                    <||>,
+                    parsedScene,
+                    "ObjectsPattern" -> "InputScene",
+                    "Activate" -> True
+                ]
         ];
         
         (*ARCEcho2[rules];
@@ -6733,11 +6769,12 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 ]
         ];
         
-        If [TrueQ[rules["Denoise"]],
-            scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
-        ];
-        
         If [parsedScene === Null,
+            
+            If [TrueQ[rules["Denoise"]],
+                scene = ReturnIfFailure[ARCDenoise[scene]]["Image"]
+            ];
+            
             parsedScene =
                 ReturnIfFailure@
                 ARCParseScene[scene, rules]
@@ -9754,7 +9791,9 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                                referenceable objects can be expensive, so we want to avoid
                                doing that unless it's helpful in a context. *)
                             "OnlyCheckIfValuesMatchInputObjects" -> True,
-                            "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"]
+                            "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"],
+                            (* Since we handle that in this function. *)
+                            "CheckForConsistentValues" -> False
                         ] === Nothing,
                         TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]]
                     ],
@@ -9885,7 +9924,9 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                 conclusions,
                 referenceableObjects,
                 examples,
-                "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"]
+                "AllowUnspecifiedIfUnchanged" -> OptionValue["AllowUnspecifiedIfUnchanged"],
+                (* Since we handle that in this function. *)
+                "CheckForConsistentValues" -> False
             ]
             ,
             Missing["NotFound"]
@@ -9912,7 +9953,8 @@ Clear[ARCGeneralizeConclusionValueNonRecursive];
 Options[ARCGeneralizeConclusionValueNonRecursive] =
 {
     "OnlyCheckIfValuesMatchInputObjects" -> False,  (*< If True, we will only check if the values match the corresponding values in the input objects. *)
-    "AllowUnspecifiedIfUnchanged" -> True           (*< If the values for this property are unchanged from the input objects, is it OK to leave the property unspecified in the rule's conclusion? An example of where we don't want to do this is if say the X value of the object is changing, where we want to be sure to explicitly specify X2 even if it isn't changing, otherwise it would be ambiguous whether the object is just moving, or moving and being resized. e.g. 29c11459 *)
+    "AllowUnspecifiedIfUnchanged" -> True,          (*< If the values for this property are unchanged from the input objects, is it OK to leave the property unspecified in the rule's conclusion? An example of where we don't want to do this is if say the X value of the object is changing, where we want to be sure to explicitly specify X2 even if it isn't changing, otherwise it would be ambiguous whether the object is just moving, or moving and being resized. e.g. 29c11459 *)
+    "CheckForConsistentValues" -> True              (*< Should we check if the values are always the same? *)
 };
 ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: _Association | Automatic, conclusions_List, referenceableObjects_Association, examples_List, OptionsPattern[]] :=
     Module[
@@ -9924,12 +9966,19 @@ ARCGeneralizeConclusionValueNonRecursive[propertyPath_List, propertyAttributes: 
                     Last[propertyPath]
                 ],
             values,
+            uniqueValues,
             defaultGetFunction,
             getFunction,
             inputObjectValues
         },
         
         values = conclusions[[All, "Value"]];
+        
+        If [TrueQ[OptionValue["CheckForConsistentValues"]],
+            If [Length[uniqueValues = DeleteDuplicates[values]] === 1,
+                Return[property -> First[uniqueValues], Module]
+            ]
+        ];
         
         (*If [MatchQ[propertyPath, {___, "Y2Inverse"}],
             EchoTag["values"][values]
@@ -15074,6 +15123,26 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 23}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 30207,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Crazy rule set. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "0b148d64",
+            "Timestamp" -> DateObject[{2022, 10, 24}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 30321,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Crazy rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "662c240a",
+            "Timestamp" -> DateObject[{2022, 10, 24}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 30321,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -29604,7 +29673,9 @@ ARCReferenceForObjectSet[objectsToReference_List, objectsNotToReference_List, re
                             |>
                         ] /@ objectsToReference,
                         referenceableInputObjects,
-                        examples
+                        examples,
+                        (* Should this be True or False here? *)
+                        "CheckForConsistentValues" -> False
                     ],
                     thisPattern: Except[_Missing] :> (
                         (*EchoTag["thisPattern"][thisPattern[[2]]];*)
