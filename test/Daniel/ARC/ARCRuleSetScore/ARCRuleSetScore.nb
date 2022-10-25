@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     82903,       1987]
-NotebookOptionsPosition[     71312,       1735]
-NotebookOutlinePosition[     76814,       1871]
-CellTagsIndexPosition[     76771,       1868]
+NotebookDataLength[     88517,       2127]
+NotebookOptionsPosition[     75825,       1858]
+NotebookOutlinePosition[     81327,       1994]
+CellTagsIndexPosition[     81284,       1991]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCRuleSetScore", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[578]:=",ExpressionUUID->"bd0f3d8a-0559-42ef-ba5d-86ed43a5436f"],
+  "In[456]:=",ExpressionUUID->"bd0f3d8a-0559-42ef-ba5d-86ed43a5436f"],
 
 Cell[CellGroupData[{
 
@@ -1729,6 +1729,129 @@ Cell[BoxData[
    3.875396540978252*^9, 3.8753965497512245`*^9}, 3.875396687872408*^9},
  CellLabel->
   "Out[543]=",ExpressionUUID->"14d2669e-a852-464d-a6f1-de84ac1a0423"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Regression Test: ZOrder vs Area.Rank (DISABLED)", "Subsection",
+ CellChangeTimes->{{3.875690747115323*^9, 3.8756907477531133`*^9}, {
+  3.875690787074112*^9, 3.8756907925156097`*^9}, {3.87569199927364*^9, 
+  3.87569200085712*^9}},ExpressionUUID->"582c50e5-fd5b-4300-b90b-\
+7cb8bb6d5bef"],
+
+Cell["\<\
+Disabled these -- the problem was that ARCApplyRules wasn\[CloseCurlyQuote]t \
+setting \[OpenCurlyDoubleQuote]FindOcclusions\[CloseCurlyDoubleQuote] to True \
+property when calling ARCParseScene, so these aren\[CloseCurlyQuote]t \
+actually required.\
+\>", "Item",
+ CellChangeTimes->{{3.875691927362686*^9, 
+  3.8756919689302406`*^9}},ExpressionUUID->"049eb2a8-dbf0-46cf-8819-\
+64fe024bd7be"],
+
+Cell["Here was the code we added to $properties for ZOrder:", "Item",
+ CellChangeTimes->{{3.875691927362686*^9, 
+  3.875691977441584*^9}},ExpressionUUID->"9699e8d2-5bdb-4451-8324-\
+2b249ac5fe7d"],
+
+Cell["\<\
+        (* Note: We could make this smarter by making this score dynamic, \
+whereby if
+                 scene parsing involved non-zero ZOrder values, we\
+\[CloseCurlyQuote]d improve the rule
+                 condition quality.
+           e.g. ba97ae07
+           ARCRuleSetScore-20221025-B7Q1FH
+           ARCConditionsScore-20221025-YE3J3J *)
+        \[OpenCurlyDoubleQuote]RuleConditionQuality\[CloseCurlyDoubleQuote] \
+-> 0.95\
+\>", "Text",
+ CellChangeTimes->{
+  3.875691965966214*^9},ExpressionUUID->"f609a190-fe60-423d-a1b9-\
+abb756811a9e"],
+
+Cell[BoxData[
+ RowBox[{"Lui", "[", "\"\<ba97ae07\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.875690794274026*^9, 
+  3.875690800292656*^9}},ExpressionUUID->"d1370148-2832-4dbf-ad31-\
+dc411f8648be"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"ARCRuleSetScore", "[", "\n", "\t", 
+  RowBox[{"{", "\n", "        ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"<|", 
+      RowBox[{"\"\<Area.Rank\>\"", " ", "->", " ", "1"}], "|>"}], " ", "->", 
+     " ", 
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "0"}], "|>"}]}], ",", "\n", 
+    "        ", 
+    RowBox[{
+     RowBox[{"<|", 
+      RowBox[{"\"\<Area.Rank\>\"", " ", "->", " ", 
+       RowBox[{"Except", "[", "1", "]"}]}], "|>"}], " ", "->", " ", 
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "1"}], "|>"}]}]}], "\n", 
+   "    ", "}"}], "\n", "]"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.870467319505377*^9, 3.8704673599178047`*^9}, {
+  3.8705088411873155`*^9, 3.8705088492706766`*^9}, {3.875690756507606*^9, 
+  3.8756907627400455`*^9}},
+ CellLabel->"In[452]:=",
+ CellID->4172773,
+ "TestId" -> 
+ "ARCRuleSetScore-20221025-9RM9DE",ExpressionUUID->"4b11004c-90e1-4fa8-8c88-\
+c2ea85c1640f"],
+
+Cell[BoxData[
+ RowBox[{"-", "0.27324455602409886`"}]], "Output",
+ CellChangeTimes->{
+  3.8756907632350554`*^9, {3.8756910116914344`*^9, 3.8756910234448338`*^9}, {
+   3.8756910605784564`*^9, 3.87569106803193*^9}, {3.8756911269762564`*^9, 
+   3.875691166910282*^9}},
+ CellLabel->
+  "Out[453]=",ExpressionUUID->"4aee8ece-901d-4458-9cf8-d03745b99aaf"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"ARCRuleSetScore", "[", "\n", "    ", 
+  RowBox[{"{", "\n", "        ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "0"}], "|>"}], " ", "->", " ", 
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "1"}], "|>"}]}], ",", "\n", 
+    "        ", 
+    RowBox[{
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "1"}], "|>"}], " ", "->", " ", 
+     RowBox[{"<|", 
+      RowBox[{"\"\<ZOrder\>\"", " ", "->", " ", "0"}], "|>"}]}]}], "\n", 
+   "    ", "}"}], "\n", "]"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.870467319505377*^9, 3.8704673599178047`*^9}, {
+  3.8705088411873155`*^9, 3.8705088492706766`*^9}, {3.875690756507606*^9, 
+  3.8756907838665767`*^9}},
+ CellLabel->"In[454]:=",
+ CellID->90361661,
+ "TestId" -> 
+ "ARCRuleSetScore-20221025-B7Q1FH",ExpressionUUID->"dbe49b0e-9c2b-45ae-afd9-\
+3cdcc40a83be"],
+
+Cell[BoxData[
+ RowBox[{"-", "0.24738633753705966`"}]], "Output",
+ CellChangeTimes->{{3.8756907782562485`*^9, 3.8756907853027387`*^9}, {
+  3.8756910155388784`*^9, 3.875691069420482*^9}, {3.8756911278425674`*^9, 
+  3.8756911679667654`*^9}},
+ CellLabel->
+  "Out[455]=",ExpressionUUID->"95e4a715-2134-4198-a5fd-7fddeeaaecb3"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]
@@ -1986,6 +2109,23 @@ Cell[67129, 1639, 3593, 79, 468, "Code",ExpressionUUID->"06f4f011-4d68-498c-befe
  CellID->10923511]
 }, Open  ]],
 Cell[70737, 1721, 535, 9, 33, "Output",ExpressionUUID->"14d2669e-a852-464d-a6f1-de84ac1a0423"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[71309, 1735, 292, 4, 38, "Subsection",ExpressionUUID->"582c50e5-fd5b-4300-b90b-7cb8bb6d5bef"],
+Cell[71604, 1741, 401, 8, 53, "Item",ExpressionUUID->"049eb2a8-dbf0-46cf-8819-64fe024bd7be"],
+Cell[72008, 1751, 195, 3, 32, "Item",ExpressionUUID->"9699e8d2-5bdb-4451-8324-2b249ac5fe7d"],
+Cell[72206, 1756, 556, 14, 173, "Text",ExpressionUUID->"f609a190-fe60-423d-a1b9-abb756811a9e"],
+Cell[72765, 1772, 197, 4, 29, "Input",ExpressionUUID->"d1370148-2832-4dbf-ad31-dc411f8648be"],
+Cell[72965, 1778, 1095, 29, 144, "Code",ExpressionUUID->"4b11004c-90e1-4fa8-8c88-c2ea85c1640f",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->4172773],
+Cell[74063, 1809, 347, 7, 33, "Output",ExpressionUUID->"4aee8ece-901d-4458-9cf8-d03745b99aaf"],
+Cell[74413, 1818, 1048, 27, 144, "Code",ExpressionUUID->"dbe49b0e-9c2b-45ae-afd9-3cdcc40a83be",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->90361661],
+Cell[75464, 1847, 321, 6, 33, "Output",ExpressionUUID->"95e4a715-2134-4198-a5fd-7fddeeaaecb3"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]

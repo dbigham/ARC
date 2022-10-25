@@ -1171,12 +1171,12 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Components"][objects]];*)
                     ]
                 ];
-            
-            If [TrueQ[OptionValue["FindOcclusions"]],
-                objects =
-                    ReturnIfFailure@
-                    ARCFindOccludedLines[scene, background, objects]
-            ]
+                
+                If [TrueQ[OptionValue["FindOcclusions"]],
+                    objects =
+                        ReturnIfFailure@
+                        ARCFindOccludedLines[scene, background, objects]
+                ]
         ];
         
         If [TrueQ[OptionValue["InferPropertiesThatRequireFullObjectList"]],
@@ -1231,7 +1231,7 @@ ARCParseScene[scene_ARCScene, rules_Association, opts:OptionsPattern[]] :=
                 occlusions when parsing the scene for applying rules, since there are cases
                 where this can result in invalid scene interpretation.
                 e.g. 90c28cc7 *)
-            "FindOcclusions" -> !FreeQ[ruleList, KeyValuePattern["ZOrder" -> _]],
+            "FindOcclusions" -> !FreeQ[rules["Rules"], KeyValuePattern["ZOrder" -> _]],
             Which[
                 !MissingQ[rules["Background"]],
                     (* e.g. bda2d7a6 *)
@@ -5796,8 +5796,8 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 ] /@ DeleteCases[
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
-                        If [TrueQ[$mapComponents],
-                            {"X2.Rank"}
+                        If [!TrueQ[$mapComponents],
+                            {None, "ZOrder"}
                             ,
                             {None}
                         ]
@@ -6779,6 +6779,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 ReturnIfFailure@
                 ARCParseScene[scene, rules]
         ];
+        
+        (*ARCEcho2[parsedScene];*)
         
         objects = parsedScene["Objects"];
         
@@ -9678,7 +9680,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Fill",
+        (*If [property === "ZOrder",
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -15123,26 +15125,6 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 23}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 30207,
-            "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
-        |>,
-        (* Crazy rule set. *)
-        <|
-            "GeneralizedSuccess" -> True,
-            "ExampleImplemented" -> "0b148d64",
-            "Timestamp" -> DateObject[{2022, 10, 24}],
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "CodeLength" -> 30321,
-            "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
-        |>,
-        (* Crazy rules. *)
-        <|
-            "GeneralizedSuccess" -> True,
-            "ExampleImplemented" -> "662c240a",
-            "Timestamp" -> DateObject[{2022, 10, 24}],
-            "ImplementationTime" -> Quantity[0, "Hours"],
-            "CodeLength" -> 30321,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
