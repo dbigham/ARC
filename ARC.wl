@@ -1144,7 +1144,6 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     ];
                     
                     (* TODO: Any opportunities for memoization here? *)
-                    (* HERE13 *)
                     If [And[
                             TrueQ[OptionValue["FindOcclusions"]],
                             (* If we aren't even wanting to form multi-color objects, then
@@ -3454,9 +3453,6 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
                 opts
             ];
         
-        (* HERE11 *)
-        ARCEcho2[parsedScenes["Output"]];
-        
         ARCFindObjectMapping[
             parsedScenes["Input"],
             parsedScenes["Output"],
@@ -5253,6 +5249,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             ,
                             Nothing
                         ],
+                        If [!FreeQ[examples[[All, "Output", "OutOfSceneObjects"]], True],
+                            "AutoExpandOutputSize" -> False
+                            ,
+                            Nothing
+                        ],
                         "Rules" -> Join[
                             ARCCleanRules[rules["Rules"], allObjects],
                             additionalRules
@@ -5263,8 +5264,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     |>;
                     
                     (*ARCEcho2[ARCSimplifyRules[KeyDrop[rulesResult, {"Examples", "ObjectMappings"}]]];*)
-                    
-                    (* HERE10 *)
                     
                     If [!ARCSameOutputSizeQ[examples, {"Width", "Height"}],
                         
@@ -6626,7 +6625,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
            attribute. *)
         If [Or[
                 !FreeQ[KeyDrop[rules, "Rules"], _ObjectValue | _Object],
-                !FreeQ[rules["Rules"], ObjectValue["InputScene", ___]]
+                !FreeQ[rules["Rules"], ObjectValue["InputScene", ___]],
+                MatchQ[rules["Rules"], KeyValuePattern["Type" -> "PatternFill"]]
             ],
             
             If [TrueQ[rules["Denoise"]],
@@ -7055,7 +7055,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             ARCRenderScene[
                 outputScene,
                 "OutputWidthSpecified" -> SpecifiedQ[rules["Width"]],
-                "OutputHeightSpecified" -> SpecifiedQ[rules["Height"]]
+                "OutputHeightSpecified" -> SpecifiedQ[rules["Height"]],
+                "AutoExpandOutputSize" -> rules["AutoExpandOutputSize"] =!= False
             ];
         
         If [TrueQ[rules["RemoveEmptySpace"]],
@@ -7612,7 +7613,29 @@ ARCApplyConclusion[key:"Shape", value: KeyValuePattern["Fill" -> _], objectIn_As
         KeyDrop[objectOut, {"Color", "Colors"}],
         {
             "Shape" -> value,
-            "Colors" -> DeleteDuplicates[value["Fill"]],
+            With[
+                {
+                    colors =
+                        DeleteCases[
+                            DeleteDuplicates@
+                            Flatten@
+                            Replace[
+                                value["Fill"],
+                                KeyValuePattern["Pattern" -> pattern_] :> pattern
+                            ],
+                            $nonImageColor
+                        ]
+                },
+                If [And[
+                        colors =!= {},
+                        (* e.g. 3bdb4ada *)
+                        FreeQ[colors, 10]
+                    ],
+                    "Colors" -> colors
+                    ,
+                    Sequence @@ {}
+                ]
+            ],
             "Image" -> Missing["ToGenerate"]
         }
     ]
@@ -7892,7 +7915,8 @@ Clear[ARCRenderScene];
 Options[ARCRenderScene] =
 {
     "OutputWidthSpecified" -> False,    (*< Does the rule set specify what the width of the output scene should be? *)
-    "OutputHeightSpecified" -> False    (*< Does the rule set specify what the width of the output scene should be? *)
+    "OutputHeightSpecified" -> False,   (*< Does the rule set specify what the width of the output scene should be? *)
+    "AutoExpandOutputSize" -> True      (*< If we render an object that falls outside of the scene, should we automatically expand the scene so that the object can be fully seen? *)
 };
 ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
     Module[{sceneWidth, sceneHeight, output, objects, image, posX, posY},
@@ -7908,10 +7932,10 @@ ARCRenderScene[scene_Association, opts:OptionsPattern[]] :=
         sceneHeight = scene["Height"];
         
         (* Detect whether we need to make the output image wider or taller. e.g. d631b094 *)
-        (* Disabled Oct 23 2022 since for inputs like d364b489, we don't want to auto-expand the
-           output size. Potentially though we should still auto-expand the output size unless
-           we detect that out-of-scene occlusions are involved. *)
-        If [False,
+        (* Oct 2022 added option "AutoExpandOutputSize" since for inputs like d364b489, we don't want
+           to auto-expand the output size. If we detect that out-of-scene occlusions are involved,
+           we set this to False via a key-value in the rules. *)
+        If [TrueQ[OptionValue["AutoExpandOutputSize"]],
             If [Or[
                     !TrueQ[OptionValue["OutputWidthSpecified"]],
                     !TrueQ[OptionValue["OutputHeightSpecified"]]
@@ -15099,7 +15123,7 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 23}],
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 29890,
-            "NewGeneralizedSuccesses" -> {"ba26e723"},
+            "NewGeneralizedSuccesses" -> {"ba26e723", "3bdb4ada"},
             "NewEvaluationSuccesses" -> {}
         |>,
         <|
@@ -15117,7 +15141,9 @@ Module[{tasks},
             "ImplementationTime" -> Quantity[3, "Hours"],
             "CodeLength" -> 30200,
             "NewGeneralizedSuccesses" -> {"dc1df850"},
-            "NewEvaluationSuccesses" -> {}
+            (* Not sure when precisely this started passing, but I think it relates to being able
+               to infer the output scene's height using ObjectCount. *)
+            "NewEvaluationSuccesses" -> {"e872b94a"}
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -15125,6 +15151,16 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 23}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 30207,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Note: Was stick with the flu for 4 days in this period. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "3bdb4ada",
+            "Timestamp" -> DateObject[{2022, 10, 29}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 30388,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -21732,6 +21768,7 @@ ARCRulesForOutput[rules_Association] :=
             "OutputBackground",
             "Width",
             "Height",
+            "AutoExpandOutputSize",
             "Rules",
             "Groups",
             "PartialRules"
@@ -27841,6 +27878,23 @@ ARCSceneObject[image_ARCScene, background_, objects_] :=
             "Background" -> background,
             "Width" -> ImageWidth[image],
             "Height" -> ImageHeight[image],
+            (* We indicate if there are any out-of-scene objects due to imputing occluded images,
+               in which downstream code will set "AutoExpandOutputSize" -> False in the rule set.
+               e.g. d364b489 *)
+            With[
+                {
+                    sceneAsObject = <|
+                        "Position" -> {1, 1},
+                        "Width" -> ImageWidth[image],
+                        "Height" -> ImageHeight[image]
+                    |>
+                },
+                If [AnyTrue[objects, Function[!ObjectWithinQ[#, sceneAsObject]]],
+                    "OutOfSceneObjects" -> True
+                    ,
+                    Nothing
+                ]
+            ],
             With[{grids = Select[objects, MatchQ[#, KeyValuePattern["GridOrDivider" -> _Association]] &]},
                 If [MatchQ[grids, {_}],
                     (* There is a single grid in the scene. *)
@@ -29259,7 +29313,20 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
         If [TrueQ[OptionValue["EchoSummary"]],
             EchoIndented@
             KeyTake[
-                res,
+                Replace[
+                    res,
+                    assoc: KeyValuePattern["NewSuccess" -> {__}] :>
+                        Sett[
+                            assoc,
+                            "NewSuccess" -> DeleteCases[
+                                assoc["NewSuccess"],
+                                (* Inputs that for some odd reason pass during the parallel run
+                                   but not when run normally, so we'll ignore them as being
+                                   "new successes" for now. *)
+                                "45737921"
+                            ]
+                        ]
+                ],
                 {
                     Sequence @@ aggregationKeys,
                     "Runtime"
@@ -29866,8 +29933,6 @@ ARCComponentTransform[inputObject_Association, outputObject_Association, matchin
     \calltable
         ReturnFailureIfBadValues[object] '' Ensure we didn't produce an non-Integer values for properties that need integers.
     
-    See: Wyatt["ERPPROJECT-7631"]
-    
     Examples:
     
     Module[{}, ReturnFailureIfBadValues[<|"Y" -> 0.5|>]]
@@ -29940,8 +30005,6 @@ ReturnFailureIfBadValues[object_] :=
     \calltable
         ARCRenderFilledRectangle[width, height, fill] '' Renders a rectangle using a fill pattern.
     
-    See: Wyatt["ERPPROJECT-7631"]
-    
     Examples:
     
     ARCRenderFilledRectangle[6, 2, {{2, 2}, {8, 8}}] === ARCScene[{{2, 8, 2, 8, 2, 8}, {2, 8, 2, 8, 2, 8}}]
@@ -30004,8 +30067,6 @@ ARCRenderFilledRectangle[width_Integer, height_Integer, fillIn_, color_] :=
     \calltable
         ARCConclusionsSoFarMatchQ[conclusionsSoFar, pattern] '' Given the conclusions determined so far when generalizing a conclusion, check whether they match the given pattern. If a single explicit value isn't known for a particular property, sometimes the values from all seen input objects will confirm to the given pattern.
     
-    See: Wyatt["ERPPROJECT-7631"]
-    
     Examples:
     
     ARCConclusionsSoFarMatchQ[<|"MyProperty" -> 1|>, "MyProperty", 1] === True
@@ -30036,8 +30097,6 @@ ARCConclusionsSoFarMatchQ[conclusionsSoFar_Association, property_, pattern_] :=
     
     \calltable
         ARCPropertyUnchangingInConclusionsQ[conclusions, property] '' Returns True if the given property isn't being changed by the given conclusions.
-    
-    See: Wyatt["ERPPROJECT-7631"]
     
     Examples:
     
@@ -30076,8 +30135,6 @@ ARCPropertyUnchangingInConclusionsQ[conclusions_List, property_] :=
     
     TODO: We don't yet support occlusions from opposite sides at the same time wrt
           Left + Right or Top + Bottom. (we do support Left + Top, Left + Bottom, etc.)
-    
-    See: Wyatt["ERPPROJECT-7631"]
     
     Examples:
     
@@ -30232,8 +30289,6 @@ ARCSubImagesForOcclusionDetection["Helper", notableImage_List] :=
     \calltable
         ARCFixOcclusionsForSubImages[subImages, parsedScene] '' Given sub-images to watch out for, updates objects if they appear to be larger images that have been occluded.
     
-    See: Wyatt["ERPPROJECT-7631"]
-    
     Examples:
     
     See function notebook
@@ -30338,8 +30393,6 @@ ARCFixOcclusionsForSubImages[subImages_Association, parsedScene_Association] :=
     
     \calltable
         ARCSameOutputSizeQ[examples] '' Returns True if the inputs and outputs always have the same size.
-    
-    See: Wyatt["ERPPROJECT-7631"]
     
     Examples:
     
