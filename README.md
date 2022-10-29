@@ -8,9 +8,9 @@ https://github.com/fchollet/ARC
 
 ## Percentage of Tasks Passing
 
-* Training tasks: 170 / 400 (42.5%)\
+* Training tasks: 171 / 400 (42.8%)\
   ![Percentage of Training Tasks Passing](TrainingTasksProgressBar.png?raw=true)
-  * Implemented: 84
+  * Implemented: 85
   * Passing via generalization: 86
 * Evaluation tasks: 58 / 400 (14.5%)\
   ![Percentage of Evaluation Tasks Passing](EvaluationTasksProgressBar.png?raw=true)
@@ -21,7 +21,7 @@ https://github.com/fchollet/ARC
 
 ## Tasks Implemented
 
-### Core ARC Training Tasks (84)
+### Core ARC Training Tasks (85)
 
 * [0ca9ddb6](TaskNotes/0ca9ddb6/notes.md)
 * [3c9b0459](TaskNotes/3c9b0459/notes.md)
@@ -106,6 +106,7 @@ https://github.com/fchollet/ARC
 * [29c11459](TaskNotes/29c11459/notes.md)
 * [b6afb2da](TaskNotes/b6afb2da/notes.md)
 * [963e52fc](TaskNotes/963e52fc/notes.md)
+* [d364b489](TaskNotes/d364b489/notes.md)
 * [d364b489](TaskNotes/d364b489/notes.md)
 
 ### Personally Created Training Tasks (15)

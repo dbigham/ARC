@@ -635,6 +635,10 @@ ReturnFailureIfBadValues::usage = "ReturnFailureIfBadValues  "
 
 ARCSameOutputSizeQ::usage = "ARCSameOutputSizeQ  "
 
+ARCExamplesSegmentedByRowOrColumn::usage = "ARCExamplesSegmentedByRowOrColumn  "
+
+ARCColorCountSameQ::usage = "ARCColorCountSameQ  "
+
 Begin["`Private`"]
 
 
@@ -3432,7 +3436,8 @@ Options[ARCFindObjectMapping] =
     "FollowDiagonals" -> Automatic,                 (*< Should diagonally adjacent pixels form a single object? *)
     "CheckForGridsAndDividers" -> Automatic,        (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
     "FindOcclusions" -> True,                       (*< Whether we should consider possible occlusions when interpreting the scene. *)
-    "NoMappings" -> False                           (*< If True, we will treat the inputObject as not mapping to any of the components of the output object. *)
+    "NoMappings" -> False,                          (*< If True, we will treat the inputObject as not mapping to any of the components of the output object. *)
+    "Segmentation" -> None                          (*< Can be "Columns" or "Rows" to give a hint that objects seem to be segmented the same in input/output scene pairs wrt being in single-pixel columns or rows. e.g. 1e0a9b12 *)
 };
 
 ARCFindObjectMapping[example_Association, opts:OptionsPattern[]] :=
@@ -3450,7 +3455,7 @@ ARCFindObjectMapping[scene1_ARCScene, scene2_ARCScene, opts:OptionsPattern[]] :=
                 scene2,
                 (* We don't know the example number here, so use 1. *)
                 1,
-                opts
+                FilterOptions[opts, ARCParseInputAndOutputScenes]
             ];
         
         ARCFindObjectMapping[
@@ -3633,6 +3638,37 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
             mappedToObject: Except[_Missing] :> Return[
                 object -> mappedToObject,
                 Module
+            ]
+        ];
+        
+        (* Objects in both the input and output scene seem to be segmented into columns, so
+           we should try to find an object in the same column. For the moment, we just grab
+           the first one we can find, but we can clearly enhance this to handle cases where
+           not all objects in the column are the same color, or to favor the closest one,
+           etc. e.g. 1e0a9b12 *)
+        If [OptionValue["Segmentation"] === "Columns",
+            Replace[
+                SelectFirst[
+                    objectsToMapTo,
+                    #["X"] === object["X"] &
+                ],
+                mappedToObject: Except[_Missing] :> Return[
+                    object -> mappedToObject,
+                    Module
+                ]
+            ]
+        ];
+        
+        If [OptionValue["Segmentation"] === "Rows",
+            Replace[
+                SelectFirst[
+                    objectsToMapTo,
+                    #["Y"] === object["Y"] &
+                ],
+                mappedToObject: Except[_Missing] :> Return[
+                    object -> mappedToObject,
+                    Module
+                ]
             ]
         ];
         
@@ -5151,7 +5187,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             additionalRules = {},
             ruleSets2,
             ruleFindings2,
-            additionalRules2
+            additionalRules2,
+            segmentationForObjectMapping
         },
         
         $transformTypes = getTransformTypes[];
@@ -5411,6 +5448,12 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         (*ARCEcho2[examples[[1]]];
         Throw["HERE"];*)
         
+        (* Before finding object mappings, check whether the scenes appear to be
+           segmented by row or column. *)
+        segmentationForObjectMapping =
+            ReturnIfFailure@
+            ARCExamplesSegmentedByRowOrColumn[examples];
+        
         (* For each example, map input objects to output objects. *)
         examples = Function[{example},
             Append[
@@ -5419,7 +5462,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                     ReturnIfFailure@
                     ARCFindObjectMapping[
                         example,
-                        "SingleObject" -> TrueQ[OptionValue["SingleObject"]]
+                        "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
+                        "Segmentation" -> segmentationForObjectMapping
                     ]
             ]
         ] /@ examples;
@@ -5796,7 +5840,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {None, "ZOrder"}
+                            {None}
                             ,
                             {None}
                         ]
@@ -15163,6 +15207,14 @@ Module[{tasks},
             "CodeLength" -> 30388,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "1e0a9b12",
+            "Timestamp" -> DateObject[{2022, 10, 29}],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 30674,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -16347,6 +16399,7 @@ Clear[ARCMoreGeneral];
 $generality = <|
     "Shape" -> {
         "Rectangle" -> "Square",
+        "Rectangle" -> "Line",
         "Square" -> "Pixel"
     }
 |>;
@@ -16637,7 +16690,33 @@ ARCRuleToPattern[pattern_] :=
                 {
                     HoldPattern[Rule]["Shapes", shape_] :> (
                         (* We want the object to have this shape as one of its shapes. *)
-                        "Shapes" -> {___, ARCRuleToPattern[shape], ___}
+                        "Shapes" ->
+                            (* Previously we were calling ARCRuleToPattern in all cases here, but
+                               while working on 1e0a9b12 I'm running into an odd situation where
+                               this already ends up being a KeyValuePattern at this point, so we
+                               don't want to try to turn that into a pattern again. I'm confused
+                               why this would seemingly be running into two different cases,
+                               whereby `shape` would sometimes already be a pattern and sometimes
+                               not, so for now I'll add a check here. Ideally we'd figure out
+                               upstream of this if there's a bug, etc. *)
+                            (* Todo: There's a bug here whereby if there are multiple possible
+                                     shapes in the list, this requires them to show up
+                                     *in sequence* within the thing it's being matched against,
+                                     whereas we only care if all shapes show up in the list,
+                                     not where in the list. *)
+                            If [!MatchQ[shape, {__KeyValuePattern}],
+                                {
+                                    ___,
+                                    ARCRuleToPattern[shape],
+                                    ___
+                                }
+                                ,
+                                {
+                                    ___,
+                                    Sequence @@ shape,
+                                    ___
+                                }
+                            ]
                     )
                 },
                 {1}
@@ -16763,7 +16842,18 @@ ARCObjectCommonalities[objects_List, opts:OptionsPattern[]] :=
                 If [property === "Shapes",
                     commonShapes = Intersection @@ Replace[propertyValues, _Missing -> {}, {1}];
                     If [MatchQ[commonShapes, {__}],
-                        propertyValues = {commonShapes}
+                        propertyValues =
+                            (* If there are multiple common "shapes", we'll try to simplify the
+                               list of 'alternatives' to the most specific subset, which in many
+                               cases might be a single shape. This is good for simplicity, which
+                               will help with Occam's razor. One specific location as of Oct 2022
+                               where this is needed is for 1e0a9b12 when forming the group
+                               pattern, since the group pattern matching code in ARCApplyRules
+                               doesn't handle a list of multiple shapes correctly yet wrt
+                               how it represents it as a pattern, so getting this down to a
+                               single shape is necessary in some cases. *)
+                            (* HERE12 *)
+                            {ARCPruneAlternatives[commonShapes, "Shape", "Most" -> "Specific"]}
                     ]
                 ];
                 If [Length[propertyValues] === 1,
@@ -30416,6 +30506,170 @@ ARCSameOutputSizeQ[examples_List, properties_List] :=
                 ]
             ]
         ]
+    ]
+
+(*!
+    \function ARCExamplesSegmentedByRowOrColumn
+    
+    \calltable
+        ARCExamplesSegmentedByRowOrColumn[parsedExamples] '' Checks whether its always the case that the input and output sizes are the same and that it appears that row (or columns) color counts stay consistent, which would imply that the object mapping should try to stay within rows (or columns).
+    
+    Examples:
+    
+    ARCExamplesSegmentedByRowOrColumn[
+        ARCParseInputAndOutputScenes[ARCParseFile["1e0a9b12"]["Train"]]
+    ]
+    
+    ===
+    
+    "Columns"
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCExamplesSegmentedByRowOrColumn]
+    
+    \maintainer danielb
+*)
+Clear[ARCExamplesSegmentedByRowOrColumn];
+ARCExamplesSegmentedByRowOrColumn[examples_List] :=
+    Module[{inputImage, outputImage, width, height},
+        
+        And[
+            (* The input and output scenes always have the same size. *)
+            ARCSameOutputSizeQ[examples, {"Width", "Height"}],
+            
+            (* Pixels counts of all colors are the same for all input/output scene pairs. *)
+            AllTrue[
+                examples,
+                Function[{example},
+                    ARCColorCountSameQ[
+                        example["Input", "Objects"][[All, "Image"]],
+                        example["Output", "Objects"][[All, "Image"]]
+                    ]
+                ]
+            ],
+            
+            (* For either rows, or columns, the pixel color counts always stay constant between
+               any input/output scene pair. *)
+            Function[{segmentation},
+                AllTrue[
+                    examples,
+                    Function[{example},
+                        
+                        inputImage = Replace[
+                            example["Input", "Scene"][[1]],
+                            example["Input", "Background"] -> $nonImageColor,
+                            {2}
+                        ];
+                        
+                        outputImage = Replace[
+                            example["Output", "Scene"][[1]],
+                            example["Output", "Background"] -> $nonImageColor,
+                            {2}
+                        ];
+                        
+                        width = example["Input", "Width"];
+                        height = example["Input", "Height"];
+                        
+                        Switch[
+                            segmentation,
+                            "Rows",
+                                AllTrue[
+                                    Range[example["Input", "Height"]],
+                                    Function[{i},
+                                        ARCColorCountSameQ[
+                                            inputImage[[
+                                                i,
+                                                1 ;; width
+                                            ]],
+                                            outputImage[[
+                                                i,
+                                                1 ;; width
+                                            ]]
+                                        ]
+                                    ]
+                                ],
+                            "Columns",
+                                AllTrue[
+                                    Range[example["Input", "Width"]],
+                                    Function[{i},
+                                        ARCColorCountSameQ[
+                                            inputImage[[
+                                                1 ;; height,
+                                                i
+                                            ]],
+                                            outputImage[[
+                                                1 ;; height,
+                                                i
+                                            ]]
+                                        ]
+                                    ]
+                                ]
+                        ]
+                    ]
+                ] // Function[{res},
+                    If [TrueQ[res],
+                        Return[segmentation, Module]
+                    ]
+                ]
+            ] /@ {"Columns", "Rows"}
+        ];
+        
+        None
+    ]
+
+(*!
+    \function ARCColorCountSameQ
+    
+    \calltable
+        ARCColorCountSameQ[image1, image2] '' Given two images (or two lists of images), returns True if their color counts are the same.
+    
+    Examples:
+    
+    ARCColorCountSameQ[{{1}}, {{1}}] === True
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCColorCountSameQ]
+    
+    \maintainer danielb
+*)
+Clear[ARCColorCountSameQ];
+Options[ARCColorCountSameQ] =
+{
+    "IgnoreBackground" -> True      (*< Ignore the number of background pixels? *)
+};
+ARCColorCountSameQ[image1_List, image2_List, OptionsPattern[]] :=
+    Module[{ignoreBackgroundFunc = Identity},
+        
+        If [TrueQ[OptionValue["IgnoreBackground"]],
+            ignoreBackgroundFunc = Function[{colorCounts},
+                KeyDrop[colorCounts, $nonImageColor]
+            ]
+        ];
+        
+        SameQ @@ (
+            Function[{image},
+                KeySort@
+                ignoreBackgroundFunc@
+                Counts[Flatten[image]]
+            ] /@ {
+                (* If there are any nested ARCScene wrappers, remove them. This allows us
+                   to also support passing in a list of ARCScenes as the `image1` and/or
+                   `image2` as well. *)
+                If [FreeQ[image1, _ARCScene],
+                    image1
+                    ,
+                    Replace[image1, arcScene_ARCScene :> arcScene[[1]], Infinity]
+                ]
+                ,
+                If [FreeQ[image2, _ARCScene],
+                    image2
+                    ,
+                    Replace[image2, arcScene_ARCScene :> arcScene[[1]], Infinity]
+                ]
+            }
+        )
     ]
 
 End[]

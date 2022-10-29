@@ -3968,3 +3968,53 @@ Test[
     ,
     TestID -> "ARCFindRules-20221023-M4PSAD"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "1e0a9b12"]["Train"]]
+    ]
+    ,
+    <|
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <||> -> <|
+                "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>},
+                "YInverse" -> Daniel`ARC`ObjectValue["InputObject", "FilledArea"],
+                "Y2Inverse" -> 1
+            |>
+        },
+        "Groups" -> {
+            <|
+                "Width" -> 1,
+                "Components" -> {
+                    Repeated[
+                        <|
+                            "Shapes" -> {<|"Name" -> "Line", "Angle" -> 90|>},
+                            "ZOrder" -> 0,
+                            "Width" -> 1,
+                            "FilledProportion" -> 1.,
+                            "HorizontalLineSymmetry" -> True,
+                            "Width.Rank" -> 1,
+                            "Width.InverseRank" -> 1,
+                            "FilledProportion.Rank" -> 1,
+                            "FilledProportion.InverseRank" -> 1,
+                            "Color" -> "Same",
+                            "ColorUseCount" -> "Same",
+                            "ColorUseCount.InverseRank" -> "Same",
+                            "ColorUseCount.Rank" -> "Same",
+                            "X" -> "Same",
+                            "X2" -> "Same",
+                            "XMiddle" -> "Same"
+                        |>,
+                        {2}
+                    ]
+                },
+                "ZOrder" -> 0,
+                "PrimarySizeDimension" -> "Y",
+                "HollowCount" -> 0
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221029-8JXO9P"
+]
