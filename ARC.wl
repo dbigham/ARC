@@ -1480,7 +1480,7 @@ ARCParseInputAndOutputScenes[examples_List, opts:OptionsPattern[]] :=
     Module[{},
         
         (* Detect the list of notable sub-images across all input and output scenes. *)
-        notableSubImages =
+        notableSubImages = $notableSubImages =
             If [!TrueQ[OptionValue["SingleObject"]] && !ListQ[OptionValue["SubdivideInput"]],
                 notableSubImages = Flatten[
                     MapIndexed[
@@ -5206,7 +5206,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ruleSets2,
             ruleFindings2,
             additionalRules2,
-            segmentationForObjectMapping
+            segmentationForObjectMapping,
+            notableSubImages
         },
         
         $transformTypes = getTransformTypes[];
@@ -5314,6 +5315,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             additionalRules
                         ],
                         KeyTake[rules, "Groups"],
+                        "NotableSubImages" -> notableSubImages,
                         "Examples" -> examples,
                         "ObjectMappings" -> objectMappings
                     |>;
@@ -5377,18 +5379,21 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                 ]
             ];
         
-        examples =
-            ReturnIfFailure@
-            ARCParseInputAndOutputScenes[
-                examplesIn,
-                "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"] =!= False,
-                "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
-                "SubdivideInput" -> OptionValue["SubdivideInput"],
-                "FindOcclusions" -> OptionValue["FindOcclusions"],
-                "Background" -> OptionValue["Background"],
-                "FollowDiagonals" -> OptionValue["FollowDiagonals"],
-                "CheckForGridsAndDividers" -> OptionValue["CheckForGridsAndDividers"]
-            ];
+        Block[{$notableSubImages},
+            examples =
+                ReturnIfFailure@
+                ARCParseInputAndOutputScenes[
+                    examplesIn,
+                    "FormMultiColorCompositeObjects" -> OptionValue["FormMultiColorCompositeObjects"] =!= False,
+                    "SingleObject" -> TrueQ[OptionValue["SingleObject"]],
+                    "SubdivideInput" -> OptionValue["SubdivideInput"],
+                    "FindOcclusions" -> OptionValue["FindOcclusions"],
+                    "Background" -> OptionValue["Background"],
+                    "FollowDiagonals" -> OptionValue["FollowDiagonals"],
+                    "CheckForGridsAndDividers" -> OptionValue["CheckForGridsAndDividers"]
+                ];
+            notableSubImages = $notableSubImages
+        ];
         
         (* If the caller is interested in capturing this we'll pass it this way. *)
         $parsedExamples = examples;
@@ -6697,7 +6702,15 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             
             parsedScene =
                 ReturnIfFailure@
-                ARCParseScene[scene, rules];
+                ARCParseScene[
+                    scene,
+                    rules,
+                    If [ListQ[rules["NotableSubImages"]],
+                        "NotableSubImages" -> rules["NotableSubImages"]
+                        ,
+                        Sequence @@ {}
+                    ]
+                ];
             
             background = parsedScene["Background"];
             
@@ -6839,7 +6852,15 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             
             parsedScene =
                 ReturnIfFailure@
-                ARCParseScene[scene, rules]
+                ARCParseScene[
+                    scene,
+                    rules,
+                    If [ListQ[rules["NotableSubImages"]],
+                        "NotableSubImages" -> rules["NotableSubImages"]
+                        ,
+                        Sequence @@ {}
+                    ]
+                ]
         ];
         
         (*ARCEcho2[parsedScene];*)
@@ -11517,7 +11538,7 @@ ARCMakeObjectsForSubImages[object_Association, subImages_List, scene_ARCScene, b
                         ];
                         If [exampleObject["InputOrOutput"] === "Output",
                             (* This notable sub-image is actually from the same scene
-                            as the object we're considering. *)
+                               as the object we're considering. *)
                             fromSameSceneQ = True
                         ]
                     ] /@ subImageAssoc["ExampleObjects"]
@@ -12483,12 +12504,12 @@ ARCSimplifyRules[rules_List, OptionsPattern[]] :=
 
 ARCSimplifyRules[rules_Association, OptionsPattern[]] :=
     Module[{},
-        If [Keys[rules] === {"Rules"},
+        If [MatchQ[Keys[rules], {"Rules"} | {"Rules", "NotableSubImages"}],
             (* If it's only the "Rules" key that is specified, then we'll only return the
                list of rules for ease of reading. *)
             ARCSimplifyRules[rules["Rules"]]
             ,
-            ARCSimplifyRules /@ rules
+            ARCSimplifyRules /@ KeyDrop[rules, "NotableSubImages"]
         ]
     ]
 
@@ -15300,6 +15321,14 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 11, 5}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 30884,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "868de0fa",
+            "Timestamp" -> DateObject[{2022, 11, 5}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 30915,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -22073,6 +22102,7 @@ ARCRulesForOutput[rules_Association] :=
             "AutoExpandOutputSize",
             "Rules",
             "Groups",
+            "NotableSubImages",
             "PartialRules"
         }
     ]
