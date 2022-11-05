@@ -1134,6 +1134,7 @@ ARCParseScene[scene_ARCScene, opts:OptionsPattern[]] :=
                     ];
                 
                 If [MatchQ[notableSubImages, {__}],
+                    
                     objects = Flatten[
                         Function[{object},
                             ReturnIfFailure@
@@ -1399,10 +1400,13 @@ ARCParseScene[scene_ARCScene, backgroundColor_, opts:OptionsPattern[]] :=
         
         objects = ARCInferColorCountPropertyValues[objects, scene];
         
+        (* The following three properties technically need to wait until
+           ARCInferPropertiesThatRequireFullObjectList before they can be computed, but
+           for some reason when I removed these from here, a87f7484 stopped working.
+           It would be good to understand why, but for now I will leave these here in addition
+           to their more seemingly correct use in ARCInferPropertiesThatRequireFullObjectList. *)
         objects = ARCInferImageUseCountPropertyValues[objects];
-        
         objects = ARCInferShapeUseCountPropertyValues[objects];
-        
         objects = ARCInferGeneralShapeUseCountPropertyValues[objects];
         
         (*ARCEcho[SimplifyObjects[objects]];*)
@@ -2193,6 +2197,16 @@ $properties = <|
         "Type2" -> "PositionDimensionValue",
         "RuleConditionQuality" -> 0.5
     |>,
+    (*"YHalf" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,
+    "XHalf" -> <|
+        "Type" -> "Integer",
+        "Type2" -> "PositionDimensionValue",
+        "RuleConditionQuality" -> 0.5
+    |>,*)
     "ZOrder" -> <|
         "Type" -> "Integer",
         "Type2" -> "PositionDimensionValue"
@@ -2247,13 +2261,13 @@ $properties = <|
         "RuleConditionQuality" -> 0.9
     |>,
     "MostUsedColor" -> <|
-        "Type" -> "Integer",
+        "Type" -> "Color",
         "Type2" -> "Color",
         (* Adopting this from "ColorCount", not sure if it's needing to be high like this. *)
         "RuleConditionQuality" -> 0.9
     |>,
     "SecondMostUsedColor" -> <|
-        "Type" -> "Integer",
+        "Type" -> "Color",
         "Type2" -> "Color",
         (* Adopting this from "ColorCount", not sure if it's needing to be high like this. *)
         "RuleConditionQuality" -> 0.9
@@ -3505,20 +3519,25 @@ ARCFindObjectMapping[input_Association, output_Association, opts:OptionsPattern[
                             HoldPattern[Rule][inputObject_, outputObject_] :> (
                                 (* This call returned a single mapping from our input object. *)
                                 AppendTo[inputObjectsHandled, inputObject];
-                                If [And[
-                                        inputObject["Position"] == outputObject["Position"],
-                                        inputObject["Width"] == outputObject["Width"],
-                                        inputObject["Height"] == outputObject["Height"]
+                                If [Or[
+                                        (* If the input and output objects are at the same position
+                                           and the same size, then remove the output object from
+                                           the list of objects that can be mapped to so that we don't
+                                           end up with the unwanted situation of multiple input
+                                           objects mapping to it. e.g. 2dee498d (example 1) *)
+                                        And[
+                                            inputObject["Position"] == outputObject["Position"],
+                                            inputObject["Width"] == outputObject["Width"],
+                                            inputObject["Height"] == outputObject["Height"]
+                                        ],
+                                        (* Oct 30 2022: Or, if they are identical images, also
+                                           remove the object from the pool, for 39a8645d. *)
+                                        inputObject["Image"] === outputObject["Image"]
                                     ],
-                                    (* If the input and output objects are at the same position
-                                       and the same size, then remove the output object from
-                                       the list of objects that can be mapped to so that we don't
-                                       end up with the unwanted situation of multiple input
-                                       objects mapping to it. e.g. 2dee498d (example 1) *)
                                     outputObjectsAvailableToMapTo = DeleteCases[
                                         outputObjectsAvailableToMapTo,
-                                        outputObject
-                                    ];
+                                        KeyValuePattern["UUID" -> outputObject["UUID"]]
+                                    ]
                                 ];
                                 res
                             ),
@@ -5066,7 +5085,6 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     ReturnIfFailure[ARCDenoise[examples]];
                 
                 If [TrueQ[denoiseResult["Denoised"]],
-                    
                     Block[{$denoised = True},
                         res2 =
                             ARCLogScope["ARCFindRules:Denoise"]@
@@ -5840,7 +5858,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {None}
+                            {"ImageUseCount.Rank"}
                             ,
                             {None}
                         ]
@@ -8423,7 +8441,9 @@ ARCMakeObjectsReferenceable[parsedScenes_List, opts:OptionsPattern[]] :=
 
 (* Disabled for now as of Sept 18 2022 since this causes the number of referenceable things
    to explode, such as going from 4 to 85 for examples like 746b3537, which causes a massive
-   slowdown. *)
+   slowdown. Other inputs which want to make use of referenceable classes:
+   - 39a8645d
+   - 1fad071e *)
 $EnableReferenceableClasses = False;
 
 ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:OptionsPattern[]] :=
@@ -11834,6 +11854,24 @@ ARCInferObjectProperties[object_Association, sceneWidth_, sceneHeight_] :=
                     ,
                     Nothing
                 ],
+                (* Disabling since this wasn't enough to get an new inputs working and was
+                   breaking 253bf280 and af902bf9. *)
+                (*If [!And[
+                        Mod[sceneHeight, 2] === 1,
+                        y === (sceneHeight + 1) / 2
+                    ],
+                    "YHalf" -> Floor[y / ((sceneHeight + 1) / 2)]
+                    ,
+                    Nothing
+                ],
+                If [!And[
+                        Mod[sceneWidth, 2] === 1,
+                        x === (sceneWidth + 1) / 2
+                    ],
+                    "XHalf" -> Floor[x / ((sceneWidth + 1) / 2)]
+                    ,
+                    Nothing
+                ],*)
                 "Width" -> width,
                 "Height" -> height,
                 "Length" -> Max[width, height],
@@ -13031,6 +13069,38 @@ ProcessExamples[files_List] :=
                             ]
                         ],
                         " | ",
+                        SmartButton[
+                            "RowsColumns",
+                            Function[
+                                PrintIfFailure@
+                                SetTrainingDataKeyValue[thisFile, "Type" -> "Rows/Columns"];
+                            ]
+                        ],
+                        " ",
+                        SmartButton[
+                            "Grid",
+                            Function[
+                                PrintIfFailure@
+                                SetTrainingDataKeyValue[thisFile, "Type" -> "Grid"];
+                            ]
+                        ],
+                        " ",
+                        SmartButton[
+                            "To Analyze",
+                            Function[
+                                PrintIfFailure@
+                                SetTrainingDataKeyValue[thisFile, "Type" -> "ToAnalyze"];
+                            ]
+                        ],
+                        " ",
+                        SmartButton[
+                            "Add N",
+                            Function[
+                                PrintIfFailure@
+                                SetTrainingDataKeyValue[thisFile, "Type" -> "AddN"];
+                            ]
+                        ],
+                        " ",
                         SmartButton[
                             "Generator",
                             Function[
@@ -15213,6 +15283,23 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 10, 29}],
             "ImplementationTime" -> Quantity[2, "Hours"],
             "CodeLength" -> 30674,
+            "NewGeneralizedSuccesses" -> {"e98196ab"},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "7e0986d6",
+            "Timestamp" -> DateObject[{2022, 11, 5}],
+            "ImplementationTime" -> Quantity[1, "Hours"],
+            "CodeLength" -> 30865,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "e98196ab",
+            "Timestamp" -> DateObject[{2022, 11, 5}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 30884,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -18273,6 +18360,14 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
 Clear[ARCInferPropertiesThatRequireFullObjectList];
 ARCInferPropertiesThatRequireFullObjectList[objectsIn_List] :=
     Module[{objects = objectsIn},
+        
+        (* We need to wait until this point since split notable sub-images can result
+           in image use counts changing. *)
+        objects = ARCInferImageUseCountPropertyValues[objects];
+        
+        objects = ARCInferShapeUseCountPropertyValues[objects];
+        
+        objects = ARCInferGeneralShapeUseCountPropertyValues[objects];
         
         (* For now we'll only infer rank property values on top level objects. *)
         objects = ARCInferRankProperties[objects];
@@ -21626,12 +21721,56 @@ ARCDenoise[imageIn_List, noiseObjects_List] :=
     ]
 
 ARCDenoise[imageIn_List, noiseObject_Association] :=
-    Module[{image = imageIn},
+    Module[{image = imageIn, surroundingPixels},
         
         surroundingPixelColors =
             Counts@
-            DeleteMissing@
-            Values[ARCSurroundingPixels[noiseObject, image]];
+            Replace[
+                Values[surroundingPixels = ARCSurroundingPixels[noiseObject, image]],
+                (* Treat out-of-bounds pixels as background. (black for now) *)
+                _Missing :> 0,
+                {1}
+            ];
+        
+        If [And[surroundingPixelColors[0] === 5, Length[surroundingPixelColors] === 2],
+            
+            (* There are two colors in play -- one of them is black, which is often
+               a background color, as well as one non-black color. The number of
+               black pixels and non-black pixels suggests this might be the corner
+               of a rectangle, so we'll check for that. (needs special handling, otherwise
+               we'd make the pixel black instead of the rectangle's color) *)
+            
+            nonBlackColor = First[DeleteCases[Keys[surroundingPixelColors], 0]];
+            
+            nonBlackPixelPositions = Keys[
+                Select[surroundingPixels, # === nonBlackColor &]
+            ];
+            
+            (* Make the positions relative to the noise pixel. *)
+            nonBlackPixelPositions =
+                Sort[
+                    (# - {noiseObject["Y"], noiseObject["X"]}) & /@ nonBlackPixelPositions
+                ];
+            
+            If [MemberQ[
+                    {
+                        {{-1, -1}, {-1, 0}, {0, -1}},
+                        {{0, -1}, {1, -1}, {1, 0}},
+                        {{-1, 0}, {-1, 1}, {0, 1}},
+                        {{0, 1}, {1, 0}, {1, 1}}
+                    },
+                    nonBlackPixelPositions
+                ],
+                (* This looks like the corner of a rectangle, so we'll use the non-black
+                   color. *)
+                image[[
+                    noiseObject["Y"],
+                    noiseObject["X"]
+                ]] = nonBlackColor;
+                
+                Return[image, Module]
+            ]
+        ];
         
         maxColorCount = Max[surroundingPixelColors];
         
@@ -21786,7 +21925,7 @@ ARCSurroundingPixels[objectY_, objectX_, objectY2_, objectX2_, image_] :=
 *)
 Clear[ARCNoiseObjects];
 ARCNoiseObjects[objects_List] :=
-    Module[{pixels},
+    Module[{pixels, noiseColor, diagonalObjects1, diagonalObjects2},
         
         pixels = Select[
             objects,
@@ -21801,7 +21940,80 @@ ARCNoiseObjects[objects_List] :=
                 (* The pixels are all the same color. *)
                 MatchQ[DeleteDuplicates[pixels[[All, "Color"]]], {_}]
             ],
-            pixels
+            
+            noiseColor = pixels[[1, "Color"]];
+            
+            (* Two pixels on a diagonal to each other. e.g. 7e0986d6 (test) *)
+            diagonalObjects1 = Select[
+                objects,
+                Function[
+                    #[["Image", 1]] === {{noiseColor, -1}, {-1, noiseColor}}
+                ]
+            ];
+            
+            (* Two pixels on a diagonal to each other. (style 2) *)
+            diagonalObjects2 = Select[
+                objects,
+                Function[
+                    #[["Image", 1]] === {{-1, noiseColor}, {noiseColor, -1}}
+                ]
+            ];
+            
+            Join[
+                pixels,
+                (* Diagonal pixels (style 1) *)
+                Flatten[
+                    Replace[
+                        diagonalObjects1,
+                        diagonalObject_Association :> (
+                            {
+                                <|
+                                    "Image" -> ARCScene[{{noiseColor}}],
+                                    "Y" -> diagonalObject["Y"],
+                                    "X" -> diagonalObject["X"],
+                                    "Y2" -> diagonalObject["Y"],
+                                    "X2" -> diagonalObject["X"]
+                                |>,
+                                <|
+                                    "Image" -> ARCScene[{{noiseColor}}],
+                                    "Y" -> diagonalObject["Y"] + 1,
+                                    "X" -> diagonalObject["X"] + 1,
+                                    "Y2" -> diagonalObject["Y"] + 1,
+                                    "X2" -> diagonalObject["X"] + 1
+                                |>
+                            }
+                        ),
+                        {1}
+                    ],
+                    1
+                ],
+                (* Diagonal pixels (style 2) *)
+                Flatten[
+                    Replace[
+                        diagonalObjects2,
+                        diagonalObject_Association :> (
+                            {
+                                <|
+                                    "Image" -> ARCScene[{{noiseColor}}],
+                                    "Y" -> diagonalObject["Y"] + 1,
+                                    "X" -> diagonalObject["X"],
+                                    "Y2" -> diagonalObject["Y"] + 1,
+                                    "X2" -> diagonalObject["X"]
+                                |>,
+                                <|
+                                    "Image" -> ARCScene[{{noiseColor}}],
+                                    "Y" -> diagonalObject["Y"],
+                                    "X" -> diagonalObject["X"] + 1,
+                                    "Y2" -> diagonalObject["Y"],
+                                    "X2" -> diagonalObject["X"] + 1
+                                |>
+                            }
+                        ),
+                        {1}
+                    ],
+                    1
+                ]
+            ]
             ,
             {}
         ]
@@ -22842,6 +23054,8 @@ ARCInferImageUseCountPropertyValues[objects_List] :=
     Module[{counts},
         
         counts = Counts[objects[[All, "Image"]]];
+        
+        (*ARCEcho2[counts];*)
         
         Function[{object},
             Sett[

@@ -4018,3 +4018,13 @@ Test[
     ,
     TestID -> "ARCFindRules-20221029-8JXO9P"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "7e0986d6"]["Train"]]
+    ]
+    ,
+    <|"Denoise" -> True, "Rules" -> {<||> -> <|"Same" -> True|>}|>
+    ,
+    TestID -> "ARCFindRules-20221105-2VTFKM"
+]
