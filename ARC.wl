@@ -5259,14 +5259,22 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             ,
                             If [MatchQ[
                                     Flatten[examples[[All, "Input", "Objects"]]][[All, "Shape"]],
-                                    {Repeated[KeyValuePattern["Name" -> "Pixel"]]}
+                                    {
+                                        Repeated[KeyValuePattern["Name" -> "Pixel" | "Rectangle" | "Square"]]
+                                    }
                                 ],
                                 (* If all of the input objects we've seen are pixels, then we'll
                                    avoid following diagonals if we see one in the test
                                    scene, since the chances are they would be two pixels that
                                    should be treated as separate objects. I'm adding this heuristic
                                    while working on 97999447, although it's not required by
-                                   that task to get tings working. *)
+                                   that task to get tings working.
+                                   
+                                   Likewise, if the objects are all rectangles/squares, for
+                                   cases like 868de0fa, where the 4th training input becomes
+                                   problematic when evaluating the rules we've found, where
+                                   we're not using notable sub-images to avoid the diagonally
+                                   connected squares from fusing. *)
                                 "FollowDiagonals" -> False
                                 ,
                                 Nothing
@@ -5315,7 +5323,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             additionalRules
                         ],
                         KeyTake[rules, "Groups"],
-                        "NotableSubImages" -> notableSubImages,
+                        (*"NotableSubImages" -> notableSubImages,*)
                         "Examples" -> examples,
                         "ObjectMappings" -> objectMappings
                     |>;
@@ -5863,7 +5871,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {"ImageUseCount.Rank"}
+                            {"Shape"}
                             ,
                             {None}
                         ]
@@ -9157,7 +9165,24 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                     Nothing
                 ],
                 {
-                    "Shape" | "MonochromeImage" | "Shapes",
+                    Alternatives[
+                        "Shape",
+                        "MonochromeImage",
+                        "Shapes" /;
+                            (* For 97999447, we want to avoid it choosing
+                               "Shapes" -> {<|"Name" -> "Line"|>} at this stage over
+                               a "Shape" definition that specifies the fill pattern.
+                               For some reason on M13 sees the "Shapes" alternative here. *)
+                            !ARCConclusionsSoFarMatchQ[
+                                #,
+                                "Shape",
+                                Alternatives[
+                                    KeyValuePattern[
+                                        "Fill" -> _
+                                    ]
+                                ]
+                            ]
+                    ],
                     Alternatives[
                         "Color",
                         Missing["Color"] /;
@@ -15323,7 +15348,10 @@ Module[{tasks},
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>,
-        <|
+        (* This passed in the parallel run, but now seems to be failing in the main kernel.
+           Not sure what's going on. (also, the rules seemed to be based on Y, but now seem
+           to be based on Y.InverseRank, which doesn't generalize) *)
+        (*<|
             "GeneralizedSuccess" -> True,
             "ExampleImplemented" -> "e98196ab",
             "Timestamp" -> DateObject[{2022, 11, 5}],
@@ -15331,18 +15359,15 @@ Module[{tasks},
             "CodeLength" -> 30884,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>
-        (* This passed in the parallel run, but now seems to be failing in the main kernel.
-           Not sure what's going on. (also, the rules seemed to be based on Y, but now seem
-           to be based on Y.InverseRank, which doesn't generalize) *)
-        (*<|
+        |>,*)
+        <|
             "ExampleImplemented" -> "868de0fa",
             "Timestamp" -> DateObject[{2022, 11, 5}],
             "ImplementationTime" -> Quantity[1, "Hours"],
             "CodeLength" -> 30915,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>*)
+        |>
     };
     
     (* ADD NEW SUCCESSES HERE *)
