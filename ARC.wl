@@ -6704,12 +6704,16 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 ReturnIfFailure@
                 ARCParseScene[
                     scene,
-                    rules,
-                    If [ListQ[rules["NotableSubImages"]],
+                    rules
+                    (* We had hoped to make use of notable sub-images in ARCApplyRules to fix
+                       tasks like 868de0fa, but it breaks examples like 1caeab9d and
+                       aedd82e4, and it's not clear how to avoid those breakages, so we will
+                       avoid doing this for now. *)
+                    (*If [ListQ[rules["NotableSubImages"]],
                         "NotableSubImages" -> rules["NotableSubImages"]
                         ,
                         Sequence @@ {}
-                    ]
+                    ]*)
                 ];
             
             background = parsedScene["Background"];
@@ -6854,12 +6858,16 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 ReturnIfFailure@
                 ARCParseScene[
                     scene,
-                    rules,
-                    If [ListQ[rules["NotableSubImages"]],
+                    rules
+                    (* We had hoped to make use of notable sub-images in ARCApplyRules to fix
+                       tasks like 868de0fa, but it breaks examples like 1caeab9d and
+                       aedd82e4, and it's not clear how to avoid those breakages, so we will
+                       avoid doing this for now. *)
+                    (*If [ListQ[rules["NotableSubImages"]],
                         "NotableSubImages" -> rules["NotableSubImages"]
                         ,
                         Sequence @@ {}
-                    ]
+                    ]*)
                 ]
         ];
         
@@ -15323,15 +15331,18 @@ Module[{tasks},
             "CodeLength" -> 30884,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>,
-        <|
+        |>
+        (* This passed in the parallel run, but now seems to be failing in the main kernel.
+           Not sure what's going on. (also, the rules seemed to be based on Y, but now seem
+           to be based on Y.InverseRank, which doesn't generalize) *)
+        (*<|
             "ExampleImplemented" -> "868de0fa",
             "Timestamp" -> DateObject[{2022, 11, 5}],
             "ImplementationTime" -> Quantity[1, "Hours"],
             "CodeLength" -> 30915,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
-        |>
+        |>*)
     };
     
     (* ADD NEW SUCCESSES HERE *)
