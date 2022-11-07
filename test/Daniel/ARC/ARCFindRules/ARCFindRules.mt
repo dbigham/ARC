@@ -4028,3 +4028,99 @@ Test[
     ,
     TestID -> "ARCFindRules-20221105-2VTFKM"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "56dc2b01"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|
+            Daniel`ARC`Object[<|"Colors" -> {3}|>] -> <|"X.InverseRank" -> 1|>,
+            Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|"X.InverseRank" -> 2|>
+        |>,
+        "FormMultiColorCompositeObjects" -> False,
+        "CheckForGridsAndDividers" -> False,
+        "Rules" -> {
+            <|"Area.Rank" -> 1|> -> <|
+                "Transform" -> <|
+                    "Type" -> "Move",
+                    "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {2}, "Context" -> "Output"|>]
+                |>
+            |>,
+            <|"Area.Rank" -> 2|> -> <|"Same" -> True|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                            "Color" -> 8,
+                            "X" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[
+                                    <|"Colors" -> {3}, "Context" -> "Output"|>,
+                                    "X"
+                                ],
+                                -1
+                            ],
+                            "Y" -> 1,
+                            "Width" -> 1,
+                            "Y2Inverse" -> 1,
+                            "ZOrder" -> 0
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221107-7J9NW9"
+]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "56dc2b01"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|
+            Daniel`ARC`Object[<|"Colors" -> {3}|>] -> <|"X.InverseRank" -> 1|>,
+            Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|"X.InverseRank" -> 2|>
+        |>,
+        "FormMultiColorCompositeObjects" -> False,
+        "CheckForGridsAndDividers" -> False,
+        "Rules" -> {
+            <|"Area.Rank" -> 1|> -> <|
+                "Transform" -> <|
+                    "Type" -> "Move",
+                    "BlockedBy" -> Daniel`ARC`Object[<|"Colors" -> {2}, "Context" -> "Output"|>]
+                |>
+            |>,
+            <|"Area.Rank" -> 2|> -> <|"Same" -> True|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Line", "Angle" -> 90|>,
+                            "Color" -> 8,
+                            "X" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[
+                                    <|"Colors" -> {3}, "Context" -> "Output"|>,
+                                    "X"
+                                ],
+                                -1
+                            ],
+                            "Y" -> 1,
+                            "Width" -> 1,
+                            "Y2Inverse" -> 1,
+                            "ZOrder" -> 0
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221107-S4HZP4"
+]

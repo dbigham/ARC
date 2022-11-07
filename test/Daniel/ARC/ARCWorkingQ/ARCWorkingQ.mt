@@ -1215,3 +1215,11 @@ Test[
     ,
     TestID -> "ARCWorkingQ-20221105-6N7TT6"
 ]
+
+Test[
+    Daniel`ARC`ARCWorkingQ["56dc2b01"]
+    ,
+    True
+    ,
+    TestID -> "ARCWorkingQ-20221107-FX48DZ"
+]

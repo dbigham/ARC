@@ -641,6 +641,8 @@ ARCColorCountSameQ::usage = "ARCColorCountSameQ  "
 
 ARCFindRotationalNormalizationsForScenes::usage = "ARCFindRotationalNormalizationsForScenes  "
 
+ARCRemoveReferencesForObjects::usage = "ARCRemoveReferencesForObjects  "
+
 Begin["`Private`"]
 
 
@@ -5598,7 +5600,10 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         referenceableOutputObjects =
             ReturnIfFailure@
-            ARCMakeObjectsReferenceable[examples[[All, "Output"]]];
+            ARCMakeObjectsReferenceable[
+                examples[[All, "Output"]],
+                "AdditionalConditions" -> <|"Context" -> "Output"|>
+            ];
         
         ARCLog["ReferenceableOutputObjects" -> Length[referenceableOutputObjects]];
         
@@ -5614,9 +5619,6 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ARCLogScope["AddMoveAttributes"]@
             ARCAddMoveAttributes[examples, referenceableOutputObjects];
         
-        (* UNDOME *)
-        $referenceableOutputObjects = referenceableOutputObjects;
-        
         (*ARCEcho[SimplifyObjects[examples]];*)
         
         objectMappings = examples[[All, "ObjectMapping"]];
@@ -5628,7 +5630,12 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         res =
             ARCLogScope["ARCFindRules"]@
-            ARCFindRules[examples, objectMappings, referenceableInputObjects];
+            ARCFindRules[
+                examples,
+                objectMappings,
+                referenceableInputObjects,
+                referenceableOutputObjects
+            ];
         
         (*Throw["HERE"];*)
         
@@ -5662,7 +5669,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                             ARCAddedObjectsMapping[{output[["Objects", 1]]}]
                         |>
                     ] /@ examples[[All, "Output"]],
-                    referenceableInputObjects
+                    referenceableInputObjects,
+                    referenceableOutputObjects
                 ];
             
             If [Length[additionalRules2] > 0,
@@ -5723,7 +5731,7 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
     ]
 
 (* Try to find rules given object mappings. *)
-ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Association] :=
+ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Association, referenceableOutputObjects_Association] :=
     Module[
         {
             objectMappings = objectMappingsIn,
@@ -5804,10 +5812,27 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
         (* If there are objects in the output that don't seem to correspond to objects in the
            input, then we'll start by trying to model them. *)
         (*ARCEcho2["AddedObjects" -> addedObjects];*)
+        
         addedObjectsRule =
             ReturnIfFailure@
             ReturnFailureIfMissing[
-                ARCRuleForAddedObjects[addedObjects, referenceableInputObjects, examples],
+                ARCRuleForAddedObjects[
+                    addedObjects,
+                    Join[
+                        referenceableInputObjects,
+                        ReturnIfFailure@
+                        ARCRemoveReferencesForObjects[
+                            referenceableOutputObjects,
+                            Flatten@
+                            Cases[
+                                addedObjects,
+                                assoc: KeyValuePattern["Objects" -> _] :> assoc["Objects"],
+                                Infinity
+                            ]
+                        ]
+                    ],
+                    examples
+                ],
                 "AddedObjectsFailure",
                 "Unable to produce a rule for adding objects.",
                 "AddedObjects" -> addedObjects
@@ -5882,7 +5907,12 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                         ,
                         rules =
                             ReturnIfFailure@
-                            ARCFindRules[preRules, property, referenceableInputObjects, examples];
+                            ARCFindRules[
+                                preRules,
+                                property,
+                                referenceableInputObjects,
+                                examples
+                            ];
                         
                         ++propertyCount;
                         
@@ -6775,6 +6805,7 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             rotationalNormalizationAngle
         },
         
+        (* e.g. 56dc2b01 *)
         If [!MissingQ[rules["RotationNormalization"]],
             Replace[
                 ReturnIfFailure@
@@ -7238,6 +7269,8 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                         addObjects["Transform", "Objects"],
                         <||>,
                         parsedScene,
+                        (* To support references to output objects. *)
+                        "ParsedOutputScene" -> outputScene,
                         "Activate" -> True
                     ]
             ]
@@ -8835,8 +8868,9 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
 Clear[GetObject];
 Options[GetObject] =
 {
-    "NamedObjects" -> <||>,         (*< Objects that can be referred to by name like Object["MyObject"]. *)
-    "Class" -> False                (*< Can be set to True if we're looking up a class rather than a single object, such that a list of 1 or more objects should be returned. *)
+    "NamedObjects" -> <||>,             (*< Objects that can be referred to by name like Object["MyObject"]. *)
+    "Class" -> False,                   (*< Can be set to True if we're looking up a class rather than a single object, such that a list of 1 or more objects should be returned. *)
+    "ParsedOutputScene" -> Automatic    (*< If both referenceable input and output objects are in use, this allows the parsed output scene to be specified. *)
 };
 GetObject[object: _Object | _Class, parsedSceneOrObjectsList_, opts:OptionsPattern[]] :=
     GetObject[
@@ -8881,8 +8915,19 @@ GetObject[object: _Association | _String, parsedScene_Association, opts:OptionsP
                 opts
             ],
         AssociationQ[object] && object["Context"] === "Output",
-            (* Requires that the caller correctly passes in the _output_ scene. *)
-            GetObject[object, parsedScene["Objects"], opts],
+            (* Note: As of Nov 7 2022, we're never actually passing in ParsedOutputScene, since
+                     via ARCGeneralizeConclusionValueUsingReferenceableObjects,
+                     it takes care of selecting the output scene and calling GetObject
+                     appropriately, and in one other location, we just pass in the output
+                     scene as `parsedScene`. *)
+            GetObject[
+                object,
+                Replace[
+                    OptionValue["ParsedOutputScene"],
+                    Automatic :> parsedScene
+                ]["Objects"],
+                opts
+            ],
         StringQ[object["Context"]],
             ReturnFailure[
                 "UnsupportedContext",
@@ -9679,7 +9724,10 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
                                 Prepend[
                                     referenceableInputObjects,
                                     Object["Parent"] -> <||>
-                                ]
+                                ],
+                                (* TODO: Not referenceableOutputObjects aren't currently
+                                         available from here. *)
+                                <||>
                             ]
                         ];
                     
@@ -10643,7 +10691,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
             property
         },
         
-        $debugProperty = "Y";
+        $debugProperty = "X";
         
         theseExamples =
             If [examples =!= {},
@@ -10674,7 +10722,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
         
         (*If [Last[propertyPath] === $debugProperty,
             ARCEcho["valuesToInfer" -> valuesToInfer];
-            (*ARCEcho2[referenceableObjectsIn];*)
+            ARCEcho2[Keys[referenceableObjectsIn]];
         ];*)
         
         ARCLogScope["GetReferenceableValues"(*, <|"Values" -> valuesToInfer|>*)][
@@ -11299,8 +11347,9 @@ AssociationTranspose[assocsIn_] :=
 Clear[ResolveValues];
 Options[ResolveValues] =
 {
-    "ObjectsPattern" -> _,      (*< Can be specified to be something like "InputScene" to restrict which ObjectValues we'll resolve. *)
-    "Activate" -> False         (*< If there are an Inactive parts of the resultant expression, should we activate them? *)
+    "ObjectsPattern" -> _,              (*< Can be specified to be something like "InputScene" to restrict which ObjectValues we'll resolve. *)
+    "Activate" -> False,                (*< If there are an Inactive parts of the resultant expression, should we activate them? *)
+    "ParsedOutputScene" -> Null         (*< If both referenceable input and output objects are in use, this allows the parsed output scene to be specified. *)
 };
 ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[]] :=
     Module[{resolvedObject, propertyValue, head},
@@ -11318,7 +11367,12 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                             pattern,
                             scene,
                             "NamedObjects" -> <|"InputObject" -> inputObject|>,
-                            "Class" -> (objectOrClassValueHead === ClassValue)
+                            "Class" -> (objectOrClassValueHead === ClassValue),
+                            If [AssociationQ[OptionValue["ParsedOutputScene"]],
+                                "ParsedOutputScene" -> OptionValue["ParsedOutputScene"]
+                                ,
+                                Sequence @@ {}
+                            ]
                         ];
                     
                     If [objectOrClassValueHead === ClassValue,
@@ -15496,6 +15550,14 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 11, 6}],
             "ExampleImplemented" -> "56dc2b01-easier-2",
             "ImplementationTime" -> Quantity[1.5, "Hours"]
+        |>,
+        <|
+            "ExampleImplemented" -> "56dc2b01",
+            "Timestamp" -> DateObject[{2022, 11, 7}],
+            "ImplementationTime" -> Quantity[6, "Hours"],
+            "CodeLength" -> 31389,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -17133,7 +17195,6 @@ ARCObjectCommonalities[objects_List, opts:OptionsPattern[]] :=
                                doesn't handle a list of multiple shapes correctly yet wrt
                                how it represents it as a pattern, so getting this down to a
                                single shape is necessary in some cases. *)
-                            (* HERE12 *)
                             {ARCPruneAlternatives[commonShapes, "Shape", "Most" -> "Specific"]}
                     ]
                 ];
@@ -18369,7 +18430,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
     \function ARCRuleForAddedObjects
     
     \calltable
-        ARCRuleForAddedObjects[addedObjects, referenceableInputObjects, examles] '' Given the "AddedObjects" value for each example, determines whether we support modeling those added objects, and if so returns the rule for them.
+        ARCRuleForAddedObjects[addedObjects, referenceableObjects, examles] '' Given the "AddedObjects" value for each example, determines whether we support modeling those added objects, and if so returns the rule for them.
     
     Examples:
     
@@ -18382,7 +18443,7 @@ ARCAddedObjectsMapping[outputObjectsMappedTo_List] :=
     \maintainer danielb
 *)
 Clear[ARCRuleForAddedObjects];
-ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association, examplesIn_List] :=
+ARCRuleForAddedObjects[addedObjects_List, referenceableObjects_Association, examplesIn_List] :=
     ARCLogScope["ARCRuleForAddedObjects"]@
     Module[{examples = examplesIn, counter = 0, generalizedCondition},
         
@@ -18397,33 +18458,12 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                 
                 (* There is always exactly one object added, so we'll see if we can model that. *)
                 
-                (*addedObjectUUIDs = Flatten[addedObjects[[All, "Transform", "Objects", All, "UUID"]]];*)
-                (* Remove these 'added objects' from the output scenes so that the referenceable objects
-                   we form below don't try to use the very objects we're trying to add. *)
-                (* Commented out as the below code to form referenceable output objects isn't
-                   currently in use. *)
-                (*examples[[All, "Output"]] = Replace[
-                    examples[[All, "Output"]],
-                    KeyValuePattern["UUID" -> Alternatives @@ addedObjectUUIDs] :> Nothing,
-                    {0, Infinity}
-                ];*)
                 ReturnIfFailure@
                 ARCGeneralizeConclusions[
                     Function[{item},
                         Append[item, "Example" -> ++counter]
                     ] /@ addedObjects,
-                    Join[
-                        referenceableInputObjects
-                        (* I don't think this is required. We were previously using it for
-                           31aa019c, but it can use a referenceable input object, and other
-                           examples like 1A2E2828 are needing referenceable input objects
-                           here. *)
-                        (*ReturnIfFailure@
-                        ARCMakeObjectsReferenceable[
-                            examples[[All, "Output"]],
-                            "AdditionalConditions" -> <|"Context" -> "Output"|>
-                        ]*)
-                    ],
+                    referenceableObjects,
                     examples
                 ],
             MatchQ[addedObjects, {Repeated[KeyValuePattern["Transform" -> KeyValuePattern["Objects" -> {_}]] | _Missing]}],
@@ -18459,7 +18499,7 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                             "Example" -> counter
                         ]
                     ] /@ addedObjects,
-                    referenceableInputObjects,
+                    referenceableObjects,
                     examples
                 ];
                 
@@ -18484,7 +18524,7 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                         Function[{item},
                             Append[item, "Example" -> ++counter]
                         ] /@ Extract[addedObjects, addedObjectPositions],
-                        referenceableInputObjects,
+                        referenceableObjects,
                         examplesWithObjectAdded
                     ],
                     conclusion: KeyValuePattern[
@@ -18514,7 +18554,7 @@ ARCRuleForAddedObjects[addedObjects_List, referenceableInputObjects_Association,
                     Function[{item},
                         Append[item, "Example" -> ++counter]
                     ] /@ addedObjects,
-                    referenceableInputObjects,
+                    referenceableObjects,
                     examples
                 ],
             
@@ -31111,8 +31151,6 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
             identifyingProperties
         },
         
-        (* HERE11 *)
-        
         (* We'll pay attention to referenceable objects to try to understand whether scenes
            are rotationally consistent with each other. *)
         objectReferences =
@@ -31124,7 +31162,7 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
             Return[Missing["NotFound"], Module]
         ];
         
-        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.Rank", "Y.Rank"}][examples[[1, "Input", "Objects"]]]];*)
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][examples[[1, "Input", "Objects"]]]];*)
         
         (* We'll use the first example as our "canonical" example, and try to rotate the
            other examples as necessary to make them consistent. *)
@@ -31142,8 +31180,8 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
             ] /@ objectReferences
         ];
         
-        (* Now that we've selected _just_ the referenceable objects, re-compute their Y.Rank
-           and X.Rank values where we only include those objects so that we can see their
+        (* Now that we've selected _just_ the referenceable objects, re-compute their Y.InverseRank
+           and X.InverseRank values where we only include those objects so that we can see their
            relative order, ignoring any non-referenceable objects in the scene. *)
         referenceableObjects = AssociationThread[
             Keys[referenceableObjects],
@@ -31154,7 +31192,7 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
             ]
         ];
         
-        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.Rank", "Y.Rank"}][referenceableObjects]];*)
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][referenceableObjects]];*)
         
         (* Determine which dimensions appear to be useable to sense the orientation of
            an input scene. *)
@@ -31221,10 +31259,13 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
             |>
         ];
         
-        If [!TrueQ[nonZeroRotationPerformedQ],
-            Missing["NotFound"]
-            ,
+        If [And[
+                MatchQ[res, {_, __}],
+                MemberQ[Rest[res][[All, "NormalizationAngle"]], 90 | 180 | 270]
+            ],
             res
+            ,
+            Missing["NotFound"]
         ]
     ]
 
@@ -31312,6 +31353,44 @@ ARCFindRotationalNormalizationsForScenes[scene_ARCScene, referenceableObjects_As
         
         (* We weren't able to find a normalization angle for this input scene. *)
         Missing["NotFound"]
+    ]
+
+(*!
+    \function ARCRemoveReferencesForObjects
+    
+    \calltable
+        ARCRemoveReferencesForObjects[objectReferences, objects] '' Given some object references, removes any that match the given objects. For example, if we are going to use referenceable output objects to infer property values of output objects, we don't want to include references to those very objects.
+    
+    e.g. 56dc2b01
+    
+    \maintainer danielb
+*)
+Clear[ARCRemoveReferencesForObjects];
+ARCRemoveReferencesForObjects[objectReferences_Association, objects_List] :=
+    Module[{},
+        Association@
+        KeyValueMap[
+            Function[{objectReference, conclusions},
+                If [FailureTagMatchQ[
+                        GetObject[
+                            objectReference,
+                            objects,
+                            (* So that we don't get a failure when we see multiple matches due to
+                            an added object being in all output scenes and `objects` being objects
+                            from all output scenes. *)
+                            "Class" -> True
+                        ],
+                        "NoObjectsOfClassFound"
+                    ],
+                    (* Keep this object reference because none of the `objects` matched it. *)
+                    objectReference -> conclusion
+                    ,
+                    (* Discard this object reference, since one or more `objects` matched it. *)
+                    Nothing
+                ]
+            ],
+            objectReferences
+        ]
     ]
 
 End[]
