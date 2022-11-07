@@ -639,6 +639,8 @@ ARCExamplesSegmentedByRowOrColumn::usage = "ARCExamplesSegmentedByRowOrColumn  "
 
 ARCColorCountSameQ::usage = "ARCColorCountSameQ  "
 
+ARCFindRotationalNormalizationsForScenes::usage = "ARCFindRotationalNormalizationsForScenes  "
+
 Begin["`Private`"]
 
 
@@ -4638,6 +4640,11 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         "FormMultiColorCompositeObjects" -> False,
                         opts
                     ];
+                
+                If [!ListQ[parsedExamples],
+                    parsedExamples = $parsedExamples
+                ];
+                
                 (*ARCEcho2[ARCSimplifyRules[res2["PartialRules"]]];*)
                 (*ARCEcho2[ARCSimplifyRules[res2["Rules"]]];*)
                 foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
@@ -5109,6 +5116,65 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        If [And[
+                Or[
+                    !TrueQ[workingRulesFound[]],
+                    (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2
+                ],
+                (* Don't try performing rotational normalization if we've already done that
+                   normalization. *)
+                FreeQ[examples, KeyValuePattern["NormalizationAngle" -> _]]
+            ],
+            (* Check if there is a way to rotationally normalize the examples. *)
+            Replace[
+                ARCFindRotationalNormalizationsForScenes[parsedExamples],
+                normalizedExamples_List :> (
+                    (*ARCEcho2[normalizedExamples];*)
+                    res2 =
+                        ARCLogScope["ARCFindRules:RotationallyNormalized"]@
+                        ARCFindRules[
+                            normalizedExamples,
+                            If [$MinimumExamplesPerRule =!= 1,
+                                "SettleForOneExamplePerRule" -> False
+                                ,
+                                Sequence @@ {}
+                            ],
+                            opts
+                        ];
+                    (*ARCEcho[ARCSimplifyRules[res2]];*)
+                    foundRules2Q = MatchQ[res2, KeyValuePattern["Rules" -> _List]];
+                    
+                    If [foundRules2Q,
+                        If [Or[
+                                (* We haven't found any previous rules, but we have found rules here,
+                                   so we'll use them as our best bet without checking whether they're
+                                   working or not. *)
+                                !TrueQ[foundRulesQ],
+                                (* We had found rules previously, but they aren't working on all training
+                                   examples, whereas these new rules are working on all examples. *)
+                                And[
+                                    !TrueQ[workingRulesFound[]],
+                                    TrueQ[ARCWorkingQ[examples, res2, "TrainingExamplesOnly" -> True, "ResolveObjectAmbiguityArbitrarily" -> False]]
+                                ],
+                                (* Either both the old rules and new rules are working, or they're
+                                   both not working, so we'll only use these new rules if their score
+                                   is better. *)
+                                And[
+                                    !And[
+                                        TrueQ[workingRulesFound[]],
+                                        !TrueQ[ARCWorkingQ[examples, res2, "TrainingExamplesOnly" -> True, "ResolveObjectAmbiguityArbitrarily" -> False]]
+                                    ],
+                                    (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0
+                                ]
+                            ],
+                            foundRulesQ = True;
+                            res = res2
+                        ]
+                    ]
+                )
+            ]
+        ];
+        
         If [TrueQ[OptionValue["SettleForOneExamplePerRule"]],
             (* TODO: I wonder if instead of having a second pass, we should allow
                      single-example rules in general, and just make sure we're
@@ -5223,6 +5289,11 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
                              ARCRulesForOutput *)
                     
                     rulesResult = <|
+                        If [MatchQ[examplesIn[[1]], KeyValuePattern["RotationNormalization" -> _]],
+                            "RotationNormalization" -> examplesIn[[1, "RotationNormalization"]]
+                            ,
+                            Nothing
+                        ],
                         If [ListQ[OptionValue["SubdivideInput"]],
                             "SubdivideInput" -> OptionValue["SubdivideInput"]
                             ,
@@ -5543,6 +5614,9 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
             ARCLogScope["AddMoveAttributes"]@
             ARCAddMoveAttributes[examples, referenceableOutputObjects];
         
+        (* UNDOME *)
+        $referenceableOutputObjects = referenceableOutputObjects;
+        
         (*ARCEcho[SimplifyObjects[examples]];*)
         
         objectMappings = examples[[All, "ObjectMapping"]];
@@ -5691,27 +5765,29 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 objectMappings
             ];
         
-        (* If there is always only 1 modified object, try to work backwards to find a rule
-           that can map those objects. *)
-        Replace[
-            ReturnIfFailure@
-            ARCCheckForSingleModifiedObject[preRules, referenceableInputObjects, examples],
-            rule: Except[_Missing] :> (
-                Return[
-                    {
+        If [MatchQ[addedObjects, {Repeated[_Missing]}],
+            (* If there is always only 1 modified object, try to work backwards to find a rule
+               that can map those objects. *)
+            Replace[
+                ReturnIfFailure@
+                ARCCheckForSingleModifiedObject[preRules, referenceableInputObjects, examples],
+                rule: Except[_Missing] :> (
+                    Return[
                         {
-                            <|
-                                "Rules" -> {
-                                    rule
-                                }
-                            |>
+                            {
+                                <|
+                                    "Rules" -> {
+                                        rule
+                                    }
+                                |>
+                            },
+                            <||>,
+                            {}
                         },
-                        <||>,
-                        {}
-                    },
-                    Module
-                ]
-            )
+                        Module
+                    ]
+                )
+            ]
         ];
         
         (*ARCEcho2[preRules];*)
@@ -5736,6 +5812,8 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                 "Unable to produce a rule for adding objects.",
                 "AddedObjects" -> addedObjects
             ];
+        
+        (*ARCEcho2[addedObjectsRule];*)
         
         If [AssociationQ[addedObjectsRule] && inputObjectsNeedingMapping === {},
             (* There aren't any input objects needing to be mapped, we just needed to find
@@ -6693,8 +6771,34 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             outputImage,
             outputWidth,
             outputHeight,
-            background
+            background,
+            rotationalNormalizationAngle
         },
+        
+        If [!MissingQ[rules["RotationNormalization"]],
+            Replace[
+                ReturnIfFailure@
+                ARCFindRotationalNormalizationsForScenes[
+                    scene,
+                    rules["RotationNormalization"]
+                ],
+                {
+                    normalizationRes: KeyValuePattern["NormalizedScene" -> _] :> (
+                        scene = normalizationRes["NormalizedScene"];
+                        rotationalNormalizationAngle = normalizationRes["NormalizationAngle"];
+                    ),
+                    _ :> (
+                        ReturnFailure[
+                            "RotationNormalizationFailure",
+                            "We were unable to normalize the rotation of the scene.",
+                            "Scene" -> scene,
+                            "RotationNormalization" -> rules["RotationNormalization"]
+                        ]
+                    )
+                }
+            ]
+        ];
+        
         (* Compute any dynamic expressions in the top-level rules association. For example,
            the Width of the output scene might be a dynamic expression of some InputScene
            attribute. *)
@@ -7160,6 +7264,10 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
         
         If [TrueQ[rules["RemoveEmptySpace"]],
             renderedScene = ARCRemoveEmptySpace[renderedScene, outputScene["Background"]]
+        ];
+        
+        If [SpecifiedQ[rotationalNormalizationAngle],
+            renderedScene = RotateImage[renderedScene, -rotationalNormalizationAngle]
         ];
         
         renderedScene
@@ -12768,16 +12876,31 @@ ARCBlockingQ[object1In_Association, object2_Association, direction_List, scene_A
     \maintainer danielb
 *)
 Clear[ARCInferRankProperties];
-ARCInferRankProperties[objectsIn_List] :=
+Options[ARCInferRankProperties] =
+{
+    "Properties" -> Automatic,          (*< The properties to compute ranks for. *)
+    "IgnoreGridsAndDividers" -> True    (*< Should we ignore grids/dividers when computing rank properties? *)
+};
+ARCInferRankProperties[objectsIn_List, OptionsPattern[]] :=
     Module[{objects = objectsIn, grids, rankProperties, property, sortedValues},
         
-        rankProperties = Select[$properties, TrueQ[#["Rank"]] &];
+        rankProperties = Replace[
+            OptionValue["Properties"],
+            {
+                Automatic :> Select[$properties, TrueQ[#["Rank"]] &],
+                properties_List :> KeyTake[$properties, properties]
+            }
+        ];
         
         (* Don't include grids/dividers in the list of objects when computing
            rank properties, so that properties like X.Rank, Y.Rank aren't thrown
            off by the grid itself. *)
-        grids = Select[objects, AssociationQ[#["GridOrDivider"]] &];
-        objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &];
+        If [TrueQ[OptionValue["IgnoreGridsAndDividers"]],
+            grids = Select[objects, AssociationQ[#["GridOrDivider"]] &];
+            objects = Select[objects, !AssociationQ[#["GridOrDivider"]] &]
+            ,
+            grids = {}
+        ];
         
         KeyValueMap[
             Function[{rankPropertyName, rankPropertyAttributes},
@@ -15367,6 +15490,12 @@ Module[{tasks},
             "CodeLength" -> 30915,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "PersonalExample" -> True,
+            "Timestamp" -> DateObject[{2022, 11, 6}],
+            "ExampleImplemented" -> "56dc2b01-easier-2",
+            "ImplementationTime" -> Quantity[1.5, "Hours"]
         |>
     };
     
@@ -22123,6 +22252,7 @@ ARCRulesForOutput[rules_Association] :=
     KeyTake[
         rules,
         {
+            "RotationNormalization",
             "SubdivideInput",
             "Subdivision",
             "Denoise",
@@ -30950,6 +31080,238 @@ ARCColorCountSameQ[image1_List, image2_List, OptionsPattern[]] :=
                 ]
             }
         )
+    ]
+
+(*!
+    \function ARCFindRotationalNormalizationsForScenes
+    
+    \calltable
+        ARCFindRotationalNormalizationsForScenes[examples] '' Given a list of examples, checks to see if there are rotations that can be applied to any of the scenes to better normalize them.
+    
+    e.g. 56dc2b01
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCFindRotationalNormalizationsForScenes]
+    
+    \maintainer danielb
+*)
+Clear[ARCFindRotationalNormalizationsForScenes];
+ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
+    Module[
+        {
+            examples = examplesIn,
+            objectReferences,
+            referenceableObjects,
+            dimensions,
+            identifyingProperties
+        },
+        
+        (* HERE11 *)
+        
+        (* We'll pay attention to referenceable objects to try to understand whether scenes
+           are rotationally consistent with each other. *)
+        objectReferences =
+            Keys@
+            ReturnIfFailure@
+            ARCMakeObjectsReferenceable[examples[[All, "Input"]]];
+        
+        If [Length[objectReferences] < 2,
+            Return[Missing["NotFound"], Module]
+        ];
+        
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.Rank", "Y.Rank"}][examples[[1, "Input", "Objects"]]]];*)
+        
+        (* We'll use the first example as our "canonical" example, and try to rotate the
+           other examples as necessary to make them consistent. *)
+        canonicalExample = examples[[1]];
+        
+        (* Look up the referenceable objects from the canonical scene. *)
+        referenceableObjects = Association[
+            Function[{objectReference},
+                objectReference ->
+                    ReturnIfFailure@
+                    GetObject[
+                        objectReference,
+                        canonicalExample["Input"]
+                    ]
+            ] /@ objectReferences
+        ];
+        
+        (* Now that we've selected _just_ the referenceable objects, re-compute their Y.Rank
+           and X.Rank values where we only include those objects so that we can see their
+           relative order, ignoring any non-referenceable objects in the scene. *)
+        referenceableObjects = AssociationThread[
+            Keys[referenceableObjects],
+            ARCInferRankProperties[
+                Values[referenceableObjects],
+                "Properties" -> {"Y.InverseRank", "X.InverseRank"},
+                "IgnoreGridsAndDividers" -> False
+            ]
+        ];
+        
+        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.Rank", "Y.Rank"}][referenceableObjects]];*)
+        
+        (* Determine which dimensions appear to be useable to sense the orientation of
+           an input scene. *)
+        dimensions = Select[
+            {"X", "Y"},
+            Function[{dimension},
+                SameQ[
+                    Sort[Values[referenceableObjects][[All, dimension <> ".InverseRank"]]],
+                    Range[Length[referenceableObjects]]
+                ]
+            ]
+        ];
+        
+        If [Length[dimensions] === 0,
+            Return[Missing["NotFound"], Module]
+        ];
+        
+        identifyingProperties = (# <> ".InverseRank") & /@ dimensions;
+        
+        (* For each referenceable object, select the properties that look to be useable to
+           sense the orientation of an input scene. *)
+        referenceableObjects =
+            SortBy[
+                KeyTake[identifyingProperties] /@ referenceableObjects,
+                Function[{item},
+                    item[First[identifyingProperties]]
+                ]
+            ];
+        
+        (*ARCEcho2[referenceableObjects];*)
+        
+        (* For each example, see if it looks like a rotation can be used to normalize it. *)
+        res = Prepend[
+            Function[{example},
+                Replace[
+                    ReturnIfFailure@
+                    ReturnIfMissing@
+                    ARCFindRotationalNormalizationsForScenes[
+                        example["Input", "Scene"],
+                        referenceableObjects,
+                        example["Input"]
+                    ],
+                    thisRes: KeyValuePattern["NormalizedScene" -> _] :> (
+                        <|
+                            "Input" -> thisRes["NormalizedScene"],
+                            "Output" ->
+                                If [thisRes["NormalizationAngle"] === 0,
+                                    example["Output", "Scene"]
+                                    ,
+                                    RotateImage[
+                                        example["Output", "Scene"],
+                                        thisRes["NormalizationAngle"]
+                                    ]
+                                ],
+                            "NormalizationAngle" -> thisRes["NormalizationAngle"]
+                        |>
+                    )
+                ]
+            ] /@ Rest[examples],
+            <|
+                "Input" -> canonicalExample["Input", "Scene"],
+                "Output" -> canonicalExample["Output", "Scene"],
+                "RotationNormalization" -> referenceableObjects
+            |>
+        ];
+        
+        If [!TrueQ[nonZeroRotationPerformedQ],
+            Missing["NotFound"]
+            ,
+            res
+        ]
+    ]
+
+(* Given a specific scene, tries to find an angle that it can be rotated by to normalize it
+   in a way consistent with `referenceableObjects`. *)
+ARCFindRotationalNormalizationsForScenes[scene_ARCScene, referenceableObjects_Association, parsedScene_Association : Automatic] :=
+    Module[
+        {
+            objectReferences = Keys[referenceableObjects],
+            identifyingProperties = Keys[First[referenceableObjects]],
+            rotatedExample,
+            res,
+            theseReferenceableObjects,
+            nonZeroRotationPerformedQ = False
+        },
+        Function[{angle},
+            
+            rotatedExample =
+                If [angle === 0 && AssociationQ[parsedScene],
+                    parsedScene
+                    ,
+                    (* Parse the rotated scene. Something that's awkward here is that we don't
+                       know what values to use for options like FormMultiColorCompositeObjects,
+                       etc. One option would be to try various combinations here to see if any
+                       of them lead do seeing how to rotationally normalize the scene. Related is
+                       that the _input_ `examples` to this function were parsed using some
+                       scheme, and ideally we'd like to support considering all schemes to see if
+                       any of them can discover how to rotationally normalize the scene. *)
+                    If [angle =!= 0,
+                        nonZeroRotationPerformedQ = True
+                    ];
+                    ReturnIfFailure@
+                    ARCParseScene[RotateImage[scene, angle]]
+                ];
+            
+            (* Look up the referenceable objects from the scene. *)
+            theseReferenceableObjects = Association[
+                Function[{objectReference},
+                    objectReference ->
+                        ReturnIfFailure@
+                        GetObject[objectReference, rotatedExample]
+                ] /@ objectReferences
+            ];
+            
+            (* Now that we've selected _just_ the referenceable objects, re-compute
+               their Y.InverseRank and X.InverseRank values where we only include those objects
+               so that we can see their relative order, ignoring any non-referenceable
+               objects in the scene. *)
+            theseReferenceableObjects = AssociationThread[
+                Keys[theseReferenceableObjects],
+                ARCInferRankProperties[
+                    Values[theseReferenceableObjects],
+                    "Properties" -> {"Y.InverseRank", "X.InverseRank"},
+                    "IgnoreGridsAndDividers" -> False
+                ]
+            ];
+            
+            (*ARCEcho[angle -> SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][theseReferenceableObjects]];*)
+            
+            (* For each referenceable object, select the properties that look to be useable to
+               sense the orientation of an input scene. *)
+            theseReferenceableObjects =
+                SortBy[
+                    KeyTake[identifyingProperties] /@ theseReferenceableObjects,
+                    Function[{item},
+                        item[First[identifyingProperties]]
+                    ]
+                ];
+            
+            (*ARCEcho2[angle -> theseReferenceableObjects -> "vs" -> referenceableObjects];*)
+            
+            If [referenceableObjects === theseReferenceableObjects,
+                (* This rotation looks to have produced a normalized orientation,
+                   so we'll use this angle for normalization. *)
+                Return[
+                    <|
+                        "NormalizedScene" -> rotatedExample["Scene"],
+                        "NormalizationAngle" -> angle
+                    |>,
+                    Module 
+                ]
+            ];
+                
+        ] /@ {0, 90, 180, 270};
+        
+        (* We weren't able to find a normalization angle for this input scene. *)
+        Missing["NotFound"]
     ]
 
 End[]

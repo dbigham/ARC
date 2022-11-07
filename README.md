@@ -111,7 +111,7 @@ https://github.com/fchollet/ARC
 * [7e0986d6](TaskNotes/7e0986d6/notes.md)
 * [868de0fa](TaskNotes/868de0fa/notes.md)
 
-### Personally Created Training Tasks (15)
+### Personally Created Training Tasks (16)
 
 * [jnohuorzh-easier](TaskNotes/jnohuorzh-easier/notes.md)
 * [ihiz27k2n](TaskNotes/ihiz27k2n/notes.md)
@@ -128,6 +128,7 @@ https://github.com/fchollet/ARC
 * [middle](TaskNotes/middle/notes.md)
 * [surface-pixel-count](TaskNotes/surface-pixel-count/notes.md)
 * [4938f0c2-easy](TaskNotes/4938f0c2-easy/notes.md)
+* [56dc2b01-easier-2](TaskNotes/56dc2b01-easier-2/notes.md)
 
 ## Tasks Passing via Generalization
 
