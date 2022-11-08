@@ -37,22 +37,36 @@ Test[
                     "MinimalPropertySets" -> {{"Name", "Angle", "Fill" | Missing["Fill"]}}
                 |>,
                 "MonochromeImage" -> <||>,
-                "Shapes" -> <|"ClassList" -> True|>
+                "Shapes" -> <|
+                    "ClassList" -> True,
+                    "Condition" -> Hold[
+                        Not[
+                            Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                                #1,
+                                "Shape",
+                                Alternatives[KeyValuePattern["Fill" -> _]]
+                            ]
+                        ]
+                    ]
+                |>
             ],
             Alternatives[
                 "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
                 Missing["Color"] -> <|
-                    "Condition" -> Daniel`ARC`ARCConclusionsSoFarMatchQ[
-                        #1,
-                        "Shape",
-                        Alternatives[
-                            KeyValuePattern[
-                                {
-                                    "Border" -> KeyValuePattern["Color" -> _],
-                                    "Interior" -> KeyValuePattern["Color" -> _]
-                                }
-                            ],
-                            KeyValuePattern["Fill" -> _]
+                    "ObjectGet" -> (#1["Color"] & ),
+                    "Condition" -> Hold[
+                        Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                            #1,
+                            "Shape",
+                            Alternatives[
+                                KeyValuePattern[
+                                    {
+                                        "Border" -> KeyValuePattern["Color" -> _],
+                                        "Interior" -> KeyValuePattern["Color" -> _]
+                                    }
+                                ],
+                                KeyValuePattern["Fill" -> _]
+                            ]
                         ]
                     ]
                 |>
@@ -234,22 +248,36 @@ Test[
                     "MinimalPropertySets" -> {{"Name", "Angle", "Fill" | Missing["Fill"]}}
                 |>,
                 "MonochromeImage" -> <||>,
-                "Shapes" -> <|"ClassList" -> True|>
+                "Shapes" -> <|
+                    "ClassList" -> True,
+                    "Condition" -> Hold[
+                        Not[
+                            Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                                #1,
+                                "Shape",
+                                Alternatives[KeyValuePattern["Fill" -> _]]
+                            ]
+                        ]
+                    ]
+                |>
             ],
             Alternatives[
                 "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
                 Missing["Color"] -> <|
-                    "Condition" -> Daniel`ARC`ARCConclusionsSoFarMatchQ[
-                        #1,
-                        "Shape",
-                        Alternatives[
-                            KeyValuePattern[
-                                {
-                                    "Border" -> KeyValuePattern["Color" -> _],
-                                    "Interior" -> KeyValuePattern["Color" -> _]
-                                }
-                            ],
-                            KeyValuePattern["Fill" -> _]
+                    "ObjectGet" -> (#1["Color"] & ),
+                    "Condition" -> Hold[
+                        Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                            #1,
+                            "Shape",
+                            Alternatives[
+                                KeyValuePattern[
+                                    {
+                                        "Border" -> KeyValuePattern["Color" -> _],
+                                        "Interior" -> KeyValuePattern["Color" -> _]
+                                    }
+                                ],
+                                KeyValuePattern["Fill" -> _]
+                            ]
                         ]
                     ]
                 |>
@@ -276,8 +304,14 @@ Test[
             "Direction" -> <||>,
             "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
             Alternatives[
-                "Y" -> <|"ObjectGet" -> (#1["Y"] & ), "Condition" -> False|>,
-                "X" -> <|"ObjectGet" -> (#1["X"] & ), "Condition" -> False|>
+                "Y" -> <|
+                    "ObjectGet" -> (#1["Y"] & ),
+                    "Condition" -> Hold[MatchQ[#1["Direction"], {0, -1} | {0, 1}]]
+                |>,
+                "X" -> <|
+                    "ObjectGet" -> (#1["X"] & ),
+                    "Condition" -> Hold[MatchQ[#1["Direction"], {-1, 0} | {1, 0}]]
+                |>
             ]
         }
     }

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     43192,        975]
-NotebookOptionsPosition[     34763,        782]
-NotebookOutlinePosition[     40316,        919]
-CellTagsIndexPosition[     40273,        916]
+NotebookDataLength[     44614,        995]
+NotebookOptionsPosition[     36184,        802]
+NotebookOutlinePosition[     41737,        939]
+CellTagsIndexPosition[     41694,        936]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,7 +28,7 @@ Cell[BoxData[{
  RowBox[{"RunUnitTests", "[", "ARCSubPropertySets", "]"}]}], "Code",
  InitializationCell->False,
  CellLabel->
-  "In[636]:=",ExpressionUUID->"91db2606-0a9b-4d30-98fb-a05cf634e264"],
+  "In[436]:=",ExpressionUUID->"91db2606-0a9b-4d30-98fb-a05cf634e264"],
 
 Cell[CellGroupData[{
 
@@ -99,6 +99,7 @@ DynamicOutputSectionVariable202282417251164098, "ImageSize" -> {Full, {0,
                OptionValue[
                DevTools`NotebookTools`DynamicOutputSection, {}, 
                 "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          
           If[
            TrueQ[
             OptionValue[
@@ -132,7 +133,7 @@ Cell[BoxData[{
  InitializationCell->False,
  CellChangeTimes->{{3.870365066059939*^9, 3.870365101399065*^9}, {
   3.8703776941638703`*^9, 3.870377694914891*^9}},
- CellLabel->"In[385]:=",
+ CellLabel->"In[434]:=",
  CellID->12245694,
  "TestId" -> 
  "ARCSubPropertySets-20220824-T9149Q",ExpressionUUID->"ea14aff9-2b20-4c7d-\
@@ -151,26 +152,34 @@ Cell[BoxData["\<\"{\\n    {\\n        \\\"Image\\\" -> <||>,\\n        \
          \\\"ObjectGet\\\" -> (#1[\\\"Shape\\\"] & ),\\n                \
 \\\"MinimalPropertySets\\\" -> {{\\\"Name\\\", \\\"Angle\\\", \\\"Fill\\\" | \
 Missing[\\\"Fill\\\"]}}\\n            |>,\\n            \\\"MonochromeImage\\\
-\" -> <||>,\\n            \\\"Shapes\\\" -> <|\\\"ClassList\\\" -> True|>\\n  \
-      ],\\n        Alternatives[\\n            \\\"Color\\\" -> \
-<|\\\"ObjectGet\\\" -> (#1[\\\"Color\\\"] & )|>,\\n            \
-Missing[\\\"Color\\\"] -> <|\\n                \\\"Condition\\\" -> \
-ARCConclusionsSoFarMatchQ[\\n                    #1,\\n                    \\\
-\"Shape\\\",\\n                    Alternatives[\\n                        \
-KeyValuePattern[\\n                            {\\n                           \
-     \\\"Border\\\" -> KeyValuePattern[\\\"Color\\\" -> _],\\n                \
-                \\\"Interior\\\" -> KeyValuePattern[\\\"Color\\\" -> _]\\n    \
-                        }\\n                        ],\\n                     \
-   KeyValuePattern[\\\"Fill\\\" -> _]\\n                    ]\\n              \
-  ]\\n            |>\\n        ],\\n        (\\\"X\\\" -> <|\\\"ObjectGet\\\" \
--> (#1[\\\"X\\\"] & )|>) | (\\\"XInverse\\\" -> <||>),\\n        (\\\"Y\\\" \
--> <|\\\"ObjectGet\\\" -> (#1[\\\"Y\\\"] & )|>) | (\\\"YInverse\\\" -> <||>),\
-\\n        Alternatives[\\n            \\\"Width\\\" -> <|\\\"ObjectGet\\\" \
--> (#1[\\\"Width\\\"] & )|>,\\n            \\\"X2\\\" -> <|\\n                \
-\\\"AllowUnspecifiedIfUnchanged\\\" -> Function[\\n                    \
-{conclusionSoFar, conclusionsBeingGeneralized},\\n                    And[\\n \
-                       MissingQ[conclusionSoFar[\\\"X\\\"]],\\n               \
-         ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, \
+\" -> <||>,\\n            \\\"Shapes\\\" -> <|\\n                \
+\\\"ClassList\\\" -> True,\\n                \\\"Condition\\\" -> Hold[\\n    \
+                Not[\\n                        ARCConclusionsSoFarMatchQ[\\n  \
+                          #1,\\n                            \\\"Shape\\\",\\n \
+                           Alternatives[KeyValuePattern[\\\"Fill\\\" -> \
+_]]\\n                        ]\\n                    ]\\n                \
+]\\n            |>\\n        ],\\n        Alternatives[\\n            \
+\\\"Color\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Color\\\"] & )|>,\\n          \
+  Missing[\\\"Color\\\"] -> <|\\n                \\\"ObjectGet\\\" -> \
+(#1[\\\"Color\\\"] & ),\\n                \\\"Condition\\\" -> Hold[\\n       \
+             ARCConclusionsSoFarMatchQ[\\n                        #1,\\n      \
+                  \\\"Shape\\\",\\n                        Alternatives[\\n   \
+                         KeyValuePattern[\\n                                {\
+\\n                                    \\\"Border\\\" -> \
+KeyValuePattern[\\\"Color\\\" -> _],\\n                                    \\\
+\"Interior\\\" -> KeyValuePattern[\\\"Color\\\" -> _]\\n                      \
+          }\\n                            ],\\n                            \
+KeyValuePattern[\\\"Fill\\\" -> _]\\n                        ]\\n             \
+       ]\\n                ]\\n            |>\\n        ],\\n        (\\\"X\\\
+\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"X\\\"] & )|>) | (\\\"XInverse\\\" -> \
+<||>),\\n        (\\\"Y\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Y\\\"] & )|>) | \
+(\\\"YInverse\\\" -> <||>),\\n        Alternatives[\\n            \\\"Width\\\
+\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Width\\\"] & )|>,\\n            \\\"X2\\\
+\" -> <|\\n                \\\"AllowUnspecifiedIfUnchanged\\\" -> \
+Function[\\n                    {conclusionSoFar, \
+conclusionsBeingGeneralized},\\n                    And[\\n                   \
+     MissingQ[conclusionSoFar[\\\"X\\\"]],\\n                        \
+ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, \
 \\\"Width\\\"]\\n                    ]\\n                ]\\n            \
 |>,\\n            \\\"X2Inverse\\\" -> <|\\n                \
 \\\"AllowUnspecifiedIfUnchanged\\\" -> Function[\\n                    \
@@ -195,9 +204,10 @@ conclusionsBeingGeneralized, \\\"Height\\\"]\\n                    ]\\n       \
  CellChangeTimes->{{3.8703650763719826`*^9, 3.870365098588652*^9}, 
    3.87036542810477*^9, {3.8703776856983604`*^9, 3.870377695165243*^9}, 
    3.870516095746493*^9, 3.870629850062851*^9, 3.870903250728191*^9, 
-   3.8719281284898777`*^9, 3.876860472143569*^9},
+   3.8719281284898777`*^9, 3.876860472143569*^9, 3.876901387129726*^9, 
+   3.8769014445403647`*^9},
  CellLabel->
-  "Out[386]=",ExpressionUUID->"505e6d70-fb8b-4c67-8f54-975b2881d173"],
+  "Out[435]=",ExpressionUUID->"113e25fd-f39f-478f-9256-2fff280d36bd"],
 
 Cell[CellGroupData[{
 
@@ -609,7 +619,7 @@ Cell[BoxData["\<\"{\\n    {\\\"Image\\\" -> <||>, \\\"Y\\\" -> <||>, \
  CellChangeTimes->{3.870630314903279*^9, 3.876860237863985*^9},
  CellLabel->
   "Out[359]=",ExpressionUUID->"84a1a8ca-99ac-4ddc-baed-80ceade23048"]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -723,7 +733,7 @@ Cell[BoxData[{
  CellChangeTimes->{{3.870365066059939*^9, 3.870365101399065*^9}, {
   3.8703776941638703`*^9, 3.870377694914891*^9}, {3.8706328755842996`*^9, 
   3.870632941151205*^9}},
- CellLabel->"In[379]:=",
+ CellLabel->"In[430]:=",
  CellID->64774638,
  "TestId" -> 
  "ARCSubPropertySets-20220827-YX24O2",ExpressionUUID->"09c14b1c-096e-4785-\
@@ -742,19 +752,26 @@ Cell[BoxData["\<\"{\\n    {\\n        \\\"Image\\\" -> <||>,\\n        \
 (#1[\\\"Shape\\\"] & ),\\n                \\\"MinimalPropertySets\\\" -> {{\\\
 \"Name\\\", \\\"Angle\\\", \\\"Fill\\\" | Missing[\\\"Fill\\\"]}}\\n          \
   |>,\\n            \\\"MonochromeImage\\\" -> <||>,\\n            \\\"Shapes\
-\\\" -> <|\\\"ClassList\\\" -> True|>\\n        ],\\n        Alternatives[\\n \
-           \\\"Color\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Color\\\"] & \
-)|>,\\n            Missing[\\\"Color\\\"] -> <|\\n                \
-\\\"Condition\\\" -> ARCConclusionsSoFarMatchQ[\\n                    #1,\\n  \
-                  \\\"Shape\\\",\\n                    Alternatives[\\n       \
-                 KeyValuePattern[\\n                            {\\n          \
-                      \\\"Border\\\" -> KeyValuePattern[\\\"Color\\\" -> \
-_],\\n                                \\\"Interior\\\" -> \
-KeyValuePattern[\\\"Color\\\" -> _]\\n                            }\\n        \
-                ],\\n                        KeyValuePattern[\\\"Fill\\\" -> \
-_]\\n                    ]\\n                ]\\n            |>\\n        \
-],\\n        \\\"Position\\\" -> <|\\n            \\\"SubProperties\\\" -> \
-{\\n                \\\"RelativePosition\\\" -> <|\\\"SubProperties\\\" -> \
+\\\" -> <|\\n                \\\"ClassList\\\" -> True,\\n                \
+\\\"Condition\\\" -> Hold[\\n                    Not[\\n                      \
+  ARCConclusionsSoFarMatchQ[\\n                            #1,\\n             \
+               \\\"Shape\\\",\\n                            \
+Alternatives[KeyValuePattern[\\\"Fill\\\" -> _]]\\n                        \
+]\\n                    ]\\n                ]\\n            |>\\n        \
+],\\n        Alternatives[\\n            \\\"Color\\\" -> <|\\\"ObjectGet\\\" \
+-> (#1[\\\"Color\\\"] & )|>,\\n            Missing[\\\"Color\\\"] -> <|\\n    \
+            \\\"ObjectGet\\\" -> (#1[\\\"Color\\\"] & ),\\n                \\\
+\"Condition\\\" -> Hold[\\n                    ARCConclusionsSoFarMatchQ[\\n  \
+                      #1,\\n                        \\\"Shape\\\",\\n         \
+               Alternatives[\\n                            \
+KeyValuePattern[\\n                                {\\n                       \
+             \\\"Border\\\" -> KeyValuePattern[\\\"Color\\\" -> _],\\n        \
+                            \\\"Interior\\\" -> KeyValuePattern[\\\"Color\\\" \
+-> _]\\n                                }\\n                            ],\\n \
+                           KeyValuePattern[\\\"Fill\\\" -> _]\\n              \
+          ]\\n                    ]\\n                ]\\n            |>\\n   \
+     ],\\n        \\\"Position\\\" -> <|\\n            \\\"SubProperties\\\" \
+-> {\\n                \\\"RelativePosition\\\" -> <|\\\"SubProperties\\\" -> \
 {\\\"Y\\\" | \\\"YInverse\\\", \\\"X\\\" | \\\"XInverse\\\"}|>,\\n            \
     \\\"Y\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Y\\\"] & )|>,\\n              \
   \\\"X\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"X\\\"] & )|>\\n            \
@@ -767,16 +784,19 @@ _]\\n                    ]\\n                ]\\n            |>\\n        \
 \\\"MinimalPropertySets\\\" -> {{\\\"Name\\\", \\\"Angle\\\", \\\"Fill\\\" | \
 Missing[\\\"Fill\\\"]}}\\n        |>,\\n        \\\"Direction\\\" -> <||>,\\n \
        \\\"Color\\\" -> <|\\\"ObjectGet\\\" -> (#1[\\\"Color\\\"] & )|>,\\n   \
-     Alternatives[\\n            \\\"Y\\\" -> <|\\\"ObjectGet\\\" -> \
-(#1[\\\"Y\\\"] & ), \\\"Condition\\\" -> False|>,\\n            \\\"X\\\" -> \
-<|\\\"ObjectGet\\\" -> (#1[\\\"X\\\"] & ), \\\"Condition\\\" -> False|>\\n    \
-    ]\\n    }\\n}\"\>"], "Output",
+     Alternatives[\\n            \\\"Y\\\" -> <|\\n                \
+\\\"ObjectGet\\\" -> (#1[\\\"Y\\\"] & ),\\n                \\\"Condition\\\" \
+-> Hold[MatchQ[#1[\\\"Direction\\\"], {0, -1} | {0, 1}]]\\n            |>,\\n \
+           \\\"X\\\" -> <|\\n                \\\"ObjectGet\\\" -> (#1[\\\"X\\\
+\"] & ),\\n                \\\"Condition\\\" -> \
+Hold[MatchQ[#1[\\\"Direction\\\"], {-1, 0} | {1, 0}]]\\n            |>\\n     \
+   ]\\n    }\\n}\"\>"], "Output",
  CellChangeTimes->{{3.8706329031481895`*^9, 3.8706329647072954`*^9}, {
-  3.876860285458537*^9, 3.876860308264027*^9}, {3.876860403972707*^9, 
-  3.876860405291768*^9}},
+   3.876860285458537*^9, 3.876860308264027*^9}, {3.876860403972707*^9, 
+   3.876860405291768*^9}, 3.8769014363129845`*^9},
  CellLabel->
-  "Out[380]=",ExpressionUUID->"33c1e0ae-2074-4066-a0f4-7af73832115d"]
-}, Open  ]]
+  "Out[431]=",ExpressionUUID->"12ab9970-8ea3-4fab-a17e-65d6df71d40f"]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 },
@@ -925,56 +945,56 @@ Cell[673, 24, 253, 6, 54, "Code",ExpressionUUID->"91db2606-0a9b-4d30-98fb-a05cf6
 Cell[CellGroupData[{
 Cell[951, 34, 79, 0, 67, "Section",ExpressionUUID->"c09ddfab-9b72-4762-a828-80e5a8f5115b"],
 Cell[CellGroupData[{
-Cell[1055, 38, 3565, 83, 52, "TestUI",ExpressionUUID->"2715eeea-5329-4319-9b68-baff9157fa35",
+Cell[1055, 38, 3576, 84, 52, "TestUI",ExpressionUUID->"2715eeea-5329-4319-9b68-baff9157fa35",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[4623, 123, 617, 15, 90, "Code",ExpressionUUID->"ea14aff9-2b20-4c7d-be5a-b4677504f309",
+Cell[4634, 124, 617, 15, 90, "Code",ExpressionUUID->"ea14aff9-2b20-4c7d-be5a-b4677504f309",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->12245694]
 }, Open  ]],
-Cell[5255, 141, 4409, 58, 1754, "Output",ExpressionUUID->"505e6d70-fb8b-4c67-8f54-975b2881d173"],
+Cell[5266, 142, 5024, 67, 2034, "Output",ExpressionUUID->"113e25fd-f39f-478f-9256-2fff280d36bd"],
 Cell[CellGroupData[{
-Cell[9689, 203, 3577, 83, 52, "TestUI",ExpressionUUID->"5311cfda-4b22-4254-906a-6ecbdb38bac6",
+Cell[10315, 213, 3577, 83, 52, "TestUI",ExpressionUUID->"5311cfda-4b22-4254-906a-6ecbdb38bac6",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[13269, 288, 974, 23, 91, "Code",ExpressionUUID->"f1c69589-b424-4e32-b5f0-8559db9af260",
+Cell[13895, 298, 974, 23, 91, "Code",ExpressionUUID->"f1c69589-b424-4e32-b5f0-8559db9af260",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->39241815]
 }, Open  ]],
-Cell[14258, 314, 521, 8, 33, "Output",ExpressionUUID->"39798016-8413-4f7d-978e-841395477d3f"],
+Cell[14884, 324, 521, 8, 33, "Output",ExpressionUUID->"39798016-8413-4f7d-978e-841395477d3f"],
 Cell[CellGroupData[{
-Cell[14804, 326, 235, 5, 54, "Subsection",ExpressionUUID->"4d97f14b-1cb4-4d7a-9a35-dd3cc0478656"],
+Cell[15430, 336, 235, 5, 54, "Subsection",ExpressionUUID->"4d97f14b-1cb4-4d7a-9a35-dd3cc0478656"],
 Cell[CellGroupData[{
-Cell[15064, 335, 3568, 84, 52, "TestUI",ExpressionUUID->"44f6d114-91f1-43e2-acc7-f156076ec602",
+Cell[15690, 345, 3568, 84, 52, "TestUI",ExpressionUUID->"44f6d114-91f1-43e2-acc7-f156076ec602",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[18635, 421, 1251, 29, 180, "Code",ExpressionUUID->"fa19b5d2-0779-46fe-a10f-d639a2501ead",
+Cell[19261, 431, 1251, 29, 180, "Code",ExpressionUUID->"fa19b5d2-0779-46fe-a10f-d639a2501ead",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->13594983]
 }, Open  ]],
-Cell[19901, 453, 606, 9, 94, "Output",ExpressionUUID->"d7f7f4b7-879e-4383-89e4-be44f431e7b2"],
+Cell[20527, 463, 606, 9, 94, "Output",ExpressionUUID->"d7f7f4b7-879e-4383-89e4-be44f431e7b2"],
 Cell[CellGroupData[{
-Cell[20532, 466, 3566, 84, 52, "TestUI",ExpressionUUID->"deb411dc-4d4a-47e3-b0aa-6af8b5f695cb",
+Cell[21158, 476, 3566, 84, 52, "TestUI",ExpressionUUID->"deb411dc-4d4a-47e3-b0aa-6af8b5f695cb",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[24101, 552, 2193, 49, 342, "Code",ExpressionUUID->"aa53af34-9dc5-4035-98e8-b59f009f94d7",
+Cell[24727, 562, 2193, 49, 342, "Code",ExpressionUUID->"aa53af34-9dc5-4035-98e8-b59f009f94d7",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->99595874]
 }, Open  ]],
-Cell[26309, 604, 400, 6, 94, "Output",ExpressionUUID->"84a1a8ca-99ac-4ddc-baed-80ceade23048"]
-}, Open  ]],
+Cell[26935, 614, 400, 6, 94, "Output",ExpressionUUID->"84a1a8ca-99ac-4ddc-baed-80ceade23048"]
+}, Closed]],
 Cell[CellGroupData[{
-Cell[26746, 615, 208, 4, 54, "Subsection",ExpressionUUID->"5ca1cdfc-5d13-47e6-bc59-05559204413c"],
+Cell[27372, 625, 208, 4, 38, "Subsection",ExpressionUUID->"5ca1cdfc-5d13-47e6-bc59-05559204413c"],
 Cell[CellGroupData[{
-Cell[26979, 623, 3576, 84, 52, "TestUI",ExpressionUUID->"3a8fb629-d696-4c03-a93c-3bc5d041a072",
+Cell[27605, 633, 3576, 84, 52, "TestUI",ExpressionUUID->"3a8fb629-d696-4c03-a93c-3bc5d041a072",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
-Cell[30558, 709, 819, 20, 90, "Code",ExpressionUUID->"09c14b1c-096e-4785-ba4a-038a18fdacd4",
+Cell[31184, 719, 819, 20, 90, "Code",ExpressionUUID->"09c14b1c-096e-4785-ba4a-038a18fdacd4",
  CellGroupingRules->{"GroupTogetherGrouping", 10000.},
  InitializationCell->False,
  CellID->64774638]
 }, Open  ]],
-Cell[31392, 732, 3331, 45, 1294, "Output",ExpressionUUID->"33c1e0ae-2074-4066-a0f4-7af73832115d"]
-}, Open  ]]
+Cell[32018, 742, 4126, 55, 1694, "Output",ExpressionUUID->"12ab9970-8ea3-4fab-a17e-65d6df71d40f"]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 }

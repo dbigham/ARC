@@ -2390,6 +2390,8 @@ ARCClassifyShape[image_List, OptionsPattern[]] :=
         }
     ]
 
+ARCClassifyShape[{}] := {}
+
 (*!
     \function ARCClassifyTriangle
     
@@ -4409,7 +4411,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                        parallel. That's a pretty big mutliple. (More than 3x!) *)
                     "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5" |
                     (* Oct 22 2022 *)
-                    "d10ecb37" | "b6afb2da"
+                    "d10ecb37" | "b6afb2da" |
+                    (* Nov 8 2022: Started timing out, but still fails with extra time. *)
+                    "42a15761"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -5121,6 +5125,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         If [And[
                 Or[
                     !TrueQ[workingRulesFound[]],
+                    (* 5168d44c's unwanted parse has a score of -2.1. *)
                     (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2
                 ],
                 (* Don't try performing rotational normalization if we've already done that
@@ -9321,20 +9326,22 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                     Alternatives[
                         "Shape",
                         "MonochromeImage",
-                        "Shapes" /;
+                        "Shapes" /; Function[{conclusionSoFar, conclusionsBeingGeneralized},
                             (* For 97999447, we want to avoid it choosing
                                "Shapes" -> {<|"Name" -> "Line"|>} at this stage over
                                a "Shape" definition that specifies the fill pattern.
                                For some reason on M13 sees the "Shapes" alternative here. *)
                             !ARCConclusionsSoFarMatchQ[
-                                #,
+                                conclusionSoFar,
                                 "Shape",
                                 Alternatives[
                                     KeyValuePattern[
                                         "Fill" -> _
                                     ]
                                 ]
+                                (*"ConclusionsBeingGeneralized" -> conclusionsBeingGeneralized*)
                             ]
+                        ]
                     ],
                     Alternatives[
                         "Color",
@@ -10450,6 +10457,8 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
             conclusionsSoFar = <||>,
             (* Includes additional key-values for <Property>.InputValues. *)
             conclusionsSoFar2 = <||>,
+            (* Includes additional key-values for the alternates that have been considered so far. *)
+            conclusionsSoFar3 = <||>,
             inputValues
         },
         Association[
@@ -10464,6 +10473,8 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                 ];
                 
                 subPropertyAlternatives = Association[subPropertyAlternatives];
+                
+                conclusionsSoFar3 = conclusionsSoFar2;
                 
                 subPropertyResults =
                     ReturnIfFailure@
@@ -10483,10 +10494,11 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                                                 ReleaseHold@
                                                 Replace[
                                                     subPropertyAttributes["Condition"],
-                                                    # -> conclusionsSoFar2,
-                                                    {0, Infinity},
-                                                    Heads -> True
-                                                ]
+                                                    {
+                                                        Hold[inner: Except[_Function]] :> Function[inner],
+                                                        Hold[function_Function] :> function
+                                                    }
+                                                ][conclusionsSoFar3, conclusions]
                                             ],
                                             (* This property has a condition specified that must be
                                                true for it to apply, and that condition evaluated to
@@ -10544,31 +10556,42 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                                                         }
                                                     ]
                                                 ],
-                                                (* If one of the minimal property sets is so good that it
-                                                   doesn't even need to be specified in the conclusion,
-                                                   then use it without considering other property sets. *)
-                                                Nothing :> Return[
-                                                    {
-                                                        If [And[
-                                                                Length[propertyPath] === 0,
-                                                                (* Confirm that the values in the conclusions always
-                                                                   match those in the inputs. *)
-                                                                SameQ[
-                                                                    conclusions[[All, "Input", subPropertyName]],
-                                                                    inputValues = conclusions[[All, "Value", subPropertyName]]
-                                                                ]
-                                                            ],
-                                                            Automatic -> (
-                                                                subPropertyName -> <|
-                                                                    "InputValues" -> inputValues
-                                                                |>
-                                                            )
-                                                            ,
-                                                            Nothing
-                                                        ]
-                                                    },
-                                                    Module
-                                                ]
+                                                {
+                                                    (* If one of the minimal property sets is so good that it
+                                                       doesn't even need to be specified in the conclusion,
+                                                       then use it without considering other property sets. *)
+                                                    Nothing :> Return[
+                                                        {
+                                                            If [And[
+                                                                    Length[propertyPath] === 0,
+                                                                    (* Confirm that the values in the conclusions always
+                                                                       match those in the inputs. *)
+                                                                    SameQ[
+                                                                        conclusions[[All, "Input", subPropertyName]],
+                                                                        inputValues = conclusions[[All, "Value", subPropertyName]]
+                                                                    ]
+                                                                ],
+                                                                Automatic -> (
+                                                                    subPropertyName -> <|
+                                                                        "InputValues" -> inputValues
+                                                                    |>
+                                                                )
+                                                                ,
+                                                                Nothing
+                                                            ]
+                                                        },
+                                                        Module
+                                                    ],
+                                                    thisResult_ :> (
+                                                        If [MatchQ[thisResult, HoldPattern[Rule][_, Except[_Missing]]],
+                                                            AppendTo[
+                                                                conclusionsSoFar3,
+                                                                thisResult
+                                                            ]
+                                                        ];
+                                                        thisResult
+                                                    )
+                                                }
                                             ]
                                     ]
                                 ]
@@ -15340,8 +15363,9 @@ Module[{tasks},
             "ImplementationTime" -> Quantity[3.5, "Hours"],
             "CodeLength" -> 27358,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {},
-            "FailsOnlyDuringParallelTest" -> True
+            "NewEvaluationSuccesses" -> {}
+            (* Stopped failing in parallel run Nov 8 2022. *)
+            (*"FailsOnlyDuringParallelTest" -> True*)
         |>,
         (* Bad rules that happen to pass. I think what caused this to start passing
            is the new ResolveObjectAmbiguityArbitrarily option. *)
@@ -15542,7 +15566,15 @@ Module[{tasks},
             "ImplementationTime" -> Quantity[6, "Hours"],
             "CodeLength" -> 31389,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "NewEvaluationSuccesses" -> {
+                "2b01abd0",
+                (* Not due to this input but rather to a recent change whereby if all input
+                   objects are squares/rectangles, we add "FollowDiagonals" -> False to the
+                   rule set. *)
+                "817e6c09",
+                (* Also now working due to "FollowDiagonals" -> False, I think. *)
+                "8ee62060"
+            }
         |>
     };
     
@@ -19349,7 +19381,7 @@ ARCMinimalPropertySetItemToAttributes[item_, attributeLookup_] :=
                 ] :> (
                     property -> Append[
                         Lookup[attributeLookup, propertyName, <||>],
-                        "Condition" -> condition
+                        "Condition" -> Hold[condition]
                     ]
                 ),
                 _Alternatives :> (
@@ -30624,7 +30656,11 @@ ARCRenderFilledRectangle[width_Integer, height_Integer, fillIn_, color_] :=
     \maintainer danielb
 *)
 Clear[ARCConclusionsSoFarMatchQ];
-ARCConclusionsSoFarMatchQ[conclusionsSoFar_Association, property_, pattern_] :=
+Options[ARCConclusionsSoFarMatchQ] =
+{
+    "ConclusionsBeingGeneralized" -> Null       (*< The list of conclusions being generalized. *)
+};
+ARCConclusionsSoFarMatchQ[conclusionsSoFar_Association, property_, pattern_, OptionsPattern[]] :=
     Module[{},
         Or[
             MatchQ[
@@ -30634,6 +30670,15 @@ ARCConclusionsSoFarMatchQ[conclusionsSoFar_Association, property_, pattern_] :=
             MatchQ[
                 conclusionsSoFar[property <> ".InputValues"],
                 {Repeated[pattern]}
+            ],
+            (* Experimental while working on 97999447, but I don't think we actually want to use
+               this approach in that case. *)
+            And[
+                OptionValue["ConclusionsBeingGeneralized"] =!= Null,
+                MatchQ[
+                    OptionValue["ConclusionsBeingGeneralized"][[All, "Value", property]],
+                    {Repeated[pattern]}
+                ]
             ]
         ]
     ]
