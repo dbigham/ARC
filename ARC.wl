@@ -5984,7 +5984,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {"Shape"}
+                            {None}
                             ,
                             {None}
                         ]
@@ -31046,6 +31046,22 @@ ARCExamplesSegmentedByRowOrColumn[examples_List] :=
                     ARCColorCountSameQ[
                         example["Input", "Objects"][[All, "Image"]],
                         example["Output", "Objects"][[All, "Image"]]
+                    ]
+                ]
+            ],
+            
+            (* It isn't the case that there are always the same set of objects in the
+               input and output scenes, suggesting movement instead, which might not
+               be confined to rows/columns. e.g. 42a15761 *)
+            !AllTrue[
+                examples,
+                Function[{example},
+                    And[
+                        Length[example["Input", "Objects"]] === Length[example["Output", "Objects"]],
+                        Sort[example[["Input", "Objects", All, "Image"]]] === Sort[example[["Output", "Objects", All, "Image"]]],
+                        (* There aren't any duplicate images in a scene, so it should be unambiguous
+                           what the mapping is between then. *)
+                        Length[example[["Input", "Objects", All, "Image"]]] === Length[DeleteDuplicates[example[["Output", "Objects", All, "Image"]]]]
                     ]
                 ]
             ],
