@@ -20,7 +20,9 @@ Test[
             "Image" -> <||>,
             "Position" -> <|
                 "SubProperties" -> {
-                    "RelativePosition" -> <||>,
+                    "RelativePosition" -> <|
+                        "SubProperties" -> {"Y" | "YInverse", "X" | "XInverse"}
+                    |>,
                     "Y" -> <|"ObjectGet" -> (#1["Y"] & )|>,
                     "X" -> <|"ObjectGet" -> (#1["X"] & )|>
                 },
@@ -30,29 +32,99 @@ Test[
         },
         {
             Alternatives[
-                "Shape" -> <|"MinimalPropertySets" -> {{"Name", "Angle"}}|>,
+                "Shape" -> <|
+                    "ObjectGet" -> (#1["Shape"] & ),
+                    "MinimalPropertySets" -> {{"Name", "Angle", "Fill" | Missing["Fill"]}}
+                |>,
                 "MonochromeImage" -> <||>,
                 "Shapes" -> <|"ClassList" -> True|>
             ],
             Alternatives[
-                "Color" -> <||>,
-                Condition[
-                    Missing["Color"],
-                    MatchQ[
-                        #1["Shape"],
-                        KeyValuePattern[
-                            {
-                                "Border" -> KeyValuePattern["Color" -> _],
-                                "Interior" -> KeyValuePattern["Color" -> _]
-                            }
+                "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
+                Missing["Color"] -> <|
+                    "Condition" -> Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                        #1,
+                        "Shape",
+                        Alternatives[
+                            KeyValuePattern[
+                                {
+                                    "Border" -> KeyValuePattern["Color" -> _],
+                                    "Interior" -> KeyValuePattern["Color" -> _]
+                                }
+                            ],
+                            KeyValuePattern["Fill" -> _]
                         ]
                     ]
-                ]
+                |>
             ],
-            ("X" -> <||>) | ("XInverse" -> <||>),
-            ("Y" -> <||>) | ("YInverse" -> <||>),
-            ("Width" -> <||>) | ("X2" -> <||>) | ("X2Inverse" -> <||>),
-            ("Height" -> <||>) | ("Y2" -> <||>) | ("Y2Inverse" -> <||>),
+            ("X" -> <|"ObjectGet" -> (#1["X"] & )|>) | ("XInverse" -> <||>),
+            ("Y" -> <|"ObjectGet" -> (#1["Y"] & )|>) | ("YInverse" -> <||>),
+            Alternatives[
+                "Width" -> <|"ObjectGet" -> (#1["Width"] & )|>,
+                "X2" -> <|
+                    "AllowUnspecifiedIfUnchanged" -> Function[
+                        {
+                            Daniel`ARC`Private`conclusionSoFar,
+                            Daniel`ARC`Private`conclusionsBeingGeneralized
+                        },
+                        And[
+                            MissingQ[Daniel`ARC`Private`conclusionSoFar["X"]],
+                            Daniel`ARC`ARCPropertyUnchangingInConclusionsQ[
+                                Daniel`ARC`Private`conclusionsBeingGeneralized,
+                                "Width"
+                            ]
+                        ]
+                    ]
+                |>,
+                "X2Inverse" -> <|
+                    "AllowUnspecifiedIfUnchanged" -> Function[
+                        {
+                            Daniel`ARC`Private`conclusionSoFar,
+                            Daniel`ARC`Private`conclusionsBeingGeneralized
+                        },
+                        And[
+                            MissingQ[Daniel`ARC`Private`conclusionSoFar["X"]],
+                            Daniel`ARC`ARCPropertyUnchangingInConclusionsQ[
+                                Daniel`ARC`Private`conclusionsBeingGeneralized,
+                                "Width"
+                            ]
+                        ]
+                    ]
+                |>
+            ],
+            Alternatives[
+                "Height" -> <|"ObjectGet" -> (#1["Height"] & )|>,
+                "Y2" -> <|
+                    "AllowUnspecifiedIfUnchanged" -> Function[
+                        {
+                            Daniel`ARC`Private`conclusionSoFar,
+                            Daniel`ARC`Private`conclusionsBeingGeneralized
+                        },
+                        And[
+                            MissingQ[Daniel`ARC`Private`conclusionSoFar["Y"]],
+                            Daniel`ARC`ARCPropertyUnchangingInConclusionsQ[
+                                Daniel`ARC`Private`conclusionsBeingGeneralized,
+                                "Height"
+                            ]
+                        ]
+                    ]
+                |>,
+                "Y2Inverse" -> <|
+                    "AllowUnspecifiedIfUnchanged" -> Function[
+                        {
+                            Daniel`ARC`Private`conclusionSoFar,
+                            Daniel`ARC`Private`conclusionsBeingGeneralized
+                        },
+                        And[
+                            MissingQ[Daniel`ARC`Private`conclusionSoFar["Y"]],
+                            Daniel`ARC`ARCPropertyUnchangingInConclusionsQ[
+                                Daniel`ARC`Private`conclusionsBeingGeneralized,
+                                "Height"
+                            ]
+                        ]
+                    ]
+                |>
+            ],
             "ZOrder" -> <||>
         }
     }
@@ -67,7 +139,7 @@ Test[
         ]
     ]
     ,
-    {{"Y" | Missing["Y"], "X" | Missing["Y"]}}
+    {{("Y" -> <||>) | (Missing["Y"] -> <||>), ("X" -> <||>) | (Missing["Y"] -> <||>)}}
     ,
     TestID -> "ARCSubPropertySets-20220826-XZS2EB"
 ]
@@ -132,10 +204,12 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCSubPropertySets[
-        Utility`Gett[
-            Daniel`ARC`Private`$transformTypes["AddComponents", "SubProperties"],
-            "Components"
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCSubPropertySets[
+            Utility`Gett[
+                Daniel`ARC`Private`$transformTypes["AddComponents", "SubProperties"],
+                "Components"
+            ]
         ]
     ]
     ,
@@ -146,42 +220,65 @@ Test[
                 "SubProperties" -> {
                     "RelativePosition" -> <|
                         "SubProperties" -> {"Y" | "YInverse", "X" | "XInverse"}
-                    |>
-                }
+                    |>,
+                    "Y" -> <|"ObjectGet" -> (#1["Y"] & )|>,
+                    "X" -> <|"ObjectGet" -> (#1["X"] & )|>
+                },
+                "MinimalPropertySets" -> {{"RelativePosition"}, {"Y", "X"}}
             |>
         },
         {
-            "Shapes" -> <|"ClassList" -> True|>,
-            "Width" -> <|"ObjectGet" -> (#1["Width"] & )|>,
-            "Height" -> <|"ObjectGet" -> (#1["Height"] & )|>,
-            "Color" -> <|"ObjectGet" -> (Daniel`ARC`InferColor[#1] & )|>,
+            Alternatives[
+                "Shape" -> <|
+                    "ObjectGet" -> (#1["Shape"] & ),
+                    "MinimalPropertySets" -> {{"Name", "Angle", "Fill" | Missing["Fill"]}}
+                |>,
+                "MonochromeImage" -> <||>,
+                "Shapes" -> <|"ClassList" -> True|>
+            ],
+            Alternatives[
+                "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
+                Missing["Color"] -> <|
+                    "Condition" -> Daniel`ARC`ARCConclusionsSoFarMatchQ[
+                        #1,
+                        "Shape",
+                        Alternatives[
+                            KeyValuePattern[
+                                {
+                                    "Border" -> KeyValuePattern["Color" -> _],
+                                    "Interior" -> KeyValuePattern["Color" -> _]
+                                }
+                            ],
+                            KeyValuePattern["Fill" -> _]
+                        ]
+                    ]
+                |>
+            ],
             "Position" -> <|
                 "SubProperties" -> {
                     "RelativePosition" -> <|
                         "SubProperties" -> {"Y" | "YInverse", "X" | "XInverse"}
-                    |>
-                }
-            |>
-        },
-        {
-            "Shape" -> <|"ObjectGet" -> (#1["Shape"] & )|>,
+                    |>,
+                    "Y" -> <|"ObjectGet" -> (#1["Y"] & )|>,
+                    "X" -> <|"ObjectGet" -> (#1["X"] & )|>
+                },
+                "MinimalPropertySets" -> {{"RelativePosition"}, {"Y", "X"}}
+            |>,
             "Width" -> <|"ObjectGet" -> (#1["Width"] & )|>,
-            "Height" -> <|"ObjectGet" -> (#1["Height"] & )|>,
-            "Color" -> <|"ObjectGet" -> (Daniel`ARC`InferColor[#1] & )|>,
-            "Position" -> <|
-                "SubProperties" -> {
-                    "RelativePosition" -> <|
-                        "SubProperties" -> {"Y" | "YInverse", "X" | "XInverse"}
-                    |>
-                }
-            |>
+            "Height" -> <|"ObjectGet" -> (#1["Height"] & )|>
         },
         {
             "Outward" -> <||>,
-            "Shape" -> <|"ObjectGet" -> (#1["Shape"] & )|>,
+            "Shape" -> <|
+                "ObjectGet" -> (#1["Shape"] & ),
+                "MinimalPropertySets" -> {{"Name", "Angle", "Fill" | Missing["Fill"]}}
+            |>,
             "Direction" -> <||>,
-            "Color" -> <|"ObjectGet" -> (Daniel`ARC`InferColor[#1] & )|>,
-            "X" -> <|"ObjectGet" -> (#1["X"] & )|>
+            "Color" -> <|"ObjectGet" -> (#1["Color"] & )|>,
+            Alternatives[
+                "Y" -> <|"ObjectGet" -> (#1["Y"] & ), "Condition" -> False|>,
+                "X" -> <|"ObjectGet" -> (#1["X"] & ), "Condition" -> False|>
+            ]
         }
     }
     ,

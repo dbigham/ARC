@@ -10148,7 +10148,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                        to infer -- which it really should. As a fallback, we'll just try iterating
                        over the keys that are specified in this conclusion association. *)
                     {
-                        Keys[values[[1]]]
+                        Keys[values[[1]]] -> <||>
                     }
                 )
             ];
@@ -10463,22 +10463,7 @@ arcGeneralizeConclusionValueHelper[propertyPath_List, subProperties_List, conclu
                     }
                 ];
                 
-                subPropertyAlternatives =
-                    Association@
-                    Replace[
-                        subPropertyAlternatives,
-                        {
-                            propertyName: _String | Missing[_String] :> propertyName -> <||>,
-                            HoldPattern[Condition][
-                                propertyName: _String | Missing[_String],
-                                condition_
-                             ] :> propertyName -> <|"Condition" -> Hold[condition]|>,
-                             assoc_Association :> (
-                                assoc["Name"] -> KeyDrop[assoc, "Name"]
-                             )
-                        },
-                        {1}
-                    ];
+                subPropertyAlternatives = Association[subPropertyAlternatives];
                 
                 subPropertyResults =
                     ReturnIfFailure@
@@ -19271,6 +19256,7 @@ Clear[ARCSubPropertySets];
 ARCSubPropertySets[attributes_Association] :=
     Module[{},
         If [ListQ[attributes["SubProperties"]] || ListQ[attributes["MinimalPropertySets"]],
+            
             (* $transformTypes specifies which sub-properties we need to be able to
                infer, so we loop over them. *)
             subProperties = Lookup[
@@ -19282,20 +19268,29 @@ ARCSubPropertySets[attributes_Association] :=
                     Missing["NotFound"]
                 ]
             ];
-            If [ListQ[attributes["MinimalPropertySets"]],
-                (* There are different combinations of the properties that can be used
-                    to achieve a minimally specifying set of properties. *)
-                Function[{minimalPropertySet},
-                    Function[{item},
-                        (* Lookup the attributes for this property. *)
-                        ARCMinimalPropertySetItemToAttributes[item, subProperties]
-                    ] /@ minimalPropertySet
-                ] /@ attributes["MinimalPropertySets"]
-                ,
-                {
-                    subProperties
-                }
-            ]
+            
+            (* There are different combinations of the properties that can be used
+               to achieve a minimally specifying set of properties. *)
+            Function[{minimalPropertySet},
+                Function[{item},
+                    (* Lookup the attributes for this property. *)
+                    ARCMinimalPropertySetItemToAttributes[
+                        item,
+                        If [AssociationQ[subProperties] || MatchQ[subProperties, {__Rule}],
+                            subProperties
+                            ,
+                            <||>
+                        ]
+                    ]
+                ] /@ minimalPropertySet
+            ] /@
+                If [ListQ[attributes["MinimalPropertySets"]],
+                    attributes["MinimalPropertySets"]
+                    ,
+                    {
+                       subProperties
+                    }
+                ]
             ,
             If [!MissingQ[attributes["SubProperties"]],
                 ReturnFailure[
@@ -19339,11 +19334,22 @@ ARCMinimalPropertySetItemToAttributes[item_, attributeLookup_] :=
         Replace[
             item,
             {
-                property_String :> (
-                    property -> Lookup[
-                        attributeLookup,
-                        property,
-                        <||>
+                property:(propertyName_String | Missing[propertyName_String]) :> (
+                    property -> Lookup[attributeLookup, propertyName, <||>]
+                ),
+                attributes: KeyValuePattern["Name" -> _] :> (
+                    attributes["Name"] -> Join[
+                        Lookup[attributeLookup, attributes["Name"], <||>],
+                        KeyDrop[attributes, "Name"]
+                    ]
+                ),
+                HoldPattern[Condition][
+                    property:(propertyName_String | Missing[propertyName_String]),
+                    condition_
+                ] :> (
+                    property -> Append[
+                        Lookup[attributeLookup, propertyName, <||>],
+                        "Condition" -> condition
                     ]
                 ),
                 _Alternatives :> (
