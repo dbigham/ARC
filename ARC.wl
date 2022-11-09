@@ -643,6 +643,12 @@ ARCFindRotationalNormalizationsForScenes::usage = "ARCFindRotationalNormalizatio
 
 ARCRemoveReferencesForObjects::usage = "ARCRemoveReferencesForObjects  "
 
+ARCFindRotationalNormalizationsForScenes2::usage = "ARCFindRotationalNormalizationsForScenes2  "
+
+ARCObjectsSequentialDirection::usage = "ARCObjectsSequentialDirection  "
+
+ARCFindRotationalNormalizationsForScenes3::usage = "ARCFindRotationalNormalizationsForScenes3  "
+
 Begin["`Private`"]
 
 
@@ -4445,6 +4451,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             denoiseResult,
             (* The parsed examples using the standard parsing approach, if computed. *)
             parsedExamples,
+            parsedExamplesForNotFormingMultiColorCompositeObjects,
             backgroundDetails,
             semiParsedExamples,
             thisBackground
@@ -4650,6 +4657,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                 If [!ListQ[parsedExamples],
                     parsedExamples = $parsedExamples
                 ];
+                
+                parsedExamplesForNotFormingMultiColorCompositeObjects = $parsedExamples;
                 
                 (*ARCEcho2[ARCSimplifyRules[res2["PartialRules"]]];*)
                 (*ARCEcho2[ARCSimplifyRules[res2["Rules"]]];*)
@@ -5134,7 +5143,21 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ],
             (* Check if there is a way to rotationally normalize the examples. *)
             Replace[
-                ARCFindRotationalNormalizationsForScenes[parsedExamples],
+                SelectFirst[
+                    Function[{theseParsedExamples},
+                        ARCFindRotationalNormalizationsForScenes[theseParsedExamples]
+                    ] /@ Select[
+                        DeleteDuplicates@
+                        {
+                            parsedExamples,
+                            (* Incase `parsedExamples` formed multi-color objects but rotational
+                               normalization is only seen when not forming them. *)
+                            parsedExamplesForNotFormingMultiColorCompositeObjects
+                        },
+                        ListQ
+                    ],
+                    !MissingQ[#] &
+                ],
                 normalizedExamples_List :> (
                     (*ARCEcho2[normalizedExamples];*)
                     res2 =
@@ -6810,13 +6833,22 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             rotationalNormalizationAngle
         },
         
+        (* HERE11 *)
+        
         (* e.g. 56dc2b01 *)
         If [!MissingQ[rules["RotationNormalization"]],
             Replace[
                 ReturnIfFailure@
-                ARCFindRotationalNormalizationsForScenes[
-                    scene,
-                    rules["RotationNormalization"]
+                If [MatchQ[rules["RotationNormalization"], KeyValuePattern["ObjectsAngle" -> _]],
+                    ARCFindRotationalNormalizationsForScenes3[
+                        scene,
+                        rules["RotationNormalization", "ObjectsAngle"]
+                    ]
+                    ,
+                    ARCFindRotationalNormalizationsForScenes2[
+                        scene,
+                        rules["RotationNormalization"]
+                    ]
                 ],
                 {
                     normalizationRes: KeyValuePattern["NormalizedScene" -> _] :> (
@@ -8646,7 +8678,9 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             countsForNotValue,
             res,
             objectSetsSeen,
-            secondOrderReferences
+            secondOrderReferences,
+            existingReference,
+            referenceScore
         },
         
         usablePropertiesAndValues = Association[
@@ -8796,14 +8830,23 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             Association@
             KeyValueMap[
                 Function[{objectReference, properties},
-                    If [TrueQ[objectSetsSeen[properties["Objects"]]],
+                    existingReference = objectSetsSeen[properties["Objects"]];
+                    referenceScore = ARCConditionsScore[objectReference[[1]]];
+                    If [Or[
+                            MissingQ[existingReference],
+                            referenceScore > existingReference["Score"]
+                        ],
+                        objectSetsSeen[properties["Objects"]] = <|
+                            "Reference" -> objectReference,
+                            "Score" -> referenceScore
+                        |>;
+                        objectReference -> KeyDrop[properties, "Objects"]
+                        ,
                         (* We already have a reference that refers to this group of
                            objects, so to avoid creating "duplicate" references to
                            this object set, we'll discard this object reference. *)
+                        (*EchoIndented[objectReference -> referenceScore -> existingReference];*)
                         Nothing
-                        ,
-                        objectSetsSeen[properties["Objects"]] = True;
-                        objectReference -> KeyDrop[properties, "Objects"]
                     ]
                 ],
                 res
@@ -10696,7 +10739,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                class. *)
             objects,
             valuesToInfer,
-            property
+            propertyOrProperties
         },
         
         $debugProperty = "X";
@@ -10785,7 +10828,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                     ]
                 ];*)
                 
-                property =
+                propertyOrProperties =
                     ARCFindPropertyToInferValues[
                         propertyPath,
                         objects,
@@ -10814,23 +10857,33 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
                     ]
                 ];*)
                 
-                If [!MissingQ[property],
-                    If [FreeQ[property, TODO],
-                        If [MatchQ[reference, _Class],
-                            ClassValue
-                            ,
-                            ObjectValue
-                        ][reference[[1]], property]
-                        ,
-                        (* We didn't get back a property name but rather an expression
-                           involving the property, which needs the object reference pattern
-                           substituted into it. *)
-                        Replace[
-                            property,
-                            TODO -> reference[[1]],
-                            {1, Infinity}
-                        ]
-                    ]
+                (* HERE13 *)
+                If [!MissingQ[propertyOrProperties],
+                    Sequence @@ (
+                        Function[{property},
+                            If [FreeQ[property, TODO],
+                                If [MatchQ[reference, _Class],
+                                    ClassValue
+                                    ,
+                                    ObjectValue
+                                ][reference[[1]], property]
+                                ,
+                                (* We didn't get back a property name but rather an expression
+                                   involving the property, which needs the object reference pattern
+                                   substituted into it. *)
+                                Replace[
+                                    property,
+                                    TODO -> reference[[1]],
+                                    {1, Infinity}
+                                ]
+                            ]
+                        ] /@
+                            If [ListQ[propertyOrProperties],
+                                propertyOrProperties
+                                ,
+                                {propertyOrProperties}
+                            ]
+                    )
                     ,
                     Nothing
                 ]
@@ -10843,7 +10896,7 @@ ARCGeneralizeConclusionValueUsingReferenceableObjects[propertyPath_List, values_
         ];*)
         
         If [MatchQ[referenceableValues, {__}],
-            (*If [Last[propertyPath] === "Y",
+            (*If [Last[propertyPath] === "Width",
                 ARCEcho["referenceableValues"];
                 ARCDebug@
                 ARCEcho2@
@@ -10910,7 +10963,8 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
             matchingPropertiesUsingAddition,
             matchingPropertiesUsingMultiplication,
             numberQ,
-            linearModel
+            linearModel,
+            res
         },
         
         transposedObjects = Replace[
@@ -10984,37 +11038,38 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                 OptionValue["RelativePosition"]
             ];
         
-        Which[
-            Length[matchingProperties] > 0,
-                (* TODO: What to do if there are multiple properties that could
-                         be used? *)
-                First[Keys[matchingProperties]],
+        res = Join[
+            If [Length[matchingProperties] > 0,
+                Keys[matchingProperties]
+                ,
+                {}
+            ],
             
             (* Addition? *)
-            And[
-                numberQ = AllTrue[values, NumberQ],
-                (* What properties of these objects, if we use addition, appear to be usable
-                   to infer these values? *)
-                matchingPropertiesUsingAddition = Select[
-                    transposedObjects,
-                    And[
-                        AllTrue[#, NumberQ],
-                        (* TODO: Why do we need this condition? Shouldn't the lengths of these things
-                                 always be the same. e.g. relative-components *)
-                        Length[values] === Length[#],
+            If [And[
+                    numberQ = AllTrue[values, NumberQ],
+                    (* What properties of these objects, if we use addition, appear to be usable
+                    to infer these values? *)
+                    matchingPropertiesUsingAddition = Select[
+                        transposedObjects,
                         And[
-                            SingleUniqueValueQ[differences = values - #],
-                            !MatchQ[differences[[1]], 0 | 0.]
-                        ]
-                    ] &
-                ];
-                matchingPropertiesUsingAddition =
-                    ARCPruneMatchingPropertiesForRelativePositions[
-                        matchingPropertiesUsingAddition,
-                        OptionValue["RelativePosition"]
+                            AllTrue[#, NumberQ],
+                            (* TODO: Why do we need this condition? Shouldn't the lengths of these things
+                                    always be the same. e.g. relative-components *)
+                            Length[values] === Length[#],
+                            And[
+                                SingleUniqueValueQ[differences = values - #],
+                                !MatchQ[differences[[1]], 0 | 0.]
+                            ]
+                        ] &
                     ];
-                Length[matchingPropertiesUsingAddition] > 0
-            ],
+                    matchingPropertiesUsingAddition =
+                        ARCPruneMatchingPropertiesForRelativePositions[
+                            matchingPropertiesUsingAddition,
+                            OptionValue["RelativePosition"]
+                        ];
+                    Length[matchingPropertiesUsingAddition] > 0
+                ],
                 (* NOTE: As of Aug 18 2022, this function is called with one referenceable object
                          after another, and the first one that has a suitable property results in
                          that property being used. Related to that is that when we form the list
@@ -11027,9 +11082,8 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                          property that _does_ need math given how to iterate over objects
                          and choose the first usable property of the first visited object.
                          It could easily be the case that that isn't desirable. *)
-                (* TODO: What to do if there are multiple properties that could
-                         be used? *)
-                With[{property = First[Keys[matchingPropertiesUsingAddition]]},
+                Function[{property},
+                    (* HERE12 *)
                     Inactive[Plus][
                         ObjectValue[
                             (* The caller is responsible for filling in the object reference
@@ -11049,47 +11103,48 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                             difference
                         ]
                     ]
-                ],
+                ] /@ Keys[matchingPropertiesUsingAddition]
+                ,
+                {}
+            ],
             
             (* Multiplication? *)
-            And[
-                numberQ,
-                (* What properties of these objects, if we use multiplication, appear to be usable
-                   to infer these values? *)
-                (* Disallow color to be treated as an integer here since that doesn't make semantic
-                   sense. We should probably also disallow addition above, but will avoid changing
-                   that as of Oct 5 2022 since it could in theory break things making use of it.
-                   (But long term we should probably disallow that too) Ideally we'd use $properties
-                   to check if "Type" is "Integer", but that might break things so will hold off
-                   for the moment.
-                   e.g. aabf363d gets "Color" -> Inactive[Times][ObjectValue["InputObject", "Color"], 2] *)
-                matchingPropertiesUsingMultiplication =
-                    If [Last[propertyPath] =!= "Color",
-                        Select[
-                            transposedObjects,
-                            And[
-                                AllTrue[#, NumberQ],
-                                Length[values] === Length[#],
-                                FreeQ[#, 0 | 0., {1}],
+            If [And[
+                    numberQ,
+                    (* What properties of these objects, if we use multiplication, appear to be usable
+                       to infer these values? *)
+                    (* Disallow color to be treated as an integer here since that doesn't make semantic
+                       sense. We should probably also disallow addition above, but will avoid changing
+                       that as of Oct 5 2022 since it could in theory break things making use of it.
+                       (But long term we should probably disallow that too) Ideally we'd use $properties
+                       to check if "Type" is "Integer", but that might break things so will hold off
+                       for the moment.
+                       e.g. aabf363d gets "Color" -> Inactive[Times][ObjectValue["InputObject", "Color"], 2] *)
+                    matchingPropertiesUsingMultiplication =
+                        If [Last[propertyPath] =!= "Color",
+                            Select[
+                                transposedObjects,
                                 And[
-                                    SingleUniqueValueQ[factors = values / #],
-                                    !MatchQ[factors[[1]], 1 | 1.]
-                                ]
-                            ] &
-                        ]
-                        ,
-                        <||>
-                    ];
-                matchingPropertiesUsingMultiplication =
-                    ARCPruneMatchingPropertiesForRelativePositions[
-                        matchingPropertiesUsingMultiplication,
-                        OptionValue["RelativePosition"]
-                    ];
-                Length[matchingPropertiesUsingMultiplication] > 0
-            ],
-                (* TODO: What to do if there are multiple properties that could
-                         be used? *)
-                With[{property = First[Keys[matchingPropertiesUsingMultiplication]]},
+                                    AllTrue[#, NumberQ],
+                                    Length[values] === Length[#],
+                                    FreeQ[#, 0 | 0., {1}],
+                                    And[
+                                        SingleUniqueValueQ[factors = values / #],
+                                        !MatchQ[factors[[1]], 1 | 1.]
+                                    ]
+                                ] &
+                            ]
+                            ,
+                            <||>
+                        ];
+                    matchingPropertiesUsingMultiplication =
+                        ARCPruneMatchingPropertiesForRelativePositions[
+                            matchingPropertiesUsingMultiplication,
+                            OptionValue["RelativePosition"]
+                        ];
+                    Length[matchingPropertiesUsingMultiplication] > 0
+                ],
+                Function[{property},
                     Inactive[Times][
                         ObjectValue[
                             (* The caller is responsible for filling in the object reference
@@ -11109,13 +11164,26 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                             factor
                         ]
                     ]
-                ],
-            
+                ] /@ Keys[matchingPropertiesUsingMultiplication]
+                ,
+                {}
+            ]
+        ];
+        
+        (* If any of the above things found usable properties, we'll return at this point
+           since the below additional approaches seem significantly lower probability,
+           and we'd also like to avoid the cost of trying to find linear equations if we don't
+           have to. *)
+        If [MatchQ[res, {__}],
+            Return[res, Module]
+        ];
+        
+        Which[
             (* Linear model? *)
             And[
                 numberQ,
                 Last[propertyPath] =!= "Color",
-                linearModel = ARCFindLinearModel[Global`a = values, Global`b = transposedObjects];
+                linearModel = ARCFindLinearModel[values, transposedObjects];
                 AssociationQ[linearModel]
             ],
                 Inactive[Plus][
@@ -11135,11 +11203,9 @@ ARCFindPropertyToInferValues[propertyPath_List, objectsIn_List, values_List, opt
                 ];
                 
                 If [Length[matchingProperties] > 0,
-                    (* TODO: What to do if there are multiple properties that could
-                             be used? *)
-                    Inactive[First][
-                        First[Keys[matchingProperties]]
-                    ]
+                    Function[{property},
+                        Inactive[First][property]
+                    ] /@ Keys[matchingProperties]
                     ,
                     Missing["NotFound"]
                 ]
@@ -13156,6 +13222,7 @@ ARCTransformScore[transformIn_] :=
         score
     ]
 
+(* SCORE TRANSFORM *)
 ARCTransformScore[key_, rhs_] :=
     Module[{score = 0, objectValueCondition, objectValueProperty},
         
@@ -13183,7 +13250,14 @@ ARCTransformScore[key_, rhs_] :=
                        of Times, and already we have one unwanted parse making use of
                        it (6e02f1e3), so we'll downscore it. *)
                     score += ARCConstantScore[value];
-                    score -= 0.3
+                    (* d6ad076f is choosing a crazy Times parse over a very nice
+                       Plus parse, so we'll increase this penalty. Related is that previously,
+                       if we found a referenceable object that we could use to construct a Plus
+                       expression, we wouldn't even consider Times, whereas now we are returning
+                       all possible references, Times included, and then using score to pick
+                       the winner.
+                       ARCTransformScore-20221109-6NC6YM *)
+                    score -= 0.5
                 )
             }
         ];
@@ -13214,6 +13288,36 @@ ARCTransformScore[key_, rhs_] :=
         score += Which[
             key === objectValueProperty,
                 0,
+            MatchQ[
+                Sort[{key, objectValueProperty}],
+                Alternatives[
+                    {"Y", "Y2"},
+                    {"X", "X2"}
+                ]
+            ],
+                (* These properties are very compatible with each other. e.g. d6ad076f *)
+                Switch[
+                    key -> rhs,
+                    "Y" -> Inactive[Plus][ObjectValue[_, "Y2"], 1],
+                        (* An object is being placed directly below another object, which is
+                           a very semantically sensible thing to do. e.g. d6ad076f
+                           ARCTransformScore-20221109-2U7DOJ *)
+                        0.1,
+                    "X" -> Inactive[Plus][ObjectValue[_, "X2"], 1],
+                        (* An object is being placed directly to the right of another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.1,
+                    "Y2" -> Inactive[Plus][ObjectValue[_, "Y"], -1],
+                        (* An object is being placed directly above another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.1,
+                    "X2" -> Inactive[Plus][ObjectValue[_, "X"], -1],
+                        (* An object is being placed directly to the left of another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.1,
+                    _,
+                        -0.025
+                ],
             $properties[key, "Type2"] === $properties[objectValueProperty, "Type2"],
                 -0.5,
             And[
@@ -15575,6 +15679,14 @@ Module[{tasks},
                 (* Also now working due to "FollowDiagonals" -> False, I think. *)
                 "8ee62060"
             }
+        |>,
+        <|
+            "ExampleImplemented" -> "d6ad076f",
+            "Timestamp" -> DateObject[{2022, 11, 9}],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 31839,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -31208,7 +31320,168 @@ ARCColorCountSameQ[image1_List, image2_List, OptionsPattern[]] :=
     \maintainer danielb
 *)
 Clear[ARCFindRotationalNormalizationsForScenes];
-ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
+ARCFindRotationalNormalizationsForScenes[examples_List] :=
+    Module[{},
+        
+        (* Check if referenceable objects can be used to determine how scenes should
+           be rotationally normalized. *)
+        Replace[
+            ARCFindRotationalNormalizationsForScenes2[examples],
+            res: Except[_Missing] :> Return[res, Module]
+        ];
+        
+        (* Check if the direction of scene objects can be used to determine how scenes should
+           be rotationally normalized. *)
+        Replace[
+            ARCFindRotationalNormalizationsForScenes3[examples],
+            res: Except[_Missing] :> Return[res, Module]
+        ];
+        
+        Missing["NotFound"]
+    ]
+
+ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
+    Module[
+        {
+            examples = examplesIn,
+            canonicalExample,
+            canonicalObjectsAngle,
+            parsedScene,
+            res
+        },
+        
+        canonicalExample = examples[[1]];
+        
+        Function[{inputOrOutput},
+            
+            (* Check whether the objects in the canonical example or along a particular
+               direction. *)
+            canonicalObjectsAngle =
+                ARCObjectsSequentialDirection[canonicalExample[inputOrOutput, "Objects"]];
+            
+            If [canonicalObjectsAngle =!= None,
+                
+                res = Block[{},
+                    Function[{thisExample},
+                
+                        parsedScene = thisExample[inputOrOutput];
+                        
+                        Replace[
+                            ARCFindRotationalNormalizationsForScenes3[
+                                parsedScene["Scene"],
+                                canonicalObjectsAngle,
+                                parsedScene
+                            ],
+                            {
+                                _Missing :> Return[Missing["NotFound"], Block],
+                                thisRes: KeyValuePattern["NormalizedScene" -> _] :> (
+                                    <|
+                                        "Input" ->
+                                            If [inputOrOutput === "Input",
+                                                thisRes["NormalizedScene"]
+                                                ,
+                                                RotateImage[
+                                                    thisExample[["Input", "Scene"]],
+                                                    thisRes["NormalizationAngle"]
+                                                ]
+                                            ],
+                                        "Output" ->
+                                            If [inputOrOutput === "Output",
+                                                thisRes["NormalizedScene"]
+                                                ,
+                                                RotateImage[
+                                                    thisExample[["Output", "Scene"]],
+                                                    thisRes["NormalizationAngle"]
+                                                ]
+                                            ],
+                                        "NormalizationAngle" -> thisRes["NormalizationAngle"]
+                                    |>
+                                )
+                            }
+                        ]
+                        
+                    ] /@ Rest[examples]
+                ];
+                
+                If [And[
+                        !MissingQ[res],
+                        MemberQ[res[[All, "NormalizationAngle"]], 90 | 270]
+                    ],
+                    (* We've found an angle for each example that can be used to make the direction
+                       of its objects consistent with the canonical example. *)
+                    Return[
+                        Prepend[
+                            res,
+                            <|
+                                "Input" -> canonicalExample["Input", "Scene"],
+                                "Output" -> canonicalExample["Output", "Scene"],
+                                "RotationNormalization" -> <|
+                                    "ObjectsAngle" -> canonicalObjectsAngle
+                                |>
+                            |>
+                        ],
+                        Module
+                    ]
+                ]
+            ]
+        
+        ] /@ {"Input", "Output"};
+        
+        Missing["NotFound"]
+    ]
+
+ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_Integer, parsedScene_Association : Automatic] :=
+    Module[
+        {
+            res,
+            rotatedExample,
+            directionOfRotatedExample
+        },
+        
+        XEcho["EXAMPLE" -> parsedScene["Scene"]];
+        
+        (* Check whether the other scenes can be rotated so that their objects
+           are along a direction consistent with the canonical example. *)
+        Function[{angle},
+            
+            XEcho[inputOrOutput -> angle];
+            
+            rotatedExample =
+                If [angle === 0 && AssociationQ[parsedScene],
+                    parsedScene
+                    ,
+                    ReturnIfFailure@
+                    ARCParseScene[RotateImage[scene, angle]]
+                ];
+            
+            XEcho[rotatedExample["Scene"]];
+            
+            directionOfRotatedExample =
+                ARCObjectsSequentialDirection[
+                    rotatedExample["Objects"]
+                ];
+            
+            XEcho[directionOfRotatedExample -> canonicalObjectsAngle];
+            
+            If [directionOfRotatedExample === canonicalObjectsAngle,
+                Return[
+                    <|
+                        "NormalizedScene" -> rotatedExample["Scene"],
+                        "NormalizationAngle" -> angle
+                    |>,
+                    Module
+                ]
+            ]
+            
+        ] /@
+            (* We shouldn't need 180 since that would result in the same orientation.
+            (since in this context we can't differentiate between say 90 and -90) *)
+            {0, 90, 270};
+        
+        Missing["NotFound"]
+    ]
+
+ARCFindRotationalNormalizationsForScenes2[examplesIn_List] :=
     Module[
         {
             examples = examplesIn,
@@ -31239,10 +31512,12 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
         referenceableObjects = Association[
             Function[{objectReference},
                 objectReference ->
-                    ReturnIfFailure@
-                    GetObject[
-                        objectReference,
-                        canonicalExample["Input"]
+                    Replace[
+                        GetObject[
+                            objectReference,
+                            canonicalExample["Input"]
+                        ],
+                        _Failure :> Return[Missing["NotFound"], Module]
                     ]
             ] /@ objectReferences
         ];
@@ -31297,7 +31572,7 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
                 Replace[
                     ReturnIfFailure@
                     ReturnIfMissing@
-                    ARCFindRotationalNormalizationsForScenes[
+                    ARCFindRotationalNormalizationsForScenes2[
                         example["Input", "Scene"],
                         referenceableObjects,
                         example["Input"]
@@ -31338,7 +31613,7 @@ ARCFindRotationalNormalizationsForScenes[examplesIn_List] :=
 
 (* Given a specific scene, tries to find an angle that it can be rotated by to normalize it
    in a way consistent with `referenceableObjects`. *)
-ARCFindRotationalNormalizationsForScenes[scene_ARCScene, referenceableObjects_Association, parsedScene_Association : Automatic] :=
+ARCFindRotationalNormalizationsForScenes2[scene_ARCScene, referenceableObjects_Association, parsedScene_Association : Automatic] :=
     Module[
         {
             objectReferences = Keys[referenceableObjects],
@@ -31372,8 +31647,10 @@ ARCFindRotationalNormalizationsForScenes[scene_ARCScene, referenceableObjects_As
             theseReferenceableObjects = Association[
                 Function[{objectReference},
                     objectReference ->
-                        ReturnIfFailure@
-                        GetObject[objectReference, rotatedExample]
+                        Replace[
+                            GetObject[objectReference, rotatedExample],
+                            _Failure :> Return[Missing["NotFound"], Module]
+                        ]
                 ] /@ objectReferences
             ];
             
@@ -31458,6 +31735,109 @@ ARCRemoveReferencesForObjects[objectReferences_Association, objects_List] :=
             ],
             objectReferences
         ]
+    ]
+
+(*!
+    \function ARCObjectsSequentialDirection
+    
+    \calltable
+        ARCObjectsSequentialDirection[objects] '' Given a list of objects, returns the direction for which they form a sequential sequence, if any.
+    
+    For now we don't allow any overlaps
+    
+    Examples:
+    
+    ARCObjectsSequentialDirection[
+        ReturnIfFailure[
+            ARCParseScene[
+                ARCParseFile["0a938d79"]["Train"][[1, "Output"]]
+            ]
+        ][
+            "Objects"
+        ]
+    ]
+    
+    ===
+    
+    0
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectsSequentialDirection]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectsSequentialDirection];
+ARCObjectsSequentialDirection[objects_List] :=
+    Module[{sortByFunction, sortedObjects, previousObject, thisResult},
+        
+        If [Length[objects] <= 1,
+            Return[None, Module]
+        ];
+        
+        Function[{directionAttributes},
+            
+            (* A function that we can use to sort the objects along this
+               direction. *)
+            sortByFunction = Function[{object},
+                Function[{axis},
+                    If [!MissingQ[directionAttributes[axis]],
+                        object[axis] * directionAttributes[axis]
+                        ,
+                        Nothing
+                    ]
+                ] /@ {"X", "Y"}
+            ];
+            
+            sortedObjects = SortBy[objects, sortByFunction];
+            
+            previousObject = sortedObjects[[1]];
+            If [And @@ (
+                    Function[{object},
+                        thisResult = And @@ (
+                            Function[{axis},
+                                Switch[
+                                    directionAttributes[axis],
+                                    1,
+                                        previousObject[axis <> "2"] < object[axis],
+                                    -1,
+                                        previousObject[axis] > object[axis <> "2"],
+                                    _Missing,
+                                        Nothing
+                                ]
+                            ] /@ {"X", "Y"}
+                        );
+                        previousObject = object;
+                        thisResult
+                    ] /@ Rest[sortedObjects]
+                ),
+                Return[
+                    directionAttributes["Angle"],
+                    Module
+                ]
+            ]
+        ] /@ {
+            <|
+                "Angle" -> 45,
+                "X" -> 1,
+                "Y" -> -1
+            |>,
+            <|
+                "Angle" -> 135,
+                "X" -> -1,
+                "Y" -> -1
+            |>,
+            <|
+                "Angle" -> 0,
+                "X" -> 1
+            |>,
+            <|
+                "Angle" -> 90,
+                "Y" -> 1
+            |>
+        };
+        
+        None
     ]
 
 End[]

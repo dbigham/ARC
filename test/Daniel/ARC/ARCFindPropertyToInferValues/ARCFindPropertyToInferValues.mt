@@ -62,7 +62,7 @@ Test[
         ]
     ]
     ,
-    "Y"
+    {"Y"}
     ,
     TestID -> "ARCFindPropertyToInferValues-20220724-U9ITMB"
 ]
@@ -135,13 +135,15 @@ Test[
 ]
 
 Test[
-    Daniel`ARC`ARCFindPropertyToInferValues[
-        {"Y"},
-        {<|"Y" -> 1|>, <|"Y" -> 1|>, <|"Y" -> 2|>, <|"Y" -> 2|>},
-        {1., 1., 2., 2.}
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCFindPropertyToInferValues[
+            {"Y"},
+            {<|"Y" -> 1|>, <|"Y" -> 1|>, <|"Y" -> 2|>, <|"Y" -> 2|>},
+            {1., 1., 2., 2.}
+        ]
     ]
     ,
-    "Y"
+    {"Y"}
     ,
     TestID -> "ARCFindPropertyToInferValues-20220917-H9TKY7"
 ]

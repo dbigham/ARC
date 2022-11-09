@@ -23,7 +23,7 @@ Test[
         ]
     ]
     ,
-    -0.7804360307061233
+    -0.7804722738154957
     ,
     TestID -> "ARCTransformScore-20220804-R5DIE5"
 ]
@@ -41,7 +41,7 @@ Test[
         ]
     ]
     ,
-    -1.2604360307061233
+    -1.2604722738154956
     ,
     TestID -> "ARCTransformScore-20220804-P26PZ7"
 ]
@@ -59,7 +59,7 @@ Test[
         ]
     ]
     ,
-    -1.8004360307061231
+    -1.9004722738154958
     ,
     TestID -> "ARCTransformScore-20220804-XKHR3Z"
 ]
@@ -89,7 +89,7 @@ Test[
         ]
     ]
     ,
-    -1.5608720614122467
+    -2.6059445476309913
     ,
     TestID -> "ARCTransformScore-20220818-PBN4K1"
 ]
@@ -118,7 +118,7 @@ Test[
         ]
     ]
     ,
-    -2.053587132480567
+    -2.6585871324805668
     ,
     TestID -> "ARCTransformScore-20220825-4RBNEY"
 ]
@@ -146,7 +146,7 @@ Test[
         ]
     ]
     ,
-    -0.6505984917856644
+    -0.8506481449381562
     ,
     TestID -> "ARCTransformScore-20220905-TREZ4Z"
 ]
@@ -166,7 +166,7 @@ Test[
         ]
     ]
     ,
-    -1.5841984052872977
+    -1.8841984052872978
     ,
     TestID -> "ARCTransformScore-20220905-3095OU"
 ]
@@ -210,7 +210,7 @@ Test[
         ]
     ]
     ,
-    -0.6602527710129968
+    -0.6602738113403046
     ,
     TestID -> "ARCTransformScore-20220917-WMF8CB"
 ]
@@ -222,7 +222,7 @@ Test[
         ]
     ]
     ,
-    -0.9768716547085453
+    -1.0040151617906417
     ,
     TestID -> "ARCTransformScore-20220917-9MWWQA"
 ]
@@ -239,7 +239,7 @@ Test[
         ]
     ]
     ,
-    -1.3273074238334235
+    -1.3598692513674213
     ,
     TestID -> "ARCTransformScore-20220917-PW5Q7G"
 ]
@@ -263,7 +263,59 @@ Test[
         ]
     ]
     ,
-    -2.360399820922308
+    -3.085433065567418
     ,
     TestID -> "ARCTransformScore-20221005-5GARZ7"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"Y" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Y.Rank" -> 2|>, "Y2"], 1]|>
+    ]
+    ,
+    -0.7879521278602413
+    ,
+    TestID -> "ARCTransformScore-20221109-2U7DOJ"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"Y" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Y.Rank" -> 2|>, "Y"], 3]|>
+    ]
+    ,
+    -1.1079521278602413
+    ,
+    TestID -> "ARCTransformScore-20221109-O7NJE6"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"X2" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X2"], -1]|>
+    ]
+    ,
+    -1.112979589711327
+    ,
+    TestID -> "ARCTransformScore-20221109-QOOSVQ"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|
+            "Width" -> Inactive[Plus][Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "Width"], -2]
+        |>
+    ]
+    ,
+    -1.2079795897113272
+    ,
+    TestID -> "ARCTransformScore-20221109-ARNAM4"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"X2" -> Inactive[Times][Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X"], 2]|>
+    ]
+    ,
+    -1.2529795897113272
+    ,
+    TestID -> "ARCTransformScore-20221109-6NC6YM"
 ]

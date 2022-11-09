@@ -4124,3 +4124,45 @@ Test[
     ,
     TestID -> "ARCFindRules-20221107-S4HZP4"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "d6ad076f"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|"ObjectsAngle" -> 90|>,
+        "FormMultiColorCompositeObjects" -> False,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <||> -> <|"Same" -> True|>,
+            <|
+                "Transform" -> <|
+                    "Type" -> "AddObjects",
+                    "Objects" -> {
+                        <|
+                            "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>,
+                            "Color" -> 8,
+                            "X" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X"],
+                                1
+                            ],
+                            "Y" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[<|"Y.Rank" -> 2|>, "Y2"],
+                                1
+                            ],
+                            "X2" -> Inactive[Plus][
+                                Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X2"],
+                                -1
+                            ],
+                            "Y2Inverse" -> Daniel`ARC`ObjectValue[<|"Y.Rank" -> 2|>, "Y2"],
+                            "ZOrder" -> 0
+                        |>
+                    }
+                |>
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221109-DCV8DK"
+]
