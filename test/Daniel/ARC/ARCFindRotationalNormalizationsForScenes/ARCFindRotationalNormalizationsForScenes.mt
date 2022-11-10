@@ -46,8 +46,8 @@ Test[
                 }
             ],
             "RotationNormalization" -> <|
-                Daniel`ARC`Object[<|"Colors" -> {3}|>] -> <|"X.InverseRank" -> 1|>,
-                Daniel`ARC`Object[<|"Colors" -> {2}|>] -> <|"X.InverseRank" -> 2|>
+                Daniel`ARC`Object[<|"Area.Rank" -> 1|>] -> <|"X.InverseRank" -> 1|>,
+                Daniel`ARC`Object[<|"Color" -> 2|>] -> <|"X.InverseRank" -> 2|>
             |>
         |>,
         <|

@@ -5159,7 +5159,6 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     !MissingQ[#] &
                 ],
                 normalizedExamples_List :> (
-                    (*ARCEcho2[normalizedExamples];*)
                     res2 =
                         ARCLogScope["ARCFindRules:RotationallyNormalized"]@
                         ARCFindRules[
@@ -6832,8 +6831,6 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
             background,
             rotationalNormalizationAngle
         },
-        
-        (* HERE11 *)
         
         (* e.g. 56dc2b01 *)
         If [!MissingQ[rules["RotationNormalization"]],
@@ -8672,6 +8669,7 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
     Module[
         {
             usablePropertiesAndValues,
+            properties,
             valueCounts,
             uniqueValues,
             countsForValue,
@@ -8680,8 +8678,23 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             objectSetsSeen,
             secondOrderReferences,
             existingReference,
-            referenceScore
+            referenceScore,
+            properties2
         },
+        
+        properties = DeleteCases[Keys[$properties], "Shapes"];
+        
+        If [MatchQ[OptionValue["AdditionalConditions"], KeyValuePattern["Context" -> "Output"]],
+            (* For referenceable _output_ properties, we want to avoid Rank or InverseRank
+               properties, because as we render the output scene but aren't finished yet,
+               those objects won't have stable / defined definitions. For example,
+               in 56dc2b01, it was trying to use Object[<|"Area.Rank" -> 1|>] wrt an
+               added object's property value. *)
+            properties = Select[
+                properties,
+                StringFreeQ[#, "Rank"] &
+            ];
+        ];
         
         usablePropertiesAndValues = Association[
             Function[{property},
@@ -8787,10 +8800,7 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
                     ] /@ uniqueValues,
                     1
                 ]
-            ] /@ DeleteCases[
-                Keys[$properties],
-                "Shapes"
-            ]
+            ] /@ properties
         ];
         
         (*EchoIndented[usablePropertiesAndValues];*)
@@ -8826,31 +8836,37 @@ ARCMakeObjectsReferenceable["ObjectLists" -> objectsForAllExamples_List, opts:Op
             ];
         
         objectSetsSeen = <||>;
-        res =
-            Association@
-            KeyValueMap[
-                Function[{objectReference, properties},
-                    existingReference = objectSetsSeen[properties["Objects"]];
-                    referenceScore = ARCConditionsScore[objectReference[[1]]];
-                    If [Or[
-                            MissingQ[existingReference],
-                            referenceScore > existingReference["Score"]
-                        ],
-                        objectSetsSeen[properties["Objects"]] = <|
-                            "Reference" -> objectReference,
-                            "Score" -> referenceScore
-                        |>;
-                        objectReference -> KeyDrop[properties, "Objects"]
-                        ,
-                        (* We already have a reference that refers to this group of
-                           objects, so to avoid creating "duplicate" references to
-                           this object set, we'll discard this object reference. *)
-                        (*EchoIndented[objectReference -> referenceScore -> existingReference];*)
-                        Nothing
-                    ]
-                ],
-                res
-            ];
+        KeyValueMap[
+            Function[{objectReference, properties},
+                properties2 = DeleteMissing[KeyDrop[properties, "Objects"]];
+                existingReference = objectSetsSeen[properties2];
+                referenceScore = ARCConditionsScore[objectReference[[1]]];
+                If [Or[
+                        MissingQ[existingReference],
+                        referenceScore > existingReference["Score"]
+                    ],
+                    (*Echo[objectReference -> referenceScore -> existingReference];*)
+                    objectSetsSeen[properties2] = <|
+                        "Reference" -> objectReference,
+                        "Score" -> referenceScore
+                    |>
+                    ,
+                    (* We already have a reference that refers to this group of
+                        objects, so to avoid creating "duplicate" references to
+                        this object set, we'll discard this object reference. *)
+                    (*EchoIndented[objectReference -> referenceScore -> existingReference];*)
+                    Nothing
+                ]
+            ],
+            res
+        ];
+        
+        res = AssociationThread[
+            Values[objectSetsSeen][[All, "Reference"]],
+            Keys[objectSetsSeen]
+        ];
+        
+        (*ARCEcho2[res];*)
         
         secondOrderReferences =
             ReturnIfFailure@
@@ -9191,17 +9207,20 @@ ARCReferenceableObjectProperties[objects_List, objectLists_List] :=
                             (* Not all objects of this type have the same value for this property. *)
                             Nothing
                         ]
-                    ] /@ DeleteCases[
-                        Keys[$properties],
+                    ] /@ (*DeleteCases[*)
+                        Keys[$properties]
                         (* Since we know all objects share property values for the properties in the
-                        object reference, we will for now remove them from the RHSs, although
-                        it's possible we should leave them if they are for any reason useful
-                        in the future. *)
-                        Alternatives @@ Join[
+                           object reference, we will for now remove them from the RHSs, although
+                           it's possible we should leave them if they are for any reason useful
+                           in the future. *)
+                        (* Actually, let's leave them so that in the caller when we're trying to
+                           group referenceable objects by what they conclude, we won't get
+                           thrown off by these differences. *)
+                        (*Alternatives @@ Join[
                             Keys[objectReference[[1]]],
                             constantProperties
                         ]
-                    ]
+                    ]*)
                 ],
                 "Objects" -> Sort[objectsOfType[[All, "UUID"]]]
             ]
@@ -31445,8 +31464,6 @@ ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_
             directionOfRotatedExample
         },
         
-        XEcho["EXAMPLE" -> parsedScene["Scene"]];
-        
         (* Check whether the other scenes can be rotated so that their objects
            are along a direction consistent with the canonical example. *)
         Function[{angle},
@@ -31461,14 +31478,10 @@ ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_
                     ARCParseScene[RotateImage[scene, angle]]
                 ];
             
-            XEcho[rotatedExample["Scene"]];
-            
             directionOfRotatedExample =
                 ARCObjectsSequentialDirection[
                     rotatedExample["Objects"]
                 ];
-            
-            XEcho[directionOfRotatedExample -> canonicalObjectsAngle];
             
             If [directionOfRotatedExample === canonicalObjectsAngle,
                 Return[
