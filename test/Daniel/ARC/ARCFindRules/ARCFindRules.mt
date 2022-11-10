@@ -4166,3 +4166,32 @@ Test[
     ,
     TestID -> "ARCFindRules-20221109-DCV8DK"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "f8a8fe49"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|"ObjectsAngle" -> 90|>,
+        "FormMultiColorCompositeObjects" -> False,
+        "Rules" -> {
+            <|"Area.Rank" -> 1|> -> <|"Same" -> True|>,
+            <|"Area.Rank" -> 2|> -> <|
+                "Image" -> Inactive[Daniel`ARC`Transform][
+                    Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "Image"],
+                    <|"Type" -> "Flip", "Direction" -> "Vertical"|>
+                ],
+                "Position" -> {
+                    Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X.Rank"],
+                    Daniel`ARC`ObjectValue[<|"Area.Rank" -> 2|>, "X"]
+                }
+            |>,
+            <|"Area.Rank" -> 3|> -> <|
+                "Y" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "Y"], 4]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221109-OAK00V"
+]

@@ -649,6 +649,10 @@ ARCObjectsSequentialDirection::usage = "ARCObjectsSequentialDirection  "
 
 ARCFindRotationalNormalizationsForScenes3::usage = "ARCFindRotationalNormalizationsForScenes3  "
 
+ARCObjectSimilarity::usage = "ARCObjectSimilarity  "
+
+ARCMostSimilarObject::usage = "ARCMostSimilarObject  "
+
 Begin["`Private`"]
 
 
@@ -3679,9 +3683,9 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
            etc. e.g. 1e0a9b12 *)
         If [OptionValue["Segmentation"] === "Columns",
             Replace[
-                SelectFirst[
-                    objectsToMapTo,
-                    #["X"] === object["X"] &
+                ARCMostSimilarObject[
+                    object,
+                    Select[objectsToMapTo, #["X"] === object["X"] &]
                 ],
                 mappedToObject: Except[_Missing] :> Return[
                     object -> mappedToObject,
@@ -3692,9 +3696,9 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
         
         If [OptionValue["Segmentation"] === "Rows",
             Replace[
-                SelectFirst[
-                    objectsToMapTo,
-                    #["Y"] === object["Y"] &
+                ARCMostSimilarObject[
+                    object,
+                    Select[objectsToMapTo, #["Y"] === object["Y"] &]
                 ],
                 mappedToObject: Except[_Missing] :> Return[
                     object -> mappedToObject,
@@ -6006,7 +6010,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {None}
+                            {"Y.Rank"}
                             ,
                             {None}
                         ]
@@ -15702,8 +15706,16 @@ Module[{tasks},
         <|
             "ExampleImplemented" -> "d6ad076f",
             "Timestamp" -> DateObject[{2022, 11, 9}],
-            "ImplementationTime" -> Quantity[2, "Hours"],
+            "ImplementationTime" -> Quantity[4, "Hours"],
             "CodeLength" -> 31839,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "f8a8fe49",
+            "Timestamp" -> DateObject[{2022, 11, 9}],
+            "ImplementationTime" -> Quantity[1.5, "Hours"],
+            "CodeLength" -> 31988,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -31451,7 +31463,13 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
                 ]
             ]
         
-        ] /@ {"Input", "Output"};
+        ] /@ {
+            "Input"
+            (* Whoops -- what was I thinking? We can't use the output scene to detect
+               rotational normalization, since at test time, we don't have the output scene
+               to use to align the scene. *)
+            (*"Output"*)
+        };
         
         Missing["NotFound"]
     ]
@@ -31858,6 +31876,126 @@ ARCObjectsSequentialDirection[objects_List] :=
         };
         
         None
+    ]
+
+(*!
+    \function ARCObjectSimilarity
+    
+    \calltable
+        ARCObjectSimilarity[object1, object2] '' Given two objects, how similar/different are they? A value of 0 means identitical; larger values imply more difference.
+    
+    Examples:
+    
+    ARCObjectSimilarity[
+        <|"Image" -> {{1}}, "Color" -> 1, "Colors" -> {1}, "Y" -> 1, "X" -> 1|>,
+        <|"Image" -> {{1}}, "Color" -> 1, "Colors" -> {1}, "Y" -> 1, "X" -> 1|>
+    ]
+    
+    ===
+    
+    0.
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCObjectSimilarity]
+    
+    \maintainer danielb
+*)
+Clear[ARCObjectSimilarity];
+ARCObjectSimilarity[object1_Association, object2_Association] :=
+    Module[{},
+        Plus[
+            (* Image difference. *)
+            Which[
+                object1["Image"] === object2["Image"],
+                    0,
+                MemberQ[
+                    object1["Image"],
+                    Cases[object2["Shapes"], KeyValuePattern["Image" -> _]][[All, "Image"]]
+                ],
+                    (* A rotated or scaled (etc) form of the other image. *)
+                    0.2,
+                True,
+                    (* Color difference. *)
+                    Plus[
+                        Which[
+                            object1["Color"] === object2["Color"],
+                                0,
+                            object1["Colors"] === object2["Colors"],
+                                0,
+                            True,
+                                1
+                        ]
+                    ],
+                    (* Shape comparison. *)
+                    Which[
+                        ShapeQ[object1["Shape"], "Pixel"] && ShapeQ[object2["Shape"], "Pixel"],
+                            0,
+                        And[
+                            MatchQ[object1["Shape"], KeyValuePattern["Image" -> _]],
+                            MatchQ[object2["Shape"], KeyValuePattern["Image" -> _]],
+                            object1["Shape", "Image"] === object2["Shape", "Image"]
+                        ],
+                            0.2,
+                        object1["Shape"] === object1["Shape"],
+                            0.25,
+                        And[
+                            MatchQ[object1["Shape"], KeyValuePattern["Name" -> _]],
+                            MatchQ[object2["Shape"], KeyValuePattern["Name" -> _]],
+                            object1["Shape", "Name"] === object2["Shape", "Name"]
+                        ],
+                            0.3,
+                        True,
+                            1
+                    ],
+                    (* Size difference. *)
+                    Plus[
+                        1 - Min[
+                            object1["FilledArea"] / object2["FilledArea"],
+                            object2["FilledArea"] / object1["FilledArea"]
+                        ]
+                    ]
+            ],
+            (* Position difference. *)
+            N[
+                Sqrt[
+                    (object1["Y"] - object2["Y"]) ^ 2 + (object1["X"] - object2["X"]) ^ 2
+                ] / 10
+            ]
+        ]
+    ]
+
+(*!
+    \function ARCMostSimilarObject
+    
+    \calltable
+        ARCMostSimilarObject[object, objects] '' Returns the object that is the most similar.
+    
+    Examples:
+    
+    See function notebook
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCMostSimilarObject]
+    
+    \maintainer danielb
+*)
+Clear[ARCMostSimilarObject];
+
+ARCMostSimilarObject[object_, {}] := Missing["NoObjects"]
+
+ARCMostSimilarObject[object_Association, objects_List] :=
+    Module[{},
+        SortBy[
+            Function[{otherObject},
+                <|
+                    "Object" -> otherObject,
+                    "Score" -> ARCObjectSimilarity[object, otherObject]
+                |>
+            ] /@ objects,
+            #["Score"] &
+        ][[1, "Object"]]
     ]
 
 End[]
