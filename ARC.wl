@@ -29605,7 +29605,7 @@ ARCToColorList[object_] :=
 *)
 Clear[ARCFindPropertyToInferListValues];
 ARCFindPropertyToInferListValues[propertyPath_, transposedObjects_Association, values_List] :=
-    Module[{},
+    Module[{res},
         
         (* This path doesn't apply to ClassList properties. We want lists where the
            positional elements have meaning. *)
@@ -29619,17 +29619,20 @@ ARCFindPropertyToInferListValues[propertyPath_, transposedObjects_Association, v
         ];
         
         If [SingleUniqueValueQ[Length /@ values],
-            Function[{i},
+            res = Function[{i},
                 theseValues = values[[All, i]];
                 If [SingleUniqueValueQ[theseValues],
                     First[theseValues]
                     ,
                     Replace[
-                        ARCFindPropertyToInferValues[
-                            Append[propertyPath, i],
-                            {},
-                            theseValues,
-                            "TransposedObjects" -> transposedObjects
+                        Replace[
+                            ARCFindPropertyToInferValues[
+                                Append[propertyPath, i],
+                                {},
+                                theseValues,
+                                "TransposedObjects" -> transposedObjects
+                            ],
+                            list_List :> ARCChooseBestTransform[list]
                         ],
                         {
                             property_String :> (
@@ -29643,7 +29646,11 @@ ARCFindPropertyToInferListValues[propertyPath_, transposedObjects_Association, v
                         }
                     ]
                 ]
-            ] /@ Range[Length[values[[1]]]]
+            ] /@ Range[Length[values[[1]]]];
+            
+            (* Wrap in a list so that our list _value_ doesn't get interpreted as a list of
+               possibilities. *)
+            {res}
             ,
             (* Lists aren't a consistent size. Not currently supported. *)
             Missing["NotFound"]
