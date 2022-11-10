@@ -4195,3 +4195,22 @@ Test[
     ,
     TestID -> "ARCFindRules-20221109-OAK00V"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "5168d44c"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|"ObjectsAngle" -> 0, "FavoredRotationAngle" -> -90|>,
+        "FormMultiColorCompositeObjects" -> False,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <|"Area.Rank" -> 1|> -> <|
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputObject", "X"], 2]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221110-C47ACU"
+]

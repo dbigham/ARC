@@ -74,3 +74,20 @@ Test[
     ,
     TestID -> "ARCObjectsSequentialDirection-20221108-ID1HOK"
 ]
+
+Test[
+    Daniel`ARC`ARCObjectsSequentialDirection[
+        Utility`ReturnIfFailure[
+            Daniel`ARC`ARCParseScene[
+                Daniel`ARC`ARCParseFile["5168d44c"]["Train"][[1, "Input"]],
+                "FormMultiColorCompositeObjects" -> False
+            ]
+        ][
+            "Objects"
+        ]
+    ]
+    ,
+    0
+    ,
+    TestID -> "ARCObjectsSequentialDirection-20221110-J3WUOB"
+]

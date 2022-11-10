@@ -69,7 +69,7 @@ Test[
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 3, 3, 3, 0, 2, 0}
                 }
             ],
-            "NormalizationAngle" -> 270
+            "NormalizationAngle" -> -90
         |>,
         <|
             "Input" -> Daniel`ARC`ARCScene[
@@ -543,4 +543,98 @@ Test[
     Missing["NotFound"]
     ,
     TestID -> "ARCFindRotationalNormalizationsForScenes-20221108-8L7QT5"
+]
+
+Test[
+    Module[
+        {parsedExamples},
+        parsedExamples = Utility`ReturnIfFailure[
+            Daniel`ARC`ARCParseInputAndOutputScenes[
+                Daniel`ARC`ARCParseFile["5168d44c"]["Train"]
+            ]
+        ];
+        Utility`ReturnIfFailure[
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes[parsedExamples]
+        ]
+    ]
+    ,
+    {
+        <|
+            "Input" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {2, 3, 2, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0},
+                    {2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "Output" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 3, 2, 3, 2, 3, 0, 3, 0, 3, 0, 3, 0},
+                    {0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "RotationNormalization" -> <|"ObjectsAngle" -> 0, "FavoredRotationAngle" -> -90|>
+        |>,
+        <|
+            "Input" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0},
+                    {3, 0, 3, 2, 3, 2, 3, 0, 3, 0, 3, 0, 3},
+                    {0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "Output" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0},
+                    {3, 0, 3, 0, 3, 2, 3, 2, 3, 0, 3, 0, 3},
+                    {0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "NormalizationAngle" -> -90
+        |>,
+        <|
+            "Input" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 2, 2, 2, 0, 0, 0},
+                    {3, 2, 3, 2, 3, 0, 3},
+                    {0, 2, 2, 2, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "Output" -> Daniel`ARC`ARCScene[
+                {
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 2, 2, 2, 0},
+                    {3, 0, 3, 2, 3, 2, 3},
+                    {0, 0, 0, 2, 2, 2, 0},
+                    {0, 0, 0, 0, 0, 0, 0}
+                }
+            ],
+            "NormalizationAngle" -> -90
+        |>
+    }
+    ,
+    TestID -> "ARCFindRotationalNormalizationsForScenes-20221110-9JZUIN"
 ]

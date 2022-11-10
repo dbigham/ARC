@@ -653,6 +653,12 @@ ARCObjectSimilarity::usage = "ARCObjectSimilarity  "
 
 ARCMostSimilarObject::usage = "ARCMostSimilarObject  "
 
+ARCFindRotationalNormalizationsForScenes4::usage = "ARCFindRotationalNormalizationsForScenes4  "
+
+ARCVectorToAngle::usage = "ARCVectorToAngle  "
+
+ARCMovementAngle::usage = "ARCMovementAngle  "
+
 Begin["`Private`"]
 
 
@@ -5145,6 +5151,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                    normalization. *)
                 FreeQ[examples, KeyValuePattern["NormalizationAngle" -> _]]
             ],
+            
             (* Check if there is a way to rotationally normalize the examples. *)
             Replace[
                 SelectFirst[
@@ -6843,7 +6850,10 @@ ARCApplyRules[sceneIn_ARCScene, rulesIn_Association, opts:OptionsPattern[]] :=
                 If [MatchQ[rules["RotationNormalization"], KeyValuePattern["ObjectsAngle" -> _]],
                     ARCFindRotationalNormalizationsForScenes3[
                         scene,
-                        rules["RotationNormalization", "ObjectsAngle"]
+                        rules["RotationNormalization", "ObjectsAngle"],
+                        If [!MissingQ[rules["RotationNormalization", "FavoredRotationAngle"]],
+                            "FavoredRotationAngle" -> rules["RotationNormalization", "FavoredRotationAngle"]
+                        ]
                     ]
                     ,
                     ARCFindRotationalNormalizationsForScenes2[
@@ -15716,6 +15726,14 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 11, 9}],
             "ImplementationTime" -> Quantity[1.5, "Hours"],
             "CodeLength" -> 31988,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "5168d44c",
+            "Timestamp" -> DateObject[{2022, 11, 10}],
+            "ImplementationTime" -> Quantity[2, "Hours"],
+            "CodeLength" -> 32275,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -31359,7 +31377,7 @@ ARCColorCountSameQ[image1_List, image2_List, OptionsPattern[]] :=
 *)
 Clear[ARCFindRotationalNormalizationsForScenes];
 ARCFindRotationalNormalizationsForScenes[examples_List] :=
-    Module[{},
+    Module[{favoredAngle = Null},
         
         (* Check if referenceable objects can be used to determine how scenes should
            be rotationally normalized. *)
@@ -31368,17 +31386,152 @@ ARCFindRotationalNormalizationsForScenes[examples_List] :=
             res: Except[_Missing] :> Return[res, Module]
         ];
         
+        (* Check if the motion of objects can help us differentiate whether we should rotate
+           clockwise vs. counter clockwise? *)
+        Replace[
+            ARCFindRotationalNormalizationsForScenes4[examples],
+            res: Except[_Missing] :> (
+                Replace[
+                    DeleteDuplicates[Rest[res][[All, "NormalizationAngle"]]],
+                    {-90} :> (
+                        (* It appears to always be the case that when we need to normalize
+                           an input rotationally, we want to use an angle of -90 rather than
+                           the default angle of 90, so we'll make note of that wrt
+                           ARCFindRotationalNormalizationsForScenes3. *)
+                        favoredAngle = -90
+                    )
+                ]
+            )
+        ];
+        
         (* Check if the direction of scene objects can be used to determine how scenes should
            be rotationally normalized. *)
         Replace[
-            ARCFindRotationalNormalizationsForScenes3[examples],
+            ARCFindRotationalNormalizationsForScenes3[examples, "FavoredRotationAngle" -> favoredAngle],
             res: Except[_Missing] :> Return[res, Module]
         ];
         
         Missing["NotFound"]
     ]
 
-ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
+ARCFindRotationalNormalizationsForScenes4[examplesIn_List] :=
+    Module[
+        {
+            examples = examplesIn,
+            canonicalExample,
+            canonicalObjectsAngle,
+            res
+        },
+        
+        canonicalExample = examples[[1]];
+        
+        (* Check whether the objects in the canonical example or along a particular
+           direction. *)
+        canonicalAngle =
+            ReturnIfFailure@
+            ARCMovementAngle[canonicalExample];
+        
+        If [MatchQ[
+                canonicalAngle,
+                0 | 90 | -90 | 180
+            ],
+            
+            res = Block[{},
+                Function[{thisExample},
+                    
+                    Replace[
+                        ARCFindRotationalNormalizationsForScenes4[
+                            thisExample,
+                            canonicalAngle
+                        ],
+                        {
+                            _Missing :> Return[Missing["NotFound"], Block],
+                            thisRes: KeyValuePattern["NormalizedScene" -> _] :> (
+                                <|
+                                    "Input" -> thisRes["NormalizedScene"],
+                                    "Output" ->
+                                        RotateImage[
+                                            thisExample[["Output", "Scene"]],
+                                            thisRes["NormalizationAngle"]
+                                        ],
+                                    "NormalizationAngle" -> thisRes["NormalizationAngle"]
+                                |>
+                            )
+                        }
+                    ]
+                    
+                ] /@ Rest[examples]
+            ];
+            
+            If [And[
+                    !MissingQ[res],
+                    MemberQ[res[[All, "NormalizationAngle"]], Except[0]]
+                ],
+                (* We've found an angle for each example that can be used to make the direction
+                   of its objects consistent with the canonical example. *)
+                Return[
+                    Prepend[
+                        res,
+                        <|
+                            "Input" -> canonicalExample["Input", "Scene"],
+                            "Output" -> canonicalExample["Output", "Scene"],
+                            "RotationNormalization" -> <|
+                                "ObjectsAngle" -> canonicalAngle
+                            |>
+                        |>
+                    ],
+                    Module
+                ]
+            ]
+        ];
+        
+        Missing["NotFound"]
+    ]
+
+ARCFindRotationalNormalizationsForScenes4[parsedExample_Association, canonicalAngle_Integer] :=
+    Module[
+        {
+            angle,
+            res,
+            rotatedExample
+        },
+        
+        angle =
+            ReturnIfFailure@
+            ARCMovementAngle[parsedExample];
+        
+        If [MatchQ[angle, 0 | 90 | -90 | 180],
+            
+            normalizationAngle = canonicalAngle - angle;
+            
+            rotatedExample =
+                If [normalizationAngle === 0,
+                    parsedExample["Input", "Scene"]
+                    ,
+                    ReturnIfFailure@
+                    ARCParseScene[RotateImage[parsedExample["Input", "Scene"], normalizationAngle]]
+                ];
+            
+            Return[
+                <|
+                    "NormalizedScene" -> rotatedExample["Scene"],
+                    "NormalizationAngle" -> normalizationAngle
+                |>,
+                Module
+            ]
+        ];
+        
+        (* Either objects don't move in this example, or they don't move in a consistent
+           direction. *)
+        Missing["NotFound"]
+    ]
+
+Clear[ARCFindRotationalNormalizationsForScenes3];
+Options[ARCFindRotationalNormalizationsForScenes3] =
+{
+    "FavoredRotationAngle" -> Null      (*< Can be specified as -90 if we should favor a normalization of -90 over an angle of 90. This can be useful in cases like 5168d44c where all vertically oriented examples should be rotated by -90 rather than 90, due to the motion always being downward for vertical examples, but being left-to-right for horizontal examples. *)
+};
+ARCFindRotationalNormalizationsForScenes3[examplesIn_List, opts:OptionsPattern[]] :=
     Module[
         {
             examples = examplesIn,
@@ -31392,7 +31545,7 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
         
         Function[{inputOrOutput},
             
-            (* Check whether the objects in the canonical example or along a particular
+            (* Check whether the objects in the canonical example are along a particular
                direction. *)
             canonicalObjectsAngle =
                 ARCObjectsSequentialDirection[canonicalExample[inputOrOutput, "Objects"]];
@@ -31408,7 +31561,8 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
                             ARCFindRotationalNormalizationsForScenes3[
                                 parsedScene["Scene"],
                                 canonicalObjectsAngle,
-                                parsedScene
+                                parsedScene,
+                                opts
                             ],
                             {
                                 _Missing :> Return[Missing["NotFound"], Block],
@@ -31443,7 +31597,7 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
                 
                 If [And[
                         !MissingQ[res],
-                        MemberQ[res[[All, "NormalizationAngle"]], 90 | 270]
+                        MemberQ[res[[All, "NormalizationAngle"]], 90 | -90]
                     ],
                     (* We've found an angle for each example that can be used to make the direction
                        of its objects consistent with the canonical example. *)
@@ -31454,7 +31608,12 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
                                 "Input" -> canonicalExample["Input", "Scene"],
                                 "Output" -> canonicalExample["Output", "Scene"],
                                 "RotationNormalization" -> <|
-                                    "ObjectsAngle" -> canonicalObjectsAngle
+                                    "ObjectsAngle" -> canonicalObjectsAngle,
+                                    If [OptionValue["FavoredRotationAngle"] =!= Null,
+                                        "FavoredRotationAngle" -> OptionValue["FavoredRotationAngle"]
+                                        ,
+                                        Nothing
+                                    ]
                                 |>
                             |>
                         ],
@@ -31474,7 +31633,7 @@ ARCFindRotationalNormalizationsForScenes3[examplesIn_List] :=
         Missing["NotFound"]
     ]
 
-ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_Integer, parsedScene_Association : Automatic] :=
+ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_Integer, parsedScene_Association : Automatic, OptionsPattern[]] :=
     Module[
         {
             res,
@@ -31513,8 +31672,13 @@ ARCFindRotationalNormalizationsForScenes3[scene_ARCScene, canonicalObjectsAngle_
             
         ] /@
             (* We shouldn't need 180 since that would result in the same orientation.
-            (since in this context we can't differentiate between say 90 and -90) *)
-            {0, 90, 270};
+               (since in this context we can't differentiate between say 90 and -90) *)
+            Which[
+                OptionValue["FavoredRotationAngle"] === -90,
+                    {0, -90, 90},
+                True,
+                    {0, 90, -90}
+            ];
         
         Missing["NotFound"]
     ]
@@ -31641,7 +31805,7 @@ ARCFindRotationalNormalizationsForScenes2[examplesIn_List] :=
         
         If [And[
                 MatchQ[res, {_, __}],
-                MemberQ[Rest[res][[All, "NormalizationAngle"]], 90 | 180 | 270]
+                MemberQ[Rest[res][[All, "NormalizationAngle"]], 90 | 180 | -90]
             ],
             res
             ,
@@ -31731,7 +31895,7 @@ ARCFindRotationalNormalizationsForScenes2[scene_ARCScene, referenceableObjects_A
                 ]
             ];
                 
-        ] /@ {0, 90, 180, 270};
+        ] /@ {0, 90, 180, -90};
         
         (* We weren't able to find a normalization angle for this input scene. *)
         Missing["NotFound"]
@@ -31806,11 +31970,28 @@ ARCRemoveReferencesForObjects[objectReferences_Association, objects_List] :=
     \maintainer danielb
 *)
 Clear[ARCObjectsSequentialDirection];
-ARCObjectsSequentialDirection[objects_List] :=
-    Module[{sortByFunction, sortedObjects, previousObject, thisResult},
+ARCObjectsSequentialDirection[objectsIn_List] :=
+    Module[{objects = objectsIn, sortByFunction, sortedObjects, previousObject, thisResult},
         
         If [Length[objects] <= 1,
             Return[None, Module]
+        ];
+        
+        (* Remove any objects that are fully contained within another object, otherwise
+           that will prevent the below code from being able to see the direction
+           for examples like 5168d44c. *)
+        objects = Select[
+            objects,
+            (* There aren't any objects that this object falls fully within. *)
+            Function[{object},
+                AllTrue[
+                    objects,
+                    Or[
+                        object["UUID"] === #["UUID"],
+                        !ObjectWithinQ[object, #]
+                    ] &
+                ]
+            ]
         ];
         
         Function[{directionAttributes},
@@ -31996,6 +32177,103 @@ ARCMostSimilarObject[object_Association, objects_List] :=
             ] /@ objects,
             #["Score"] &
         ][[1, "Object"]]
+    ]
+
+(*!
+    \function ARCMovementAngle
+    
+    \calltable
+        ARCMovementAngle[parsedExample] '' Given a parsed example, tries to build an object mapping to determine if there is a particular direction that objects are moving.
+    
+    Examples:
+    
+    ARCMovementAngle[
+        "MoveTransform",
+        <|"Type" -> "Move", "Position" -> <|"Y" -> 3, "X" -> 3|>, "Offset" -> <|"X" -> 2|>|>
+    ]
+    
+    ===
+    
+    0
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCMovementAngle]
+    
+    \maintainer danielb
+*)
+Clear[ARCMovementAngle];
+ARCMovementAngle[parsedExample_Association] :=
+    Module[{},
+        ARCMovementAngle[
+            "ObjectMapping",
+            ReturnIfFailure@
+            ARCFindObjectMapping[parsedExample]
+        ]
+    ]
+
+ARCMovementAngle["ObjectMapping", objectMapping_Association] :=
+    Module[{},
+        Replace[
+            ARCMovementAngle["MoveTransform", #] & /@
+                Cases[
+                    objectMapping,
+                    KeyValuePattern["Type" -> "Move"],
+                    Infinity
+                ],
+            {
+                {} :> Missing["None"],
+                (* Consistent angle. *)
+                {angle__} :> First[{angle}],
+                (* Not all movements are in the same direction. *)
+                _ :> Missing["InconsistentAngle"]
+            }
+        ]
+    ]
+
+ARCMovementAngle["MoveTransform", transform_Association] :=
+    Module[{},
+        ARCVectorToAngle[
+            {
+                Lookup[transform["Offset"], "Y", 0],
+                Lookup[transform["Offset"], "X", 0]
+            }
+        ]
+    ]
+
+(*!
+    \function ARCVectorToAngle
+    
+    \calltable
+        ARCVectorToAngle[vector] '' Given a vector, returns the corresponding angle in degrees.
+    
+    NOTE: Within this package, vectors are {y, x} due to Mathematica images being accessed
+          as image[[y, x]].
+    
+    Examples:
+    
+    ARCVectorToAngle[{-1, 0}] === -90
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCVectorToAngle]
+    
+    \maintainer danielb
+*)
+Clear[ARCVectorToAngle];
+ARCVectorToAngle[vector_] :=
+    Module[{radians},
+        
+        (* We'll treat clockwise as positive and counter-clockwise as negative. *)
+        radians = -SignedVectorAngle[
+            (* Vector 1 is the baseline. *)
+            {0, 1},
+            (* Vector 2 *)
+            vector
+        ];
+        
+        (* Degrees *)
+        radians / Pi * 180
     ]
 
 End[]
