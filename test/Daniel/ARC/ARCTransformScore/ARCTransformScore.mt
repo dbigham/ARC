@@ -319,3 +319,13 @@ Test[
     ,
     TestID -> "ARCTransformScore-20221109-6NC6YM"
 ]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        <|"Height" -> Inactive[Times][Daniel`ARC`ObjectValue["Parent", "Height"], 1/2]|>
+    ]
+    ,
+    -1.19
+    ,
+    TestID -> "ARCTransformScore-20221111-194EFK"
+]
