@@ -6574,9 +6574,10 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                 (* These conclusions aren't all identical, so we check whether they can be
                    generalized. *)
                 conclusionList = Flatten[Values[groupedByConclusion]];
+                
                 conclusion =
                     ARCGeneralizeConclusions[
-                        KeyDrop[conclusionList, "Output"],
+                        conclusionList,
                         referenceableInputObjects,
                         examples
                     ];
@@ -6606,7 +6607,7 @@ ARCFindRules[conclusionGroupIn_List, referenceableInputObjects_Association, exam
                     conclusion =
                         ReturnIfFailure@
                         ARCGeneralizeConclusions[
-                            KeyDrop[conclusionList2, "Output"],
+                            conclusionList2,
                             referenceableInputObjects,
                             examples
                         ]
@@ -7665,37 +7666,86 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 ];
                 If [MissingQ[objectOut["Shape"]] && !MissingQ[objectOut["Shapes"]],
                     objectOut = Append[objectOut, "Shape" -> First[objectOut["Shapes"]]]
-                ];
-                If [MissingQ[objectOut["Width"]] && !MissingQ[object["Width"]],
-                    objectOut["Width"] = object["Width"]
-                ];
-                If [MissingQ[objectOut["Height"]] && !MissingQ[object["Height"]],
-                    objectOut["Height"] = object["Height"]
-                ];
+                ]
             ];
         ];
         
-        (* Disabling this code as of Nov 11 2020 as it's not general enough. For example,
-           if our rule specifies new values for Y2 and Height, this will ignore that
-           and inherit the Y value from the input. I think we have downstream code
-           that is smarter, so hopefully this is no longer required here and can
-           be removed. (disabled while working on b7249182) *)
-        (*If [MissingQ[objectOut["Position"]],
+        (* HERE10 *)
+        If [MissingQ[objectOut["Y"]],
             Which[
-                MissingQ[objectOut["X"]] && MissingQ[objectOut["Y"]],
-                    objectOut["Position"] = {object["Y"], object["X"]},
-                MissingQ[objectOut["Y"]],
-                    objectOut["Position"] = {
-                        object["Y"],
-                        objectOut["X"]
-                    },
-                MissingQ[objectOut["X"]],
-                    objectOut["Position"] = {
-                        objectOut["Y"],
-                        object["X"]
-                    }
+                !MissingQ[objectOut["YInverse"]],
+                    objectOut["Y"] = outputScene["Height"] - objectOut["YInverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["Y2"]],
+            Which[
+                !MissingQ[objectOut["Y2Inverse"]],
+                    objectOut["Y2"] = outputScene["Height"] - objectOut["Y2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["X"]],
+            Which[
+                !MissingQ[objectOut["XInverse"]],
+                    objectOut["X"] = outputScene["Width"] - objectOut["XInverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["X2"]],
+            Which[
+                !MissingQ[objectOut["X2Inverse"]],
+                    objectOut["X2"] = outputScene["Width"] - objectOut["X2Inverse"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["Width"]],
+            Which[
+                !MissingQ[objectOut["X"]] && !MissingQ[objectOut["X2"]],
+                    objectOut["Width"] = objectOut["X2"] - objectOut["X"] + 1,
+                !MissingQ[object["Width"]],
+                    objectOut["Width"] = object["Width"]
+            ]
+        ];
+        
+        If [MissingQ[objectOut["Height"]],
+            Which[
+                !MissingQ[objectOut["Y"]] && !MissingQ[objectOut["Y2"]],
+                    objectOut["Height"] = objectOut["Y2"] - objectOut["Y"] + 1,
+                !MissingQ[object["Width"]],
+                    objectOut["Height"] = object["Height"]
+            ]
+        ];
+        
+        If [MissingQ[objectOut["Y"]],
+            Which[
+                !MissingQ[objectOut["Y2"]] && !MissingQ[objectOut["Height"]],
+                    objectOut["Y"] = objectOut["Y2"] - objectOut["Height"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["X"]],
+            Which[
+                !MissingQ[objectOut["X2"]] && !MissingQ[objectOut["Width"]],
+                    objectOut["X"] = objectOut["X2"] - objectOut["Width"] + 1
+            ]
+        ];
+        
+        If [MissingQ[objectOut["Position"]],
+            objectOut["Position"] = {TODO, TODO};
+            Which[
+                !MissingQ[objectOut["X"]],
+                    objectOut[["Position", 2]] = objectOut["X"],
+                !MissingQ[object["X"]],
+                    objectOut[["Position", 2]] = object["X"]
             ];
-        ];*)
+            Which[
+                !MissingQ[objectOut["Y"]],
+                    objectOut[["Position", 1]] = objectOut["Y"],
+                !MissingQ[object["Y"]],
+                    objectOut[["Position", 1]] = object["Y"]
+            ];
+        ];
         
         If [And[
                 TrueQ[conclusion["RotationNormalization"]],
@@ -9692,11 +9742,20 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                     ]
                                 |>
                             ],
+                            (* HERE10 *)
                             Alternatives[
                                 <|
                                     "Name" -> "Y",
                                     "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar, conclusionsBeingGeneralized},
                                         (* See X2Inverse for comment. *)
+    (*Map[
+        Function[{conclusion},
+            Echo[
+                conclusion["Input", "Height"] -> conclusion["Output", "Height"]
+            ]
+        ],
+        conclusionsBeingGeneralized
+    ];*)
                                         ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Height"]
                                     ]
                                 |>,
@@ -10015,7 +10074,8 @@ ARCGeneralizeConclusions[conclusionsIn_List, referenceableInputObjects_Associati
         
         (* HERE1 *)
         
-        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> {"Shape", "Input"}][conclusions]];*)
+        (*ARCEcho["ARCGeneralizeConclusions" -> SimplifyObjects["ExtraKeys" -> {"Shape", "Input", "Output"}][conclusions]];
+        Throw["HERE"];*)
         
         inputObjectComponentSets = conclusions[[All, "Input", "Components"]];
         If [MatchQ[inputObjectComponentSets, {Repeated[{__}]}],
@@ -31247,7 +31307,14 @@ ARCPropertyUnchangingInConclusionsQ[conclusions_List, property_] :=
     AllTrue[
         conclusions,
         Function[{conclusion},
-            conclusion["Input", property] === conclusion["Output", property]
+            Or[
+                conclusion["Input", property] === conclusion["Output", property],
+                (*MissingQ[conclusion["Input", property]] && MissingQ[conclusion["Output", property]],*)
+                (* If the property isn't specified in the output, should we consider it
+                   as unchanging? For example, in a5f85a15, Width is set in the input and not set
+                   in the conclusion when properties like Y and X are being inferred. *)
+                MissingQ[conclusion["Output", property]]
+            ]
         ]
     ]
 
