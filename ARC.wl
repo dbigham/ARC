@@ -6073,7 +6073,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {"Shape"}
+                            {None}
                             ,
                             {"Y.Rank"}
                         ]
@@ -7601,12 +7601,22 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 MissingQ[conclusion["Position"]],
                 MissingQ[conclusion["Y"]],
                 MissingQ[conclusion["YInverse"]],
-                MissingQ[conclusion["Y2"]],
-                MissingQ[conclusion["Y2Inverse"]],
+                !And[
+                    !MissingQ[conclusion["Height"]],
+                    Or[
+                        !MissingQ[conclusion["Y2"]],
+                        !MissingQ[conclusion["Y2Inverse"]]
+                    ]
+                ],
                 MissingQ[conclusion["X"]],
                 MissingQ[conclusion["XInverse"]],
-                MissingQ[conclusion["X2"]],
-                MissingQ[conclusion["X2Inverse"]]
+                !And[
+                    !MissingQ[conclusion["Width"]],
+                    Or[
+                        !MissingQ[conclusion["X2"]],
+                        !MissingQ[conclusion["X2Inverse"]]
+                    ]
+                ]
             ],
             (* Incase any ARCApplyConclusion handlers need to know the position, such as
                X2Inverse. But we don't want to do this in some cases like b7249182
@@ -7617,6 +7627,9 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                above to ensure the conclusion isn't specifying things like Y2,
                but maybe that will cause breakages downstream for ARCApplyConclusion
                down values that rely on Position. *)
+            (* 97999447 seems to be an example that still makes use of this, whereby
+               it updates X2Inverse, and something downstream depends on Position
+               being set. *)
             objectOut["Position"] = objectIn["Position"]
         ];
         
@@ -9665,7 +9678,19 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 |>
                             ],
                             Alternatives[
-                                "Width",
+                                <|
+                                    "Name" -> "Width",
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar, conclusionsBeingGeneralized},
+                                        And[
+                                            (* If X2 or X2Inverse are changing, then it becomes
+                                               ambiguous whether the width of the object is
+                                               changing, so if it's not changing, we want to
+                                               specify that explicitly. e.g. beb8660c *)
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "X2"],
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "X2Inverse"]
+                                        ]
+                                    ]
+                                |>,
                                 <|
                                     "Name" -> "X2",
                                     "Condition" -> Function[
@@ -9785,7 +9810,19 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 |>
                             ],
                             Alternatives[
-                                "Height",
+                                <|
+                                    "Name" -> "Height",
+                                    "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar, conclusionsBeingGeneralized},
+                                        And[
+                                            (* If Y2 or Y2Inverse are changing, then it becomes
+                                               ambiguous whether the height of the object is
+                                               changing, so if it's not changing, we want to
+                                               specify that explicitly. e.g. beb8660c *)
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2"],
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2Inverse"]
+                                        ]
+                                    ]
+                                |>,
                                 <|
                                     "Name" -> "Y2",
                                     "Condition" -> Function[
@@ -9834,7 +9871,13 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                         And[
                                             MissingQ[conclusionSoFar["Y2"]] && MissingQ[conclusionSoFar["Y2Inverse"]],
                                             (* See X2Inverse for comment. *)
-                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Height"]
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Height"],
+                                            (* If Y2 or Y2Inverse are changing, then it is
+                                               ambiguous whether the object is getting taller or
+                                               not, so we'll explicitly specify the Y or YInverse
+                                               values. *)
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2"],
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2Inverse"]
                                         ]
                                     ]
                                 |>,
@@ -9851,7 +9894,13 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                         And[
                                             MissingQ[conclusionSoFar["Y2"]] && MissingQ[conclusionSoFar["Y2Inverse"]],
                                             (* See X2Inverse for comment. *)
-                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Height"]
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Height"],
+                                            (* If Y2 or Y2Inverse are changing, then it is
+                                               ambiguous whether the object is getting taller or
+                                               not, so we'll explicitly specify the Y or YInverse
+                                               values. *)
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2"],
+                                            ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y2Inverse"]
                                         ]
                                     ]
                                 |>
@@ -13503,6 +13552,7 @@ ARCChooseBestTransform[transforms_List] :=
             Association[
                 Function[{transform},
                     transform -> (
+                        ReturnIfFailure@
                         ARCTransformScore[
                             Replace[
                                 transform,
@@ -13553,6 +13603,10 @@ Clear[ARCTransformScore];
 ARCTransformScore[transformIn_] :=
     Module[{transform = transformIn, objectValueCondition, objectValueProperty, score = 0},
         
+        If [MatchQ[transform, _Rule],
+            transform = <|transform|>
+        ];
+        
         If [AssociationQ[transform],
             transform = ARCRemoveExtendedMetadataFromConclusion[transform]
         ];
@@ -13570,7 +13624,9 @@ ARCTransformScore[transformIn_] :=
                     ]
                 ] :> KeyValueMap[
                     Function[{key, rhs},
-                        score += ARCTransformScore[key, rhs]
+                        score +=
+                            ReturnIfFailure@
+                            ARCTransformScore[key, rhs]
                     ],
                     assoc
                 ],
@@ -13700,8 +13756,25 @@ ARCTransformScore[key_, rhs_] :=
         ];
         
         score += Which[
+            MatchQ[rhs, ObjectValue["InputObject", key]],
+                (* Sometimes to avoid ambiguity we want to explicitly specify that a property
+                   isn't changing from the input, but that results in a somewhat lengthy
+                   expression like "X" -> ObjectValue["InputObject", "X"]. One negative
+                   outcome of this is that the rule finder may favor another possible expression
+                   that happens to be true in the training examples but might not be true in
+                   the text examples, so we want to try to nudge the rule finder to
+                   prefer interpretations where a value is said to be unchanging.
+                   ARCTransformScore-20221112-C6NMQW *)
+                (* HERE20 *)
+                0.3,
             key === objectValueProperty,
                 0,
+            key === "Color" && objectValueProperty =!= "Color",
+                (* Since we represent color with integers, sometimes rules will be found where
+                   the color of an object is inferred to be, say, the X value of another
+                   object, which is almost certainly not a correct interpretation.
+                   e.g. a8c38be5 *)
+                -5,
             MatchQ[
                 Sort[{key, objectValueProperty}],
                 Alternatives[
@@ -13747,7 +13820,7 @@ ARCTransformScore[key_, rhs_] :=
                 -0.75,
             True,
                 (* We are inferring a property using the value of another property
-                    where the types don't match. This in general is not good/likely. *)
+                   where the types don't match. This in general is not good/likely. *)
                 -1.1
         ];
         
