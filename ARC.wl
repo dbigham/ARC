@@ -6073,7 +6073,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {None}
+                            {"Shape"}
                             ,
                             {"Y.Rank"}
                         ]
@@ -7602,7 +7602,12 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 MissingQ[conclusion["Y"]],
                 MissingQ[conclusion["YInverse"]],
                 !And[
-                    !MissingQ[conclusion["Height"]],
+                    Or[
+                        !MissingQ[conclusion["Height"]],
+                        !MissingQ[conclusion["Image"]],
+                        (* e.g. 3ac3eb23 (but wrt Width) *)
+                        MatchQ[conclusion["Shape"], _ARCScene | KeyValuePattern["Image" -> _]]
+                    ],
                     Or[
                         !MissingQ[conclusion["Y2"]],
                         !MissingQ[conclusion["Y2Inverse"]]
@@ -7611,7 +7616,12 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                 MissingQ[conclusion["X"]],
                 MissingQ[conclusion["XInverse"]],
                 !And[
-                    !MissingQ[conclusion["Width"]],
+                    Or[
+                        !MissingQ[conclusion["Width"]],
+                        !MissingQ[conclusion["Image"]],
+                        (* e.g. 3ac3eb23 *)
+                        MatchQ[conclusion["Shape"], _ARCScene | KeyValuePattern["Image" -> _]]
+                    ],
                     Or[
                         !MissingQ[conclusion["X2"]],
                         !MissingQ[conclusion["X2Inverse"]]
@@ -7694,7 +7704,6 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
             ];
         ];
         
-        (* HERE10 *)
         If [MissingQ[objectOut["Y"]],
             Which[
                 !MissingQ[objectOut["YInverse"]],
@@ -7725,6 +7734,10 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
         
         If [MissingQ[objectOut["Width"]],
             Which[
+                !MissingQ[objectOut["Image"]],
+                    objectOut["Width"] = ImageWidth[objectOut["Width"]],
+                MatchQ[objectOut["Shape"], _ARCScene],
+                    objectOut["Width"] = ImageWidth[objectOut["Shape"]],
                 !MissingQ[objectOut["X"]] && !MissingQ[objectOut["X2"]],
                     objectOut["Width"] = objectOut["X2"] - objectOut["X"] + 1,
                 !MissingQ[object["Width"]],
@@ -7734,6 +7747,10 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
         
         If [MissingQ[objectOut["Height"]],
             Which[
+                !MissingQ[objectOut["Image"]],
+                    objectOut["Height"] = ImageHeight[objectOut["Width"]],
+                MatchQ[objectOut["Shape"], _ARCScene],
+                    objectOut["Height"] = ImageHeight[objectOut["Shape"]],
                 !MissingQ[objectOut["Y"]] && !MissingQ[objectOut["Y2"]],
                     objectOut["Height"] = objectOut["Y2"] - objectOut["Y"] + 1,
                 !MissingQ[object["Width"]],
@@ -8066,11 +8083,15 @@ ARCApplyConclusion[key:"XInverse", xInverse_Integer, objectIn_Association, objec
         ]
     ]
 
-ARCApplyConclusion[key:"Shape", value: KeyValuePattern["Image" -> _], objectIn_Association, objectOut_Association, scene_Association] :=
+(*ARCApplyConclusion[key:"Shape", value: KeyValuePattern["Image" -> _] | _ARCScene, objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
         objectOut,
-        "Image" -> ARCColorize[value, objectIn[["Colors", 1]]]
-    ]
+        {
+            "Image" -> ARCColorize[value, objectIn[["Colors", 1]]],
+            "Width" -> ImageWidth[value],
+            "Height" -> ImageHeight[value]
+        }
+    ]*)
 
 ARCApplyConclusion[key:"Shape", value: KeyValuePattern["Fill" -> _], objectIn_Association, objectOut_Association, scene_Association] :=
     Sett[
@@ -9593,17 +9614,26 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                     Alternatives[
                         "Shape",
                         "MonochromeImage",
-                        "Shapes" /; Function[{conclusionSoFar, conclusionsBeingGeneralized},
+                        "Shapes" /; Function[{conclusionSoFar, conclusionSoFarIncludingCurrentAlternatives, conclusionsBeingGeneralized},
                             (* For 97999447, we want to avoid it choosing
                                "Shapes" -> {<|"Name" -> "Line"|>} at this stage over
                                a "Shape" definition that specifies the fill pattern.
                                For some reason on M13 sees the "Shapes" alternative here. *)
                             !ARCConclusionsSoFarMatchQ[
-                                conclusionSoFar,
+                                conclusionSoFarIncludingCurrentAlternatives,
                                 "Shape",
                                 Alternatives[
                                     KeyValuePattern[
                                         "Fill" -> _
+                                    ],
+                                    (* This further demonstrates the issue with this "Shapes"
+                                       alternative. It doesn't guarentee that it provides
+                                       enough information to render output objects. We'll
+                                       need to try removing it, see what breaks, and then think
+                                       more about how to make it work robustly if it's
+                                       really needed. e.g. b7249182 *)
+                                    KeyValuePattern[
+                                        "StemHeight" -> _
                                     ]
                                 ]
                                 (*"ConclusionsBeingGeneralized" -> conclusionsBeingGeneralized*)
@@ -9779,7 +9809,6 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                     ]
                                 |>
                             ],
-                            (* HERE10 *)
                             Alternatives[
                                 <|
                                     "Name" -> "Y"
@@ -9859,7 +9888,6 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 |>,
                                 <|
                                     "Name" -> "Y",
-                                    (* HERE16 *)
                                     "Condition" -> Function[
                                         And[
                                             MissingQ[#["Y"]] && MissingQ[#["YInverse"]],
@@ -11884,9 +11912,22 @@ Options[ResolveValues] =
     "ParsedOutputScene" -> Null         (*< If both referenceable input and output objects are in use, this allows the parsed output scene to be specified. *)
 };
 ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[]] :=
-    Module[{resolvedObject, propertyValue, head},
+    Module[{resolvedObject, propertyValue, head, reapTag, symbol},
+        
+        replacementsToRestoreRemovedParts = ReapList[
+            reapTag,
+            res = Replace[
+                expr,
+                e: KeyValuePattern["Type" -> "MapComponents"] :> (
+                    Sow[(symbol = Unique["temporaryReplacement"]) -> e, reapTag];
+                    symbol
+                ),
+                {0, Infinity}
+            ]
+        ];
+        
         res = Replace[
-            expr,
+            res,
             {
                 (* Resolve an object's value. *)
                 (objectOrClassValueHead:(ObjectValue | ClassValue))[pattern: OptionValue["ObjectsPattern"], property_] :> (
@@ -11958,6 +11999,14 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                         "ObjectPattern" -> pattern
                     ]
             },
+            {0, Infinity}
+        ];
+        
+        (* Restore the sub-expressions that we temporarily removed to avoid expressions
+           getting resolved in them. *)
+        res = Replace[
+            res,
+            replacementsToRestoreRemovedParts,
             {0, Infinity}
         ];
         
@@ -21055,7 +21104,19 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                             {
                                 "Width",
                                 "Height",
-                                If [!MissingQ[pattern["X"]] || TrueQ[OptionValue["Conclusion"]],
+                                If [Or[
+                                        !MissingQ[pattern["X"]]
+                                        (* Disabled Nov 12 2022. I don't understand how this makes
+                                           sense, and it breaks conclusions if they specify say
+                                           Shape and X2, where the X2 is being specified to move
+                                           the object. If X is specified in that case, then yes,
+                                           we don't need to also specify X2 if we know the width
+                                           of the object (via Shape or Image), but that's why we
+                                           have the condition above that checks that X is
+                                           specified. e.g. 3ac3eb23
+                                           ARCCleanRules-20221112-XA42PG *)
+                                        (*TrueQ[OptionValue["Conclusion"]]*)
+                                    ],
                                     {
                                         "X2",
                                         "X2.InverseRank",
@@ -21068,7 +21129,11 @@ ARCPrunePattern[patternIn_, OptionsPattern[]] :=
                                     ,
                                     Nothing
                                 ],
-                                If [!MissingQ[pattern["Y"]] || TrueQ[OptionValue["Conclusion"]],
+                                If [Or[
+                                        !MissingQ[pattern["Y"]]
+                                        (* See analogous comment above for the X case. *)
+                                        (*TrueQ[OptionValue["Conclusion"]]*)
+                                    ],
                                     {
                                         "Y2",
                                         "Y2.InverseRank",
