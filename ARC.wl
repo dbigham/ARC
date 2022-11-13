@@ -4459,7 +4459,9 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     (* Oct 22 2022 *)
                     "d10ecb37" | "b6afb2da" |
                     (* Nov 8 2022: Started timing out, but still fails with extra time. *)
-                    "42a15761"
+                    "42a15761" |
+                    (* Nov 12 2022 *)
+                    "3ee1011a"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -7657,10 +7659,17 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                             Function[{object2, key2, value2},
                                 Block[
                                     {
-                                        $inputScene = inputScene,
+                                        $inputScene = inputScene
                                         (* MapComponents transforms may use Object["Parent"] to
-                                           refer to the input composite object. *)
-                                        $parent = object2
+                                           refer to the input composite object.
+                                           As of Nov 12 2022, I'm confused why this is needed,
+                                           since we Block $parent in the ARCApplyConclusion down
+                                           value for MapComponents. And for b7249182, it causes
+                                           breakage because it overrides the true parent with
+                                           the _component_, so it ends up treating itself as
+                                           its parent. I'll remove this until we understand
+                                           why it's needed. *)
+                                        (*$parent = object2*)
                                     },
                                     ReturnIfFailure@
                                     ARCApplyConclusion[
@@ -8285,7 +8294,6 @@ ARCApplyConclusion[key:"Transform", value:KeyValuePattern[{"Type" -> "MapCompone
         Block[{$parent = objectIn},
             
             If [MatchQ[value["Groups"], {__}],
-                
                 objects =
                     ReturnIfFailure@
                     ARCFormGroupsWhenApplyingRules[
@@ -12002,14 +12010,6 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
             {0, Infinity}
         ];
         
-        (* Restore the sub-expressions that we temporarily removed to avoid expressions
-           getting resolved in them. *)
-        res = Replace[
-            res,
-            replacementsToRestoreRemovedParts,
-            {0, Infinity}
-        ];
-        
         If [TrueQ[OptionValue["Activate"]],
             res = Replace[
                 res,
@@ -12044,6 +12044,14 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
         res = Replace[
             res,
             real_Real :> ToIntegerIfNoDecimal[real],
+            {0, Infinity}
+        ];
+        
+        (* Restore the sub-expressions that we temporarily removed to avoid expressions
+           getting resolved in them. *)
+        res = Replace[
+            res,
+            replacementsToRestoreRemovedParts,
             {0, Infinity}
         ];
         
@@ -16248,7 +16256,11 @@ Module[{tasks},
             "ImplementationTime" -> Quantity[4, "Hours"],
             "CodeLength" -> 32763,
             "NewGeneralizedSuccesses" -> {},
-            "NewEvaluationSuccesses" -> {}
+            "NewEvaluationSuccesses" -> {
+                "3ee1011a",
+                "7039b2d7",
+                "da2b0fe3"
+            }
         |>
     };
     
@@ -31341,7 +31353,8 @@ ReturnFailureIfBadValues[object_] :=
                             ReturnFailure[
                                 "IntegerExpected",
                                 "The property " <> propertyName <> " is expected to have an integer value.",
-                                "Value" -> value
+                                "Value" -> value,
+                                "Object" -> object
                             ]
                         ]
                     ],
