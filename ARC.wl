@@ -665,6 +665,8 @@ ObjectX::usage = "ObjectX  "
 
 ObjectY::usage = "ObjectY  "
 
+ARCInferDimensionalSequenceOrder::usage = "ARCInferDimensionalSequenceOrder  "
+
 Begin["`Private`"]
 
 
@@ -3800,29 +3802,42 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                                 "ExactMatch" -> True
                             ];
                         If [!MissingQ[mappedToObject],
-                            Return[
-                                matchingComponents =
-                                    DeleteMissing@
-                                    Association[
-                                        Function[{component2},
-                                            component2 -> ARCGetMatchingComponent[
-                                                mappedToObject,
-                                                component2,
-                                                "ExactMatch" -> False
-                                            ]
-                                        ] /@ object["Components"]
-                                    ];
-                                (* For now we'll allow up to 4 components to be added, to try to
-                                   reduce false positives. We might want to eliminate this check,
-                                   though, since in theory there could be many components added. *)
-                                If [Length[matchingComponents] >= Length[object["Components"]] - 4,
-                                    Return[Null, Block]
-                                    ,
-                                    (* Insufficient match.*)
-                                    mappedToObject = Null
-                                ];
+                            (* If both objects are objects like rectangles with a different
+                               border and fill color, then don't treat that as MapComponents.
+                               e.g. b548a754 *)
+                            If [And[
+                                    (* Not yet enabled. *)
+                                    False,
+                                    MatchQ[mappedToObject["Shape"], KeyValuePattern[{"Filled" -> True, "Interior" -> _, "Border" -> _}]],
+                                    MatchQ[object["Shape"], KeyValuePattern[{"Filled" -> True, "Interior" -> _, "Border" -> _}]]
+                                ],
+                                mappedToObject = Null;
+                                Return[Null, Block]
                                 ,
-                                Block
+                                Return[
+                                    matchingComponents =
+                                        DeleteMissing@
+                                        Association[
+                                            Function[{component2},
+                                                component2 -> ARCGetMatchingComponent[
+                                                    mappedToObject,
+                                                    component2,
+                                                    "ExactMatch" -> False
+                                                ]
+                                            ] /@ object["Components"]
+                                        ];
+                                    (* For now we'll allow up to 4 components to be added, to try to
+                                    reduce false positives. We might want to eliminate this check,
+                                    though, since in theory there could be many components added. *)
+                                    If [Length[matchingComponents] >= Length[object["Components"]] - 4,
+                                        Return[Null, Block]
+                                        ,
+                                        (* Insufficient match.*)
+                                        mappedToObject = Null
+                                    ];
+                                    ,
+                                    Block
+                                ]
                             ]
                         ]
                     ] /@ object["Components"]
@@ -5177,6 +5192,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        (* HERE RNORM *)
         If [And[
                 Or[
                     !TrueQ[workingRulesFound[]],
@@ -5670,8 +5686,8 @@ arcFindRulesHelper[examplesIn_List, opts:OptionsPattern[]] :=
         
         (* HEREF *)
         
-        (*ARCEcho2[examples[[All, "ObjectMapping"]]];
-        Throw["HEREF"];*)
+        (*ARCEcho2[examples[[All, "ObjectMapping"]]];*)
+        (*Throw["HEREF"];*)
         
         (*ARCEcho[SimplifyObjects["ExtraKeys" -> "Shape"][examples[[All, "ObjectMapping"]]]];*)
         
@@ -6226,7 +6242,49 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                                     <|property -> value|> -> item[[2]]
                                 ] /@ Replace[propertyValue, _Missing :> {}]
                                 ,
-                                <|property -> propertyValue|> -> item[[2]]
+                                Rule[
+                                    If [property === "Shape",
+                                        <|
+                                            property -> Replace[
+                                                propertyValue,
+                                                {
+                                                    (* For the purposes of rule finding, treat a
+                                                       square that has differing border and
+                                                       interior color as just a rectangle.
+                                                       e.g. b548a754 *)
+                                                    (* Note: Not yet enabled. *)
+                                                    (*KeyValuePattern[
+                                                        {
+                                                            "Name" -> "Square",
+                                                            "Border" -> _,
+                                                            "Interior" -> _
+                                                        }
+                                                    ] :> (
+                                                        Sett[
+                                                            KeyDrop[propertyValue, {"Border", "Interior"}],
+                                                            "Name" -> "Rectangle"
+                                                        ]
+                                                    ),*)
+                                                    (* If the Shape also involves information about
+                                                       border or internal colors, we'll drop that
+                                                       information when grouping for rule finding. *)
+                                                    KeyValuePattern[
+                                                        "Border" -> _
+                                                    ] :> KeyDrop[
+                                                        propertyValue,
+                                                        {
+                                                            "Border",
+                                                            "Interior"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        |>
+                                        ,
+                                        <|property -> propertyValue|>
+                                    ],
+                                    item[[2]]
+                                ]
                             ]
                         ] /@ preRules
                     ]
@@ -6239,6 +6297,8 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                     <||> -> preRules[[All, 2]]
                 |>
             ];
+        
+        (*ARCEcho2[groupedByPattern];*)
         
         If [Length[groupedByPattern] === 1 && property =!= None,
             (* If all objects share a single property value, and this isn't the no-grouping
@@ -10468,7 +10528,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
     (* HERE2 *)
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     (*Function[{expr},
-        If [propertyPath === {"Height"},
+        If [MatchQ[propertyPath, {"Shape", ___}],
             EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath][expr]
         ];
         expr
@@ -10501,6 +10561,12 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         values = conclusions[[All, "Value"]];
         
         (*If [property === "Height" && TrueQ[$mapComponents],
+            ARCEcho["Conclusion values" -> values];
+            ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
+        ];*)
+        
+        (*If [MatchQ[propertyPath, {"Shape", ___}],
+            ARCEcho[propertyPath];
             ARCEcho["Conclusion values" -> values];
             ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
         ];*)
@@ -32013,7 +32079,7 @@ ARCFindRotationalNormalizationsForScenes[examples_List, OptionsPattern[]] :=
         res = Module[{favoredAngle = Null},
             
             (* Check if referenceable objects can be used to determine how scenes should
-            be rotationally normalized. *)
+               be rotationally normalized. *)
             Replace[
                 ARCFindRotationalNormalizationsForScenes2[examples],
                 res: Except[_Missing] :> Return[res, Module]
@@ -32353,6 +32419,8 @@ ARCFindRotationalNormalizationsForScenes2[examplesIn_List] :=
             examples = examplesIn,
             objectReferences,
             referenceableObjects,
+            referenceableObjectSubsets,
+            theseReferenceableObjects,
             dimensions,
             identifyingProperties
         },
@@ -32388,93 +32456,95 @@ ARCFindRotationalNormalizationsForScenes2[examplesIn_List] :=
             ] /@ objectReferences
         ];
         
-        (* Now that we've selected _just_ the referenceable objects, re-compute their Y.InverseRank
-           and X.InverseRank values where we only include those objects so that we can see their
-           relative order, ignoring any non-referenceable objects in the scene. *)
-        referenceableObjects = AssociationThread[
-            Keys[referenceableObjects],
-            ARCInferRankProperties[
-                Values[referenceableObjects],
-                "Properties" -> {"Y.InverseRank", "X.InverseRank"},
-                "IgnoreGridsAndDividers" -> False
-            ]
-        ];
-        
-        (*ARCEcho[SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][referenceableObjects]];*)
-        
-        (* Determine which dimensions appear to be useable to sense the orientation of
-           an input scene. *)
-        dimensions = Select[
-            {"X", "Y"},
-            Function[{dimension},
-                SameQ[
-                    Sort[Values[referenceableObjects][[All, dimension <> ".InverseRank"]]],
-                    Range[Length[referenceableObjects]]
-                ]
-            ]
-        ];
-        
-        If [Length[dimensions] === 0,
-            Return[Missing["NotFound"], Module]
-        ];
-        
-        identifyingProperties = (# <> ".InverseRank") & /@ dimensions;
-        
-        (* For each referenceable object, select the properties that look to be useable to
-           sense the orientation of an input scene. *)
-        referenceableObjects =
-            SortBy[
-                KeyTake[identifyingProperties] /@ referenceableObjects,
-                Function[{item},
-                    item[First[identifyingProperties]]
-                ]
+        referenceableObjectSubsets =
+            Select[
+                (* For now we'll go with subsets of size 2. *)
+                Subsets[Normal[referenceableObjects], {2}],
+                With[{theseObjectUUIDs = #[[All, 2, "UUID"]]},
+                    Length[theseObjectUUIDs] === Length[DeleteDuplicates[theseObjectUUIDs]]
+                ] &
             ];
         
-        (*ARCEcho2[referenceableObjects];*)
-        
-        (* For each example, see if it looks like a rotation can be used to normalize it. *)
-        res = Prepend[
-            Function[{example},
-                Replace[
-                    ReturnIfFailure@
-                    ReturnIfMissing@
-                    ARCFindRotationalNormalizationsForScenes2[
-                        example["Input", "Scene"],
-                        referenceableObjects,
-                        example["Input"]
-                    ],
-                    thisRes: KeyValuePattern["NormalizedScene" -> _] :> (
-                        <|
-                            "Input" -> thisRes["NormalizedScene"],
-                            "Output" ->
-                                If [thisRes["NormalizationAngle"] === 0,
-                                    example["Output", "Scene"]
-                                    ,
-                                    RotateImage[
-                                        example["Output", "Scene"],
-                                        thisRes["NormalizationAngle"]
-                                    ]
+        Function[{theseReferenceableObjectsIn},
+            Function[{dimension},
+                Block[{},
+                    
+                    property = dimension <> ".InverseRank";
+                    
+                    (*ARCEcho[dimension -> SimplifyObjects["ExtraKeys" -> {dimension}][theseReferenceableObjectsIn]];*)
+                    
+                    (* For the currention referenceable objects and dimension being considered,
+                       re-compute the "X.InverseRank" or "Y.InverseRank" properties for just
+                       those objects, and disallow overlaps. *)
+                    theseReferenceableObjects = Association[
+                        Function[{object},
+                            object["Reference"] -> KeyTake[object, property]
+                        ] /@
+                            Replace[
+                                ARCInferDimensionalSequenceOrder[
+                                    KeyValueMap[
+                                        Function[{objectReference, object},
+                                            Sett[object, "Reference" -> objectReference]
+                                        ],
+                                        Association[theseReferenceableObjectsIn]
+                                    ],
+                                    dimension
                                 ],
-                            "NormalizationAngle" -> thisRes["NormalizationAngle"]
+                                _Missing :> Return[Missing["NotFound"], Block]
+                            ]
+                    ];
+                    
+                    (*ARCEcho[dimension -> SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][theseReferenceableObjects]];*)
+                    
+                    (* For each example, see if it looks like a rotation can be used to normalize it. *)
+                    res = Prepend[
+                        Function[{example},
+                            Replace[
+                                ReturnIfFailure@
+                                ARCFindRotationalNormalizationsForScenes2[
+                                    example["Input", "Scene"],
+                                    theseReferenceableObjects,
+                                    example["Input"]
+                                ],
+                                {
+                                    _Missing :> Return[Missing["NotFound"], Block],
+                                    thisRes: KeyValuePattern["NormalizedScene" -> _] :> (
+                                        <|
+                                            "Input" -> thisRes["NormalizedScene"],
+                                            "Output" ->
+                                                If [thisRes["NormalizationAngle"] === 0,
+                                                    example["Output", "Scene"]
+                                                    ,
+                                                    RotateImage[
+                                                        example["Output", "Scene"],
+                                                        thisRes["NormalizationAngle"]
+                                                    ]
+                                                ],
+                                            "NormalizationAngle" -> thisRes["NormalizationAngle"]
+                                        |>
+                                    )
+                                }
+                            ]
+                        ] /@ Rest[examples],
+                        <|
+                            "Input" -> canonicalExample["Input", "Scene"],
+                            "Output" -> canonicalExample["Output", "Scene"],
+                            "RotationNormalization" -> theseReferenceableObjects
                         |>
-                    )
+                    ];
+                    
+                    If [And[
+                            MatchQ[res, {_, __}],
+                            MemberQ[Rest[res][[All, "NormalizationAngle"]], 90 | 180 | -90]
+                        ],
+                        Return[res, Module]
+                    ]
+                    
                 ]
-            ] /@ Rest[examples],
-            <|
-                "Input" -> canonicalExample["Input", "Scene"],
-                "Output" -> canonicalExample["Output", "Scene"],
-                "RotationNormalization" -> referenceableObjects
-            |>
-        ];
+            ] /@ {"X", "Y"}
+        ] /@ referenceableObjectSubsets;
         
-        If [And[
-                MatchQ[res, {_, __}],
-                MemberQ[Rest[res][[All, "NormalizationAngle"]], 90 | 180 | -90]
-            ],
-            res
-            ,
-            Missing["NotFound"]
-        ]
+        Missing["NotFound"]
     ]
 
 (* Given a specific scene, tries to find an angle that it can be rotated by to normalize it
@@ -32483,84 +32553,83 @@ ARCFindRotationalNormalizationsForScenes2[scene_ARCScene, referenceableObjects_A
     Module[
         {
             objectReferences = Keys[referenceableObjects],
-            identifyingProperties = Keys[First[referenceableObjects]],
+            property = First[Keys[First[referenceableObjects]]],
             rotatedExample,
             res,
             theseReferenceableObjects,
-            nonZeroRotationPerformedQ = False
+            dimension
         },
         Function[{angle},
+            Block[{},
             
-            rotatedExample =
-                If [angle === 0 && AssociationQ[parsedScene],
-                    parsedScene
-                    ,
-                    (* Parse the rotated scene. Something that's awkward here is that we don't
-                       know what values to use for options like FormMultiColorCompositeObjects,
-                       etc. One option would be to try various combinations here to see if any
-                       of them lead do seeing how to rotationally normalize the scene. Related is
-                       that the _input_ `examples` to this function were parsed using some
-                       scheme, and ideally we'd like to support considering all schemes to see if
-                       any of them can discover how to rotationally normalize the scene. *)
-                    If [angle =!= 0,
-                        nonZeroRotationPerformedQ = True
-                    ];
-                    ReturnIfFailure@
-                    ARCParseScene[
-                        RotateImage[scene, angle],
-                        Sequence @@ Normal[OptionValue["ParseOptions"]]
-                    ]
-                ];
-            
-            (* Look up the referenceable objects from the scene. *)
-            theseReferenceableObjects = Association[
-                Function[{objectReference},
-                    objectReference ->
-                        Replace[
-                            GetObject[objectReference, rotatedExample],
-                            _Failure :> Return[Missing["NotFound"], Module]
+                rotatedExample =
+                    If [angle === 0 && AssociationQ[parsedScene],
+                        parsedScene
+                        ,
+                        (* Parse the rotated scene. Something that's awkward here is that we don't
+                        know what values to use for options like FormMultiColorCompositeObjects,
+                        etc. One option would be to try various combinations here to see if any
+                        of them lead do seeing how to rotationally normalize the scene. Related is
+                        that the _input_ `examples` to this function were parsed using some
+                        scheme, and ideally we'd like to support considering all schemes to see if
+                        any of them can discover how to rotationally normalize the scene. *)
+                        ReturnIfFailure@
+                        ARCParseScene[
+                            RotateImage[scene, angle],
+                            Sequence @@ Normal[OptionValue["ParseOptions"]]
                         ]
-                ] /@ objectReferences
-            ];
-            
-            (* Now that we've selected _just_ the referenceable objects, re-compute
-               their Y.InverseRank and X.InverseRank values where we only include those objects
-               so that we can see their relative order, ignoring any non-referenceable
-               objects in the scene. *)
-            theseReferenceableObjects = AssociationThread[
-                Keys[theseReferenceableObjects],
-                ARCInferRankProperties[
-                    Values[theseReferenceableObjects],
-                    "Properties" -> {"Y.InverseRank", "X.InverseRank"},
-                    "IgnoreGridsAndDividers" -> False
-                ]
-            ];
-            
-            (*ARCEcho[angle -> SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][theseReferenceableObjects]];*)
-            
-            (* For each referenceable object, select the properties that look to be useable to
-               sense the orientation of an input scene. *)
-            theseReferenceableObjects =
-                SortBy[
-                    KeyTake[identifyingProperties] /@ theseReferenceableObjects,
-                    Function[{item},
-                        item[First[identifyingProperties]]
-                    ]
+                    ];
+                
+                (* Look up the referenceable objects from the scene. *)
+                theseReferenceableObjects = Association[
+                    Function[{objectReference},
+                        objectReference ->
+                            Replace[
+                                GetObject[objectReference, rotatedExample],
+                                _Failure :> Return[Missing["NotFound"], Module]
+                            ]
+                    ] /@ objectReferences
                 ];
-            
-            (*ARCEcho2[angle -> theseReferenceableObjects -> "vs" -> referenceableObjects];*)
-            
-            If [referenceableObjects === theseReferenceableObjects,
-                (* This rotation looks to have produced a normalized orientation,
-                   so we'll use this angle for normalization. *)
-                Return[
-                    <|
-                        "NormalizedScene" -> rotatedExample["Scene"],
-                        "NormalizationAngle" -> angle
-                    |>,
-                    Module 
+                
+                dimension = First[StringSplit[property, "."]];
+                
+                (* For the currention referenceable objects and dimension being considered,
+                re-compute the "X.InverseRank" or "Y.InverseRank" properties for just
+                those objects, and disallow overlaps. *)
+                theseReferenceableObjects = Association[
+                    Function[{object},
+                        object["Reference"] -> KeyTake[object, property]
+                    ] /@
+                        Replace[
+                            ARCInferDimensionalSequenceOrder[
+                                KeyValueMap[
+                                    Function[{objectReference, object},
+                                        Sett[object, "Reference" -> objectReference]
+                                    ],
+                                    Association[theseReferenceableObjects]
+                                ],
+                                dimension
+                            ],
+                            _Missing :> Return[Missing["NotFound"], Block]
+                        ]
+                ];
+                
+                (*ARCEcho[angle -> SimplifyObjects["ExtraKeys" -> {"X.InverseRank", "Y.InverseRank"}][theseReferenceableObjects]];*)
+                
+                (*ARCEcho2[angle -> theseReferenceableObjects -> "vs" -> referenceableObjects];*)
+                
+                If [referenceableObjects === theseReferenceableObjects,
+                    (* This rotation looks to have produced a normalized orientation,
+                    so we'll use this angle for normalization. *)
+                    Return[
+                        <|
+                            "NormalizedScene" -> rotatedExample["Scene"],
+                            "NormalizationAngle" -> angle
+                        |>,
+                        Module
+                    ]
                 ]
-            ];
+            ]
                 
         ] /@ {0, 90, 180, -90};
         
@@ -33086,6 +33155,61 @@ ObjectY[object_Association] :=
     ]
 
 ObjectX[object_] := Missing["NetSpecified", "Y"]
+
+(*!
+    \function ARCInferDimensionalSequenceOrder
+    
+    \calltable
+        ARCInferDimensionalSequenceOrder[objects, dimension] '' Given a list of objects, populates X.InverseRank or Y.InverseRank, but requires objects to not be overlapping in that dimension. (if there are overlaps, Missing is returned)
+    
+    Examples:
+    
+    ARCInferDimensionalSequenceOrder[{<|"X" -> 1, "X2" -> 1|>, <|"X" -> 2, "X2" -> 2|>}, "X"]
+    
+    ===
+    
+    {
+        <|"X" -> 1, "X2" -> 1, "X.InverseRank" -> 1|>,
+        <|"X" -> 2, "X2" -> 2, "X.InverseRank" -> 2|>
+    }
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCInferDimensionalSequenceOrder]
+    
+    \maintainer danielb
+*)
+Clear[ARCInferDimensionalSequenceOrder];
+ARCInferDimensionalSequenceOrder[objects_List, dimension_String] :=
+    Module[{sortedObjects, property},
+        
+        sortedObjects = SortBy[objects, #[dimension] &];
+        
+        property = dimension <> ".InverseRank";
+        
+        sortedObjects = KeyDrop[sortedObjects, property];
+        
+        sortedObjects[[1, property]] = 1;
+        
+        previousObject = sortedObjects[[1]];
+        Prepend[
+            MapIndexed[
+                Function[{object, position},
+                    If [previousObject[dimension <> "2"] < object[dimension],
+                        previousObject = object;
+                        Sett[
+                            object,
+                            property -> First[position] + 1
+                        ]
+                        ,
+                        Return[Missing["OverlappingObjects"], Module]
+                    ]
+                ],
+                Rest[sortedObjects]
+            ],
+            sortedObjects[[1]]
+        ]
+    ]
 
 End[]
 

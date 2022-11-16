@@ -1,0 +1,2768 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    154128,       2760]
+NotebookOptionsPosition[    146359,       2584]
+NotebookOutlinePosition[    152390,       2727]
+CellTagsIndexPosition[    152347,       2724]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["ARCFindRotationalNormalizationsForScenes2", "Title",ExpressionUUID->"f69fc97f-bfe2-4fac-a773-e6305d35596e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{"RunUnitTests", "[", "ARCFindRotationalNormalizationsForScenes2", 
+  "]"}]}], "Code",
+ InitializationCell->False,
+ CellLabel->
+  "In[977]:=",ExpressionUUID->"aec8bc5d-de62-4dbd-aa5d-c0256f03baf4"],
+
+Cell[CellGroupData[{
+
+Cell["Tests", "Section",ExpressionUUID->"09ac08ca-2c04-4caa-817e-37e99d3b1496"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU", 
+              Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723], 26200580, "SubTest" -> 
+              None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU", 
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723], "CellID" -> 26200580, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU", 
+           Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165130159723}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8773650899092035`*^9},ExpressionUUID->"8fc5553a-3b27-4467-af4c-\
+698f67ba09c6"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCFindRotationalNormalizationsForScenes2", "[", "\n", "\t", 
+   RowBox[{"ARCParseInputAndOutputScenes", "[", 
+    RowBox[{
+     RowBox[{"ARCParseFile", "[", "\"\<56dc2b01\>\"", "]"}], "[", 
+     "\"\<Train\>\"", "]"}], "]"}], "\n", "]"}], " ", "//", " ", 
+  "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8773650374646597`*^9, 3.8773650899092035`*^9}},
+ CellLabel->"In[975]:=",
+ CellID->26200580,
+ "TestId" -> 
+ "ARCFindRotationalNormalizationsForScenes2-20221113-PM1NXU",ExpressionUUID->\
+"d0cde915-4850-46ce-b8a4-be451b854b6b"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"{\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}},
+            AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                3} -> GrayLevel[0], {1, 4} -> GrayLevel[0], {1, 5} -> 
+               GrayLevel[0], {1, 6} -> GrayLevel[0], {1, 7} -> 
+               GrayLevel[0], {1, 8} -> GrayLevel[0], {1, 9} -> 
+               GrayLevel[0], {1, 10} -> GrayLevel[0], {1, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {1, 
+                12} -> GrayLevel[0], {1, 13} -> GrayLevel[0], {1, 14} -> 
+               GrayLevel[0], {1, 15} -> GrayLevel[0], {1, 16} -> 
+               GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                3} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                5} -> GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 
+                12} -> GrayLevel[0], {2, 13} -> GrayLevel[0], {2, 14} -> 
+               GrayLevel[0], {2, 15} -> GrayLevel[0], {2, 16} -> 
+               GrayLevel[0], {3, 1} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                2} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 3} -> 
+               GrayLevel[0], {3, 4} -> GrayLevel[0], {3, 5} -> 
+               GrayLevel[0], {3, 6} -> GrayLevel[0], {3, 7} -> 
+               GrayLevel[0], {3, 8} -> GrayLevel[0], {3, 9} -> 
+               GrayLevel[0], {3, 10} -> GrayLevel[0], {3, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                12} -> GrayLevel[0], {3, 13} -> GrayLevel[0], {3, 14} -> 
+               GrayLevel[0], {3, 15} -> GrayLevel[0], {3, 16} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                3} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                5} -> GrayLevel[0], {4, 6} -> GrayLevel[0], {4, 7} -> 
+               GrayLevel[0], {4, 8} -> GrayLevel[0], {4, 9} -> 
+               GrayLevel[0], {4, 10} -> GrayLevel[0], {4, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                12} -> GrayLevel[0], {4, 13} -> GrayLevel[0], {4, 14} -> 
+               GrayLevel[0], {4, 15} -> GrayLevel[0], {4, 16} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.}}, "Rows" -> {{1.153846153846154}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}},
+            AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {1, 7} -> 
+               GrayLevel[0], {1, 8} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                9} -> GrayLevel[0], {1, 10} -> GrayLevel[0], {1, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {1, 
+                12} -> GrayLevel[0], {1, 13} -> GrayLevel[0], {1, 14} -> 
+               GrayLevel[0], {1, 15} -> GrayLevel[0], {1, 16} -> 
+               GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+               GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                9} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                11} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {2, 12} -> 
+               GrayLevel[0], {2, 13} -> GrayLevel[0], {2, 14} -> 
+               GrayLevel[0], {2, 15} -> GrayLevel[0], {2, 16} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {3, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                8} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 9} -> 
+               GrayLevel[0], {3, 10} -> GrayLevel[0], {3, 11} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                12} -> GrayLevel[0], {3, 13} -> GrayLevel[0], {3, 14} -> 
+               GrayLevel[0], {3, 15} -> GrayLevel[0], {3, 16} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {4, 7} -> 
+               GrayLevel[0], {4, 8} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                9} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                11} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 12} -> 
+               GrayLevel[0], {4, 13} -> GrayLevel[0], {4, 14} -> 
+               GrayLevel[0], {4, 15} -> GrayLevel[0], {4, 16} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.}}, "Rows" -> {{1.153846153846154}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"RotationNormalization\\\" -> <|\"\>"},
+    {"\<\"            Object[<|\\\"Area.Rank\\\" -> 1|>] -> \
+<|\\\"X.InverseRank\\\" -> 1|>,\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{
+         TemplateBox[{"\"            \"", 
+           TemplateBox[{"\"Object[\"", "\"<|\\\"Color\\\" -> \"", 
+             InterpretationBox[
+              ButtonBox[
+               TooltipBox[
+                GraphicsBox[{{
+                   GrayLevel[0], 
+                   RectangleBox[{0, 0}]}, {
+                   GrayLevel[0], 
+                   RectangleBox[{1, -1}]}, {
+                   RGBColor[1., 0.2549019607843137, 0.21176470588235294`], 
+                   RectangleBox[{0, -1}, {2, 1}]}}, DefaultBaseStyle -> 
+                 "ColorSwatchGraphics", AspectRatio -> 1, Frame -> True, 
+                 FrameStyle -> 
+                 RGBColor[
+                  0.6666666666666667, 0.16993464052287582`, 
+                   0.1411764705882353], FrameTicks -> None, PlotRangePadding -> 
+                 None, ImageSize -> 
+                 Dynamic[{
+                   Automatic, 
+                    1.35 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
+                StyleBox[
+                 RowBox[{"RGBColor", "[", 
+                   
+                   RowBox[{
+                    "1.`", ",", "0.2549019607843137`", ",", 
+                    "0.21176470588235294`"}], "]"}], NumberMarks -> False]], 
+               Appearance -> None, BaseStyle -> {}, BaselinePosition -> 
+               Baseline, DefaultBaseStyle -> {}, ButtonFunction :> 
+               With[{Typeset`box$ = EvaluationBox[]}, 
+                 If[
+                  Not[
+                   AbsoluteCurrentValue["Deployed"]], 
+                  SelectionMove[Typeset`box$, All, Expression]; 
+                  FrontEnd`Private`$ColorSelectorInitialAlpha = 1; 
+                  FrontEnd`Private`$ColorSelectorInitialColor = 
+                   RGBColor[1., 0.2549019607843137, 0.21176470588235294`]; 
+                  FrontEnd`Private`$ColorSelectorUseMakeBoxes = True; 
+                  MathLink`CallFrontEnd[
+                    FrontEnd`AttachCell[Typeset`box$, 
+                    FrontEndResource["RGBColorValueSelector"], {
+                    0, {Left, Bottom}}, {Left, Top}, 
+                    "ClosingActions" -> {
+                    "SelectionDeparture", "ParentChanged", 
+                    "EvaluatorQuit"}]]]], BaseStyle -> Inherited, Evaluator -> 
+               Automatic, Method -> "Preemptive"], 
+              RGBColor[1., 0.2549019607843137, 0.21176470588235294`], 
+              Editable -> False, Selectable -> False], "\"|>\"", "\"]\""}, 
+            "RowDefault"]}, "RowDefault"], "\" ->\""}, "RowDefault"], 
+       "\" <|\""},
+      "RowDefault"]},
+    {"\<\"                \\\"X.InverseRank\\\" -> 2\"\>"},
+    {"\<\"            |>\"\>"},
+    {"\<\"        |>\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                5} -> GrayLevel[0], {1, 6} -> GrayLevel[0], {1, 7} -> 
+               GrayLevel[0], {1, 8} -> GrayLevel[0], {1, 9} -> 
+               GrayLevel[0], {1, 10} -> GrayLevel[0], {1, 11} -> 
+               GrayLevel[0], {1, 12} -> GrayLevel[0], {1, 13} -> 
+               GrayLevel[0], {1, 14} -> GrayLevel[0], {1, 15} -> 
+               GrayLevel[0], {1, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {1, 
+                17} -> GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                5} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> GrayLevel[0], {2, 12} -> 
+               GrayLevel[0], {2, 13} -> GrayLevel[0], {2, 14} -> 
+               GrayLevel[0], {2, 15} -> GrayLevel[0], {2, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 
+                17} -> GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                6} -> GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> GrayLevel[0], {3, 12} -> 
+               GrayLevel[0], {3, 13} -> GrayLevel[0], {3, 14} -> 
+               GrayLevel[0], {3, 15} -> GrayLevel[0], {3, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                17} -> GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                3} -> GrayLevel[0], {4, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                5} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> GrayLevel[0], {4, 12} -> 
+               GrayLevel[0], {4, 13} -> GrayLevel[0], {4, 14} -> 
+               GrayLevel[0], {4, 15} -> GrayLevel[0], {4, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                17} -> GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                3} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                5} -> GrayLevel[0], {5, 6} -> GrayLevel[0], {5, 7} -> 
+               GrayLevel[0], {5, 8} -> GrayLevel[0], {5, 9} -> 
+               GrayLevel[0], {5, 10} -> GrayLevel[0], {5, 11} -> 
+               GrayLevel[0], {5, 12} -> GrayLevel[0], {5, 13} -> 
+               GrayLevel[0], {5, 14} -> GrayLevel[0], {5, 15} -> 
+               GrayLevel[0], {5, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                17} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{0.9629629629629629}}, 
+             "Rows" -> {{1.1111111111111112`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {1, 12} -> 
+               GrayLevel[0], {1, 13} -> GrayLevel[0], {1, 14} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                15} -> GrayLevel[0], {1, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {1, 
+                17} -> GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+               GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {2, 12} -> 
+               GrayLevel[0], {2, 13} -> GrayLevel[0], {2, 14} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                15} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 
+                17} -> GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {3, 12} -> 
+               GrayLevel[0], {3, 13} -> GrayLevel[0], {3, 14} -> 
+               GrayLevel[0], {3, 15} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                16} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 17} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {4, 12} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                13} -> GrayLevel[0], {4, 14} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                15} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                17} -> GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {5, 12} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                13} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 14} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                15} -> GrayLevel[0], {5, 16} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                17} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{0.9629629629629629}}, 
+             "Rows" -> {{1.1111111111111112`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> -90\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                5} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {1, 6} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                7} -> GrayLevel[0], {1, 8} -> GrayLevel[0], {1, 9} -> 
+               GrayLevel[0], {1, 10} -> GrayLevel[0], {1, 11} -> 
+               GrayLevel[0], {1, 12} -> GrayLevel[0], {1, 13} -> 
+               GrayLevel[0], {1, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {1, 
+                15} -> GrayLevel[0], {1, 16} -> GrayLevel[0], {1, 17} -> 
+               GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                5} -> GrayLevel[0], {2, 6} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                7} -> GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               GrayLevel[0], {2, 12} -> GrayLevel[0], {2, 13} -> 
+               GrayLevel[0], {2, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 
+                15} -> GrayLevel[0], {2, 16} -> GrayLevel[0], {2, 17} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                7} -> GrayLevel[0], {3, 8} -> GrayLevel[0], {3, 9} -> 
+               GrayLevel[0], {3, 10} -> GrayLevel[0], {3, 11} -> 
+               GrayLevel[0], {3, 12} -> GrayLevel[0], {3, 13} -> 
+               GrayLevel[0], {3, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                15} -> GrayLevel[0], {3, 16} -> GrayLevel[0], {3, 17} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                5} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 6} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                7} -> GrayLevel[0], {4, 8} -> GrayLevel[0], {4, 9} -> 
+               GrayLevel[0], {4, 10} -> GrayLevel[0], {4, 11} -> 
+               GrayLevel[0], {4, 12} -> GrayLevel[0], {4, 13} -> 
+               GrayLevel[0], {4, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                15} -> GrayLevel[0], {4, 16} -> GrayLevel[0], {4, 17} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> GrayLevel[0], {5, 12} -> 
+               GrayLevel[0], {5, 13} -> GrayLevel[0], {5, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                15} -> GrayLevel[0], {5, 16} -> GrayLevel[0], {5, 17} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{0.9629629629629629}}, 
+             "Rows" -> {{1.1111111111111112`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {1, 11} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                12} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {1, 13} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {1, 
+                14} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {1, 15} -> 
+               GrayLevel[0], {1, 16} -> GrayLevel[0], {1, 17} -> 
+               GrayLevel[0], {2, 1} -> GrayLevel[0], {2, 2} -> 
+               GrayLevel[0], {2, 3} -> GrayLevel[0], {2, 4} -> 
+               GrayLevel[0], {2, 5} -> GrayLevel[0], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {2, 11} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                12} -> GrayLevel[0], {2, 13} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                14} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {2, 15} -> 
+               GrayLevel[0], {2, 16} -> GrayLevel[0], {2, 17} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {3, 11} -> 
+               GrayLevel[0], {3, 12} -> GrayLevel[0], {3, 13} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                14} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 15} -> 
+               GrayLevel[0], {3, 16} -> GrayLevel[0], {3, 17} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {4, 11} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                12} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 13} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                14} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 15} -> 
+               GrayLevel[0], {4, 16} -> GrayLevel[0], {4, 17} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {5, 11} -> 
+               GrayLevel[0], {5, 12} -> GrayLevel[0], {5, 13} -> 
+               GrayLevel[0], {5, 14} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                15} -> GrayLevel[0], {5, 16} -> GrayLevel[0], {5, 17} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{0.9629629629629629}}, 
+             "Rows" -> {{1.1111111111111112`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> 90\"\>"},
+    {"\<\"    |>\"\>"},
+    {"\<\"}\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{3.877365079867366*^9},
+ CellLabel->
+  "Out[976]=",ExpressionUUID->"48d102da-037a-47b9-ab25-eaa245d40a9d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ DynamicBox[ToBoxes[
+   Column[{
+     Framed[
+      Grid[{{
+         Button["Run", 
+          
+          With[{DevTools`TestingTools`Private`res = 
+            DevTools`TestingTools`Private`runButtonClicked[
+             "ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO", 
+              Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+              HoldComplete[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766], 85653390, "SubTest" -> 
+              None]}, 
+           If[
+            FailureQ[DevTools`TestingTools`Private`res], 
+            Print[DevTools`TestingTools`Private`res]]], 
+          ImageSize -> {57.5, 25}, Method -> "Queued"], 
+         Button[
+         "Update", {
+           "TestUiMarker", "TestId" -> 
+            "ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO"}; 
+          DevTools`TestingTools`Private`updateTestClicked[
+           "ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO", 
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766], "CellID" -> 85653390, 
+            "SubTest" -> None], ImageSize -> {80., 25}, Method -> "Queued"], 
+         Button["Open in Editor", 
+          DevTools`TestingTools`Private`openInEditorClicked[
+          "ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO", 
+           Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+           HoldComplete[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766], 
+           Utility`FilterOptions[
+           "SubTest" -> None, 
+            DevTools`TestingTools`Private`openInEditorClicked]], 
+          ImageSize -> {140., 25}, Method -> "Queued"], 
+         Row[{"ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO"}, 
+          ImageSize -> {Full, Automatic}, Alignment -> {Right, Center}]}}], 
+      ImageSize -> {Full, Automatic}, FrameStyle -> GrayLevel[0.8], 
+      FrameMargins -> 10], 
+     DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766; If[
+       And[
+        ValueQ[
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766 =!= "", 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766 =!= Null], 
+       (If[
+        TrueQ[
+         OptionValue[
+         DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+        Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+        Framed[#, FrameStyle -> LightGray, Background -> White, FrameMargins -> 
+         15]]& )[
+        Grid[{{
+           Pane[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766, "ImageSize" -> {Full, {0, 
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {}, 
+                "MaxHeight"]}}, Scrollbars -> Automatic, FrameMargins -> 0]}, 
+          If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {}, "NakedSection"]], 
+           Apply[Sequence, {}], {
+            Button[
+            "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766 = "", 
+             ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+         Alignment -> {Left, Top}]], 
+       Apply[Sequence, {}]]}], StandardForm],
+  ImageSizeCache->{840., {21.8544921875, 27.1455078125}},
+  TrackedSymbols:>{
+   DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable20221113165132159766}]], "TestUI",
+ CellMargins->{{65, 0}, {0, 0}},
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ GeneratedCell->False,
+ CellChangeTimes->{
+  3.8773650920979185`*^9},ExpressionUUID->"47c13885-7167-4564-b5e1-\
+b0a18d418df9"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ARCFindRotationalNormalizationsForScenes2", "[", "\n", "\t", 
+   RowBox[{"ARCParseInputAndOutputScenes", "[", 
+    RowBox[{
+     RowBox[{"ARCParseFile", "[", "\"\<b548a754\>\"", "]"}], "[", 
+     "\"\<Train\>\"", "]"}], "]"}], "\n", "]"}], " ", "//", " ", 
+  "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8773650374646597`*^9, 3.877365048664092*^9}, 
+   3.8773650920989213`*^9},
+ CellLabel->"In[973]:=",
+ CellID->85653390,
+ "TestId" -> 
+ "ARCFindRotationalNormalizationsForScenes2-20221113-T38VDO",ExpressionUUID->\
+"63e5c30c-f3d9-42fb-aa60-e50224ff476e"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"{\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> GrayLevel[0], {3, 1} -> 
+               GrayLevel[0], {3, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> GrayLevel[0], {4, 1} -> 
+               GrayLevel[0], {4, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> GrayLevel[0], {5, 1} -> 
+               GrayLevel[0], {5, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> GrayLevel[0], {6, 1} -> 
+               GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+               GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
+               GrayLevel[0], {6, 6} -> GrayLevel[0], {6, 7} -> 
+               GrayLevel[0], {6, 8} -> GrayLevel[0], {6, 9} -> 
+               GrayLevel[0], {6, 10} -> GrayLevel[0], {6, 11} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> GrayLevel[0], {8, 3} -> 
+               GrayLevel[0], {8, 4} -> GrayLevel[0], {8, 5} -> 
+               GrayLevel[0], {8, 6} -> GrayLevel[0], {8, 7} -> 
+               GrayLevel[0], {8, 8} -> GrayLevel[0], {8, 9} -> 
+               GrayLevel[0], {8, 10} -> GrayLevel[0], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {9, 5} -> 
+               GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> 
+               GrayLevel[0], {9, 8} -> GrayLevel[0], {9, 9} -> 
+               GrayLevel[0], {9, 10} -> GrayLevel[0], {9, 11} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> 
+               GrayLevel[0], {10, 11} -> GrayLevel[0], {11, 1} -> 
+               GrayLevel[0], {11, 2} -> GrayLevel[0], {11, 3} -> 
+               GrayLevel[0], {11, 4} -> GrayLevel[0], {11, 5} -> 
+               GrayLevel[0], {11, 6} -> GrayLevel[0], {11, 7} -> 
+               GrayLevel[0], {11, 8} -> GrayLevel[0], {11, 9} -> 
+               GrayLevel[0], {11, 10} -> GrayLevel[0], {11, 11} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> GrayLevel[0], {3, 1} -> 
+               GrayLevel[0], {3, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> GrayLevel[0], {4, 1} -> 
+               GrayLevel[0], {4, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> GrayLevel[0], {5, 1} -> 
+               GrayLevel[0], {5, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> GrayLevel[0], {6, 1} -> 
+               GrayLevel[0], {6, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+               GrayLevel[0], {6, 11} -> GrayLevel[0], {7, 1} -> 
+               GrayLevel[0], {7, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+               GrayLevel[0], {8, 11} -> GrayLevel[0], {9, 1} -> 
+               GrayLevel[0], {9, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+               GrayLevel[0], {9, 11} -> GrayLevel[0], {10, 1} -> 
+               GrayLevel[0], {10, 2} -> GrayLevel[0], {10, 3} -> 
+               GrayLevel[0], {10, 4} -> GrayLevel[0], {10, 5} -> 
+               GrayLevel[0], {10, 6} -> GrayLevel[0], {10, 7} -> 
+               GrayLevel[0], {10, 8} -> GrayLevel[0], {10, 9} -> 
+               GrayLevel[0], {10, 10} -> GrayLevel[0], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               GrayLevel[0], {11, 9} -> GrayLevel[0], {11, 10} -> 
+               GrayLevel[0], {11, 11} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"RotationNormalization\\\" -> <|\"\>"},
+    {"\<\"            Object[<|\\\"Area.Rank\\\" -> 1|>] -> \
+<|\\\"Y.InverseRank\\\" -> 1|>,\"\>"},
+    {"\<\"            Object[<|\\\"Shape\\\" -> <|\\\"Name\\\" -> \\\"Pixel\\\
+\"|>|>] -> <|\\\"Y.InverseRank\\\" -> 2|>\"\>"},
+    {"\<\"        |>\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                8} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                9} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                11} -> GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 11} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 11} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {5, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 11} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                8} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {6, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                11} -> GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> GrayLevel[0], {8, 3} -> 
+               GrayLevel[0], {8, 4} -> GrayLevel[0], {8, 5} -> 
+               GrayLevel[0], {8, 6} -> GrayLevel[0], {8, 7} -> 
+               GrayLevel[0], {8, 8} -> GrayLevel[0], {8, 9} -> 
+               GrayLevel[0], {8, 10} -> GrayLevel[0], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+               GrayLevel[0], {9, 11} -> GrayLevel[0], {10, 1} -> 
+               GrayLevel[0], {10, 2} -> GrayLevel[0], {10, 3} -> 
+               GrayLevel[0], {10, 4} -> GrayLevel[0], {10, 5} -> 
+               GrayLevel[0], {10, 6} -> GrayLevel[0], {10, 7} -> 
+               GrayLevel[0], {10, 8} -> GrayLevel[0], {10, 9} -> 
+               GrayLevel[0], {10, 10} -> GrayLevel[0], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               GrayLevel[0], {11, 9} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {11, 10} -> 
+               GrayLevel[0], {11, 11} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                8} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 11} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 11} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 11} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {5, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 11} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {6, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {6, 11} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {7, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {7, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {7, 11} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {8, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {8, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {9, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {9, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {9, 11} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {10, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {10, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {10, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {11, 
+                8} -> RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`],
+                {11, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {11, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {11, 11} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> 90\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {1, 12} -> 
+               GrayLevel[0], {1, 13} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               GrayLevel[0], {2, 12} -> GrayLevel[0], {2, 13} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 13} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 13} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 13} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+               GrayLevel[0], {6, 11} -> GrayLevel[0], {6, 12} -> 
+               GrayLevel[0], {6, 13} -> GrayLevel[0], {7, 1} -> 
+               GrayLevel[0], {7, 2} -> GrayLevel[0], {7, 3} -> 
+               GrayLevel[0], {7, 4} -> GrayLevel[0], {7, 5} -> 
+               GrayLevel[0], {7, 6} -> GrayLevel[0], {7, 7} -> 
+               GrayLevel[0], {7, 8} -> GrayLevel[0], {7, 9} -> 
+               GrayLevel[0], {7, 10} -> GrayLevel[0], {7, 11} -> 
+               GrayLevel[0], {7, 12} -> GrayLevel[0], {7, 13} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+               GrayLevel[0], {8, 11} -> GrayLevel[0], {8, 12} -> 
+               GrayLevel[0], {8, 13} -> GrayLevel[0], {9, 1} -> 
+               GrayLevel[0], {9, 2} -> GrayLevel[0], {9, 3} -> 
+               GrayLevel[0], {9, 4} -> GrayLevel[0], {9, 5} -> 
+               GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> 
+               GrayLevel[0], {9, 8} -> GrayLevel[0], {9, 9} -> 
+               GrayLevel[0], {9, 10} -> GrayLevel[0], {9, 11} -> 
+               GrayLevel[0], {9, 12} -> GrayLevel[0], {9, 13} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> 
+               GrayLevel[0], {10, 11} -> GrayLevel[0], {10, 12} -> 
+               GrayLevel[0], {10, 13} -> GrayLevel[0], {11, 1} -> 
+               GrayLevel[0], {11, 2} -> GrayLevel[0], {11, 3} -> 
+               GrayLevel[0], {11, 4} -> GrayLevel[0], {11, 5} -> 
+               GrayLevel[0], {11, 6} -> GrayLevel[0], {11, 7} -> 
+               GrayLevel[0], {11, 8} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {11, 9} -> 
+               GrayLevel[0], {11, 10} -> GrayLevel[0], {11, 11} -> 
+               GrayLevel[0], {11, 12} -> GrayLevel[0], {11, 13} -> 
+               GrayLevel[0], {12, 1} -> GrayLevel[0], {12, 2} -> 
+               GrayLevel[0], {12, 3} -> GrayLevel[0], {12, 4} -> 
+               GrayLevel[0], {12, 5} -> GrayLevel[0], {12, 6} -> 
+               GrayLevel[0], {12, 7} -> GrayLevel[0], {12, 8} -> 
+               GrayLevel[0], {12, 9} -> GrayLevel[0], {12, 10} -> 
+               GrayLevel[0], {12, 11} -> GrayLevel[0], {12, 12} -> 
+               GrayLevel[0], {12, 13} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.1304347826086956`}}, 
+             "Rows" -> {{1.3043478260869565`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {1, 12} -> 
+               GrayLevel[0], {1, 13} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               GrayLevel[0], {2, 12} -> GrayLevel[0], {2, 13} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 13} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 13} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 13} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 13} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 13} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 13} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {9, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {9, 13} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {10, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {10, 13} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 13} -> 
+               GrayLevel[0], {12, 1} -> GrayLevel[0], {12, 2} -> 
+               GrayLevel[0], {12, 3} -> GrayLevel[0], {12, 4} -> 
+               GrayLevel[0], {12, 5} -> GrayLevel[0], {12, 6} -> 
+               GrayLevel[0], {12, 7} -> GrayLevel[0], {12, 8} -> 
+               GrayLevel[0], {12, 9} -> GrayLevel[0], {12, 10} -> 
+               GrayLevel[0], {12, 11} -> GrayLevel[0], {12, 12} -> 
+               GrayLevel[0], {12, 13} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.1304347826086956`}}, 
+             "Rows" -> {{1.3043478260869565`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> 90\"\>"},
+    {"\<\"    |>\"\>"},
+    {"\<\"}\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{{3.8773650438393435`*^9, 3.8773650515000677`*^9}},
+ CellLabel->
+  "Out[974]=",ExpressionUUID->"91c89f44-413f-4775-9ac5-89119a4723d7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Working", "Section",
+ CellChangeTimes->{{3.8773561861753383`*^9, 
+  3.8773561867589903`*^9}},ExpressionUUID->"ec5167ff-9cea-4de0-aa99-\
+e60465bb10b4"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"parsedExamples", " ", "=", "\n", "\t", 
+   RowBox[{"ReturnIfFailure", "@", "\n", "\t", 
+    RowBox[{"ARCParseInputAndOutputScenes", "[", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"ARCParseFile", "[", "\"\<b548a754\>\"", "]"}], "[", 
+      "\"\<Train\>\"", "]"}], "\n", "\t", "]"}]}]}], ";"}]], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.876942400732851*^9, 3.8769424077186084`*^9}, 
+   3.8771054248655005`*^9, 3.877356137168094*^9},
+ CellLabel->
+  "In[806]:=",ExpressionUUID->"2f41df52-e1c5-4ab6-99ac-0da6c2d197ae"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ReloadARC", "[", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"NotTest", "@", "\n", 
+   RowBox[{
+   "ARCFindRotationalNormalizationsForScenes2", "[", "parsedExamples", 
+    "]"}]}], " ", "//", " ", "ARCIndent"}]}], "Code",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellChangeTimes->{{3.8767549296486545`*^9, 3.8767549327440653`*^9}, {
+   3.8767549697784204`*^9, 3.876755067812369*^9}, {3.876755125854787*^9, 
+   3.8767551479365525`*^9}, {3.8767551824904995`*^9, 3.876755209197632*^9}, {
+   3.8767572587944107`*^9, 3.8767572734350605`*^9}, {3.8767573222402487`*^9, 
+   3.8767573360979247`*^9}, 3.8769051469306498`*^9, {3.8769423749585214`*^9, 
+   3.8769424217658863`*^9}, 3.8769451154720316`*^9, {3.87694788124636*^9, 
+   3.876947882835124*^9}, 3.877356197451691*^9},
+ CellLabel->"In[969]:=",
+ CellID->6098139,
+ "TestId" -> "",ExpressionUUID->"8027dddd-ccea-462f-8630-c86f6931c21e"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"{\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> GrayLevel[0], {3, 1} -> 
+               GrayLevel[0], {3, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> GrayLevel[0], {4, 1} -> 
+               GrayLevel[0], {4, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> GrayLevel[0], {5, 1} -> 
+               GrayLevel[0], {5, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> GrayLevel[0], {6, 1} -> 
+               GrayLevel[0], {6, 2} -> GrayLevel[0], {6, 3} -> 
+               GrayLevel[0], {6, 4} -> GrayLevel[0], {6, 5} -> 
+               GrayLevel[0], {6, 6} -> GrayLevel[0], {6, 7} -> 
+               GrayLevel[0], {6, 8} -> GrayLevel[0], {6, 9} -> 
+               GrayLevel[0], {6, 10} -> GrayLevel[0], {6, 11} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> GrayLevel[0], {8, 3} -> 
+               GrayLevel[0], {8, 4} -> GrayLevel[0], {8, 5} -> 
+               GrayLevel[0], {8, 6} -> GrayLevel[0], {8, 7} -> 
+               GrayLevel[0], {8, 8} -> GrayLevel[0], {8, 9} -> 
+               GrayLevel[0], {8, 10} -> GrayLevel[0], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {9, 5} -> 
+               GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> 
+               GrayLevel[0], {9, 8} -> GrayLevel[0], {9, 9} -> 
+               GrayLevel[0], {9, 10} -> GrayLevel[0], {9, 11} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> 
+               GrayLevel[0], {10, 11} -> GrayLevel[0], {11, 1} -> 
+               GrayLevel[0], {11, 2} -> GrayLevel[0], {11, 3} -> 
+               GrayLevel[0], {11, 4} -> GrayLevel[0], {11, 5} -> 
+               GrayLevel[0], {11, 6} -> GrayLevel[0], {11, 7} -> 
+               GrayLevel[0], {11, 8} -> GrayLevel[0], {11, 9} -> 
+               GrayLevel[0], {11, 10} -> GrayLevel[0], {11, 11} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {2, 6} -> 
+               GrayLevel[0], {2, 7} -> GrayLevel[0], {2, 8} -> 
+               GrayLevel[0], {2, 9} -> GrayLevel[0], {2, 10} -> 
+               GrayLevel[0], {2, 11} -> GrayLevel[0], {3, 1} -> 
+               GrayLevel[0], {3, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               GrayLevel[0], {3, 9} -> GrayLevel[0], {3, 10} -> 
+               GrayLevel[0], {3, 11} -> GrayLevel[0], {4, 1} -> 
+               GrayLevel[0], {4, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               GrayLevel[0], {4, 9} -> GrayLevel[0], {4, 10} -> 
+               GrayLevel[0], {4, 11} -> GrayLevel[0], {5, 1} -> 
+               GrayLevel[0], {5, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               GrayLevel[0], {5, 9} -> GrayLevel[0], {5, 10} -> 
+               GrayLevel[0], {5, 11} -> GrayLevel[0], {6, 1} -> 
+               GrayLevel[0], {6, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+               GrayLevel[0], {6, 11} -> GrayLevel[0], {7, 1} -> 
+               GrayLevel[0], {7, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 3} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 4} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+               GrayLevel[0], {8, 11} -> GrayLevel[0], {9, 1} -> 
+               GrayLevel[0], {9, 2} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 3} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 4} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 5} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+               GrayLevel[0], {9, 11} -> GrayLevel[0], {10, 1} -> 
+               GrayLevel[0], {10, 2} -> GrayLevel[0], {10, 3} -> 
+               GrayLevel[0], {10, 4} -> GrayLevel[0], {10, 5} -> 
+               GrayLevel[0], {10, 6} -> GrayLevel[0], {10, 7} -> 
+               GrayLevel[0], {10, 8} -> GrayLevel[0], {10, 9} -> 
+               GrayLevel[0], {10, 10} -> GrayLevel[0], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               GrayLevel[0], {11, 9} -> GrayLevel[0], {11, 10} -> 
+               GrayLevel[0], {11, 11} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"RotationNormalization\\\" -> <|\"\>"},
+    {"\<\"            Object[<|\\\"Area.Rank\\\" -> 1|>] -> \
+<|\\\"Y.InverseRank\\\" -> 1|>,\"\>"},
+    {"\<\"            Object[<|\\\"Shape\\\" -> <|\\\"Name\\\" -> \\\"Pixel\\\
+\"|>|>] -> <|\\\"Y.InverseRank\\\" -> 2|>\"\>"},
+    {"\<\"        |>\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                8} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                9} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                11} -> GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 11} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 11} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {5, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 11} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                8} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {6, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                10} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                11} -> GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               GrayLevel[0], {7, 9} -> GrayLevel[0], {7, 10} -> 
+               GrayLevel[0], {7, 11} -> GrayLevel[0], {8, 1} -> 
+               GrayLevel[0], {8, 2} -> GrayLevel[0], {8, 3} -> 
+               GrayLevel[0], {8, 4} -> GrayLevel[0], {8, 5} -> 
+               GrayLevel[0], {8, 6} -> GrayLevel[0], {8, 7} -> 
+               GrayLevel[0], {8, 8} -> GrayLevel[0], {8, 9} -> 
+               GrayLevel[0], {8, 10} -> GrayLevel[0], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               GrayLevel[0], {9, 9} -> GrayLevel[0], {9, 10} -> 
+               GrayLevel[0], {9, 11} -> GrayLevel[0], {10, 1} -> 
+               GrayLevel[0], {10, 2} -> GrayLevel[0], {10, 3} -> 
+               GrayLevel[0], {10, 4} -> GrayLevel[0], {10, 5} -> 
+               GrayLevel[0], {10, 6} -> GrayLevel[0], {10, 7} -> 
+               GrayLevel[0], {10, 8} -> GrayLevel[0], {10, 9} -> 
+               GrayLevel[0], {10, 10} -> GrayLevel[0], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               GrayLevel[0], {11, 9} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {11, 10} -> 
+               GrayLevel[0], {11, 11} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                8} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {2, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {2, 11} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {3, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {3, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {3, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {3, 11} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {4, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {4, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {4, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {4, 11} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {5, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {5, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {5, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {5, 11} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {6, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {6, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {6, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {6, 11} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {7, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {7, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {7, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {7, 11} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {8, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {8, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {8, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {8, 11} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {9, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {9, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {9, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {9, 11} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {10, 
+                8} -> RGBColor[
+                1., 0.2549019607843137, 0.21176470588235294`], {10, 9} -> 
+               RGBColor[1., 0.2549019607843137, 0.21176470588235294`], {10, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {10, 11} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {11, 
+                8} -> RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`],
+                {11, 9} -> 
+               RGBColor[0.1803921568627451, 0.8, 0.25098039215686274`], {11, 
+                10} -> RGBColor[
+                0.1803921568627451, 0.8, 0.25098039215686274`], {11, 11} -> 
+               GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.2380952380952381`}}, 
+             "Rows" -> {{1.4285714285714284`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> 90\"\>"},
+    {"\<\"    |>,\"\>"},
+    {"\<\"    <|\"\>"},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Input\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {1, 12} -> 
+               GrayLevel[0], {1, 13} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               GrayLevel[0], {2, 12} -> GrayLevel[0], {2, 13} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 13} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 13} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 13} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               GrayLevel[0], {6, 9} -> GrayLevel[0], {6, 10} -> 
+               GrayLevel[0], {6, 11} -> GrayLevel[0], {6, 12} -> 
+               GrayLevel[0], {6, 13} -> GrayLevel[0], {7, 1} -> 
+               GrayLevel[0], {7, 2} -> GrayLevel[0], {7, 3} -> 
+               GrayLevel[0], {7, 4} -> GrayLevel[0], {7, 5} -> 
+               GrayLevel[0], {7, 6} -> GrayLevel[0], {7, 7} -> 
+               GrayLevel[0], {7, 8} -> GrayLevel[0], {7, 9} -> 
+               GrayLevel[0], {7, 10} -> GrayLevel[0], {7, 11} -> 
+               GrayLevel[0], {7, 12} -> GrayLevel[0], {7, 13} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               GrayLevel[0], {8, 9} -> GrayLevel[0], {8, 10} -> 
+               GrayLevel[0], {8, 11} -> GrayLevel[0], {8, 12} -> 
+               GrayLevel[0], {8, 13} -> GrayLevel[0], {9, 1} -> 
+               GrayLevel[0], {9, 2} -> GrayLevel[0], {9, 3} -> 
+               GrayLevel[0], {9, 4} -> GrayLevel[0], {9, 5} -> 
+               GrayLevel[0], {9, 6} -> GrayLevel[0], {9, 7} -> 
+               GrayLevel[0], {9, 8} -> GrayLevel[0], {9, 9} -> 
+               GrayLevel[0], {9, 10} -> GrayLevel[0], {9, 11} -> 
+               GrayLevel[0], {9, 12} -> GrayLevel[0], {9, 13} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               GrayLevel[0], {10, 9} -> GrayLevel[0], {10, 10} -> 
+               GrayLevel[0], {10, 11} -> GrayLevel[0], {10, 12} -> 
+               GrayLevel[0], {10, 13} -> GrayLevel[0], {11, 1} -> 
+               GrayLevel[0], {11, 2} -> GrayLevel[0], {11, 3} -> 
+               GrayLevel[0], {11, 4} -> GrayLevel[0], {11, 5} -> 
+               GrayLevel[0], {11, 6} -> GrayLevel[0], {11, 7} -> 
+               GrayLevel[0], {11, 8} -> 
+               RGBColor[0.4980392156862745, 0.8588235294117647, 1.], {11, 9} -> 
+               GrayLevel[0], {11, 10} -> GrayLevel[0], {11, 11} -> 
+               GrayLevel[0], {11, 12} -> GrayLevel[0], {11, 13} -> 
+               GrayLevel[0], {12, 1} -> GrayLevel[0], {12, 2} -> 
+               GrayLevel[0], {12, 3} -> GrayLevel[0], {12, 4} -> 
+               GrayLevel[0], {12, 5} -> GrayLevel[0], {12, 6} -> 
+               GrayLevel[0], {12, 7} -> GrayLevel[0], {12, 8} -> 
+               GrayLevel[0], {12, 9} -> GrayLevel[0], {12, 10} -> 
+               GrayLevel[0], {12, 11} -> GrayLevel[0], {12, 12} -> 
+               GrayLevel[0], {12, 13} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.1304347826086956`}}, 
+             "Rows" -> {{1.3043478260869565`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {
+     TemplateBox[{
+       TemplateBox[{"\"        \\\"Output\\\" -> \"", 
+         TagBox[
+          
+          GridBox[{{
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}, {
+            "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", "\"\"", 
+             "\"\"", "\"\"", "\"\"", "\"\"", "\"\""}}, AutoDelete -> False, 
+           GridBoxBackground -> {
+            "Columns" -> {{None}}, "Rows" -> {{None}}, 
+             "ItemsIndexed" -> {{1, 1} -> GrayLevel[0], {1, 2} -> 
+               GrayLevel[0], {1, 3} -> GrayLevel[0], {1, 4} -> 
+               GrayLevel[0], {1, 5} -> GrayLevel[0], {1, 6} -> 
+               GrayLevel[0], {1, 7} -> GrayLevel[0], {1, 8} -> 
+               GrayLevel[0], {1, 9} -> GrayLevel[0], {1, 10} -> 
+               GrayLevel[0], {1, 11} -> GrayLevel[0], {1, 12} -> 
+               GrayLevel[0], {1, 13} -> GrayLevel[0], {2, 1} -> 
+               GrayLevel[0], {2, 2} -> GrayLevel[0], {2, 3} -> 
+               GrayLevel[0], {2, 4} -> GrayLevel[0], {2, 5} -> 
+               GrayLevel[0], {2, 6} -> GrayLevel[0], {2, 7} -> 
+               GrayLevel[0], {2, 8} -> GrayLevel[0], {2, 9} -> 
+               GrayLevel[0], {2, 10} -> GrayLevel[0], {2, 11} -> 
+               GrayLevel[0], {2, 12} -> GrayLevel[0], {2, 13} -> 
+               GrayLevel[0], {3, 1} -> GrayLevel[0], {3, 2} -> 
+               GrayLevel[0], {3, 3} -> GrayLevel[0], {3, 4} -> 
+               GrayLevel[0], {3, 5} -> GrayLevel[0], {3, 6} -> 
+               GrayLevel[0], {3, 7} -> GrayLevel[0], {3, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {3, 13} -> 
+               GrayLevel[0], {4, 1} -> GrayLevel[0], {4, 2} -> 
+               GrayLevel[0], {4, 3} -> GrayLevel[0], {4, 4} -> 
+               GrayLevel[0], {4, 5} -> GrayLevel[0], {4, 6} -> 
+               GrayLevel[0], {4, 7} -> GrayLevel[0], {4, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {4, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {4, 13} -> 
+               GrayLevel[0], {5, 1} -> GrayLevel[0], {5, 2} -> 
+               GrayLevel[0], {5, 3} -> GrayLevel[0], {5, 4} -> 
+               GrayLevel[0], {5, 5} -> GrayLevel[0], {5, 6} -> 
+               GrayLevel[0], {5, 7} -> GrayLevel[0], {5, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {5, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {5, 13} -> 
+               GrayLevel[0], {6, 1} -> GrayLevel[0], {6, 2} -> 
+               GrayLevel[0], {6, 3} -> GrayLevel[0], {6, 4} -> 
+               GrayLevel[0], {6, 5} -> GrayLevel[0], {6, 6} -> 
+               GrayLevel[0], {6, 7} -> GrayLevel[0], {6, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {6, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {6, 13} -> 
+               GrayLevel[0], {7, 1} -> GrayLevel[0], {7, 2} -> 
+               GrayLevel[0], {7, 3} -> GrayLevel[0], {7, 4} -> 
+               GrayLevel[0], {7, 5} -> GrayLevel[0], {7, 6} -> 
+               GrayLevel[0], {7, 7} -> GrayLevel[0], {7, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {7, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {7, 13} -> 
+               GrayLevel[0], {8, 1} -> GrayLevel[0], {8, 2} -> 
+               GrayLevel[0], {8, 3} -> GrayLevel[0], {8, 4} -> 
+               GrayLevel[0], {8, 5} -> GrayLevel[0], {8, 6} -> 
+               GrayLevel[0], {8, 7} -> GrayLevel[0], {8, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {8, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {8, 13} -> 
+               GrayLevel[0], {9, 1} -> GrayLevel[0], {9, 2} -> 
+               GrayLevel[0], {9, 3} -> GrayLevel[0], {9, 4} -> 
+               GrayLevel[0], {9, 5} -> GrayLevel[0], {9, 6} -> 
+               GrayLevel[0], {9, 7} -> GrayLevel[0], {9, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {9, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {9, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {9, 13} -> 
+               GrayLevel[0], {10, 1} -> GrayLevel[0], {10, 2} -> 
+               GrayLevel[0], {10, 3} -> GrayLevel[0], {10, 4} -> 
+               GrayLevel[0], {10, 5} -> GrayLevel[0], {10, 6} -> 
+               GrayLevel[0], {10, 7} -> GrayLevel[0], {10, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {10, 9} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 10} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 11} -> 
+               RGBColor[
+                0.9411764705882353, 0.07058823529411765, 
+                 0.7450980392156863], {10, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {10, 13} -> 
+               GrayLevel[0], {11, 1} -> GrayLevel[0], {11, 2} -> 
+               GrayLevel[0], {11, 3} -> GrayLevel[0], {11, 4} -> 
+               GrayLevel[0], {11, 5} -> GrayLevel[0], {11, 6} -> 
+               GrayLevel[0], {11, 7} -> GrayLevel[0], {11, 8} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 9} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 10} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 11} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 12} -> 
+               RGBColor[0., 0.4549019607843137, 0.8509803921568627], {11, 13} -> 
+               GrayLevel[0], {12, 1} -> GrayLevel[0], {12, 2} -> 
+               GrayLevel[0], {12, 3} -> GrayLevel[0], {12, 4} -> 
+               GrayLevel[0], {12, 5} -> GrayLevel[0], {12, 6} -> 
+               GrayLevel[0], {12, 7} -> GrayLevel[0], {12, 8} -> 
+               GrayLevel[0], {12, 9} -> GrayLevel[0], {12, 10} -> 
+               GrayLevel[0], {12, 11} -> GrayLevel[0], {12, 12} -> 
+               GrayLevel[0], {12, 13} -> GrayLevel[0]}}, 
+           GridBoxDividers -> {"Columns" -> {{True}}, "Rows" -> {{True}}}, 
+           GridBoxFrame -> {"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+            GridBoxItemSize -> {
+            "Columns" -> {{1.1304347826086956`}}, 
+             "Rows" -> {{1.3043478260869565`}}}, FrameStyle -> {
+             AbsoluteThickness[1], 
+             GrayLevel[0.5]}], "Grid"]}, "RowDefault"], "\",\""},
+      "RowDefault"]},
+    {"\<\"        \\\"NormalizationAngle\\\" -> 90\"\>"},
+    {"\<\"    |>\"\>"},
+    {"\<\"}\"\>"}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellChangeTimes->{{3.8773561995938888`*^9, 3.8773562185766015`*^9}, 
+   3.8773568285968513`*^9, 3.877356891635202*^9, {3.8773569824283576`*^9, 
+   3.8773569844313245`*^9}, 3.8773572039770784`*^9, {3.8773572369414587`*^9, 
+   3.8773572801768274`*^9}, 3.877357379415794*^9, 3.8773574387020664`*^9, 
+   3.877357472633973*^9, 3.8773575103839636`*^9, {3.8773575465248795`*^9, 
+   3.8773575877205544`*^9}, {3.8773576485157347`*^9, 3.877357669828404*^9}, {
+   3.8773577429421277`*^9, 3.877357755921338*^9}, 3.877357879514289*^9, {
+   3.8773633381208696`*^9, 3.877363359427122*^9}, 3.8773633917622447`*^9, 
+   3.87736343207196*^9, 3.8773634828965383`*^9, {3.8773635577105846`*^9, 
+   3.8773635633451133`*^9}, 3.877363624668519*^9, {3.8773636772940035`*^9, 
+   3.87736374788133*^9}, {3.8773638098534875`*^9, 3.877363831473298*^9}, {
+   3.877364066655749*^9, 3.877364072531357*^9}, 3.877364106631207*^9, 
+   3.8773642372613196`*^9, {3.8773644147220864`*^9, 3.877364493624563*^9}, 
+   3.8773645302904053`*^9, 3.8773645678773947`*^9, {3.877364794352648*^9, 
+   3.8773648347986703`*^9}, {3.877364865241253*^9, 3.877364908203124*^9}, 
+   3.877364953920678*^9, {3.8773649842845545`*^9, 3.87736500781814*^9}},
+ CellLabel->
+  "Out[970]=",ExpressionUUID->"b327d504-4bb1-4a1d-bb55-6c9a0c510780"]
+}, Open  ]]
+}, Open  ]]
+},
+Evaluator->"Local",
+WindowSize->{958, 980},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+DockedCells->{
+  Cell[
+   BoxData[
+    DynamicBox[
+     ToBoxes[
+      Column[{
+        Row[{
+          Button["New Test", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`NewFunctionCell[
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes2], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861]], ImageSize -> {95., 40}, 
+           Method -> "Queued"], " ", 
+          Button["Add Tests to File", 
+           
+           DevTools`NotebookTools`\
+RedirectPrintsAndMessagesToDynamicOutputSection[
+            DevTools`TestingTools`CreateUnitTests[
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, "SubTest" -> 
+             None], 
+            HoldComplete[
+            DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861]], ImageSize -> {162.5, 40}, 
+           Method -> "Queued"], " ", 
+          Button[
+          "Run Tests", 
+           DevTools`TestingTools`RunUnitTestsInNotebook[
+            Daniel`ARC`ARCFindRotationalNormalizationsForScenes2]; Null, 
+           ImageSize -> {102.5, 40}, Method -> "Queued"], " ", 
+          Button["Options", Print[
+             Utility`Indent`Indent2[
+              Options[Daniel`ARC`ARCFindRotationalNormalizationsForScenes2]]]; 
+           Null, ImageSize -> {87.5, 40}, Method -> "Queued"], " ", 
+          Button["Edit Tests", 
+           DevTools`TestingTools`EditUnitTests[
+           Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, "SubTest" -> 
+            None], ImageSize -> {110., 40}, Method -> "Queued"], " ", 
+          Button["Edit Function", 
+           DevTools`SourceTools`EditFunction[
+           Daniel`ARC`ARCFindRotationalNormalizationsForScenes2], 
+           ImageSize -> {132.5, 40}, Method -> "Queued"], " ", 
+          Row[{
+            
+            DynamicModule[{
+             DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+              "Capture"}, 
+             Button[
+              Dynamic[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel], 
+              If[
+              DevTools`TestingTools`FunctionCapture`Private`buttonLabel === 
+               "Capture", 
+               DevTools`TestingTools`FunctionCapture`EnableFunctionCapture[
+                Daniel`ARC`ARCFindRotationalNormalizationsForScenes2]; 
+               DevTools`TestingTools`FunctionCapture`\
+RegisterFunctionCaptureNotebook[
+                Daniel`ARC`ARCFindRotationalNormalizationsForScenes2, 
+                 InputNotebook[]]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Release"; Null, 
+               DevTools`TestingTools`FunctionCapture`DisableFunctionCapture[
+                Daniel`ARC`ARCFindRotationalNormalizationsForScenes2]; 
+               DevTools`TestingTools`FunctionCapture`Private`buttonLabel = 
+                "Capture"; Null], ImageSize -> {100, 40}, Method -> "Queued"],
+              DynamicModuleValues :> {}], 
+            Button["?", 
+             DevTools`TestingTools`FunctionCapture`CaptureFunctionHelp[], 
+             ImageSize -> {30, 40}, Method -> "Queued"]}], " ", 
+          Row[{
+            Button["<", 
+             DevTools`NotebookTools`MoveNotebook["Left"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"], 
+            Button[">", 
+             DevTools`NotebookTools`MoveNotebook["Right"], 
+             ImageSize -> {42.5, 40}, Method -> "Queued"]}]}], 
+        DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861; If[
+          And[
+           ValueQ[
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861], 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861 =!= "", 
+           DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861 =!= Null], 
+          (If[
+           TrueQ[
+            OptionValue[
+            DevTools`NotebookTools`DynamicOutputSection, {"MaxHeight" -> 300},
+              "NakedSection"]], 
+           Framed[#, FrameStyle -> None, FrameMargins -> 2], 
+           Framed[#, FrameStyle -> LightGray, Background -> White, 
+            FrameMargins -> 15]]& )[
+           Grid[{{
+              Pane[
+              DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861, "ImageSize" -> {Full, {0, 
+                  OptionValue[
+                  DevTools`NotebookTools`DynamicOutputSection, {
+                   "MaxHeight" -> 300}, "MaxHeight"]}}, Scrollbars -> 
+               Automatic, FrameMargins -> 0]}, 
+             If[
+              TrueQ[
+               OptionValue[
+               DevTools`NotebookTools`DynamicOutputSection, {
+                "MaxHeight" -> 300}, "NakedSection"]], 
+              Apply[Sequence, {}], {
+               Button[
+               "OK", DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861 = "", 
+                ImageSize -> {100, 33}]}]}, Spacings -> {0, 1}, 
+            Alignment -> {Left, Top}]], 
+          Apply[Sequence, {}]]}], StandardForm], 
+     TrackedSymbols :> {
+      DevTools`NotebookTools`Private`\
+DynamicOutputSectionVariable2022111314233149861}]], "DockedCell"]},
+TaggingRules->{
+ "CreateNamedNotebook2Args" -> {
+   "ARCFindRotationalNormalizationsForScenes2", "Type" -> "Function", 
+    "GenerateNotebookArgs" -> {
+     "Function" -> Daniel`ARC`ARCFindRotationalNormalizationsForScenes2}, 
+    "ReturnNotebook" -> True}},
+FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"7a5185b2-fba1-439c-bb05-6e6ec64901b7"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 113, 0, 98, "Title",ExpressionUUID->"f69fc97f-bfe2-4fac-a773-e6305d35596e"],
+Cell[696, 24, 279, 7, 54, "Code",ExpressionUUID->"aec8bc5d-de62-4dbd-aa5d-c0256f03baf4",
+ InitializationCell->False],
+Cell[CellGroupData[{
+Cell[1000, 35, 79, 0, 67, "Section",ExpressionUUID->"09ac08ca-2c04-4caa-817e-37e99d3b1496"],
+Cell[CellGroupData[{
+Cell[1104, 39, 3954, 89, 52, "TestUI",ExpressionUUID->"8fc5553a-3b27-4467-af4c-698f67ba09c6",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[5061, 130, 708, 17, 90, "Code",ExpressionUUID->"d0cde915-4850-46ce-b8a4-be451b854b6b",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->26200580]
+}, Open  ]],
+Cell[5784, 150, 33444, 582, 881, "Output",ExpressionUUID->"48d102da-037a-47b9-ab25-eaa245d40a9d"],
+Cell[CellGroupData[{
+Cell[39253, 736, 3954, 89, 52, "TestUI",ExpressionUUID->"47c13885-7167-4564-b5e1-b0a18d418df9",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[43210, 827, 734, 18, 90, "Code",ExpressionUUID->"63e5c30c-f3d9-42fb-aa60-e50224ff476e",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->85653390]
+}, Open  ]],
+Cell[43959, 848, 49762, 836, 1847, "Output",ExpressionUUID->"91c89f44-413f-4775-9ac5-89119a4723d7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[93758, 1689, 156, 3, 67, "Section",ExpressionUUID->"ec5167ff-9cea-4de0-aa99-e60465bb10b4"],
+Cell[93917, 1694, 566, 12, 108, "Code",ExpressionUUID->"2f41df52-e1c5-4ab6-99ac-0da6c2d197ae",
+ InitializationCell->False],
+Cell[94486, 1708, 955, 19, 72, "Code",ExpressionUUID->"8027dddd-ccea-462f-8630-c86f6931c21e",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ InitializationCell->False,
+ CellID->6098139],
+Cell[95444, 1729, 50887, 851, 1847, "Output",ExpressionUUID->"b327d504-4bb1-4a1d-bb55-6c9a0c510780"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
