@@ -147,3 +147,27 @@ Test[
     ,
     TestID -> "ARCConstantScore-20221010-FR6HTR"
 ]
+
+Test[
+    Daniel`ARC`ARCConstantScore[-1]
+    ,
+    0.01
+    ,
+    TestID -> "ARCConstantScore-20221117-YU9Q1K"
+]
+
+Test[
+    Daniel`ARC`ARCConstantScore[-2]
+    ,
+    -0.11
+    ,
+    TestID -> "ARCConstantScore-20221117-6MSIUT"
+]
+
+Test[
+    Daniel`ARC`ARCConstantScore[-5]
+    ,
+    -0.35
+    ,
+    TestID -> "ARCConstantScore-20221117-DD8AMG"
+]

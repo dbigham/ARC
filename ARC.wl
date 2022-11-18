@@ -4476,7 +4476,20 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                     (* Nov 8 2022: Started timing out, but still fails with extra time. *)
                     "42a15761" |
                     (* Nov 12 2022 *)
-                    "3ee1011a"
+                    "3ee1011a" |
+                    (* Started failing approx Nov 13 2022.
+                       Seems to pass in 1.2 minutes now if given more time. *)
+                    "8ee62060" |
+                    (* Started failing approx Nov 13 2022.
+                       Going to give it extra time incase that's the cause.
+                       Does look to be working now in parallel kernel. *)
+                    "2b01abd0" |
+                    (* Started Nov 15 2022, I suspect because of rotational normalization
+                       being considered if the score is < about -2. *)
+                    "8d510a79" |
+                    (* Started Nov 15 2022, I suspect because of rotational normalization
+                       being considered if the score is < about -2. *)
+                    "d9f24cd1"
                 ],
                 (* If an input is known to be slow, but should be working, then we give
                    it lots of time to try to avoid false positive failures. *)
@@ -5258,7 +5271,12 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                                         TrueQ[workingRulesFound[]],
                                         !TrueQ[ARCWorkingQ[examples, res2, "TrainingExamplesOnly" -> True, "ResolveObjectAmbiguityArbitrarily" -> False]]
                                     ],
-                                    (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0
+                                    (* A realization is that extra keys like RotationNormalization
+                                       don't seem to get taken into account by ARCRuleSetScore
+                                       because it just looks at the rules list, so we'll add
+                                       0.25 here as the penalty for needing rotational
+                                       normalization. e.g. 31aa019c *)
+                                    (newRulesScore = ARCRuleSetScore[res2["Rules"]]) - existingRulesScore >= 0.25
                                 ]
                             ],
                             foundRulesQ = True;
@@ -13902,7 +13920,9 @@ ARCTransformScore[key_, rhs_] :=
                 Sort[{key, objectValueProperty}],
                 Alternatives[
                     {"Y", "Y2"},
-                    {"X", "X2"}
+                    {"Y2", "Y"},
+                    {"X", "X2"},
+                    {"X2", "X"}
                 ]
             ],
                 (* These properties are very compatible with each other. e.g. d6ad076f *)
@@ -13912,35 +13932,91 @@ ARCTransformScore[key_, rhs_] :=
                         (* An object is being placed directly below another object, which is
                            a very semantically sensible thing to do. e.g. d6ad076f
                            ARCTransformScore-20221109-2U7DOJ *)
-                        0.1,
+                        0.05,
                     "X" -> Inactive[Plus][ObjectValue[_, "X2"], 1],
                         (* An object is being placed directly to the right of another object,
                            which is a very semantically sensible thing to do. *)
-                        0.1,
+                        0.05,
                     "Y2" -> Inactive[Plus][ObjectValue[_, "Y"], -1],
                         (* An object is being placed directly above another object,
                            which is a very semantically sensible thing to do. *)
-                        0.1,
+                        0.05,
                     "X2" -> Inactive[Plus][ObjectValue[_, "X"], -1],
                         (* An object is being placed directly to the left of another object,
                            which is a very semantically sensible thing to do. *)
-                        0.1,
+                        0.05,
                     _,
-                        -0.025
+                        -0.01
+                ],
+            MatchQ[
+                Sort[{key, objectValueProperty}],
+                Alternatives[
+                    {"YInverse", "Y2Inverse"},
+                    {"Y2Inverse", "YInverse"},
+                    {"XInverse", "X2Inverse"},
+                    {"X2Inverse", "XInverse"}
+                ]
+            ],
+                (* These properties are very compatible with each other. e.g. d6ad076f *)
+                Switch[
+                    key -> rhs,
+                    "YInverse" -> Inactive[Plus][ObjectValue[_, "Y2Inverse"], 1],
+                        (* An object is being placed directly below another object, which is
+                           a very semantically sensible thing to do. *)
+                        0.04,
+                    "XInverse" -> Inactive[Plus][ObjectValue[_, "X2Inverse"], 1],
+                        (* An object is being placed directly to the right of another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.04,
+                    "Y2Inverse" -> Inactive[Plus][ObjectValue[_, "YInverse"], -1],
+                        (* An object is being placed directly above another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.04,
+                    "X2Inverse" -> Inactive[Plus][ObjectValue[_, "XInverse"], -1],
+                        (* An object is being placed directly to the left of another object,
+                           which is a very semantically sensible thing to do. *)
+                        0.04,
+                    _,
+                        -0.011
                 ],
             $properties[key, "Type2"] === $properties[objectValueProperty, "Type2"],
                 -0.5,
+            (* e.g. Y2Inverse vs Height *)
+            And[
+                MatchQ[
+                    $properties[key, "Type2"],
+                    "PositionDimensionValue" | "SizeDimensionValue"
+                 ],
+                 MatchQ[
+                    $properties[objectValueProperty, "Type2"],
+                    "PositionDimensionValue" | "SizeDimensionValue"
+                 ]
+            ],
+                -0.65,
+            And[
+                StringQ[objectValueProperty],
+                rhs === ObjectValue["InputScene", "ObjectCount"]
+            ],
+                (* We were using the "Count" case below for d0f5fe59, but as of
+                   Nov 17 2022, that isn't enough, so this special case for
+                   Scene.ObjectCount seems to be needed. *)
+                -0.4,
             And[
                 (* Since we could have something like Inactive[First]["Colors"]. *)
                 StringQ[objectValueProperty],
                 StringEndsQ[objectValueProperty, "Count"]
             ],
                 (* If the property is a count property, then although it doesn't
-                    match the type of property we're trying to infer, a count is a
-                    pretty generic thing, so it feels a bit more plausible that
-                    we might want to use it to infer some random thing.
-                    e.g. d0f5fe59 *)
-                -0.75,
+                   match the type of property we're trying to infer, a count is a
+                   pretty generic thing, so it feels a bit more plausible that
+                   we might want to use it to infer some random thing.
+                   e.g. d0f5fe59
+                   Nov 17 2022: Lowered from -0.75 to 0.65 since d0f5fe59 got broken
+                                by lowering the score for:
+                                X2 -> Inactive[Plus][ObjectValue[<|"X.Rank" -> 2|>, X], -1]
+                                But even that wasn't enough to fix things, so I added
+                                a case above for ObjectCount. *)
+                -0.65,
             True,
                 (* We are inferring a property using the value of another property
                    where the types don't match. This in general is not good/likely. *)
@@ -16327,6 +16403,16 @@ Module[{tasks},
                 "7039b2d7",
                 "da2b0fe3"
             }
+        |>,
+        (* Crazy rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "dc433765",
+            "Timestamp" -> DateObject[{2022, 11, 15}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 32763,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
@@ -19484,6 +19570,11 @@ Clear[ARCGridOrDividerQ];
 ARCGridOrDividerQ[image_List, y_, x_, sceneWidth_, sceneHeight_] :=
     Module[{spansWidth, spansHeight, firstRow},
         
+        If [sceneWidth === 1 || sceneHeight === 1,
+            (* e.g. 746b3537 *)
+            Return[False, Module]
+        ];
+        
         colors = Sort[DeleteDuplicates[Flatten[image]]];
         
         spansWidth = ImageWidth[image] === sceneWidth;
@@ -20905,7 +20996,7 @@ ARCFindOccludedLines[scene_ARCScene, background_, objects_List] :=
     ]
 
 ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_List, objectsByPixelPosition_Association, objectsByUUID_Association] :=
-    Module[{nextObject, nextNextPosition, nextNextObject, comparisonProperty},
+    Module[{nextObject, nextNextPosition, nextNextObject, comparisonProperty, sideObject1, sideObject2},
         ARCEcho3["ARCFindOccludedLines" -> direction -> nextPosition];
         nextObject = objectsByPixelPosition[nextPosition];
         If [And[
@@ -20922,14 +21013,14 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
                     And[
                         MatchQ[direction, {0, 1} | {0, -1}],
                         MatchQ[
-                            objectsByUUID[objectsByPixelPosition[nextPosition + {-1, 0}]]["Shape"],
+                            sideObject1 = objectsByUUID[objectsByPixelPosition[nextPosition + {-1, 0}]]["Shape"],
                             Alternatives[
                                 KeyValuePattern[{"Name" -> "Line", "Angle" -> 90}],
                                 KeyValuePattern["Name" -> "Pixel"]
                             ]
                         ],
                         MatchQ[
-                            objectsByUUID[objectsByPixelPosition[nextPosition + {1, 0}]]["Shape"],
+                            sideObject2 = objectsByUUID[objectsByPixelPosition[nextPosition + {1, 0}]]["Shape"],
                             Alternatives[
                                 KeyValuePattern[{"Name" -> "Line", "Angle" -> 90}],
                                 KeyValuePattern["Name" -> "Pixel"]
@@ -20939,20 +21030,21 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
                     And[
                         MatchQ[direction, {1, 0} | {-1, 0}],
                         MatchQ[
-                            objectsByUUID[objectsByPixelPosition[nextPosition + {0, 1}]]["Shape"],
+                            sideObject1 = objectsByUUID[objectsByPixelPosition[nextPosition + {0, 1}]]["Shape"],
                             Alternatives[
                                 KeyValuePattern[{"Name" -> "Line", "Angle" -> 0}],
                                 KeyValuePattern["Name" -> "Pixel"]
                             ]
                         ],
                         MatchQ[
-                            objectsByUUID[objectsByPixelPosition[nextPosition + {0, -1}]]["Shape"],
+                            sideObject2 = objectsByUUID[objectsByPixelPosition[nextPosition + {0, -1}]]["Shape"],
                             Alternatives[
                                 KeyValuePattern[{"Name" -> "Line", "Angle" -> 0}],
                                 KeyValuePattern["Name" -> "Pixel"]
                             ]
                         ]
-                    ]
+                    ],
+                    sideObject1["Color"] === sideObject2["Color"]
                 ],
                 Switch[
                     direction,
@@ -20976,8 +21068,18 @@ ARCFindOccludedLines[lineOrRectangle_Association, direction_List, nextPosition_L
                         ShapeQ[lineOrRectangle, "Pixel"],
                         ShapeQ[nextObject, "Line"],
                         Or[
-                            Abs[direction[[1]]] === 1 && nextObject["Shape", "Angle"] === 90,
-                            Abs[direction[[2]]] === 1 && nextObject["Shape", "Angle"] === 0
+                            (* Line isn't "across" the direction of occlusion.
+                               ARCFindOccludedLines-20220829-W6RA8O *)
+                            Or[
+                                Abs[direction[[1]]] === 1 && nextObject["Shape", "Angle"] === 90,
+                                Abs[direction[[2]]] === 1 && nextObject["Shape", "Angle"] === 0
+                            ],
+                            (* Or, if it's across, but it ends right at the occlusion.
+                               ARCFindOccludedLines-20221115-516FQR *)
+                            Or[
+                                Abs[direction[[1]]] === 1 && Or[nextObject["X"] === lineOrRectangle["X"], nextObject["X2"] === lineOrRectangle["X"]],
+                                Abs[direction[[2]]] === 1 && Or[nextObject["Y"] === lineOrRectangle["Y"], nextObject["Y2"] === lineOrRectangle["Y"]]
+                            ]
                         ]
                     ]
                 ]
@@ -29946,6 +30048,10 @@ ARCConstantScore[4 | 5] := -0.3
 ARCConstantScore[6 | 7] := -0.4
 ARCConstantScore[8 | 9 | 10] := -0.5
 
+(* Negative values. *)
+ARCConstantScore[value_Integer /; value < 0] :=
+    ARCConstantScore[Abs[value]] * 1.2 + 0.01
+
 ARCConstantScore[value_Integer /; value < 100] :=
     -0.5 - (Abs[value] / 100) * 0.5
 
@@ -32076,17 +32182,12 @@ Options[ARCFindRotationalNormalizationsForScenes] =
 ARCFindRotationalNormalizationsForScenes[examples_List, OptionsPattern[]] :=
     Module[{res},
         
-        res = Module[{favoredAngle = Null},
-            
-            (* Check if referenceable objects can be used to determine how scenes should
-               be rotationally normalized. *)
-            Replace[
-                ARCFindRotationalNormalizationsForScenes2[examples],
-                res: Except[_Missing] :> Return[res, Module]
-            ];
+        res = Module[{favoredAngle = Null, skipConsideringReferenceableObjectsQ = False},
             
             (* Check if the motion of objects can help us differentiate whether we should rotate
-            clockwise vs. counter clockwise? *)
+               clockwise vs. counter clockwise? *)
+            (* We do this before ARCFindRotationalNormalizationsForScenes2 since it feels like
+               a stronger signal e.g. 5168d44c. *)
             Replace[
                 ARCFindRotationalNormalizationsForScenes4[examples],
                 res: Except[_Missing] :> (
@@ -32094,17 +32195,27 @@ ARCFindRotationalNormalizationsForScenes[examples_List, OptionsPattern[]] :=
                         DeleteDuplicates[Rest[res][[All, "NormalizationAngle"]]],
                         {-90} :> (
                             (* It appears to always be the case that when we need to normalize
-                            an input rotationally, we want to use an angle of -90 rather than
-                            the default angle of 90, so we'll make note of that wrt
-                            ARCFindRotationalNormalizationsForScenes3. *)
+                               an input rotationally, we want to use an angle of -90 rather than
+                               the default angle of 90, so we'll make note of that wrt
+                               ARCFindRotationalNormalizationsForScenes3. *)
+                            skipConsideringReferenceableObjectsQ = True;
                             favoredAngle = -90
                         )
                     ]
                 )
             ];
             
+            If [!TrueQ[skipConsideringReferenceableObjectsQ],
+                (* Check if referenceable objects can be used to determine how scenes should
+                   be rotationally normalized. *)
+                Replace[
+                    ARCFindRotationalNormalizationsForScenes2[examples],
+                    res: Except[_Missing] :> Return[res, Module]
+                ]
+            ];
+            
             (* Check if the direction of scene objects can be used to determine how scenes should
-            be rotationally normalized. *)
+               be rotationally normalized. *)
             Replace[
                 ARCFindRotationalNormalizationsForScenes3[examples, "FavoredRotationAngle" -> favoredAngle],
                 res: Except[_Missing] :> Return[res, Module]
