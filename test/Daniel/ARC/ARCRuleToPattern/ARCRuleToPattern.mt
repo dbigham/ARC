@@ -126,15 +126,51 @@ Test[
     Condition[
         Daniel`ARC`Private`assoc:KeyValuePattern[{}],
         MatchQ[
-            Daniel`ARC`ARCSelectMatchingObjectsForRelationship[
-                "Within",
-                Daniel`ARC`Object[<|"Colors" -> {5}|>],
-                {Daniel`ARC`Private`assoc},
-                Daniel`ARC`Private`$objects
+            Utility`ReturnIfFailure[
+                Daniel`ARC`ARCSelectMatchingObjectsForRelationship[
+                    "Within",
+                    Daniel`ARC`Object[<|"Colors" -> {5}|>],
+                    {Daniel`ARC`Private`assoc},
+                    Daniel`ARC`Private`$objects
+                ]
             ],
             {_}
         ]
     ]
     ,
     TestID -> "ARCRuleToPattern-20221016-DLU522"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCRuleToPattern[<|"Shape" -> "Rectangle"|>]
+    ]
+    ,
+    KeyValuePattern[{"Shape" -> "Rectangle" | "Square" | "Line" | "Pixel"}]
+    ,
+    TestID -> "ARCRuleToPattern-20221119-KGNOZI"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCRuleToPattern[<|"Shape" -> "ABC"|>]
+    ]
+    ,
+    KeyValuePattern[{"Shape" -> "ABC"}]
+    ,
+    TestID -> "ARCRuleToPattern-20221119-M0GHXP"
+]
+
+Test[
+    Daniel`ARC`ARCRuleToPattern[<|"Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>|>]
+    ,
+    KeyValuePattern[
+        {
+            "Shape" -> KeyValuePattern[
+                {"Name" -> "Rectangle" | "Square" | "Line" | "Pixel", "Filled" -> True}
+            ]
+        }
+    ]
+    ,
+    TestID -> "ARCRuleToPattern-20221119-IG89DI"
 ]

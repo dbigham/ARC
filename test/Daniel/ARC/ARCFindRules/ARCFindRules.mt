@@ -4299,3 +4299,31 @@ Test[
     ,
     TestID -> "ARCFindRules-20221111-6G8QZ1"
 ]
+
+Test[
+    Daniel`ARC`ARCSimplifyRules[
+        Daniel`ARC`ARCFindRules[Daniel`ARC`ARCParseFile[file = "b548a754"]["Train"]]
+    ]
+    ,
+    <|
+        "RotationNormalization" -> <|
+            Daniel`ARC`Object[<|"Area.Rank" -> 1|>] -> <|"Y.InverseRank" -> 1|>,
+            Daniel`ARC`Object[<|"Shape" -> <|"Name" -> "Pixel"|>|>] -> <|"Y.InverseRank" -> 2|>
+        |>,
+        "FollowDiagonals" -> False,
+        "Rules" -> {
+            <|"Shape" -> <|"Name" -> "Pixel"|>|> -> <|"Transform" -> <|"Type" -> "Delete"|>|>,
+            <|"Shape" -> <|"Name" -> "Rectangle", "Filled" -> True|>|> -> <|
+                "Shape" -> <|
+                    "Name" -> "Rectangle",
+                    "Filled" -> True,
+                    "Interior" -> "Same",
+                    "Border" -> "Same"
+                |>,
+                "Y2" -> Daniel`ARC`ObjectValue[<|"Shape" -> <|"Name" -> "Pixel"|>|>, "Y2"]
+            |>
+        }
+    |>
+    ,
+    TestID -> "ARCFindRules-20221119-V3L596"
+]

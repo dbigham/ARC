@@ -667,6 +667,8 @@ ObjectY::usage = "ObjectY  "
 
 ARCInferDimensionalSequenceOrder::usage = "ARCInferDimensionalSequenceOrder  "
 
+ARCResolveSameValues::usage = "ARCResolveSameValues  "
+
 Begin["`Private`"]
 
 
@@ -3806,8 +3808,6 @@ ARCFindObjectMapping[object_Association, objectsToMapTo_List, inputObjects_List,
                                border and fill color, then don't treat that as MapComponents.
                                e.g. b548a754 *)
                             If [And[
-                                    (* Not yet enabled. *)
-                                    False,
                                     MatchQ[mappedToObject["Shape"], KeyValuePattern[{"Filled" -> True, "Interior" -> _, "Border" -> _}]],
                                     MatchQ[object["Shape"], KeyValuePattern[{"Filled" -> True, "Interior" -> _, "Border" -> _}]]
                                 ],
@@ -5205,7 +5205,7 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
-        (* HERE RNORM *)
+        (* HERE RNORM HERE ROTATIONAL NORM *)
         If [And[
                 Or[
                     !TrueQ[workingRulesFound[]],
@@ -6271,7 +6271,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                                                        interior color as just a rectangle.
                                                        e.g. b548a754 *)
                                                     (* Note: Not yet enabled. *)
-                                                    (*KeyValuePattern[
+                                                    KeyValuePattern[
                                                         {
                                                             "Name" -> "Square",
                                                             "Border" -> _,
@@ -6282,7 +6282,7 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                                                             KeyDrop[propertyValue, {"Border", "Interior"}],
                                                             "Name" -> "Rectangle"
                                                         ]
-                                                    ),*)
+                                                    ),
                                                     (* If the Shape also involves information about
                                                        border or internal colors, we'll drop that
                                                        information when grouping for rule finding. *)
@@ -7769,7 +7769,10 @@ ARCApplyConclusion[objectIn_Association, conclusion_Association, inputScene_Asso
                         Nothing :> Return[Nothing, Module]
                     ];
             ],
-            ARCRemoveExtendedMetadataFromConclusion[conclusion]
+            ARCResolveSameValues[
+                ARCRemoveExtendedMetadataFromConclusion[conclusion],
+                object
+            ]
         ];
         
         (* Ensure we didn't produce an non-Integer values for properties that need integers. *)
@@ -9739,8 +9742,8 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 Alternatives[
                                     KeyValuePattern[
                                         {
-                                            "Border" -> KeyValuePattern["Color" -> _],
-                                            "Interior" -> KeyValuePattern["Color" -> _]
+                                            "Border" -> KeyValuePattern["Color" -> _] | "Same",
+                                            "Interior" -> KeyValuePattern["Color" -> _] | "Same"
                                         }
                                     ],
                                     (* e.g. a5f85a15 *)
@@ -9940,10 +9943,13 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 |>,
                                 <|
                                     "Name" -> "Y2",
-                                    "Condition" -> Function[
+                                    "Condition" -> Function[{conclusionSoFar, conclusionSoFarIncludingCurrentAlternatives, conclusionsBeingGeneralized},
                                         And[
-                                            MissingQ[#["Y2"]] && MissingQ[#["Y2Inverse"]],
-                                            !MissingQ[#["Y"]] || !MissingQ[#["YInverse"]] || !MissingQ[#["Height"]]
+                                            MissingQ[conclusionSoFar["Y2"]] && MissingQ[conclusionSoFar["Y2Inverse"]],
+                                            Or[
+                                                !MissingQ[conclusionSoFar["Y"]] || !MissingQ[conclusionSoFar["YInverse"]] || !MissingQ[conclusionSoFar["Height"]],
+                                                ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y"]
+                                            ]
                                         ]
                                     ],
                                     "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar, conclusionsBeingGeneralized},
@@ -10095,12 +10101,20 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                    required if Fill wasn't inferrable. *)
                                 Missing["Fill"]
                             ]
-                        }
+                        },
                         (* e.g. b548a754
                            Since the above input isn't yet working, and this is breaking 50cb2852 for
                            some reason, we won't enable this yet. *)
-                        (*{"Name", "Filled", "Interior", "Border"}*)
-                    }
+                        {"Name", "Filled", "Interior", "Border"}
+                    },
+                    "SubProperties" -> <|
+                        "Interior" -> <|
+                            "MinimalPropertySets" -> {{"Color"}}
+                        |>,
+                        "Border" -> <|
+                            "MinimalPropertySets" -> {{"Color"}}
+                        |>
+                    |>
                 |>,
                 "Color" -> <|
                     "ObjectGet" -> Function[#["Color"]]
@@ -10546,7 +10560,8 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
     (* HERE2 *)
     (*EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath]@*)
     (*Function[{expr},
-        If [MatchQ[propertyPath, {"Shape", ___}],
+        (*If [MatchQ[propertyPath, {"Shape", ___}],*)
+        If [MatchQ[propertyPath, {___, "Y2"}],
             EchoTag["ARCGeneralizeConclusionValue result" -> propertyPath][expr]
         ];
         expr
@@ -10569,6 +10584,7 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                     None
                 ],
             values,
+            inputValues,
             commonValues,
             uniqueValue,
             subPropertySets
@@ -10578,9 +10594,17 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
         
         values = conclusions[[All, "Value"]];
         
-        (*If [property === "Height" && TrueQ[$mapComponents],
+        inputValues = (
+            Gett[#, propertyPath] & /@ conclusions[[All, "Input"]]
+        );
+        
+        (*If [property === "Border" && !TrueQ[$mapComponents],
             ARCEcho["Conclusion values" -> values];
-            ARCEcho["Input values" -> conclusions[[All, "Input", property]]];
+            ARCEcho[
+                "Input values" -> (
+                    Gett[#, propertyPath] & /@ conclusions[[All, "Input"]]
+                )
+            ];
         ];*)
         
         (*If [MatchQ[propertyPath, {"Shape", ___}],
@@ -10632,15 +10656,37 @@ ARCGeneralizeConclusionValue[propertyPath_List, propertyAttributes: _Association
                    won't correspond to a top-level input object property, and even if it
                    did, ARCApplyConclusion wouldn't know to take the input property
                    value and stuff it down into this nested location. *)
-                Length[propertyPath] === 1,
-                conclusions[[All, "Input", property]] === values
+                (* But let's try going down this path and see where we get...
+                   e.g. Using "Same" for b548a754. *)
+                (*Length[propertyPath] === 1,*)
+                inputValues === values
             ],
             If [TrueQ[OptionValue["AllowUnspecifiedIfUnchanged"]],
-                Return[Nothing, Module]
+                If [Length[propertyPath] === 1,
+                    Return[Nothing, Module]
+                    ,
+                    Return[
+                        (* Let's try this syntax. *)
+                        property ->
+                            If [SingleUniqueValueQ[values],
+                                values[[1]]
+                                ,
+                                (* e.g. b548a754 *)
+                                "Same"
+                            ],
+                        Module
+                    ]
+                ]
                 ,
                 (* Even though the values don't change, we need to specify the values
                    explicitly. *)
-                Return[property -> ObjectValue["InputObject", property], Module]
+                Return[property ->
+                    ObjectValue[
+                        "InputObject",
+                        Replace[propertyPath, {{singleProperty_} :> singleProperty}]
+                    ],
+                    Module
+                ]
             ]
         ];
         
@@ -12041,7 +12087,16 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                         ];
                     
                     If [objectOrClassValueHead === ClassValue,
-                        propertyValue = DeleteDuplicates[resolvedObject[[All, property]]];
+                        propertyValue = DeleteDuplicates[
+                            If [ListQ[property],
+                                (* `property` is a property path. (List) *)
+                                Function[{thisObject},
+                                    Gett[thisObject, property]
+                                ] /@ resolvedObject
+                                ,
+                                resolvedObject[[All, property]]
+                            ]
+                        ];
                         If [MatchQ[propertyValue, {_}],
                             propertyValue = First[propertyValue]
                             ,
@@ -12053,7 +12108,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                             ]
                         ]
                         ,
-                        propertyValue = resolvedObject[property]
+                        propertyValue = Gett[resolvedObject, property]
                     ];
                     
                     propertyValue = ReturnFailureIfMissing[
@@ -12065,7 +12120,7 @@ ResolveValues[expr_, inputObject_Association, scene_Association, OptionsPattern[
                                     head = h;
                                     propertyValue
                                 ),
-                                propertyName_String :> propertyValue
+                                propertyName_String | propertyPath_List :> propertyValue
                             }
                         ],
                         "MissingPropertyValue",
@@ -13836,6 +13891,8 @@ ARCTransformScore[transformIn_] :=
 (* SCORE TRANSFORM *)
 ARCTransformScore[key_, rhs_] :=
     Module[{score = 0, objectValueCondition, objectValueProperty},
+        
+        (*EchoTag["ARCTransformScore"][key -> rhs];*)
         
         (* For now we'll just pay attention to references wrt their type matches
            the property being specified, etc. *)
@@ -16393,6 +16450,7 @@ Module[{tasks},
             "NewEvaluationSuccesses" -> {}
         |>,
         <|
+            "KnownMessages" -> True,
             "ExampleImplemented" -> "b7249182",
             "Timestamp" -> DateObject[{2022, 11, 11}],
             "ImplementationTime" -> Quantity[4, "Hours"],
@@ -16421,6 +16479,14 @@ Module[{tasks},
             "Timestamp" -> DateObject[{2022, 11, 17}],
             "ImplementationTime" -> Quantity[0, "Hours"],
             "CodeLength" -> 33339,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
+        |>,
+        <|
+            "ExampleImplemented" -> "b548a754",
+            "Timestamp" -> DateObject[{2022, 11, 19}],
+            "ImplementationTime" -> Quantity[3, "Hours"],
+            "CodeLength" -> 33486,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
         |>
@@ -17980,6 +18046,30 @@ ARCRuleToPattern[pattern_] :=
                                     Sequence @@ shape,
                                     ___
                                 }
+                            ]
+                    ),
+                    HoldPattern[Rule]["Shape", shape_String | assoc:KeyValuePattern["Name" -> shape_String]] :> (
+                        "Shape" ->
+                            With[
+                                {
+                                    alternatives = Replace[
+                                        (* If a condition should apply to say "Rectangle", then it should
+                                        also apply to "Square", etc. *)
+                                        Quiet[VertexOutComponent[$generalityGraph["Shape"], shape]],
+                                        {
+                                            {singleShape_} :> singleShape,
+                                            (* ARCRuleToPattern-20221119-KGNOZI *)
+                                            {shapes__} :> Alternatives @@ {shapes},
+                                            (* ARCRuleToPattern-20221119-M0GHXP *)
+                                            _ :> shape
+                                        }
+                                    ]
+                                },
+                                If [{assoc} =!= {},
+                                    Sett[assoc, "Name" -> alternatives]
+                                    ,
+                                    alternatives
+                                ]
                             ]
                     )
                 },
@@ -30799,11 +30889,19 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                             ],
                             If [ListQ[messages],
                                 <|
-                                    "Messages" -> True,
+                                    If [TrueQ[taskDetails["KnownMessages"]],
+                                        "KnownMessages" -> True
+                                        ,
+                                        "Messages" -> True
+                                    ],
                                     "MessagesDetails" -> messages
                                 |>
                                 ,
-                                Nothing
+                                If [TrueQ[taskDetails["KnownMessages"]],
+                                    "KnownMessages:Fixed" -> True
+                                    ,
+                                    Nothing
+                                ]
                             ],
                             "Runtime" -> thisRuntime,
                             If [taskDetails =!= <||>,
@@ -30850,7 +30948,8 @@ ARCTestInputSet[inputSetName_String, OptionsPattern[]] :=
                         "Fixed:FailsOnlyDuringParallelTest",
                         "NewFailure",
                         "NewFailure:TimeLimitExceeded",
-                        "Messages"
+                        "Messages",
+                        "KnownMessages:Fixed"
                     }
                 )
             ),
@@ -33330,6 +33429,54 @@ ARCInferDimensionalSequenceOrder[objects_List, dimension_String] :=
             ],
             sortedObjects[[1]]
         ]
+    ]
+
+(*!
+    \function ARCResolveSameValues
+    
+    \calltable
+        ARCResolveSameValues[conclusion, inputObject] '' Given a conclusion that should be applied to an input object, resolve uses of "Same".
+    
+    Examples:
+    
+    ARCResolveSameValues[
+        <|
+            "Shape" -> <|
+                "Name" -> "Rectangle",
+                "Filled" -> True,
+                "Interior" -> "Same",
+                "Border" -> "Same"
+            |>
+        |>,
+        <|"Shape" -> <|"Interior" -> "A", "Border" -> "B"|>|>
+    ]
+    
+    ===
+    
+    <|
+        "Shape" -> <|"Name" -> "Rectangle", "Filled" -> True, "Interior" -> "A", "Border" -> "B"|>
+    |>
+    
+    Unit tests:
+    
+    RunUnitTests[Daniel`ARC`ARCResolveSameValues]
+    
+    \maintainer danielb
+*)
+Clear[ARCResolveSameValues];
+ARCResolveSameValues[conclusionIn_, inputObject_Association] :=
+    Module[{conclusion = conclusionIn},
+        
+        Function[{position},
+            position2 = Replace[position, Key[key_String] :> key, {1}];
+            conclusion = Sett[
+                conclusion,
+                position2 ->
+                    Gett[inputObject, position]
+            ]
+        ] /@ Position[conclusion, "Same", Infinity];
+        
+        conclusion
     ]
 
 End[]
