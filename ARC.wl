@@ -16413,6 +16413,16 @@ Module[{tasks},
             "CodeLength" -> 32763,
             "NewGeneralizedSuccesses" -> {},
             "NewEvaluationSuccesses" -> {}
+        |>,
+        (* Crazy rules. *)
+        <|
+            "GeneralizedSuccess" -> True,
+            "ExampleImplemented" -> "e50d258f",
+            "Timestamp" -> DateObject[{2022, 11, 17}],
+            "ImplementationTime" -> Quantity[0, "Hours"],
+            "CodeLength" -> 33339,
+            "NewGeneralizedSuccesses" -> {},
+            "NewEvaluationSuccesses" -> {}
         |>
     };
     
