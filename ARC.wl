@@ -4672,7 +4672,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                  AddObjects where multiple objects need to be added, and a Failure is returned. *)
         If [And[
                 OptionValue["FormMultiColorCompositeObjects"] =!= False,
-                !TrueQ[OptionValue["SingleObject"]]
+                !TrueQ[OptionValue["SingleObject"]],
+                OptionValue["AllowSubdividing"] =!= "Require"
             ],
             res =
                 ARCLogScope["ARCFindRules:MultiColorObjects"]@
@@ -4689,7 +4690,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         If [And[
                 MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | False],
-                !TrueQ[OptionValue["SingleObject"]]
+                !TrueQ[OptionValue["SingleObject"]],
+                OptionValue["AllowSubdividing"] =!= "Require"
                 (* At first we would only try parsing the scene without the formation
                    of composite objects if the scene always consisted of a single
                    composite object, but 31aa019c appears to be an example that
@@ -4781,7 +4783,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         
         If [And[
                 OptionValue["SingleObject"] =!= False,
-                MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | True]
+                MatchQ[OptionValue["FormMultiColorCompositeObjects"], Automatic | True],
+                OptionValue["AllowSubdividing"] =!= "Require"
             ],
             If [Or[
                     !TrueQ[workingRulesFound[]],
@@ -4840,12 +4843,25 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
             ]
         ];
         
+        If [!MatchQ[parsedExamples, KeyValuePattern["Examples" -> _List]],
+            (* Needed if "AllowSubdividing" -> "Require". *)
+            parsedExamples = <|
+                "Examples" ->
+                    ReturnIfFailure@
+                    ARCParseInputAndOutputScenes[
+                        examples,
+                        FilterOptions[opts, ARCParseInputAndOutputScenes]
+                    ],
+                "ParseOptions" -> <|opts|>
+            |>
+        ];
+        
         (* If both inputs and outputs have a shared grid structure, we can try subdividing
            the input/output scenes into their individual grid cells. *)
         If [And[
                 MatchQ[parsedExamples, KeyValuePattern["Examples" -> _List]],
                 ARCAllExamplesUseGridInInputAndOutput[parsedExamples["Examples"]],
-                TrueQ[OptionValue["AllowSubdividing"]]
+                MatchQ[OptionValue["AllowSubdividing"], True | "Require"]
             ],
             (* Previously we weren't trying this parsing mode unless we were unable to find
                working rules above, but inputs like 272f95fa are producing a bad rule set
@@ -4868,7 +4884,20 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
                         ]
                     ],
                     foundRulesQ = True;
-                    res = res2
+                    res = res2;
+                    If [OptionValue["AllowSubdividing"] === "Require",
+                        Return[
+                            ARCRulesForOutput[res],
+                            Module
+                        ]
+                    ]
+                    ,
+                    If [OptionValue["AllowSubdividing"] === "Require",
+                        Return[
+                            <||>,
+                            Module
+                        ]
+                    ]
                 ]
             (*]*)
         ];
@@ -9947,8 +9976,10 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                         And[
                                             MissingQ[conclusionSoFar["Y2"]] && MissingQ[conclusionSoFar["Y2Inverse"]],
                                             Or[
-                                                !MissingQ[conclusionSoFar["Y"]] || !MissingQ[conclusionSoFar["YInverse"]] || !MissingQ[conclusionSoFar["Height"]],
-                                                ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y"]
+                                                !MissingQ[conclusionSoFar["Y"]],
+                                                ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y"],
+                                                !MissingQ[conclusionSoFar["YInverse"]],
+                                                !MissingQ[conclusionSoFar["Height"]]
                                             ]
                                         ]
                                     ],
@@ -9963,10 +9994,15 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 |>,
                                 <|
                                     "Name" -> "Y2Inverse",
-                                    "Condition" -> Function[
+                                    "Condition" -> Function[{conclusionSoFar, conclusionSoFarIncludingCurrentAlternatives, conclusionsBeingGeneralized},
                                         And[
-                                            MissingQ[#["Y2Inverse"]] && MissingQ[#["Y2"]],
-                                            !MissingQ[#["Y"]] || !MissingQ[#["YInverse"]] || !MissingQ[#["Height"]]
+                                            MissingQ[conclusionSoFar["Y2Inverse"]] && MissingQ[conclusionSoFar["Y2"]],
+                                            Or[
+                                                !MissingQ[conclusionSoFar["Y"]],
+                                                ARCPropertyUnchangingInConclusionsQ[conclusionsBeingGeneralized, "Y"],
+                                                !MissingQ[conclusionSoFar["YInverse"]],
+                                                !MissingQ[conclusionSoFar["Height"]]
+                                            ]
                                         ]
                                     ],
                                     "AllowUnspecifiedIfUnchanged" -> Function[{conclusionSoFar, conclusionsBeingGeneralized},
@@ -13888,7 +13924,7 @@ ARCTransformScore[transformIn_] :=
         score
     ]
 
-(* SCORE TRANSFORM *)
+(* SCORE TRANSFORM SCORE *)
 ARCTransformScore[key_, rhs_] :=
     Module[{score = 0, objectValueCondition, objectValueProperty},
         
