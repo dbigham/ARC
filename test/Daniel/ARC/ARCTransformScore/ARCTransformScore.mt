@@ -52,7 +52,7 @@ Test[
             <|
                 "Type" -> "Move",
                 "Offset" -> <|
-                    "Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {4}|>, "YRank"],
+                    "Y" -> Daniel`ARC`ObjectValue[<|"Colors" -> {4}|>, "Color"],
                     "X" -> 0
                 |>
             |>
@@ -115,7 +115,7 @@ Test[
         ]
     ]
     ,
-    -2.103587132480567
+    -1.8535871324805668
     ,
     TestID -> "ARCTransformScore-20220825-4RBNEY"
 ]
@@ -361,7 +361,7 @@ Test[
         ]
     ]
     ,
-    -0.10000000000000003
+    0.04999999999999993
     ,
     TestID -> "ARCTransformScore-20221112-C6NMQW"
 ]
@@ -408,4 +408,43 @@ Test[
     -1.2424499799839839
     ,
     TestID -> "ARCTransformScore-20221117-TF7XJB"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|"X" -> Daniel`ARC`ObjectValue["InputObject", "Area.Rank"]|>
+        ]
+    ]
+    ,
+    -1.0699999999999998
+    ,
+    TestID -> "ARCTransformScore-20221119-Y5XA9J"
+]
+
+Test[
+    Utility`ReplaceAssociationsWithUnevaluatedAssociations[
+        Daniel`ARC`ARCTransformScore[
+            <|
+                "X" -> Inactive[Plus][Daniel`ARC`ObjectValue["InputScene", "ObjectCount"], -1]
+            |>
+        ]
+    ]
+    ,
+    -1.22
+    ,
+    TestID -> "ARCTransformScore-20221119-6ZGYOE"
+]
+
+Test[
+    Daniel`ARC`ARCTransformScore[
+        "Width" -> Inactive[Plus][
+            Daniel`ARC`ObjectValue[<|"Area.InverseRank" -> 1|>, "Length"],
+            2
+        ]
+    ]
+    ,
+    -1.0979795897113271
+    ,
+    TestID -> "ARCTransformScore-20221119-VJKK1U"
 ]

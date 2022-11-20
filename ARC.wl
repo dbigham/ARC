@@ -4448,6 +4448,7 @@ Options[ARCFindRules] =
     "CheckForGridsAndDividers" -> Automatic,            (*< If we see things that look like grids/dividers, should we treat the specially, such as segmenting them into their own objects? *)
     "CheckForImputation" -> True,                       (*< Should we check for imputation? *)
     "CheckForPatternFill" -> True,                      (*< Should we check for pattern fill rules? *)
+    "MaxTime" -> Automatic,                             (*< The maximum number of seconds of computation time allowed. *)
     
     "UnnormalizedConclusionGroup" -> Missing[]          (*< If finding rules for a normalized conclusion group, we need to pass in the unnormalized conclusion group for use in updating the `unhandled` list. Only used by one of the down values. *)
 };
@@ -4457,45 +4458,51 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
        that into account. *)
     ARCTimeConstrained[
         Quantity[
-            If [MatchQ[
-                    $file,
-                    "6773b310" | "0d3d703e" | "3194b014" |
-                    (* These started failing Oct 1 in training test runs, but didn't fail
-                       when I ran them locally, so adding them here experimentally. *)
-                    "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" |
-                    (* Added Oct 8 2022 *)
-                    "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d" |
-                    (* Added Oct 10 2022 *)
-                    "363442ee" | "9dfd6313" |
-                    (* Added Oct 13 2022: I'm finding it odd that these are running in 11 to 18
-                       seconds when run in a single kernel, but over 55 seconds when run in
-                       parallel. That's a pretty big mutliple. (More than 3x!) *)
-                    "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5" |
-                    (* Oct 22 2022 *)
-                    "d10ecb37" | "b6afb2da" |
-                    (* Nov 8 2022: Started timing out, but still fails with extra time. *)
-                    "42a15761" |
-                    (* Nov 12 2022 *)
-                    "3ee1011a" |
-                    (* Started failing approx Nov 13 2022.
-                       Seems to pass in 1.2 minutes now if given more time. *)
-                    "8ee62060" |
-                    (* Started failing approx Nov 13 2022.
-                       Going to give it extra time incase that's the cause.
-                       Does look to be working now in parallel kernel. *)
-                    "2b01abd0" |
-                    (* Started Nov 15 2022, I suspect because of rotational normalization
-                       being considered if the score is < about -2. *)
-                    "8d510a79" |
-                    (* Started Nov 15 2022, I suspect because of rotational normalization
-                       being considered if the score is < about -2. *)
-                    "d9f24cd1"
-                ],
-                (* If an input is known to be slow, but should be working, then we give
-                   it lots of time to try to avoid false positive failures. *)
-                180
-                ,
-                55
+            Replace[
+                OptionValue["MaxTime"],
+                Automatic :>
+                    If [MatchQ[
+                            $file,
+                            "6773b310" | "0d3d703e" | "3194b014" |
+                            (* These started failing Oct 1 in training test runs, but didn't fail
+                            when I ran them locally, so adding them here experimentally. *)
+                            "1b2d62fb" | "1f876c06" | "22eb0ac0" | "746b3537" | "8efcae92" | "90c28cc7" |
+                            (* Added Oct 8 2022 *)
+                            "178fcbfb" | "b91ae062" | "9af7a82c" | "44d8ac46" | "0bb8deee" | "9110e3c5" | "e133d23d" |
+                            (* Added Oct 10 2022 *)
+                            "363442ee" | "9dfd6313" |
+                            (* Added Oct 13 2022: I'm finding it odd that these are running in 11 to 18
+                               seconds when run in a single kernel, but over 55 seconds when run in
+                               parallel. That's a pretty big mutliple. (More than 3x!) *)
+                            "1190e5a7" | "1caeab9d" | "25d8a9c8" | "272f95fa" | "27a28665" | "2dc579da" | "31aa019c" | "3428a4f5" | "42a50994" | "4be741c5" |
+                            (* Oct 22 2022 *)
+                            "d10ecb37" | "b6afb2da" |
+                            (* Nov 8 2022: Started timing out, but still fails with extra time. *)
+                            "42a15761" |
+                            (* Nov 12 2022 *)
+                            "3ee1011a" |
+                            (* Started failing approx Nov 13 2022.
+                               Seems to pass in 1.2 minutes now if given more time. *)
+                            "8ee62060" |
+                            (* Started failing approx Nov 13 2022.
+                               Going to give it extra time incase that's the cause.
+                               Does look to be working now in parallel kernel. *)
+                            "2b01abd0" |
+                            (* Started Nov 15 2022, I suspect because of rotational normalization
+                               being considered if the score is < about -2. *)
+                            "8d510a79" |
+                            (* Started Nov 15 2022, I suspect because of rotational normalization
+                               being considered if the score is < about -2. *)
+                            "d9f24cd1" |
+                            (* Nov 19 2022 *)
+                            "e50d258f"
+                        ],
+                        (* If an input is known to be slow, but should be working, then we give
+                           it lots of time to try to avoid false positive failures. *)
+                        180
+                        ,
+                        55
+                    ]
             ],
             "Seconds"
         ]
@@ -5238,8 +5245,8 @@ ARCFindRules[examplesIn_List, opts:OptionsPattern[]] :=
         If [And[
                 Or[
                     !TrueQ[workingRulesFound[]],
-                    (* 5168d44c's unwanted parse has a score of -2.1. *)
-                    (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -2
+                    (* 5168d44c's unwanted parse has a score of -2.1. (now -1.8) *)
+                    (existingRulesScore = ARCRuleSetScore[res["Rules"]]) < -1.8
                 ],
                 (* Don't try performing rotational normalization if we've already done that
                    normalization. *)
@@ -6138,7 +6145,7 @@ ARCFindRules[examples_List, objectMappingsIn_List, referenceableInputObjects_Ass
                     (* UNDOME *)
                     If [False && !TrueQ[$arcFindRulesForGeneratedObjects],
                         If [!TrueQ[$mapComponents],
-                            {"Shape"}
+                            {"Area.Rank"}
                             ,
                             {"Y.Rank"}
                         ]
@@ -6295,23 +6302,6 @@ ARCFindRules[preRules_List, property: _String | None, referenceableInputObjects_
                                             property -> Replace[
                                                 propertyValue,
                                                 {
-                                                    (* For the purposes of rule finding, treat a
-                                                       square that has differing border and
-                                                       interior color as just a rectangle.
-                                                       e.g. b548a754 *)
-                                                    (* Note: Not yet enabled. *)
-                                                    KeyValuePattern[
-                                                        {
-                                                            "Name" -> "Square",
-                                                            "Border" -> _,
-                                                            "Interior" -> _
-                                                        }
-                                                    ] :> (
-                                                        Sett[
-                                                            KeyDrop[propertyValue, {"Border", "Interior"}],
-                                                            "Name" -> "Rectangle"
-                                                        ]
-                                                    ),
                                                     (* If the Shape also involves information about
                                                        border or internal colors, we'll drop that
                                                        information when grouping for rule finding. *)
@@ -9743,6 +9733,13 @@ ARCObjectMinimalPropertySetsAndSubProperties[OptionsPattern[]] :=
                                 Alternatives[
                                     KeyValuePattern[
                                         "Fill" -> _
+                                    ],
+                                    (* e.g. b548a754 *)
+                                    KeyValuePattern[
+                                        {
+                                            "Border" -> _,
+                                            "Interior" -> _
+                                        }
                                     ],
                                     (* This further demonstrates the issue with this "Shapes"
                                        alternative. It doesn't guarentee that it provides
@@ -14003,6 +14000,18 @@ ARCTransformScore[key_, rhs_] :=
                 0.3,
             key === objectValueProperty,
                 0,
+            Or[
+                And[
+                    MatchQ[key, "Width" | "Height"],
+                    objectValueProperty === "Length"
+                ],
+                And[
+                    MatchQ[objectValueProperty, "Width" | "Height"],
+                    key === "Length"
+                ]
+            ],
+                (* e.g. 3ee1011a *)
+                -0.3,
             key === "Color" && objectValueProperty =!= "Color",
                 (* Since we represent color with integers, sometimes rules will be found where
                    the color of an object is inferred to be, say, the X value of another
@@ -14110,10 +14119,30 @@ ARCTransformScore[key_, rhs_] :=
                                 But even that wasn't enough to fix things, so I added
                                 a case above for ObjectCount. *)
                 -0.65,
+            And[
+                StringQ[objectValueProperty],
+                $properties[key, "Type"] === "Integer",
+                StringEndsQ[objectValueProperty, "Rank"]
+            ],
+                (* If the property has an integer type, and we're using a rank to populate
+                   it, that isn't terrible. Similar to how we treat Count properties.
+                   ARCTransformScore-20221119-Y5XA9J
+                   Was going to use this for 3ee1011a but that required -0.7 which seemed
+                   to risky, but will leave this here at -0.85 because it does feel
+                   sensible. *)
+                -0.85,
             True,
                 (* We are inferring a property using the value of another property
                    where the types don't match. This in general is not good/likely. *)
                 -1.1
+        ];
+        
+        If [!FreeQ[rhs, ObjectValue["InputObject", _]],
+            (* If we refer to the input object, we'll boost the score a bit, since
+               it seems more contextual to use a property from the input object
+               than to use a value from some other referenceable object in the
+               scene. e.g. 3ee1011a *)
+            score += 0.15
         ];
         
         If [And[
@@ -15191,8 +15220,9 @@ Module[{tasks},
             "ExampleImplemented" -> "1f876c06",
             "ImplementationTime" -> Quantity[6.5, "Hours"],
             "NewGeneralizedSuccesses" -> {"56ff96f3"},
-            "NewEvaluationSuccesses" -> {"e21a174a"},
-            "FailsOnlyDuringParallelTest" -> True
+            "NewEvaluationSuccesses" -> {"e21a174a"}
+            (* Started passing again Nov 19 2022. *)
+            (*"FailsOnlyDuringParallelTest" -> True*)
         |>,
         <|
             "GeneralizedSuccess" -> True,
@@ -16486,6 +16516,7 @@ Module[{tasks},
             "NewEvaluationSuccesses" -> {}
         |>,
         <|
+            (* Started Nov 17ish 2022 *)
             "KnownMessages" -> True,
             "ExampleImplemented" -> "b7249182",
             "Timestamp" -> DateObject[{2022, 11, 11}],
