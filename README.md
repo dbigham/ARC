@@ -6,6 +6,10 @@ My attempt at:
 
 https://github.com/fchollet/ARC
 
+## How it Works
+
+[How it Works](HowItWorks.md)
+
 ## Percentage of Tasks Passing
 
 * Training tasks: 181 / 400 (45.2%)\
